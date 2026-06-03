@@ -6,8 +6,8 @@
     "season_type": "Regular Season",
     "dedupe_strategy": "clean_master appends unique content hashes; clean_latest overwrites current cleaned snapshot",
     "row_count": 15,
-    "last_saved_at_utc": "2026-06-03T18:58:02+00:00",
-    "run_id": "20260603T185758Z"
+    "last_saved_at_utc": "2026-06-03T19:56:08+00:00",
+    "run_id": "20260603T195605Z"
   },
   "rows": [
     {
@@ -243,9 +243,9 @@
       "season_type": "Regular Season",
       "source_endpoint": "/get-totals/wnba",
       "source_params_json": "{\"Season\": \"2026\", \"SeasonType\": \"Regular Season\", \"Type\": \"Team\"}",
-      "run_id": "20260603T185758Z",
-      "fetched_at_utc": "2026-06-03T18:58:02+00:00",
-      "row_content_hash": "0b9ffb233176dbb9dc8affed6b9229a0caa44e2e8244a32372cac73e34548b1e",
+      "run_id": "20260603T195605Z",
+      "fetched_at_utc": "2026-06-03T19:56:07+00:00",
+      "row_content_hash": "6eafa4c60c1512820322d27f2cbd7f80b8786e43091534df8fb1043382f215e4",
       "offensive_goaltends": NaN,
       "3pt_and_1_free_throw_trips": NaN,
       "source_response_keys": "[\"single_row_table_data\", \"multi_row_table_data\"]",
@@ -253,9 +253,9 @@
       "team_id_clean": "1611661323",
       "team_name_clean": "CON",
       "dataset_clean": "team_totals",
-      "_cleaned_at_utc": "2026-06-03T18:58:02+00:00",
-      "_clean_run_id": "20260603T185758Z",
-      "_row_content_hash": "30b119509ac6051ceb22c23bdf40072c2cd50ed2669d5436f1622a1ae9351fa7"
+      "_cleaned_at_utc": "2026-06-03T19:56:08+00:00",
+      "_clean_run_id": "20260603T195605Z",
+      "_row_content_hash": "0dec51acebd73a6477451c453d01e30231cff1d320463191034e943ef2b17cc5"
     },
     {
       "entity_id": "1611661325",
@@ -490,9 +490,9 @@
       "season_type": "Regular Season",
       "source_endpoint": "/get-totals/wnba",
       "source_params_json": "{\"Season\": \"2026\", \"SeasonType\": \"Regular Season\", \"Type\": \"Team\"}",
-      "run_id": "20260603T185758Z",
-      "fetched_at_utc": "2026-06-03T18:58:02+00:00",
-      "row_content_hash": "b4e55c9c7559bf6145b0dbcc839e1e31fd44d1c197fe5c2f0d37a52e6bfe1b89",
+      "run_id": "20260603T195605Z",
+      "fetched_at_utc": "2026-06-03T19:56:07+00:00",
+      "row_content_hash": "52fd6692051c8af55cc6f1cb30b57a00dad03d977b50bb2e052a1f247d61c3ac",
       "offensive_goaltends": NaN,
       "3pt_and_1_free_throw_trips": NaN,
       "source_response_keys": "[\"single_row_table_data\", \"multi_row_table_data\"]",
@@ -500,9 +500,9 @@
       "team_id_clean": "1611661325",
       "team_name_clean": "IND",
       "dataset_clean": "team_totals",
-      "_cleaned_at_utc": "2026-06-03T18:58:02+00:00",
-      "_clean_run_id": "20260603T185758Z",
-      "_row_content_hash": "f7fcbdacbed2a09ed52427b4bcd6da39296cd9d1c671f741c12ad243de7039d6"
+      "_cleaned_at_utc": "2026-06-03T19:56:08+00:00",
+      "_clean_run_id": "20260603T195605Z",
+      "_row_content_hash": "9302926a9973ed5bf8031f18e6ca9d25dbcd37810a01c39363eb994c03cb0464"
     },
     {
       "entity_id": "1611661322",
@@ -737,9 +737,9 @@
       "season_type": "Regular Season",
       "source_endpoint": "/get-totals/wnba",
       "source_params_json": "{\"Season\": \"2026\", \"SeasonType\": \"Regular Season\", \"Type\": \"Team\"}",
-      "run_id": "20260603T185758Z",
-      "fetched_at_utc": "2026-06-03T18:58:02+00:00",
-      "row_content_hash": "1de03e87d086a330da7955985d91f5200663cd6f8616505accffe88693b16e48",
+      "run_id": "20260603T195605Z",
+      "fetched_at_utc": "2026-06-03T19:56:07+00:00",
+      "row_content_hash": "2948e31aff5455c019d9886ebadd9f709ba1536ce8d89f7ebf6cf1e54f921ee9",
       "offensive_goaltends": NaN,
       "3pt_and_1_free_throw_trips": NaN,
       "source_response_keys": "[\"single_row_table_data\", \"multi_row_table_data\"]",
@@ -747,9 +747,9 @@
       "team_id_clean": "1611661322",
       "team_name_clean": "WAS",
       "dataset_clean": "team_totals",
-      "_cleaned_at_utc": "2026-06-03T18:58:02+00:00",
-      "_clean_run_id": "20260603T185758Z",
-      "_row_content_hash": "fae6e7d6d23cfbb816fc4efe3777be08a1e56ce2461c07cabcbbe6a52a050b0f"
+      "_cleaned_at_utc": "2026-06-03T19:56:08+00:00",
+      "_clean_run_id": "20260603T195605Z",
+      "_row_content_hash": "21051d28f180a97bea124568b4531d3efbc600e6f7d5fc03e17108fe09886862"
     },
     {
       "entity_id": "1611661319",
@@ -984,9 +984,9 @@
       "season_type": "Regular Season",
       "source_endpoint": "/get-totals/wnba",
       "source_params_json": "{\"Season\": \"2026\", \"SeasonType\": \"Regular Season\", \"Type\": \"Team\"}",
-      "run_id": "20260603T185758Z",
-      "fetched_at_utc": "2026-06-03T18:58:02+00:00",
-      "row_content_hash": "4fb359a1203640c57a2a6d9668d6f80f0113c839ace9b21a71c89f5d5bea1346",
+      "run_id": "20260603T195605Z",
+      "fetched_at_utc": "2026-06-03T19:56:07+00:00",
+      "row_content_hash": "6be594c96bd5285b816091cd1d6c3bf9c2174b624618df5d7f5bbbc2f4437a69",
       "offensive_goaltends": NaN,
       "3pt_and_1_free_throw_trips": NaN,
       "source_response_keys": "[\"single_row_table_data\", \"multi_row_table_data\"]",
@@ -994,9 +994,9 @@
       "team_id_clean": "1611661319",
       "team_name_clean": "LVA",
       "dataset_clean": "team_totals",
-      "_cleaned_at_utc": "2026-06-03T18:58:02+00:00",
-      "_clean_run_id": "20260603T185758Z",
-      "_row_content_hash": "bc54e7fc007e4de5f1ca5fc657c821a5df386c9accaeb13882bcd3b698b41421"
+      "_cleaned_at_utc": "2026-06-03T19:56:08+00:00",
+      "_clean_run_id": "20260603T195605Z",
+      "_row_content_hash": "2257843f3098ef718c9eb3fce8829be8a1128baf30490c9dbc036b656c3df24b"
     },
     {
       "entity_id": "1611661324",
@@ -1231,9 +1231,9 @@
       "season_type": "Regular Season",
       "source_endpoint": "/get-totals/wnba",
       "source_params_json": "{\"Season\": \"2026\", \"SeasonType\": \"Regular Season\", \"Type\": \"Team\"}",
-      "run_id": "20260603T185758Z",
-      "fetched_at_utc": "2026-06-03T18:58:02+00:00",
-      "row_content_hash": "535b15d048472be9caae62fa4881c7e66bd276f019f9a9644c6d9a7d83baec4d",
+      "run_id": "20260603T195605Z",
+      "fetched_at_utc": "2026-06-03T19:56:07+00:00",
+      "row_content_hash": "3a59ef968094401ae138faa1f645fbb0025b2c591053b876c76a210633184648",
       "offensive_goaltends": NaN,
       "3pt_and_1_free_throw_trips": NaN,
       "source_response_keys": "[\"single_row_table_data\", \"multi_row_table_data\"]",
@@ -1241,9 +1241,9 @@
       "team_id_clean": "1611661324",
       "team_name_clean": "MIN",
       "dataset_clean": "team_totals",
-      "_cleaned_at_utc": "2026-06-03T18:58:02+00:00",
-      "_clean_run_id": "20260603T185758Z",
-      "_row_content_hash": "cb57510955c679a9aefd59a35222e990f4dca9482ae165cadcbf4cf153e44247"
+      "_cleaned_at_utc": "2026-06-03T19:56:08+00:00",
+      "_clean_run_id": "20260603T195605Z",
+      "_row_content_hash": "9070c333d1ee60f74583174558c6d750379be17e6ae6826e44b14a60191035c9"
     },
     {
       "entity_id": "1611661317",
@@ -1478,9 +1478,9 @@
       "season_type": "Regular Season",
       "source_endpoint": "/get-totals/wnba",
       "source_params_json": "{\"Season\": \"2026\", \"SeasonType\": \"Regular Season\", \"Type\": \"Team\"}",
-      "run_id": "20260603T185758Z",
-      "fetched_at_utc": "2026-06-03T18:58:02+00:00",
-      "row_content_hash": "28945982d6bae245d59d9437d357c90716144e1956ab9ff43a44cefc4b2d5214",
+      "run_id": "20260603T195605Z",
+      "fetched_at_utc": "2026-06-03T19:56:07+00:00",
+      "row_content_hash": "a7d811639e65c22977d0744df156121a75ede88daa23fb12b4cceeefba98eff1",
       "offensive_goaltends": NaN,
       "3pt_and_1_free_throw_trips": NaN,
       "source_response_keys": "[\"single_row_table_data\", \"multi_row_table_data\"]",
@@ -1488,9 +1488,9 @@
       "team_id_clean": "1611661317",
       "team_name_clean": "PHX",
       "dataset_clean": "team_totals",
-      "_cleaned_at_utc": "2026-06-03T18:58:02+00:00",
-      "_clean_run_id": "20260603T185758Z",
-      "_row_content_hash": "ede54133ea753cb2693089deafb3c2e0552015fb91f2a41d1e889b8e5dec7bcf"
+      "_cleaned_at_utc": "2026-06-03T19:56:08+00:00",
+      "_clean_run_id": "20260603T195605Z",
+      "_row_content_hash": "6eae91f44bd1869b255e8fc06c6c1ae1f4f7586135a220f96a1465ab4c298e78"
     },
     {
       "entity_id": "1611661328",
@@ -1725,9 +1725,9 @@
       "season_type": "Regular Season",
       "source_endpoint": "/get-totals/wnba",
       "source_params_json": "{\"Season\": \"2026\", \"SeasonType\": \"Regular Season\", \"Type\": \"Team\"}",
-      "run_id": "20260603T185758Z",
-      "fetched_at_utc": "2026-06-03T18:58:02+00:00",
-      "row_content_hash": "f320fe07cdc314e9196568b8e26de7201c432c8453fe948c10080c95fc4d7d7b",
+      "run_id": "20260603T195605Z",
+      "fetched_at_utc": "2026-06-03T19:56:07+00:00",
+      "row_content_hash": "3d9058eeaa22c4ff32183647a11ff202ef1ac89e8c04ff8b84969d816c0c0d17",
       "offensive_goaltends": 1.0,
       "3pt_and_1_free_throw_trips": NaN,
       "source_response_keys": "[\"single_row_table_data\", \"multi_row_table_data\"]",
@@ -1735,9 +1735,9 @@
       "team_id_clean": "1611661328",
       "team_name_clean": "SEA",
       "dataset_clean": "team_totals",
-      "_cleaned_at_utc": "2026-06-03T18:58:02+00:00",
-      "_clean_run_id": "20260603T185758Z",
-      "_row_content_hash": "f454e8bfaa89d237110ba67531776443bb272b0cbd3be2632c4a263ebf9e143e"
+      "_cleaned_at_utc": "2026-06-03T19:56:08+00:00",
+      "_clean_run_id": "20260603T195605Z",
+      "_row_content_hash": "f2a719d2df467b8025a4915ed52b2e76146f5c64292a0f2df8658e3280392b0b"
     },
     {
       "entity_id": "1611661327",
@@ -1972,9 +1972,9 @@
       "season_type": "Regular Season",
       "source_endpoint": "/get-totals/wnba",
       "source_params_json": "{\"Season\": \"2026\", \"SeasonType\": \"Regular Season\", \"Type\": \"Team\"}",
-      "run_id": "20260603T185758Z",
-      "fetched_at_utc": "2026-06-03T18:58:02+00:00",
-      "row_content_hash": "e4b14a68b03d70971717c7cba62bbdf3c83d76a92b34db252e8089e0adeb921c",
+      "run_id": "20260603T195605Z",
+      "fetched_at_utc": "2026-06-03T19:56:07+00:00",
+      "row_content_hash": "22a1e0ce9f51934e6e15888e3de87463a6c5c44ceecf0eb29bc0b915a6c39caa",
       "offensive_goaltends": NaN,
       "3pt_and_1_free_throw_trips": NaN,
       "source_response_keys": "[\"single_row_table_data\", \"multi_row_table_data\"]",
@@ -1982,9 +1982,9 @@
       "team_id_clean": "1611661327",
       "team_name_clean": "PDX",
       "dataset_clean": "team_totals",
-      "_cleaned_at_utc": "2026-06-03T18:58:02+00:00",
-      "_clean_run_id": "20260603T185758Z",
-      "_row_content_hash": "2cd698063a324cc4e18866e942c26031ba2d2e794bc71b3ddfb5a5144b025f96"
+      "_cleaned_at_utc": "2026-06-03T19:56:08+00:00",
+      "_clean_run_id": "20260603T195605Z",
+      "_row_content_hash": "c58e485ae25db816026bea3e682d78e07a0f64c9c4f0a53cbb00bc0b3c702fb5"
     },
     {
       "entity_id": "1611661321",
@@ -2219,9 +2219,9 @@
       "season_type": "Regular Season",
       "source_endpoint": "/get-totals/wnba",
       "source_params_json": "{\"Season\": \"2026\", \"SeasonType\": \"Regular Season\", \"Type\": \"Team\"}",
-      "run_id": "20260603T185758Z",
-      "fetched_at_utc": "2026-06-03T18:58:02+00:00",
-      "row_content_hash": "c96453c249e5f69fb7c8dee87cde9b5c1e2fe5963bec3d8c6849290fb026a02a",
+      "run_id": "20260603T195605Z",
+      "fetched_at_utc": "2026-06-03T19:56:07+00:00",
+      "row_content_hash": "9288a707e13b3c8eafe665dbe631b6af87b176c300edb34ee65155d03d36c872",
       "offensive_goaltends": NaN,
       "3pt_and_1_free_throw_trips": 1.0,
       "source_response_keys": "[\"single_row_table_data\", \"multi_row_table_data\"]",
@@ -2229,9 +2229,9 @@
       "team_id_clean": "1611661321",
       "team_name_clean": "DAL",
       "dataset_clean": "team_totals",
-      "_cleaned_at_utc": "2026-06-03T18:58:02+00:00",
-      "_clean_run_id": "20260603T185758Z",
-      "_row_content_hash": "5d51714a252202faeaa22e8f942bbdd32fa6e7fe4b89570a50b2cb0d8dd8a5a7"
+      "_cleaned_at_utc": "2026-06-03T19:56:08+00:00",
+      "_clean_run_id": "20260603T195605Z",
+      "_row_content_hash": "7ef73aa90d4a57fdf1c31184508782f849517abaa1f232e1fcb98002d6a85878"
     },
     {
       "entity_id": "1611661332",
@@ -2466,9 +2466,9 @@
       "season_type": "Regular Season",
       "source_endpoint": "/get-totals/wnba",
       "source_params_json": "{\"Season\": \"2026\", \"SeasonType\": \"Regular Season\", \"Type\": \"Team\"}",
-      "run_id": "20260603T185758Z",
-      "fetched_at_utc": "2026-06-03T18:58:02+00:00",
-      "row_content_hash": "d196f664b38e1d0c3a9add3c638221df38e609fcd49f9ab8a41049f916ab8714",
+      "run_id": "20260603T195605Z",
+      "fetched_at_utc": "2026-06-03T19:56:07+00:00",
+      "row_content_hash": "60751dbe7f403e257573a96868cbec714a5982be0a1da9612c51b85b04d24cee",
       "offensive_goaltends": NaN,
       "3pt_and_1_free_throw_trips": NaN,
       "source_response_keys": "[\"single_row_table_data\", \"multi_row_table_data\"]",
@@ -2476,9 +2476,9 @@
       "team_id_clean": "1611661332",
       "team_name_clean": "TOR",
       "dataset_clean": "team_totals",
-      "_cleaned_at_utc": "2026-06-03T18:58:02+00:00",
-      "_clean_run_id": "20260603T185758Z",
-      "_row_content_hash": "d8382ba47786e3e1758269eeab51308adca71f31b2168a2ac4023ff5bfbb1957"
+      "_cleaned_at_utc": "2026-06-03T19:56:08+00:00",
+      "_clean_run_id": "20260603T195605Z",
+      "_row_content_hash": "cc6056fb8cc4ce0c74b2aab71bb9aee05a629e53b929a314c18221b1dd6d6338"
     },
     {
       "entity_id": "1611661331",
@@ -2713,9 +2713,9 @@
       "season_type": "Regular Season",
       "source_endpoint": "/get-totals/wnba",
       "source_params_json": "{\"Season\": \"2026\", \"SeasonType\": \"Regular Season\", \"Type\": \"Team\"}",
-      "run_id": "20260603T185758Z",
-      "fetched_at_utc": "2026-06-03T18:58:02+00:00",
-      "row_content_hash": "09850ab823d3623e9e49021bfa53001c033dbdae8b157825ca69cc183f652811",
+      "run_id": "20260603T195605Z",
+      "fetched_at_utc": "2026-06-03T19:56:07+00:00",
+      "row_content_hash": "832eac8f40727c994bed0ce0b13ea702b1f8a6c378a8a77b12005e7cfac8c532",
       "offensive_goaltends": NaN,
       "3pt_and_1_free_throw_trips": NaN,
       "source_response_keys": "[\"single_row_table_data\", \"multi_row_table_data\"]",
@@ -2723,9 +2723,9 @@
       "team_id_clean": "1611661331",
       "team_name_clean": "GSV",
       "dataset_clean": "team_totals",
-      "_cleaned_at_utc": "2026-06-03T18:58:02+00:00",
-      "_clean_run_id": "20260603T185758Z",
-      "_row_content_hash": "d84f0878bbb9e76ae035a560cc648367dd146352168f7cb7923ca7b187e806a3"
+      "_cleaned_at_utc": "2026-06-03T19:56:08+00:00",
+      "_clean_run_id": "20260603T195605Z",
+      "_row_content_hash": "745cb49d2f86e4930ea8ce445b0b53bddf7580b031fdf88356f5aa97e8fb1cc7"
     },
     {
       "entity_id": "1611661313",
@@ -2960,9 +2960,9 @@
       "season_type": "Regular Season",
       "source_endpoint": "/get-totals/wnba",
       "source_params_json": "{\"Season\": \"2026\", \"SeasonType\": \"Regular Season\", \"Type\": \"Team\"}",
-      "run_id": "20260603T185758Z",
-      "fetched_at_utc": "2026-06-03T18:58:02+00:00",
-      "row_content_hash": "37474211a9400f828c83e188b0a49565b5424ae489feea21cff9d5dad1cf49a6",
+      "run_id": "20260603T195605Z",
+      "fetched_at_utc": "2026-06-03T19:56:07+00:00",
+      "row_content_hash": "9c78219350d2b5081742617369ad7eb9524ea812adec009352f1f99ff8f88dc0",
       "offensive_goaltends": NaN,
       "3pt_and_1_free_throw_trips": NaN,
       "source_response_keys": "[\"single_row_table_data\", \"multi_row_table_data\"]",
@@ -2970,9 +2970,9 @@
       "team_id_clean": "1611661313",
       "team_name_clean": "NYL",
       "dataset_clean": "team_totals",
-      "_cleaned_at_utc": "2026-06-03T18:58:02+00:00",
-      "_clean_run_id": "20260603T185758Z",
-      "_row_content_hash": "bc86581a626600406488670581eedec0c67c73b1d2069ecfdb03058649fca20d"
+      "_cleaned_at_utc": "2026-06-03T19:56:08+00:00",
+      "_clean_run_id": "20260603T195605Z",
+      "_row_content_hash": "4d3442401561d7b12cd753af93b72c5b495894478bb43ab6f188b5aeeeff8cc8"
     },
     {
       "entity_id": "1611661320",
@@ -3207,9 +3207,9 @@
       "season_type": "Regular Season",
       "source_endpoint": "/get-totals/wnba",
       "source_params_json": "{\"Season\": \"2026\", \"SeasonType\": \"Regular Season\", \"Type\": \"Team\"}",
-      "run_id": "20260603T185758Z",
-      "fetched_at_utc": "2026-06-03T18:58:02+00:00",
-      "row_content_hash": "e14551867f15ef938c0443908fb2196e0b39f01c58501d8b134b38f041265fe2",
+      "run_id": "20260603T195605Z",
+      "fetched_at_utc": "2026-06-03T19:56:07+00:00",
+      "row_content_hash": "b38ec10229d0e63bb906fdb0bfe8ceb13cf866399cd1fad6248a01f7af136ee0",
       "offensive_goaltends": NaN,
       "3pt_and_1_free_throw_trips": NaN,
       "source_response_keys": "[\"single_row_table_data\", \"multi_row_table_data\"]",
@@ -3217,9 +3217,9 @@
       "team_id_clean": "1611661320",
       "team_name_clean": "LAS",
       "dataset_clean": "team_totals",
-      "_cleaned_at_utc": "2026-06-03T18:58:02+00:00",
-      "_clean_run_id": "20260603T185758Z",
-      "_row_content_hash": "72b3bd90ffbccd7df360fb11a07ed10e603e46cc3fb69b0f27d4c24c31b917dd"
+      "_cleaned_at_utc": "2026-06-03T19:56:08+00:00",
+      "_clean_run_id": "20260603T195605Z",
+      "_row_content_hash": "71325968360ee460d2b7459fe2ba05d454220f7a18f8e11b5c2ce135343d7623"
     },
     {
       "entity_id": "1611661329",
@@ -3454,9 +3454,9 @@
       "season_type": "Regular Season",
       "source_endpoint": "/get-totals/wnba",
       "source_params_json": "{\"Season\": \"2026\", \"SeasonType\": \"Regular Season\", \"Type\": \"Team\"}",
-      "run_id": "20260603T185758Z",
-      "fetched_at_utc": "2026-06-03T18:58:02+00:00",
-      "row_content_hash": "bc95e712a7beaeaf457b78909658f410185ea2e1f741b6b77c30115a769d25d3",
+      "run_id": "20260603T195605Z",
+      "fetched_at_utc": "2026-06-03T19:56:07+00:00",
+      "row_content_hash": "0f890ca9a415a47558daa0c156aa5def774875b105828c71563793daad671ac8",
       "offensive_goaltends": NaN,
       "3pt_and_1_free_throw_trips": 1.0,
       "source_response_keys": "[\"single_row_table_data\", \"multi_row_table_data\"]",
@@ -3464,9 +3464,9 @@
       "team_id_clean": "1611661329",
       "team_name_clean": "CHI",
       "dataset_clean": "team_totals",
-      "_cleaned_at_utc": "2026-06-03T18:58:02+00:00",
-      "_clean_run_id": "20260603T185758Z",
-      "_row_content_hash": "b4881372cd6747e2a6e846322c9401b77ecb5b3dc5c7b84c00e2f6a7c5031d77"
+      "_cleaned_at_utc": "2026-06-03T19:56:08+00:00",
+      "_clean_run_id": "20260603T195605Z",
+      "_row_content_hash": "26f18d8a13b196cfec0d5c10836f54b3b1bbc6f29a150866c3633c3a656a7f8b"
     },
     {
       "entity_id": "1611661330",
@@ -3701,9 +3701,9 @@
       "season_type": "Regular Season",
       "source_endpoint": "/get-totals/wnba",
       "source_params_json": "{\"Season\": \"2026\", \"SeasonType\": \"Regular Season\", \"Type\": \"Team\"}",
-      "run_id": "20260603T185758Z",
-      "fetched_at_utc": "2026-06-03T18:58:02+00:00",
-      "row_content_hash": "f24c57efe7e642afa48711771d35ee348af7fc86ddddc5aaf89eb14594d4160b",
+      "run_id": "20260603T195605Z",
+      "fetched_at_utc": "2026-06-03T19:56:07+00:00",
+      "row_content_hash": "ee46bcea2f4b93f9f4ff7c82f75fe764fdbc0a295e1ef4d5208b3b021685f6be",
       "offensive_goaltends": NaN,
       "3pt_and_1_free_throw_trips": 1.0,
       "source_response_keys": "[\"single_row_table_data\", \"multi_row_table_data\"]",
@@ -3711,9 +3711,9 @@
       "team_id_clean": "1611661330",
       "team_name_clean": "ATL",
       "dataset_clean": "team_totals",
-      "_cleaned_at_utc": "2026-06-03T18:58:02+00:00",
-      "_clean_run_id": "20260603T185758Z",
-      "_row_content_hash": "10b4770165495d2f2e33bb1889577be838bfde35b04acee94cf149ce7250ebdc"
+      "_cleaned_at_utc": "2026-06-03T19:56:08+00:00",
+      "_clean_run_id": "20260603T195605Z",
+      "_row_content_hash": "d839d19727418ff7534cd81423025f50b64e8471fb1fd27385a43c8f791dc6df"
     }
   ]
 }
