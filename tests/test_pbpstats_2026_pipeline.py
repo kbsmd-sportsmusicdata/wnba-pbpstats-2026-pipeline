@@ -117,6 +117,40 @@ class PullCleanHelpersTest(unittest.TestCase):
             clean_b.loc[0, "_row_content_hash"],
         )
 
+    def test_clean_raw_df_ignores_single_row_totals_summary_in_hash(self):
+        raw_a = pd.DataFrame(
+            [
+                {
+                    "PlayerId": "42",
+                    "PlayerName": "Example Player",
+                    "FGA": 10,
+                    "FGM": 5,
+                    "PTS": 12,
+                    "_single_row_table_data_json": '{"Totals": 100}',
+                }
+            ]
+        )
+        raw_b = pd.DataFrame(
+            [
+                {
+                    "PlayerId": "42",
+                    "PlayerName": "Example Player",
+                    "FGA": 10,
+                    "FGM": 5,
+                    "PTS": 12,
+                    "_single_row_table_data_json": '{"Totals": 105}',
+                }
+            ]
+        )
+
+        clean_a = PULL_CLEAN.clean_raw_df(raw_a, "player_totals")
+        clean_b = PULL_CLEAN.clean_raw_df(raw_b, "player_totals")
+
+        self.assertEqual(
+            clean_a.loc[0, "_row_content_hash"],
+            clean_b.loc[0, "_row_content_hash"],
+        )
+
 
 class FeaturesHelpersTest(unittest.TestCase):
     def test_feature_hash_ignores_feature_metadata(self):
@@ -200,6 +234,49 @@ class FeaturesHelpersTest(unittest.TestCase):
             self.assertNotIn("_row_content_hash", loaded.columns)
             self.assertNotIn("run_id", loaded.columns)
             self.assertNotIn("_clean_run_id", loaded.columns)
+
+    def test_feature_hash_ignores_clean_totals_summary_metadata(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            path_a = Path(tmpdir) / "player_totals_clean_latest_a.csv"
+            path_b = Path(tmpdir) / "player_totals_clean_latest_b.csv"
+
+            base_row = {
+                "player_id_clean": "42",
+                "player_name_clean": "Example Player",
+                "fga": 10,
+                "fgm": 5,
+                "pts": 12,
+                "fta": 2,
+                "fg3a": 3,
+                "fg3m": 1,
+                "at_rim_fga": 4,
+                "at_rim_fgm": 3,
+                "short_mid_range_fga": 2,
+                "short_mid_range_fgm": 1,
+                "long_mid_range_fga": 1,
+                "long_mid_range_fgm": 0,
+                "corner3_fga": 1,
+                "corner3_fgm": 0,
+                "arc3_fga": 2,
+                "arc3_fgm": 1,
+                "shotquality_pbp_avg": 0.52,
+            }
+
+            row_a = dict(base_row)
+            row_a["single_row_table_data_json"] = '{"Totals": 100}'
+            row_b = dict(base_row)
+            row_b["single_row_table_data_json"] = '{"Totals": 105}'
+
+            pd.DataFrame([row_a]).to_csv(path_a, index=False)
+            pd.DataFrame([row_b]).to_csv(path_b, index=False)
+
+            feature_a = FEATURES.add_features(FEATURES.load_latest_clean(path_a, "player"), "player")
+            feature_b = FEATURES.add_features(FEATURES.load_latest_clean(path_b, "player"), "player")
+
+            self.assertEqual(
+                feature_a.loc[0, "_row_content_hash"],
+                feature_b.loc[0, "_row_content_hash"],
+            )
 
 
 if __name__ == "__main__":

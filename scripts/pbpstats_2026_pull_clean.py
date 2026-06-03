@@ -114,6 +114,14 @@ VOLATILE_HASH_FIELDS = {
     "featured_at_utc",
     "row_content_hash",
     "row_state_hash",
+    "_source_endpoint",
+    "_source_params_json",
+    "_source_response_keys",
+    "_single_row_table_data_json",
+    "source_endpoint",
+    "source_params_json",
+    "source_response_keys",
+    "single_row_table_data_json",
 }
 
 
