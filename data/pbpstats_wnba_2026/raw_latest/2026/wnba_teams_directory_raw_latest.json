@@ -6,8 +6,8 @@
     "season_type": "Regular Season",
     "dedupe_strategy": "raw_master appends unique content hashes; raw_latest overwrites current API snapshot",
     "row_count": 15,
-    "last_saved_at_utc": "2026-06-03T20:04:38+00:00",
-    "run_id": "20260603T200437Z"
+    "last_saved_at_utc": "2026-06-03T21:02:33+00:00",
+    "run_id": "20260603T210232Z"
   },
   "rows": [
     {
@@ -19,9 +19,9 @@
       "_season_type": null,
       "_source_endpoint": "/get-teams/wnba",
       "_source_params_json": "{}",
-      "_run_id": "20260603T200437Z",
-      "_fetched_at_utc": "2026-06-03T20:04:38+00:00",
-      "_row_content_hash": "6650961fb17437a0efb3c1c2ced8e9ad13f4336d5989620bf01cb2d9fef18b2a",
+      "_run_id": "20260603T210232Z",
+      "_fetched_at_utc": "2026-06-03T21:02:33+00:00",
+      "_row_content_hash": "a56497d8cb14b4da9e6ee56ca9e2912b4ab1edb562c697d7d37dbca857af4aed",
       "_source_response_keys": "[\"teams\"]"
     },
     {
@@ -33,9 +33,9 @@
       "_season_type": null,
       "_source_endpoint": "/get-teams/wnba",
       "_source_params_json": "{}",
-      "_run_id": "20260603T200437Z",
-      "_fetched_at_utc": "2026-06-03T20:04:38+00:00",
-      "_row_content_hash": "e6d34ed0fe62363a5d374c408b935d8a8f29638b0e41a03838b7b2e5d98f1a1f",
+      "_run_id": "20260603T210232Z",
+      "_fetched_at_utc": "2026-06-03T21:02:33+00:00",
+      "_row_content_hash": "2faeaf83fe837ab4bda46764d5ae4b6203557ee3eadeca8341d640aaf666e7ed",
       "_source_response_keys": "[\"teams\"]"
     },
     {
@@ -47,9 +47,9 @@
       "_season_type": null,
       "_source_endpoint": "/get-teams/wnba",
       "_source_params_json": "{}",
-      "_run_id": "20260603T200437Z",
-      "_fetched_at_utc": "2026-06-03T20:04:38+00:00",
-      "_row_content_hash": "b027582a9433c1510cf671222eaa8d872220ce57d0797f40d90e6b285aeb2985",
+      "_run_id": "20260603T210232Z",
+      "_fetched_at_utc": "2026-06-03T21:02:33+00:00",
+      "_row_content_hash": "5a9380ea07f8374f7bd62477ce5299a05bcd8dc7c5cb43251a255980313b5c31",
       "_source_response_keys": "[\"teams\"]"
     },
     {
@@ -61,9 +61,9 @@
       "_season_type": null,
       "_source_endpoint": "/get-teams/wnba",
       "_source_params_json": "{}",
-      "_run_id": "20260603T200437Z",
-      "_fetched_at_utc": "2026-06-03T20:04:38+00:00",
-      "_row_content_hash": "8b6adee0e32c2d711918623c984dafd400068b66a34760b645c9978b44cc01ec",
+      "_run_id": "20260603T210232Z",
+      "_fetched_at_utc": "2026-06-03T21:02:33+00:00",
+      "_row_content_hash": "03b99f1a7b071003a5c93c6c16de82c7b6cf291044d5415737bffc06ce1f7330",
       "_source_response_keys": "[\"teams\"]"
     },
     {
@@ -75,9 +75,9 @@
       "_season_type": null,
       "_source_endpoint": "/get-teams/wnba",
       "_source_params_json": "{}",
-      "_run_id": "20260603T200437Z",
-      "_fetched_at_utc": "2026-06-03T20:04:38+00:00",
-      "_row_content_hash": "9b7bcccdcc20ab380138b7b5489328184adb6317fe456f5293778f8cfa338067",
+      "_run_id": "20260603T210232Z",
+      "_fetched_at_utc": "2026-06-03T21:02:33+00:00",
+      "_row_content_hash": "9b6b08c85764388b3e7ebc62dc1616075f6846259f7858274e10ac93bdb21e85",
       "_source_response_keys": "[\"teams\"]"
     },
     {
@@ -89,9 +89,9 @@
       "_season_type": null,
       "_source_endpoint": "/get-teams/wnba",
       "_source_params_json": "{}",
-      "_run_id": "20260603T200437Z",
-      "_fetched_at_utc": "2026-06-03T20:04:38+00:00",
-      "_row_content_hash": "957eb3416b8f54d85d0a3b8bf701f3f54663133f61bec0623aa16153b351e46c",
+      "_run_id": "20260603T210232Z",
+      "_fetched_at_utc": "2026-06-03T21:02:33+00:00",
+      "_row_content_hash": "805d61009df68382dacf7eee424ca7594b645544e94c3695a9a92b380dc29164",
       "_source_response_keys": "[\"teams\"]"
     },
     {
@@ -103,9 +103,9 @@
       "_season_type": null,
       "_source_endpoint": "/get-teams/wnba",
       "_source_params_json": "{}",
-      "_run_id": "20260603T200437Z",
-      "_fetched_at_utc": "2026-06-03T20:04:38+00:00",
-      "_row_content_hash": "741b31a98d142a218eb1a60a81e00a049baa415cdb976710be7018a8c673f280",
+      "_run_id": "20260603T210232Z",
+      "_fetched_at_utc": "2026-06-03T21:02:33+00:00",
+      "_row_content_hash": "99e87db1e4227a95e13bb6d242098d7b0224aec307691a64b69aa320d4a954b6",
       "_source_response_keys": "[\"teams\"]"
     },
     {
@@ -117,9 +117,9 @@
       "_season_type": null,
       "_source_endpoint": "/get-teams/wnba",
       "_source_params_json": "{}",
-      "_run_id": "20260603T200437Z",
-      "_fetched_at_utc": "2026-06-03T20:04:38+00:00",
-      "_row_content_hash": "e47b3ba7271f0bfdabaef06252dcb888d49a04fb613760ac25608a6556e1126d",
+      "_run_id": "20260603T210232Z",
+      "_fetched_at_utc": "2026-06-03T21:02:33+00:00",
+      "_row_content_hash": "973dfc6e8f48e03cfb64ac48ae9625f977e068f265e383af9802947e329dbad6",
       "_source_response_keys": "[\"teams\"]"
     },
     {
@@ -131,9 +131,9 @@
       "_season_type": null,
       "_source_endpoint": "/get-teams/wnba",
       "_source_params_json": "{}",
-      "_run_id": "20260603T200437Z",
-      "_fetched_at_utc": "2026-06-03T20:04:38+00:00",
-      "_row_content_hash": "42581375959d4224bad25aed67b57077a47ca02019b4f3d3e51a8bc24898fd6f",
+      "_run_id": "20260603T210232Z",
+      "_fetched_at_utc": "2026-06-03T21:02:33+00:00",
+      "_row_content_hash": "cc84770731b6a40ccf75fd93c1c79e22abc6f0f39e0ff5195fafd5a2f7e48e03",
       "_source_response_keys": "[\"teams\"]"
     },
     {
@@ -145,9 +145,9 @@
       "_season_type": null,
       "_source_endpoint": "/get-teams/wnba",
       "_source_params_json": "{}",
-      "_run_id": "20260603T200437Z",
-      "_fetched_at_utc": "2026-06-03T20:04:38+00:00",
-      "_row_content_hash": "542e6b98a169480e56213dfb647ffc2c81e44ef60fbd30f059aac10a4c83a45a",
+      "_run_id": "20260603T210232Z",
+      "_fetched_at_utc": "2026-06-03T21:02:33+00:00",
+      "_row_content_hash": "0bf97154f6c23ee5547485cbc8a9b2598c988aaea92130fe62bc177388300711",
       "_source_response_keys": "[\"teams\"]"
     },
     {
@@ -159,9 +159,9 @@
       "_season_type": null,
       "_source_endpoint": "/get-teams/wnba",
       "_source_params_json": "{}",
-      "_run_id": "20260603T200437Z",
-      "_fetched_at_utc": "2026-06-03T20:04:38+00:00",
-      "_row_content_hash": "209a3cf28011018fc0cda0ae143157c11e79ed0dc90c17890354491a2c9124e4",
+      "_run_id": "20260603T210232Z",
+      "_fetched_at_utc": "2026-06-03T21:02:33+00:00",
+      "_row_content_hash": "af8cf21ca17ec6e388d903b5dbe13df057dd8fd5b547981c2a8ecf8f3aed07ac",
       "_source_response_keys": "[\"teams\"]"
     },
     {
@@ -173,9 +173,9 @@
       "_season_type": null,
       "_source_endpoint": "/get-teams/wnba",
       "_source_params_json": "{}",
-      "_run_id": "20260603T200437Z",
-      "_fetched_at_utc": "2026-06-03T20:04:38+00:00",
-      "_row_content_hash": "63c2511633de15a552c38ef7367a165f3d912af507d165b875f449cc8b747469",
+      "_run_id": "20260603T210232Z",
+      "_fetched_at_utc": "2026-06-03T21:02:33+00:00",
+      "_row_content_hash": "21c24c9ed3dfef842c723953452ac804f12b334a21058e09f4c74030b8a7bb26",
       "_source_response_keys": "[\"teams\"]"
     },
     {
@@ -187,9 +187,9 @@
       "_season_type": null,
       "_source_endpoint": "/get-teams/wnba",
       "_source_params_json": "{}",
-      "_run_id": "20260603T200437Z",
-      "_fetched_at_utc": "2026-06-03T20:04:38+00:00",
-      "_row_content_hash": "dc3849ac3844344ddca44cd50d82973552dcfdc338d15cf6442d13b6a608876a",
+      "_run_id": "20260603T210232Z",
+      "_fetched_at_utc": "2026-06-03T21:02:33+00:00",
+      "_row_content_hash": "53d7bfbe4a74bbfe12770843cf2b622969232ed66640e89bc9fb5b9c4a0b6a33",
       "_source_response_keys": "[\"teams\"]"
     },
     {
@@ -201,9 +201,9 @@
       "_season_type": null,
       "_source_endpoint": "/get-teams/wnba",
       "_source_params_json": "{}",
-      "_run_id": "20260603T200437Z",
-      "_fetched_at_utc": "2026-06-03T20:04:38+00:00",
-      "_row_content_hash": "ec892941efb5d8d79dbbd939f9901ca3a7228c58fa2b8884b30a6cf880256d22",
+      "_run_id": "20260603T210232Z",
+      "_fetched_at_utc": "2026-06-03T21:02:33+00:00",
+      "_row_content_hash": "f6822342f0b759f482a794248c25b9d710ddde92ef5d3ba7ee1b57d6842ee6f0",
       "_source_response_keys": "[\"teams\"]"
     },
     {
@@ -215,9 +215,9 @@
       "_season_type": null,
       "_source_endpoint": "/get-teams/wnba",
       "_source_params_json": "{}",
-      "_run_id": "20260603T200437Z",
-      "_fetched_at_utc": "2026-06-03T20:04:38+00:00",
-      "_row_content_hash": "58adb1fb5e666339a8e27bde9698f2a39e94238a25e16e1e60b01bb1754eeed8",
+      "_run_id": "20260603T210232Z",
+      "_fetched_at_utc": "2026-06-03T21:02:33+00:00",
+      "_row_content_hash": "303c087aa41b1bd76634189827e07314847b521f14fb6076f7a98dd5e8500bf7",
       "_source_response_keys": "[\"teams\"]"
     }
   ]
