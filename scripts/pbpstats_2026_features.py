@@ -125,6 +125,13 @@ INHERITED_METADATA_COLUMNS = {
     "single_row_table_data_json",
 }
 
+FEATURE_HASH_EXCLUDED_FIELDS = VOLATILE_HASH_FIELDS | {
+    "feature_level",
+    "season",
+    "season_type",
+    "league",
+}
+
 
 # =============================================================================
 # HELPERS
@@ -147,8 +154,45 @@ def hash_obj(obj) -> str:
     return hashlib.sha256(stable_json_dumps(obj).encode("utf-8")).hexdigest()
 
 
+def normalize_hash_value(value):
+    if isinstance(value, dict):
+        return {str(k): normalize_hash_value(v) for k, v in sorted(value.items(), key=lambda item: str(item[0]))}
+    if isinstance(value, (list, tuple)):
+        return [normalize_hash_value(v) for v in value]
+    if isinstance(value, (np.integer, np.int64)):
+        return int(value)
+    if isinstance(value, (np.floating, float)):
+        if pd.isna(value):
+            return None
+        return float(value)
+    if isinstance(value, (np.bool_, bool)):
+        return bool(value)
+    if pd.isna(value):
+        return None
+    return value
+
+
+def normalized_hash_record(row: Dict) -> Dict:
+    return {str(k): normalize_hash_value(v) for k, v in sorted(row.items(), key=lambda item: str(item[0]))}
+
+
+def build_row_hash(*, context: Dict, row: Dict) -> str:
+    return hash_obj({"context": normalized_hash_record(context), "row": normalized_hash_record(row)})
+
+
+def build_feature_row_hash(row: Dict, *, level: str, season: str = SEASON, season_type: str = SEASON_TYPE, league: str = LEAGUE) -> str:
+    business_row = {k: v for k, v in row.items() if k not in FEATURE_HASH_EXCLUDED_FIELDS}
+    context = {
+        "feature_level": level,
+        "league": league,
+        "season": season,
+        "season_type": season_type,
+    }
+    return build_row_hash(context=context, row=business_row)
+
+
 def nonvolatile_row_hash(row: Dict) -> str:
-    return hash_obj({k: v for k, v in row.items() if k not in VOLATILE_HASH_FIELDS})
+    return build_row_hash(context={}, row={k: v for k, v in row.items() if k not in VOLATILE_HASH_FIELDS})
 
 
 def save_json(path: Path, payload: Dict) -> None:
@@ -603,11 +647,11 @@ def add_percentiles_and_labels(df: pd.DataFrame, level: str) -> pd.DataFrame:
     return df
 
 
-def add_feature_hashes(df: pd.DataFrame) -> pd.DataFrame:
+def add_feature_hashes(df: pd.DataFrame, level: str) -> pd.DataFrame:
     df = df.copy()
     df["_feature_run_id"] = RUN_ID
     df["_featured_at_utc"] = utc_now_iso()
-    df["_row_content_hash"] = [nonvolatile_row_hash(row) for row in df.to_dict(orient="records")]
+    df["_row_content_hash"] = [build_feature_row_hash(row, level=level) for row in df.to_dict(orient="records")]
     return df
 
 
@@ -627,7 +671,7 @@ def add_features(df: pd.DataFrame, level: str) -> pd.DataFrame:
     df = add_shotquality_pbp_features(df)
     df = add_sample_flags(df, level)
     df = add_percentiles_and_labels(df, level)
-    df = add_feature_hashes(df)
+    df = add_feature_hashes(df, level)
     return df
 
 

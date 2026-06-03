@@ -20,6 +20,24 @@ FEATURES = load_module("pbpstats_2026_features", ROOT / "scripts" / "pbpstats_20
 
 
 class PullCleanHelpersTest(unittest.TestCase):
+    def test_raw_hash_uses_stable_business_row_only(self):
+        row = {"PlayerId": "42", "PlayerName": "Example Player", "PTS": 12}
+
+        hash_a = PULL_CLEAN.build_raw_row_hash(
+            row,
+            dataset="player_totals",
+            season="2026",
+            season_type="Regular Season",
+        )
+        hash_b = PULL_CLEAN.build_raw_row_hash(
+            row,
+            dataset="player_totals",
+            season="2026",
+            season_type="Regular Season",
+        )
+
+        self.assertEqual(hash_a, hash_b)
+
     def test_nonvolatile_row_hash_ignores_run_metadata(self):
         row_a = {
             "player_id_clean": "7",
@@ -117,6 +135,36 @@ class PullCleanHelpersTest(unittest.TestCase):
             clean_b.loc[0, "_row_content_hash"],
         )
 
+    def test_annotate_raw_rows_ignores_attached_metadata_in_hash(self):
+        rows = [{"PlayerId": "42", "PlayerName": "Example Player", "PTS": 12}]
+
+        df_a = PULL_CLEAN.annotate_raw_rows(
+            rows,
+            dataset="player_totals",
+            endpoint="/get-totals/wnba",
+            params={"Season": "2026", "Type": "Player"},
+            season="2026",
+            season_type="Regular Season",
+        )
+        df_b = PULL_CLEAN.annotate_raw_rows(
+            rows,
+            dataset="player_totals",
+            endpoint="/get-totals/wnba",
+            params={"Season": "2026", "Type": "Player"},
+            season="2026",
+            season_type="Regular Season",
+        )
+
+        df_a["_source_response_keys"] = '["multi_row_table_data"]'
+        df_b["_source_response_keys"] = '["multi_row_table_data","single_row_table_data"]'
+        df_a["_single_row_table_data_json"] = '{"Totals": 100}'
+        df_b["_single_row_table_data_json"] = '{"Totals": 105}'
+
+        self.assertEqual(
+            df_a.loc[0, "_row_content_hash"],
+            df_b.loc[0, "_row_content_hash"],
+        )
+
     def test_clean_raw_df_ignores_single_row_totals_summary_in_hash(self):
         raw_a = pd.DataFrame(
             [
@@ -149,6 +197,33 @@ class PullCleanHelpersTest(unittest.TestCase):
         self.assertEqual(
             clean_a.loc[0, "_row_content_hash"],
             clean_b.loc[0, "_row_content_hash"],
+        )
+
+    def test_directory_raw_hash_is_stable_across_reruns(self):
+        rows = [{"id": 1611661330, "text": "ATL"}]
+        df_a = PULL_CLEAN.annotate_raw_rows(
+            rows,
+            dataset="teams_directory",
+            endpoint="/get-teams/wnba",
+            params={},
+            season=None,
+            season_type=None,
+        )
+        df_b = PULL_CLEAN.annotate_raw_rows(
+            rows,
+            dataset="teams_directory",
+            endpoint="/get-teams/wnba",
+            params={},
+            season=None,
+            season_type=None,
+        )
+
+        df_a["_source_response_keys"] = '["teams"]'
+        df_b["_source_response_keys"] = '["teams","meta"]'
+
+        self.assertEqual(
+            df_a.loc[0, "_row_content_hash"],
+            df_b.loc[0, "_row_content_hash"],
         )
 
 

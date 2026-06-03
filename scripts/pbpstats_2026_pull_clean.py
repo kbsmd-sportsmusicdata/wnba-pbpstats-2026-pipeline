@@ -124,6 +124,20 @@ VOLATILE_HASH_FIELDS = {
     "single_row_table_data_json",
 }
 
+STABLE_CONTEXT_FIELDS = {"dataset", "league", "season", "season_type"}
+
+CLEAN_HASH_EXCLUDED_FIELDS = VOLATILE_HASH_FIELDS | {
+    "_dataset",
+    "_league",
+    "_season",
+    "_season_type",
+    "dataset_clean",
+    "dataset",
+    "league",
+    "season",
+    "season_type",
+}
+
 
 # =============================================================================
 # GENERAL HELPERS
@@ -153,10 +167,71 @@ def hash_obj(obj: Any) -> str:
     return hashlib.sha256(stable_json_dumps(obj).encode("utf-8")).hexdigest()
 
 
+def normalize_hash_value(value: Any) -> Any:
+    if isinstance(value, dict):
+        return {str(k): normalize_hash_value(v) for k, v in sorted(value.items(), key=lambda item: str(item[0]))}
+    if isinstance(value, (list, tuple)):
+        return [normalize_hash_value(v) for v in value]
+    if isinstance(value, (np.integer, np.int64)):
+        return int(value)
+    if isinstance(value, (np.floating, float)):
+        if pd.isna(value):
+            return None
+        return float(value)
+    if isinstance(value, (np.bool_, bool)):
+        return bool(value)
+    if pd.isna(value):
+        return None
+    return value
+
+
+def normalized_hash_record(row: Dict[str, Any]) -> Dict[str, Any]:
+    return {str(k): normalize_hash_value(v) for k, v in sorted(row.items(), key=lambda item: str(item[0]))}
+
+
+def build_row_hash(*, context: Dict[str, Any], row: Dict[str, Any]) -> str:
+    return hash_obj({"context": normalized_hash_record(context), "row": normalized_hash_record(row)})
+
+
+def build_raw_row_hash(
+    row: Dict[str, Any],
+    *,
+    dataset: str,
+    season: Optional[str],
+    season_type: Optional[str],
+    league: str = LEAGUE,
+) -> str:
+    context = {
+        "dataset": dataset,
+        "league": league,
+        "season": season,
+        "season_type": season_type,
+    }
+    return build_row_hash(context=context, row=dict(row))
+
+
+def build_clean_row_hash(
+    row: Dict[str, Any],
+    *,
+    dataset: str,
+    season: Optional[str],
+    season_type: Optional[str],
+    league: str = LEAGUE,
+) -> str:
+    business_row = {k: v for k, v in row.items() if k not in CLEAN_HASH_EXCLUDED_FIELDS}
+    context = {
+        "dataset": dataset,
+        "league": league,
+        "season": season,
+        "season_type": season_type,
+    }
+    return build_row_hash(context=context, row=business_row)
+
+
 def nonvolatile_row_hash(row: Dict[str, Any]) -> str:
     """Hash row contents while excluding run/timestamp/hash metadata."""
     clean_row = {k: v for k, v in row.items() if k not in VOLATILE_HASH_FIELDS}
-    return hash_obj(clean_row)
+    return build_row_hash(context={}, row=clean_row)
 
 
 def save_json(path: Path, payload: Dict[str, Any]) -> None:
@@ -281,6 +356,12 @@ def annotate_raw_rows(
 
     for row in rows:
         new_row = dict(row)
+        raw_hash = build_raw_row_hash(
+            row,
+            dataset=dataset,
+            season=season,
+            season_type=season_type,
+        )
         new_row["_dataset"] = dataset
         new_row["_league"] = LEAGUE
         new_row["_season"] = season
@@ -289,7 +370,7 @@ def annotate_raw_rows(
         new_row["_source_params_json"] = stable_json_dumps(params)
         new_row["_run_id"] = RUN_ID
         new_row["_fetched_at_utc"] = fetched_at
-        new_row["_row_content_hash"] = nonvolatile_row_hash(new_row)
+        new_row["_row_content_hash"] = raw_hash
         annotated.append(new_row)
 
     return pd.DataFrame(annotated)
@@ -466,13 +547,23 @@ def clean_raw_df(raw_df: pd.DataFrame, dataset: str) -> pd.DataFrame:
     clean = clean_column_names(clean)
     clean = coerce_numeric_columns(clean)
     clean = add_standard_ids(clean, dataset)
-    clean["season"] = SEASON if dataset in {"player_totals", "team_totals"} else None
-    clean["season_type"] = SEASON_TYPE if dataset in {"player_totals", "team_totals"} else None
+    season = SEASON if dataset in {"player_totals", "team_totals"} else None
+    season_type = SEASON_TYPE if dataset in {"player_totals", "team_totals"} else None
+    clean["season"] = season
+    clean["season_type"] = season_type
     clean["league"] = LEAGUE
     clean["dataset_clean"] = dataset
     clean["_cleaned_at_utc"] = utc_now_iso()
     clean["_clean_run_id"] = RUN_ID
-    clean["_row_content_hash"] = [nonvolatile_row_hash(row) for row in clean.to_dict(orient="records")]
+    clean["_row_content_hash"] = [
+        build_clean_row_hash(
+            row,
+            dataset=dataset,
+            season=season,
+            season_type=season_type,
+        )
+        for row in clean.to_dict(orient="records")
+    ]
     return clean
 
 
