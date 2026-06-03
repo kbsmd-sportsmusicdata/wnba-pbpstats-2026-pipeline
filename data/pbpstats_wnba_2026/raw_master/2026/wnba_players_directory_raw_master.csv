@@ -729,3 +729,5 @@ PlayerId,PlayerName,_dataset,_league,_season,_season_type,_source_endpoint,_sour
 1643644,Alicia Florez Getino,players_directory,wnba,,,/get-all-players-for-league/wnba,{},20260602T225839Z,2026-06-02T22:58:40+00:00,e3a00d2454bb5c294b8546fa8a8fe6fda7520cb3da986567d040deda760a58fc,"[""players""]"
 1643647,Tima Pouye,players_directory,wnba,,,/get-all-players-for-league/wnba,{},20260602T225839Z,2026-06-02T22:58:40+00:00,89d8698eff1950acdcc0bc5cbcda2f059dfe4518e14e4026b3c9a04073a4b80d,"[""players""]"
 196295930,Teja Oblak,players_directory,wnba,,,/get-all-players-for-league/wnba,{},20260602T225839Z,2026-06-02T22:58:40+00:00,536cbd77d34cd9615be8e631cc42784817215246e69525a6a5bcf85f69806804,"[""players""]"
+1628926,Maria Kliundikova,players_directory,wnba,,,/get-all-players-for-league/wnba,{},20260603T185758Z,2026-06-03T18:57:58+00:00,7e40a830c0581b6e0ec79d1e8bff511e4c74ceb7c4f1429721468e2bb7aa880d,"[""players""]"
+1629476,Asia (AD) Durr,players_directory,wnba,,,/get-all-players-for-league/wnba,{},20260603T185758Z,2026-06-03T18:57:58+00:00,f0272d4a36bcce89a2df9043df364d5946648302199a39cfbcfd5d71e2d9a8f4,"[""players""]"
