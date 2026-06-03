@@ -213,23 +213,52 @@ def read_hashes_from_csv(path: Path, hash_col: str = "_row_content_hash") -> set
         return set(df[hash_col].astype(str)) if hash_col in df.columns else set()
 
 
+def is_valid_hash(value) -> bool:
+    return bool(re.fullmatch(r"[0-9a-f]{64}", str(value)))
+
+
+def filter_valid_hash_rows(df: pd.DataFrame, hash_col: str = "_row_content_hash") -> pd.DataFrame:
+    if df.empty or hash_col not in df.columns:
+        return df.iloc[0:0].copy() if hash_col not in df.columns else df.copy()
+    mask = df[hash_col].astype(str).apply(is_valid_hash)
+    return df.loc[mask].copy()
+
+
+def align_columns(existing: pd.DataFrame, new_rows: pd.DataFrame) -> Tuple[pd.DataFrame, pd.DataFrame]:
+    ordered_cols = list(existing.columns)
+    for col in new_rows.columns:
+        if col not in ordered_cols:
+            ordered_cols.append(col)
+    existing_aligned = existing.reindex(columns=ordered_cols)
+    new_aligned = new_rows.reindex(columns=ordered_cols)
+    return existing_aligned, new_aligned
+
+
 def append_unique_csv(path: Path, df: pd.DataFrame, hash_col: str = "_row_content_hash") -> Tuple[int, int, int]:
     path.parent.mkdir(parents=True, exist_ok=True)
 
     if df.empty:
-        before = len(pd.read_csv(path)) if path.exists() else 0
+        before = len(filter_valid_hash_rows(pd.read_csv(path), hash_col=hash_col)) if path.exists() else 0
         return before, 0, before
 
     if hash_col not in df.columns:
         raise ValueError(f"Missing hash column: {hash_col}")
 
-    before_count = len(pd.read_csv(path)) if path.exists() else 0
-    existing_hashes = read_hashes_from_csv(path, hash_col=hash_col)
-    df_to_add = df[~df[hash_col].astype(str).isin(existing_hashes)].copy()
+    valid_new = filter_valid_hash_rows(df, hash_col=hash_col)
+    if path.exists():
+        existing = pd.read_csv(path)
+        existing = filter_valid_hash_rows(existing, hash_col=hash_col)
+    else:
+        existing = pd.DataFrame(columns=valid_new.columns)
+
+    before_count = len(existing)
+    existing, valid_new = align_columns(existing, valid_new)
+    existing_hashes = set(existing[hash_col].astype(str)) if hash_col in existing.columns else set()
+    df_to_add = valid_new[~valid_new[hash_col].astype(str).isin(existing_hashes)].copy()
     added_count = len(df_to_add)
 
-    if added_count > 0:
-        df_to_add.to_csv(path, mode="a", header=not path.exists(), index=False)
+    combined = pd.concat([existing, df_to_add], ignore_index=True)
+    combined.to_csv(path, index=False)
 
     return before_count, added_count, before_count + added_count
 

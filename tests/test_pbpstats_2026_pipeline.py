@@ -64,8 +64,8 @@ class PullCleanHelpersTest(unittest.TestCase):
             path = Path(tmpdir) / "master.csv"
             initial = pd.DataFrame(
                 [
-                    {"player_id_clean": "7", "_row_content_hash": "hash-1"},
-                    {"player_id_clean": "12", "_row_content_hash": "hash-2"},
+                    {"player_id_clean": "7", "_row_content_hash": "a" * 64},
+                    {"player_id_clean": "12", "_row_content_hash": "b" * 64},
                 ]
             )
             before, added, after = PULL_CLEAN.append_unique_csv(path, initial)
@@ -73,8 +73,8 @@ class PullCleanHelpersTest(unittest.TestCase):
 
             rerun = pd.DataFrame(
                 [
-                    {"player_id_clean": "12", "_row_content_hash": "hash-2"},
-                    {"player_id_clean": "15", "_row_content_hash": "hash-3"},
+                    {"player_id_clean": "12", "_row_content_hash": "b" * 64},
+                    {"player_id_clean": "15", "_row_content_hash": "c" * 64},
                 ]
             )
             before, added, after = PULL_CLEAN.append_unique_csv(path, rerun)
@@ -82,7 +82,58 @@ class PullCleanHelpersTest(unittest.TestCase):
 
             written = pd.read_csv(path)
             self.assertEqual(len(written), 3)
-            self.assertEqual(set(written["_row_content_hash"]), {"hash-1", "hash-2", "hash-3"})
+            self.assertEqual(set(written["_row_content_hash"]), {"a" * 64, "b" * 64, "c" * 64})
+
+    def test_append_unique_csv_preserves_hash_column_when_new_columns_are_reordered(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            path = Path(tmpdir) / "master.csv"
+            initial = pd.DataFrame(
+                [
+                    {"team_id_clean": "A", "_fetched_at_utc": "t1", "_row_content_hash": "a" * 64},
+                ]
+            )
+            initial.to_csv(path, index=False)
+
+            rerun = pd.DataFrame(
+                [
+                    {"_row_content_hash": "b" * 64, "team_id_clean": "B", "_fetched_at_utc": "t2"},
+                ],
+                columns=["_row_content_hash", "team_id_clean", "_fetched_at_utc"],
+            )
+
+            before, added, after = PULL_CLEAN.append_unique_csv(path, rerun)
+
+            self.assertEqual((before, added, after), (1, 1, 2))
+            written = pd.read_csv(path)
+            self.assertEqual(
+                list(written["_row_content_hash"]),
+                ["a" * 64, "b" * 64],
+            )
+
+    def test_append_unique_csv_drops_existing_rows_with_invalid_hash_values(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            path = Path(tmpdir) / "master.csv"
+            path.write_text(
+                "team_id_clean,_row_content_hash\n"
+                "A,aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\n"
+                "B,2026-06-03T21:02:35+00:00\n",
+                encoding="utf-8",
+            )
+
+            rerun = pd.DataFrame(
+                [
+                    {"team_id_clean": "B", "_row_content_hash": "b" * 64},
+                ]
+            )
+
+            before, added, after = PULL_CLEAN.append_unique_csv(path, rerun)
+
+            self.assertEqual((before, added, after), (1, 1, 2))
+            written = pd.read_csv(path)
+            self.assertEqual(
+                list(written["_row_content_hash"]),
+                ["a" * 64, "b" * 64],
+            )
 
     def test_clean_column_names_normalizes_shotquality_columns(self):
         raw = pd.DataFrame(
@@ -228,6 +279,37 @@ class PullCleanHelpersTest(unittest.TestCase):
 
 
 class FeaturesHelpersTest(unittest.TestCase):
+    def test_feature_append_unique_csv_handles_short_existing_rows(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            path = Path(tmpdir) / "player_features_master.csv"
+            path.write_text(
+                "entity_id_feature,specialized_shooter_label,_feature_run_id,_featured_at_utc,_row_content_hash\n"
+                "100,Valid Shooter,run-a,2026-06-03T21:02:36+00:00," + ("a" * 64) + "\n"
+                "101,run-b,2026-06-03T21:03:17+00:00," + ("b" * 64) + "\n",
+                encoding="utf-8",
+            )
+
+            rerun = pd.DataFrame(
+                [
+                    {
+                        "entity_id_feature": "101",
+                        "specialized_shooter_label": "Valid Shooter",
+                        "_feature_run_id": "run-b",
+                        "_featured_at_utc": "2026-06-03T21:03:17+00:00",
+                        "_row_content_hash": "b" * 64,
+                    }
+                ]
+            )
+
+            before, added, after = FEATURES.append_unique_csv(path, rerun)
+
+            self.assertEqual((before, added, after), (1, 1, 2))
+            written = pd.read_csv(path)
+            self.assertEqual(
+                list(written["_row_content_hash"]),
+                ["a" * 64, "b" * 64],
+            )
+
     def test_feature_hash_ignores_feature_metadata(self):
         row_a = {
             "entity_id_feature": "ATL",
