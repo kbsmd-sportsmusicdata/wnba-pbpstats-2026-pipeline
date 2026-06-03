@@ -1,0 +1,40 @@
+{
+  "run_id": "20260603T210317Z",
+  "season": "2026",
+  "season_type": "Regular Season",
+  "generated_at_utc": "2026-06-03T21:03:17+00:00",
+  "feature_results": [
+    {
+      "level": "player",
+      "rows": 197,
+      "master_before": 985,
+      "master_added": 197,
+      "master_after": 1182
+    },
+    {
+      "level": "team",
+      "rows": 15,
+      "master_before": 75,
+      "master_added": 15,
+      "master_after": 90
+    }
+  ],
+  "player_leaderboards": {
+    "player_shotquality_leaders.csv": 30,
+    "player_shot_making_over_shotquality_leaders.csv": 30,
+    "player_efficiency_leaders.csv": 30,
+    "player_rim_and_three_leaders.csv": 30,
+    "player_rim_pressure_leaders.csv": 30,
+    "player_three_point_volume_leaders.csv": 30,
+    "player_midrange_heavy_profiles.csv": 30,
+    "player_specialized_shooter_summary.csv": 87,
+    "player_low_sample_efficiency_watchlist.csv": 46
+  },
+  "team_leaderboards": {
+    "team_shotquality_leaders.csv": 15,
+    "team_efficiency_leaders.csv": 15,
+    "team_modern_shot_diet_leaders.csv": 15,
+    "team_three_point_volume_leaders.csv": 15,
+    "team_style_summary.csv": 15
+  }
+}
