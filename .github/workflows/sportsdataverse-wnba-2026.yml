@@ -1,0 +1,42 @@
+name: SportsDataverse WNBA 2026 Download
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 14 * 5-10 *"
+
+jobs:
+  sportsdataverse-wnba-2026:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      SPORTSDATAVERSE_WNBA_2026_DATA_ROOT: data/raw/sportsdataverse/wnba_2026
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Download 2026 WNBA SportsDataverse parquet files
+        run: python scripts/fetch_wnba_sportsdataverse_2026.py
+
+      - name: Commit downloaded outputs if changed
+        run: |
+          find data/raw/sportsdataverse/wnba_2026 -type f \( -name '*.parquet' -o -name '*.json' \) -print0 | xargs -0 git add
+          if git diff --cached --quiet; then
+            echo "No SportsDataverse output changes to commit"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "chore: refresh WNBA 2026 SportsDataverse downloads"
+          git push
