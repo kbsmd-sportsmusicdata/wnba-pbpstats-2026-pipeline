@@ -2196,3 +2196,4 @@ PlayerId,PlayerName,_dataset,_league,_season,_season_type,_source_endpoint,_sour
 1629476,Asia Durr,players_directory,wnba,,,/get-all-players-for-league/wnba,{},20260605T162406Z,2026-06-05T16:24:07+00:00,129471b3eef1a947dad0c5e9f19cb05262255fbbdba396ff13751d90f38db3cb,"[""players""]"
 1641602,Ivana Dojkić,players_directory,wnba,,,/get-all-players-for-league/wnba,{},20260605T162406Z,2026-06-05T16:24:07+00:00,330c73b39599a0823a72485c9eb2c9a871b7d73a9400040f3ae947e0206f1484,"[""players""]"
 1642303,Leïla Lacan,players_directory,wnba,,,/get-all-players-for-league/wnba,{},20260605T162406Z,2026-06-05T16:24:07+00:00,d4adf77b4989571d9787795f27065a025f64413637a978d83f8ca7127165888e,"[""players""]"
+1643644,Alicia Florez,players_directory,wnba,,,/get-all-players-for-league/wnba,{},20260607T151642Z,2026-06-07T15:16:42+00:00,c38c45ed354e2ec9a3594e99899175a5b45ec8fc317948dbd19d288bc9e7486d,"[""players""]"
