@@ -2197,3 +2197,7 @@ PlayerId,PlayerName,_dataset,_league,_season,_season_type,_source_endpoint,_sour
 1641602,Ivana Dojkić,players_directory,wnba,,,/get-all-players-for-league/wnba,{},20260605T162406Z,2026-06-05T16:24:07+00:00,330c73b39599a0823a72485c9eb2c9a871b7d73a9400040f3ae947e0206f1484,"[""players""]"
 1642303,Leïla Lacan,players_directory,wnba,,,/get-all-players-for-league/wnba,{},20260605T162406Z,2026-06-05T16:24:07+00:00,d4adf77b4989571d9787795f27065a025f64413637a978d83f8ca7127165888e,"[""players""]"
 1643644,Alicia Florez,players_directory,wnba,,,/get-all-players-for-league/wnba,{},20260607T151642Z,2026-06-07T15:16:42+00:00,c38c45ed354e2ec9a3594e99899175a5b45ec8fc317948dbd19d288bc9e7486d,"[""players""]"
+203838,Astou Ndour-Fall,players_directory,wnba,,,/get-all-players-for-league/wnba,{},20260609T162411Z,2026-06-09T16:24:12+00:00,596e3764f358be0bc97d8084c7c7db34c76b2a3823d359e262bfd11fea004e0f,"[""players""]"
+204327,Brittany Boyd-Jones,players_directory,wnba,,,/get-all-players-for-league/wnba,{},20260609T162411Z,2026-06-09T16:24:12+00:00,6bfc36e45746bde2088c16c9e24c8f2a2b1bb8aa0735cf01e0db00b3b70412a5,"[""players""]"
+1627701,Temi Fágbénlé,players_directory,wnba,,,/get-all-players-for-league/wnba,{},20260609T162411Z,2026-06-09T16:24:12+00:00,90a8fb044638331596e47cac9d24ebb379df25707bf342eeb8b0f140ca0100e7,"[""players""]"
+1629546,Marine Johannes,players_directory,wnba,,,/get-all-players-for-league/wnba,{},20260609T162411Z,2026-06-09T16:24:12+00:00,1622a8afe1934700ad4524b8726031a0b6b5bc35e1b1a949abc88d7fde1f220a,"[""players""]"
