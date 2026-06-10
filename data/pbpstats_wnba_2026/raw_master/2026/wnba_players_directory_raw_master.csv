@@ -2201,3 +2201,4 @@ PlayerId,PlayerName,_dataset,_league,_season,_season_type,_source_endpoint,_sour
 204327,Brittany Boyd-Jones,players_directory,wnba,,,/get-all-players-for-league/wnba,{},20260609T162411Z,2026-06-09T16:24:12+00:00,6bfc36e45746bde2088c16c9e24c8f2a2b1bb8aa0735cf01e0db00b3b70412a5,"[""players""]"
 1627701,Temi Fágbénlé,players_directory,wnba,,,/get-all-players-for-league/wnba,{},20260609T162411Z,2026-06-09T16:24:12+00:00,90a8fb044638331596e47cac9d24ebb379df25707bf342eeb8b0f140ca0100e7,"[""players""]"
 1629546,Marine Johannes,players_directory,wnba,,,/get-all-players-for-league/wnba,{},20260609T162411Z,2026-06-09T16:24:12+00:00,1622a8afe1934700ad4524b8726031a0b6b5bc35e1b1a949abc88d7fde1f220a,"[""players""]"
+1643686,Nadia Fingall,players_directory,wnba,,,/get-all-players-for-league/wnba,{},20260610T165354Z,2026-06-10T16:53:54+00:00,c925b75f1c2c97c92ebba207952c349e2beb58b5869c698bef6dd2dab59a31fc,"[""players""]"
