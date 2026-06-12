@@ -20,8 +20,7 @@ import requests
 SEASON = 2026
 BASE_URL = "https://github.com/sportsdataverse/sportsdataverse-data/releases/download"
 
-# Parquet file endpoints (adapted from fetch_wnba_sportsdataverse_2026.py pattern)
-# NOTE: Verify exact release tag names against:
+# Parquet file endpoints — release tag names confirmed against:
 # https://github.com/sportsdataverse/sportsdataverse-data/releases
 ENDPOINTS = {
     # Core box scores — always downloaded
@@ -29,9 +28,9 @@ ENDPOINTS = {
     "player_box": f"{BASE_URL}/wnba_player_box_{SEASON}/wnba_player_box_{SEASON}.parquet",
 
     # Reference files — optional, used for validation + game ID tracking
-    "rosters": f"{BASE_URL}/wnba_rosters_{SEASON}/wnba_rosters_{SEASON}.parquet",
-    "schedule": f"{BASE_URL}/wnba_schedule_{SEASON}/wnba_schedule_{SEASON}.parquet",
-    "standings": f"{BASE_URL}/wnba_standings_{SEASON}/wnba_standings_{SEASON}.parquet",
+    "standings": f"{BASE_URL}/wnba_stats_standings/wnba_stats_standings.parquet",
+    "rosters": f"{BASE_URL}/wnba_stats_game_rosters/wnba_stats_game_rosters.parquet",
+    "schedule": f"{BASE_URL}/wnba_stats_schedules/wnba_stats_schedules.parquet",
 }
 
 OUTPUT_DIR = Path("data/raw")
