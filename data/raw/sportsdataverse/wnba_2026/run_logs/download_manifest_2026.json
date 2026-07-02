@@ -104,8 +104,8 @@
     {
       "column_count": 85,
       "filename": "wnba_pbp_2026.parquet",
-      "row_count": 59175,
-      "sha256": "1993cbd99c5dddc8b566936924eded7f7e5299918815a54504aea235909a3de4",
+      "row_count": 57353,
+      "sha256": "9d3cb21b3698cfac53b8dc52f916001225ba18e596c476992dcf5d00333ab521",
       "size_note": "~367 KB",
       "source": "WNBA.com",
       "success": true,
