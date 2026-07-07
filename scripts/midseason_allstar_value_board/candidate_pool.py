@@ -37,7 +37,7 @@ def build_position_lookup(player_box: pd.DataFrame, player_season_stats: pd.Data
         pieces.append(player_season_stats[cols].rename(columns={"athlete_id": "player_id", "athlete_display_name": "player_name"}))
     if not pieces:
         return {}
-    positions = pd.concat(pieces, ignore_index=True).dropna()
+    positions = pd.concat(pieces, ignore_index=True).dropna(subset=["player_id", "athlete_position_abbreviation"])
     positions["player_id"] = positions["player_id"].astype(str)
     positions["athlete_position_abbreviation"] = positions["athlete_position_abbreviation"].astype(str)
     lookup: Dict[str, str] = {}
