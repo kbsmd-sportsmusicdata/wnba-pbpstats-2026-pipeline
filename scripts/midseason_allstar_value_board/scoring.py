@@ -173,14 +173,15 @@ def build_value_board(metric_panel: pd.DataFrame, weights: Dict[str, float]) -> 
     }
     default_weights.update(weights or {})
     total_weight = sum(default_weights.values()) or 1
-    df["allstar_value_score"] = (
-        df["production_score"] * default_weights["production"]
-        + df["efficiency_score"] * default_weights["efficiency"]
-        + df["creation_score"] * default_weights["creation"]
-        + df["impact_score"] * default_weights["impact"]
-        + df["availability_score"] * default_weights["availability"]
-        + df["team_context_score"] * default_weights["team_context"]
-    ) / total_weight
+    components = ["production", "efficiency", "creation", "impact", "availability", "team_context"]
+    weighted_sum = pd.Series(0.0, index=df.index)
+    sum_weights = pd.Series(0.0, index=df.index)
+    for comp in components:
+        score_col = f"{comp}_score"
+        weight = default_weights[comp]
+        weighted_sum += df[score_col].fillna(0) * weight
+        sum_weights += df[score_col].notna() * weight
+    df["allstar_value_score"] = safe_divide(weighted_sum, sum_weights)
 
     df = df.sort_values("allstar_value_score", ascending=False).reset_index(drop=True)
     df["overall_rank"] = np.arange(1, len(df) + 1)
