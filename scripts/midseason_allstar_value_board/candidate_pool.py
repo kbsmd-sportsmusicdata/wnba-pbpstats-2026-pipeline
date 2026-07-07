@@ -153,8 +153,8 @@ def build_candidate_pool(
     if box_workload is not None and not box_workload.empty:
         df = df.merge(box_workload, on=["player_name_key", "team_key"], how="left")
     else:
-        df["box_minutes"] = np.nan
-        df["box_games_played"] = np.nan
+        df["box_minutes"] = float("nan")
+        df["box_games_played"] = float("nan")
 
     if "team_id_key" in team_context.columns:
         df = df.merge(
