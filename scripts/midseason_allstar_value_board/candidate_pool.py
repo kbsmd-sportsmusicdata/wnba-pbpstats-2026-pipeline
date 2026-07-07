@@ -172,8 +172,8 @@ def build_candidate_pool(
     df["availability_rate"] = safe_divide(df["box_games_played"], df["team_games_played"])
     df["mpg"] = safe_divide(df["box_minutes"], df["box_games_played"])
     df["eligibility_minutes_source"] = "missing_sportsdataverse_player_box"
-    df.loc[df["box_minutes"].notna() & df["box_games_played"].notna(), "eligibility_minutes_source"] = "sportsdataverse_player_box",
-    )
+    df.loc[df["box_minutes"].notna() & df["box_games_played"].notna(), "eligibility_minutes_source"] = "sportsdataverse_player_box"
+    
     df["position"] = df["player_id"].map(lambda value: position_lookup.get(f"id:{value}"))
     name_positions = df["player_name"].map(lambda value: position_lookup.get(f"name:{_name_key(value)}"))
     df["position"] = df["position"].fillna(name_positions).fillna("UNK")
