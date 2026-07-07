@@ -14,13 +14,13 @@ Data through: 2026-07-07
 
 | Rank | Player | Team | Score | Archetype |
 | ---: | --- | --- | ---: | --- |
-| 1 | Natasha Howard | MIN | 75.0 | Efficient Interior Anchor |
-| 2 | Olivia Miles | MIN | 74.5 | Primary Engine |
-| 3 | Nia Coffey | MIN | 72.9 | Shot-Making Wing |
-| 4 | A'ja Wilson | LVA | 72.8 | Defense/Glass Value |
-| 5 | Jonquel Jones | NYL | 70.6 | Shot-Making Wing |
-| 6 | Veronica Burton | GSV | 69.8 | High-Leverage Connector |
-| 7 | Breanna Stewart | NYL | 68.6 | Defense/Glass Value |
-| 8 | Rhyne Howard | ATL | 68.1 | Spacing Guard/Wing |
-| 9 | Pauline Astier | NYL | 68.0 | High-Leverage Connector |
-| 10 | Gabby Williams | GSV | 67.0 | Spacing Guard/Wing |
+| 1 | Natasha Howard | MIN | 74.4 | Efficient Interior Anchor |
+| 2 | Olivia Miles | MIN | 74.0 | Primary Engine |
+| 3 | Nia Coffey | MIN | 72.4 | Shot-Making Wing |
+| 4 | A'ja Wilson | LVA | 71.1 | Defense/Glass Value |
+| 5 | Veronica Burton | GSV | 70.4 | High-Leverage Connector |
+| 6 | Jonquel Jones | NYL | 70.0 | Shot-Making Wing |
+| 7 | Rhyne Howard | ATL | 68.3 | Spacing Guard/Wing |
+| 8 | Breanna Stewart | NYL | 67.9 | Defense/Glass Value |
+| 9 | Aliyah Boston | IND | 67.8 | Defense/Glass Value |
+| 10 | Pauline Astier | NYL | 67.7 | High-Leverage Connector |
