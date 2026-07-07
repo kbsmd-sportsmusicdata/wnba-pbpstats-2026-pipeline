@@ -56,7 +56,7 @@ analysis/midseason_allstar_value_board/data/processed/player_archetypes_2026.csv
 analysis/midseason_allstar_value_board/data/processed/run_manifest_2026.json
 ```
 
-`candidate_pool_2026.csv` and `player_metric_panel_2026.csv` keep every player for diagnostics. `allstar_value_board_2026.csv` is the public board and includes only rows where `eligible_flag == True`.
+`candidate_pool_2026.csv` and `player_metric_panel_2026.csv` keep every player for diagnostics. Eligibility uses SportsDataverse player box-score minutes and games, joined by player name plus team. PBPStats minutes are retained as `pbpstats_minutes` for diagnostics only and are not used as an eligibility fallback. `allstar_value_board_2026.csv` is the public board and includes only rows where `eligible_flag == True`.
 
 Visualization-ready outputs:
 

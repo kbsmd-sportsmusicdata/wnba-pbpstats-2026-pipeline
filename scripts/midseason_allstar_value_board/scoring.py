@@ -31,6 +31,9 @@ def build_metric_panel(player_features: pd.DataFrame, candidate_pool: pd.DataFra
     df["player_id"] = df["entity_id_feature"].astype(str)
     df["player_name"] = df["entity_name_feature"].astype(str)
     df["team_id"] = df.get("team_id", df["team_abbreviation"]).astype(str)
+    df["pbpstats_minutes"] = pd.to_numeric(df.get("minutes"), errors="coerce")
+    df["pbpstats_games_played"] = pd.to_numeric(df.get("games_played"), errors="coerce")
+    df = df.drop(columns=[c for c in ["minutes", "games_played"] if c in df.columns])
     df["total_poss_for_rates"] = pd.to_numeric(df.get("total_poss"), errors="coerce")
     df["total_poss_for_rates"] = df["total_poss_for_rates"].fillna(pd.to_numeric(df.get("off_poss"), errors="coerce") + pd.to_numeric(df.get("def_poss"), errors="coerce"))
 
@@ -45,6 +48,11 @@ def build_metric_panel(player_features: pd.DataFrame, candidate_pool: pd.DataFra
         "position",
         "team_games_played",
         "availability_rate",
+        "games_played",
+        "minutes",
+        "box_minutes",
+        "box_games_played",
+        "eligibility_minutes_source",
         "candidate_tier",
         "eligible_flag",
         "eligibility_reason",
@@ -67,6 +75,11 @@ def build_metric_panel(player_features: pd.DataFrame, candidate_pool: pd.DataFra
         "team_games_played",
         "availability_rate",
         "minutes",
+        "box_minutes",
+        "box_games_played",
+        "pbpstats_minutes",
+        "pbpstats_games_played",
+        "eligibility_minutes_source",
         "candidate_tier",
         "eligible_flag",
         "points_per_75",

@@ -9,7 +9,7 @@ from typing import Dict, Tuple
 import pandas as pd
 
 from midseason_allstar_value_board.archetypes import assign_archetypes
-from midseason_allstar_value_board.candidate_pool import build_candidate_pool, build_position_lookup, build_team_context
+from midseason_allstar_value_board.candidate_pool import build_box_workload, build_candidate_pool, build_position_lookup, build_team_context
 from midseason_allstar_value_board.data_sources import (
     apply_runtime_overrides,
     ensure_output_dirs,
@@ -47,10 +47,12 @@ def build_processed(config: Dict) -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFr
 
     team_context = build_team_context(sources.team_features, sources.standings)
     position_lookup = build_position_lookup(sources.player_box, sources.player_season_stats)
+    box_workload = build_box_workload(sources.player_box)
     candidate_pool = build_candidate_pool(
         sources.player_features,
         team_context,
         position_lookup,
+        box_workload,
         thresholds,
         as_of_date=as_of_date,
     )
