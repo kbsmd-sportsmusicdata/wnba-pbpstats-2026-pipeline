@@ -1,0 +1,109 @@
+name: Midseason All-Star Value Board
+
+on:
+  workflow_dispatch:
+    inputs:
+      build_processed:
+        description: "Build processed candidate, score, archetype, and manifest outputs"
+        required: true
+        type: boolean
+        default: true
+      build_viz:
+        description: "Build visualization-ready CSV outputs"
+        required: true
+        type: boolean
+        default: true
+      build_editorial:
+        description: "Build Substack draft and asset manifest"
+        required: true
+        type: boolean
+        default: true
+      run_tests:
+        description: "Run midseason All-Star Value Board tests before building"
+        required: true
+        type: boolean
+        default: true
+      commit_outputs:
+        description: "Commit generated analysis/midseason_allstar_value_board outputs"
+        required: true
+        type: boolean
+        default: false
+      sportsdataverse_data_root:
+        description: "SportsDataverse WNBA 2026 data root"
+        required: true
+        type: string
+        default: "data/raw/sportsdataverse/wnba_2026"
+      pbpstats_data_root:
+        description: "PBPStats WNBA 2026 data root"
+        required: true
+        type: string
+        default: "data/pbpstats_wnba_2026"
+
+jobs:
+  midseason-allstar-value-board:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      CONFIG_PATH: analysis/midseason_allstar_value_board/config/allstar_value_board_config.json
+      OUTPUT_ROOT: analysis/midseason_allstar_value_board
+      SPORTSDATAVERSE_ROOT: ${{ inputs.sportsdataverse_data_root }}
+      PBPSTATS_ROOT: ${{ inputs.pbpstats_data_root }}
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run All-Star Value Board tests
+        if: ${{ inputs.run_tests }}
+        run: python -m unittest tests/test_midseason_allstar_value_board.py
+
+      - name: Build processed All-Star Value Board outputs
+        if: ${{ inputs.build_processed }}
+        run: |
+          python scripts/build_midseason_allstar_value_board.py \
+            --config "$CONFIG_PATH" \
+            --stage processed \
+            --pbpstats-data-root "$PBPSTATS_ROOT" \
+            --sportsdataverse-data-root "$SPORTSDATAVERSE_ROOT"
+
+      - name: Build visualization-ready All-Star Value Board outputs
+        if: ${{ inputs.build_viz }}
+        run: |
+          python scripts/build_midseason_allstar_value_board.py \
+            --config "$CONFIG_PATH" \
+            --stage viz \
+            --pbpstats-data-root "$PBPSTATS_ROOT" \
+            --sportsdataverse-data-root "$SPORTSDATAVERSE_ROOT"
+
+      - name: Build editorial All-Star Value Board assets
+        if: ${{ inputs.build_editorial }}
+        run: |
+          python scripts/build_midseason_allstar_value_board.py \
+            --config "$CONFIG_PATH" \
+            --stage editorial \
+            --pbpstats-data-root "$PBPSTATS_ROOT" \
+            --sportsdataverse-data-root "$SPORTSDATAVERSE_ROOT"
+
+      - name: Commit generated All-Star Value Board outputs if requested
+        if: ${{ inputs.commit_outputs }}
+        run: |
+          git add analysis/midseason_allstar_value_board
+          if git diff --cached --quiet; then
+            echo "No All-Star Value Board output changes to commit"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "chore: refresh midseason All-Star value board"
+          git push
