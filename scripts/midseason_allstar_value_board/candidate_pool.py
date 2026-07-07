@@ -55,7 +55,11 @@ def build_box_workload(player_box: pd.DataFrame) -> pd.DataFrame:
     if "did_not_play" in box.columns:
         box = box[box["did_not_play"] != True].copy()  # noqa: E712
     box["box_minutes_row"] = pd.to_numeric(box["minutes"], errors="coerce")
-    box = box[box["box_minutes_row"].notna()].copy()
+    box = box[
+        box["box_minutes_row"].notna()
+        & box["athlete_display_name"].notna()
+        & box["team_abbreviation"].notna()
+    ].copy()
     if box.empty:
         return pd.DataFrame(columns=columns)
 
