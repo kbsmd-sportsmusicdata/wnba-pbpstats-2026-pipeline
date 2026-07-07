@@ -27,6 +27,13 @@ Candidate tiers:
 
 The candidate pool and metric panel retain all tiers for diagnostics. The main board, top 10 summary, and social-card outputs filter to `eligible_flag == True`, so watchlist and ineligible rows do not enter the public All-Star ranking.
 
+Eligibility workload comes from SportsDataverse player box scores:
+
+- `box_minutes` is the sum of non-DNP box-score minutes.
+- `box_games_played` counts games with recorded box-score minutes.
+- `mpg` and `availability_rate` use `box_minutes` and `box_games_played`.
+- `pbpstats_minutes` and `pbpstats_games_played` remain in diagnostic outputs but do not serve as an eligibility fallback.
+
 ## Score Components
 
 All component inputs are converted to 0-100 percentile-style scores before weighting.

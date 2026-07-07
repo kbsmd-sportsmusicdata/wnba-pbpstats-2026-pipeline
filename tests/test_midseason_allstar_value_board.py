@@ -164,28 +164,27 @@ class MidseasonAllStarValueBoardTest(unittest.TestCase):
         players.to_csv(pbp_root / "features_latest" / "2026" / "player_totals_features_latest.csv", index=False)
         teams.to_csv(pbp_root / "features_latest" / "2026" / "team_totals_features_latest.csv", index=False)
 
-        player_box = pd.DataFrame(
-            [
-                {
-                    "athlete_id": "1",
-                    "athlete_display_name": "Alpha Star",
-                    "athlete_position_abbreviation": "G",
-                    "team_id": "100",
-                    "team_abbreviation": "ATL",
-                    "game_date": "2026-07-01",
-                    "did_not_play": False,
-                },
-                {
-                    "athlete_id": "2",
-                    "athlete_display_name": "Beta Watch",
-                    "athlete_position_abbreviation": "F",
-                    "team_id": "100",
-                    "team_abbreviation": "ATL",
-                    "game_date": "2026-07-01",
-                    "did_not_play": False,
-                },
-            ]
-        )
+        player_box_rows = []
+        for player_id, name, position, games, minutes in [
+            ("1", "Alpha Star", "G", 12, 30),
+            ("2", "Beta Watch", "F", 9, 36),
+            ("3", "Gamma Reserve", "G", 6, 20),
+        ]:
+            for game_num in range(games):
+                player_box_rows.append(
+                    {
+                        "game_id": f"{player_id}-{game_num}",
+                        "athlete_id": player_id,
+                        "athlete_display_name": name,
+                        "athlete_position_abbreviation": position,
+                        "team_id": "100" if name != "Gamma Reserve" else "200",
+                        "team_abbreviation": "ATL" if name != "Gamma Reserve" else "MIN",
+                        "game_date": f"2026-07-{game_num + 1:02d}",
+                        "minutes": minutes,
+                        "did_not_play": False,
+                    }
+                )
+        player_box = pd.DataFrame(player_box_rows)
         standings = pd.DataFrame(
             [
                 {"team_id": "100", "team_name": "Dream", "wins": "12", "losses": "8", "win_pct": "0.600", "season": 2026},
@@ -284,7 +283,7 @@ class MidseasonAllStarValueBoardTest(unittest.TestCase):
                 self.assertTrue((out_root / relative).exists(), relative)
 
             board = pd.read_csv(out_root / "data/processed/allstar_value_board_2026.csv")
-            self.assertEqual(list(board["player_name"]), ["Alpha Star"])
+            self.assertEqual(list(board["player_name"]), ["Alpha Star", "Beta Watch"])
             self.assertTrue(board["eligible_flag"].all())
             self.assertIn("allstar_value_score", board.columns)
 
@@ -292,14 +291,21 @@ class MidseasonAllStarValueBoardTest(unittest.TestCase):
             self.assertEqual(len(pool), 3)
             tiers = dict(zip(pool["player_name"], pool["candidate_tier"]))
             self.assertEqual(tiers["Alpha Star"], "Core Candidate")
-            self.assertEqual(tiers["Beta Watch"], "Watchlist")
+            self.assertEqual(tiers["Beta Watch"], "Core Candidate")
             self.assertEqual(tiers["Gamma Reserve"], "Ineligible")
+            beta = pool[pool["player_name"] == "Beta Watch"].iloc[0]
+            self.assertEqual(beta["box_games_played"], 9)
+            self.assertEqual(beta["box_minutes"], 324)
+            self.assertEqual(beta["pbpstats_minutes"], 220)
+            self.assertEqual(beta["eligibility_minutes_source"], "sportsdataverse_player_box")
 
             metric_panel = pd.read_csv(out_root / "data/processed/player_metric_panel_2026.csv")
             self.assertEqual(len(metric_panel), 3)
+            self.assertIn("box_minutes", metric_panel.columns)
+            self.assertIn("pbpstats_minutes", metric_panel.columns)
 
             social = pd.read_csv(out_root / "data/viz/social_card_players_2026.csv")
-            self.assertEqual(list(social["player_name"]), ["Alpha Star"])
+            self.assertEqual(list(social["player_name"]), ["Alpha Star", "Beta Watch"])
 
             archetypes = pd.read_csv(out_root / "data/processed/player_archetypes_2026.csv")
             self.assertIn("Primary Engine", set(archetypes["primary_archetype"]))
