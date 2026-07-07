@@ -1,0 +1,33 @@
+{
+  "season": 2026,
+  "as_of_date": "2026-07-07",
+  "pbpstats_data_root": "data/pbpstats_wnba_2026",
+  "sportsdataverse_data_root": "data/raw/sportsdataverse/wnba_2026",
+  "sportsdataverse_fallback_root": "2026_scout_report",
+  "output_root": "analysis/midseason_allstar_value_board",
+  "thresholds": {
+    "min_minutes": 300,
+    "watchlist_min_minutes": 180,
+    "min_games": 8,
+    "min_team_game_share": 0.45
+  },
+  "weights": {
+    "production": 0.25,
+    "efficiency": 0.2,
+    "creation": 0.15,
+    "impact": 0.2,
+    "availability": 0.1,
+    "team_context": 0.1
+  },
+  "source_files": {
+    "player_features": "features_latest/2026/player_totals_features_latest.csv",
+    "team_features": "features_latest/2026/team_totals_features_latest.csv",
+    "player_box": "player_box_2026.parquet",
+    "player_game_logs": "player_game_logs_2026.parquet",
+    "player_season_stats": "player_season_stats_2026.parquet",
+    "team_box": "team_box_2026.parquet",
+    "standings": "standings_2026.parquet",
+    "team_season_stats": "team_season_stats_2026.parquet"
+  }
+}
+

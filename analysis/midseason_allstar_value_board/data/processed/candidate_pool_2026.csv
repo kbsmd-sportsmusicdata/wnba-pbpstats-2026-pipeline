@@ -1,0 +1,211 @@
+season,as_of_date,player_id,player_name,team_id,team_abbreviation,position,games_played,team_games_played,availability_rate,minutes,mpg,eligible_flag,candidate_tier,eligibility_reason
+2026,2026-07-07,1629491,Jessica Shepard,1611661321,DAL,F,21,21,1.0,367.0,17.476190476190474,True,Core Candidate,"Meets minutes, games, and team-game share thresholds"
+2026,2026-07-07,1642289,Kamilla Cardoso,1611661329,CHI,C,20,20,1.0,363.0,18.15,True,Core Candidate,"Meets minutes, games, and team-game share thresholds"
+2026,2026-07-07,1631019,NaLyssa Smith,1611661319,LVA,F,21,21,1.0,357.0,17.0,True,Core Candidate,"Meets minutes, games, and team-game share thresholds"
+2026,2026-07-07,203400,Skylar Diggins,1611661329,CHI,G,19,20,0.95,353.0,18.57894736842105,True,Core Candidate,"Meets minutes, games, and team-game share thresholds"
+2026,2026-07-07,203826,Alyssa Thomas,1611661317,PHX,F,19,21,0.9047619047619048,349.0,18.36842105263158,True,Core Candidate,"Meets minutes, games, and team-game share thresholds"
+2026,2026-07-07,1628932,A'ja Wilson,1611661319,LVA,C,19,21,0.9047619047619048,321.0,16.894736842105264,True,Core Candidate,"Meets minutes, games, and team-game share thresholds"
+2026,2026-07-07,1643428,Flau'jae Johnson,1611661328,SEA,G,22,22,1.0,321.0,14.590909090909092,True,Core Candidate,"Meets minutes, games, and team-game share thresholds"
+2026,2026-07-07,1627668,Breanna Stewart,1611661313,NYL,F,20,21,0.9523809523809523,315.0,15.75,True,Core Candidate,"Meets minutes, games, and team-game share thresholds"
+2026,2026-07-07,203827,Natasha Howard,1611661324,MIN,F,20,20,1.0,305.0,15.25,True,Core Candidate,"Meets minutes, games, and team-game share thresholds"
+2026,2026-07-07,1629481,Arike Ogunbowale,1611661321,DAL,G,21,21,1.0,304.0,14.476190476190476,True,Core Candidate,"Meets minutes, games, and team-game share thresholds"
+2026,2026-07-07,1629567,Natisha Hiedeman,1611661328,SEA,G,22,22,1.0,303.0,13.772727272727273,True,Core Candidate,"Meets minutes, games, and team-game share thresholds"
+2026,2026-07-07,1628931,Gabby Williams,1611661331,GSV,F,21,21,1.0,302.0,14.380952380952381,True,Core Candidate,"Meets minutes, games, and team-game share thresholds"
+2026,2026-07-07,1642792,Kiki Iriafen,1611661322,WAS,F,16,19,0.8421052631578947,179.0,11.1875,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,204329,Kiah Stokes,1611661331,GSV,C,21,21,1.0,178.0,8.476190476190476,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1642291,Angel Reese,1611661330,ATL,F,21,21,1.0,173.0,8.238095238095237,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1631086,Lexie Hull,1611661325,IND,G,20,20,1.0,165.0,8.25,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1642290,Aaliyah Edwards,1611661323,CON,F,14,20,0.7,162.0,11.571428571428571,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1628886,Jordin Canada,1611661330,ATL,G,21,21,1.0,158.0,7.523809523809524,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1630142,Leonie Fiebich,1611661313,NYL,F,14,21,0.6666666666666666,158.0,11.285714285714286,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1643420,Laura Juskaite,1611661332,TOR,F,20,20,1.0,153.0,7.65,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,204324,Dearica Hamby,1611661320,LAS,F,18,18,1.0,153.0,8.5,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1642809,Saniya Rivers,1611661323,CON,G,19,20,0.95,151.0,7.947368421052632,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1630446,Michaela Onyenwere,1611661322,WAS,F,15,19,0.7894736842105263,147.0,9.8,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1642296,Nyadiew Puoch,1611661327,PDX,F,20,21,0.9523809523809523,146.0,7.3,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1642798,Dominique Malonga,1611661328,SEA,C,14,22,0.6363636363636364,146.0,10.428571428571429,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1631136,Pauline Astier,1611661313,NYL,G,21,21,1.0,142.0,6.761904761904762,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1643506,Teja Oblak,1611661327,PDX,G,15,21,0.7142857142857143,141.0,9.4,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1629477,Sabrina Ionescu,1611661313,NYL,G,9,21,0.42857142857142855,136.0,15.11111111111111,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1642292,Jacy Sheldon,1611661329,CHI,G,20,20,1.0,134.0,6.7,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1629524,Bridget Carleton,1611661327,PDX,F,20,21,0.9523809523809523,127.0,6.35,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1643449,Charlisse Leger-Walker,1611661323,CON,G,20,20,1.0,124.0,6.2,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1642781,Georgia Amoore,1611661322,WAS,G,19,19,1.0,123.0,6.473684210526316,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,204365,Erica Wheeler,1611661320,LAS,G,18,18,1.0,122.0,6.777777777777778,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,201886,DeWanna Bonner,1611661317,PHX,F,21,21,1.0,121.0,5.761904761904762,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1631141,Jade Melbourne,1611661328,SEA,G,21,22,0.9545454545454546,118.0,5.619047619047619,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1630442,Natasha Mack,1611661317,PHX,F,18,21,0.8571428571428571,112.0,6.222222222222222,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,204330,Isabelle Harrison,1611661332,TOR,F,10,20,0.5,111.0,11.1,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1642804,Te-Hina Paopao,1611661330,ATL,G,21,21,1.0,110.0,5.238095238095238,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1643447,Gabriela Jaquez,1611661329,CHI,G,16,20,0.8,107.0,6.6875,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1643436,Serah Williams,1611661327,PDX,C,17,21,0.8095238095238095,106.0,6.235294117647059,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1642800,Aneesah Morrow,1611661323,CON,F,17,20,0.85,106.0,6.235294117647059,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1629501,Alanna Smith,1611661321,DAL,F,17,21,0.8095238095238095,104.0,6.117647058823529,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1629478,Katie Lou Samuelson,1611661328,SEA,F,16,22,0.7272727272727273,104.0,6.5,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1642777,Monique Akoa Makani,1611661317,PHX,G,10,21,0.47619047619047616,95.0,9.5,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1642304,Carla Leite,1611661327,PDX,G,19,21,0.9047619047619048,94.0,4.947368421052632,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1629576,Maria Conde,1611661332,TOR,F,20,20,1.0,88.0,4.4,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1629568,Kennedy Burke,1611661323,CON,G,19,20,0.95,85.0,4.473684210526316,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1627700,Julie Allemand,1611661332,TOR,G,14,20,0.7,84.0,6.0,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1631055,Nyara Sabally,1611661332,TOR,F,14,20,0.7,82.0,5.857142857142857,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1642302,Isobel Borlase,1611661330,ATL,G,21,21,1.0,82.0,3.9047619047619047,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1643431,Madina Okot,1611661330,ATL,C,21,21,1.0,80.0,3.8095238095238093,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1643445,Kiki Rice,1611661332,TOR,G,10,20,0.5,77.0,7.7,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1631135,Olivia Nelson-Ododa,1611661323,CON,C,16,20,0.8,74.0,4.625,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1628317,Karlie Samuelson,1611661327,PDX,G,10,21,0.47619047619047616,74.0,7.4,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1642307,Mackenzie Holmes,1611661328,SEA,F,19,22,0.8636363636363636,73.0,3.8421052631578947,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1643505,Jovana Nogic,1611661317,PHX,G,16,21,0.7619047619047619,73.0,4.5625,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1630143,Luisa Geiselsoder,1611661327,PDX,C,17,21,0.8095238095238095,71.0,4.176470588235294,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,203828,Stefanie Dolson,1611661328,SEA,C,22,22,1.0,69.0,3.1363636363636362,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1628899,Myisha Hines-Allen,1611661325,IND,F,20,20,1.0,69.0,3.45,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1630386,Awak Kuier,1611661321,DAL,F,18,21,0.8571428571428571,69.0,3.8333333333333335,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1643455,Angela Dugalic,1611661322,WAS,F,19,19,1.0,60.0,3.1578947368421053,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1643427,Lauren Betts,1611661322,WAS,C,19,19,1.0,58.0,3.0526315789473686,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1642288,Rickea Jackson,1611661329,CHI,F,4,20,0.2,58.0,14.5,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1642768,Kyara Linskens,1611661317,PHX,C,15,21,0.7142857142857143,58.0,3.8666666666666667,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1641650,Haley Jones,1611661327,PDX,G,5,21,0.23809523809523808,57.0,11.4,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1643467,Cassandre Prosper,1611661322,WAS,G,15,19,0.7894736842105263,53.0,3.533333333333333,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1630097,Kaila Charles,1611661331,GSV,G,21,21,1.0,53.0,2.5238095238095237,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1643430,Cotie McMahon,1611661322,WAS,G,17,19,0.8947368421052632,51.0,3.0,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1641651,Jordan Horston,1611661328,SEA,F,17,22,0.7727272727272727,46.0,2.7058823529411766,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1643644,Alicia Florez,1611661322,WAS,G,10,19,0.5263157894736842,46.0,4.6,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1643450,Rori Harmon,1611661322,WAS,G,8,19,0.42105263157894735,44.0,5.5,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1642802,Lucy Olsen,1611661322,WAS,G,13,19,0.6842105263157895,40.0,3.076923076923077,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1643647,Tima Pouye,1611661332,TOR,G,12,20,0.6,39.0,3.25,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1643453,Grace VanSlooten,1611661325,IND,F,10,20,0.5,34.0,3.4,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1627701,Temi Fagbenle,1611661332,TOR,C,8,20,0.4,33.0,4.125,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1643527,Jordan Harrison,1611661327,PDX,G,3,21,0.14285714285714285,32.0,10.666666666666666,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,204333,Natasha Cloud,1611661329,CHI,G,19,20,0.95,32.0,1.6842105263157894,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,203824,Odyssey Sims,1611661321,DAL,G,12,21,0.5714285714285714,30.0,2.5,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1643444,Ta'Niya Latson,1611661320,LAS,G,10,18,0.5555555555555556,30.0,3.0,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,203024,Damiris Dantas,1611661325,IND,C,9,20,0.45,27.0,3.0,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1642321,Sydney Taylor,1611661329,CHI,G,18,20,0.9,26.0,1.4444444444444444,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1631021,Sika Kone,1611661330,ATL,F,20,21,0.9523809523809523,26.0,1.3,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1642794,Juste Jocyte,1611661331,GSV,G,8,21,0.38095238095238093,26.0,3.25,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1629482,Sophie Cunningham,1611661325,IND,G,19,20,0.95,26.0,1.368421052631579,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1642814,Taylor Thierry,1611661328,SEA,F,8,22,0.36363636363636365,26.0,3.25,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1630112,Tyasha Harris,1611661325,IND,G,15,20,0.75,24.0,1.6,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1641683,Holly Winterburn,1611661327,PDX,G,10,21,0.47619047619047616,21.0,2.1,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1629496,Ezi Magbegor,1611661328,SEA,F,2,22,0.09090909090909091,20.0,10.0,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,204319,Jewell Loyd,1611661319,LVA,G,19,21,0.9047619047619048,20.0,1.0526315789473684,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1629574,Li Yueru,1611661321,DAL,C,15,21,0.7142857142857143,19.0,1.2666666666666666,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,202664,Courtney Vandersloot,1611661329,CHI,G,3,20,0.15,18.0,6.0,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1628242,Emma Cannon,1611661320,LAS,F,5,18,0.2777777777777778,18.0,3.6,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1643429,Gianna Kneepkens,1611661323,CON,G,16,20,0.8,16.0,1.0,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1641656,Laeticia Amihere,1611661331,GSV,F,17,21,0.8095238095238095,16.0,0.9411764705882353,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1630148,Jihyun Park,1611661320,LAS,F,13,18,0.7222222222222222,16.0,1.2307692307692308,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1630384,Raquel Carrera,1611661313,NYL,F,9,21,0.42857142857142855,14.0,1.5555555555555556,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1631263,Nikolina Milic,1611661332,TOR,F,7,20,0.35,13.0,1.8571428571428572,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1643479,Ndjakalenga Mwenentanda,1611661331,GSV,G,5,21,0.23809523809523808,13.0,2.6,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,202252,Alysha Clark,1611661321,DAL,F,14,21,0.6666666666666666,13.0,0.9285714285714286,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1643457,Teonni Key,1611661332,TOR,F,19,20,0.95,12.0,0.631578947368421,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1643525,Alex Fowler,1611661313,NYL,F,2,21,0.09523809523809523,11.0,5.5,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1642210,Julie Vanloo,1611661313,NYL,G,5,21,0.23809523809523808,11.0,2.2,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1642790,Sania Feagin,1611661320,LAS,F,3,18,0.16666666666666666,10.0,3.3333333333333335,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,204296,Rebecca Allen,1611661313,NYL,G,7,21,0.3333333333333333,10.0,1.4285714285714286,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1643706,Ornella Bankole,1611661332,TOR,UNK,1,20,0.05,8.0,8.0,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1642775,Alex Wilson,1611661322,WAS,G,4,19,0.21052631578947367,8.0,2.0,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1628882,Lexie Brown,1611661328,SEA,G,10,22,0.45454545454545453,8.0,0.8,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1628278,Shatori Walker-Kimbrough,1611661325,IND,G,2,20,0.1,7.0,3.5,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1630469,Marine Fauthoux,1611661313,NYL,G,3,21,0.14285714285714285,6.0,2.0,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1643686,Nadia Fingall,1611661331,GSV,C,2,21,0.09523809523809523,6.0,3.0,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1642801,Aaliyah Nye,1611661330,ATL,G,11,21,0.5238095238095238,6.0,0.5454545454545454,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1643448,Nell Angloma,1611661323,CON,F,16,20,0.8,6.0,0.375,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1631039,Miela Sowah,1611661331,GSV,G,2,21,0.09523809523809523,6.0,3.0,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1643424,Costanza Verona,1611661321,DAL,G,1,21,0.047619047619047616,6.0,6.0,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1630138,Peyton Williams,1611661317,PHX,F,1,21,0.047619047619047616,6.0,6.0,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1643458,Saylor Poffenbarger,1611661329,CHI,G,5,20,0.25,6.0,1.2,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1630108,Mariella Fasoula,1611661332,TOR,C,3,20,0.15,5.0,1.6666666666666667,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1641695,Ashten Prechtel,1611661331,GSV,F,1,21,0.047619047619047616,5.0,5.0,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1630115,Joyner Holmes,1611661328,SEA,F,1,22,0.045454545454545456,5.0,5.0,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1641660,Zia Cooke,1611661328,SEA,G,22,22,1.0,5.0,0.22727272727272727,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,204468,Valeriane Ayayi,1611661317,PHX,F,15,21,0.7142857142857143,4.0,0.26666666666666666,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1641652,Maddy Siegrist,1611661321,DAL,F,21,21,1.0,3.0,0.14285714285714285,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1642808,JJ Quinerly,1611661321,DAL,G,2,21,0.09523809523809523,2.0,1.0,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1643488,Emma Cechova,1611661324,MIN,F,3,20,0.15,2.0,0.6666666666666666,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1642815,Makayla Timpson,1611661325,IND,F,19,20,0.95,2.0,0.10526315789473684,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1630134,Sug Sutton,1611661321,DAL,G,11,21,0.5238095238095238,1.0,0.09090909090909091,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1642767,Janelle Salaun,1611661331,GSV,F,21,21,1.0,1.0,0.047619047619047616,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1629539,Amy Okonkwo,1611661330,ATL,F,1,21,0.047619047619047616,1.0,1.0,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1643470,Shay Ciezki,1611661317,PHX,G,2,21,0.09523809523809523,-1.0,-0.5,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1643461,Laura Ziegler,1611661320,LAS,F,3,18,0.16666666666666666,-1.0,-0.3333333333333333,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,204323,Cheyenne Parker-Tyus,1611661319,LVA,F,18,21,0.8571428571428571,-1.0,-0.05555555555555555,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1630993,Anneli Maley,1611661313,NYL,F,4,21,0.19047619047619047,-2.0,-0.5,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1630461,Kiana Williams,1611661320,LAS,G,11,18,0.6111111111111112,-2.0,-0.18181818181818182,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1642817,Hailey Van Lith,1611661323,CON,G,10,20,0.5,-6.0,-0.6,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1643473,Taina Mair,1611661328,SEA,G,3,22,0.13636363636363635,-7.0,-2.3333333333333335,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1643490,Eliska Hamzova,1611661324,MIN,G,5,20,0.25,-7.0,-1.4,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1642822,Kaitlyn Chen,1611661331,GSV,G,21,21,1.0,-8.0,-0.38095238095238093,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1643441,Raegan Beers,1611661323,CON,F,16,20,0.8,-8.0,-0.5,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1642818,Maddy Westbeld,1611661329,CHI,F,2,20,0.1,-9.0,-4.5,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1629479,Teaira McCowan,1611661324,MIN,C,10,20,0.5,-12.0,-1.2,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1642786,Aicha Coulibaly,1611661329,CHI,G,11,20,0.55,-12.0,-1.0909090909090908,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1642826,Aubrey Griffin,1611661313,NYL,F,4,21,0.19047619047619047,-12.0,-3.0,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1631006,Kierstan Bell,1611661319,LVA,F,17,21,0.8095238095238095,-15.0,-0.8823529411764706,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1643437,Ashlon Jackson,1611661323,CON,G,6,20,0.3,-17.0,-2.8333333333333335,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1629488,Brianna Turner,1611661319,LVA,F,18,21,0.8571428571428571,-18.0,-1.0,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,203026,Tiffany Hayes,1611661331,GSV,G,19,21,0.9047619047619048,-23.0,-1.2105263157894737,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,204335,Betnijah Laney-Hamilton,1611661313,NYL,G,14,21,0.6666666666666666,-23.0,-1.6428571428571428,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1642324,Kate Martin,1611661320,LAS,G,10,18,0.5555555555555556,-23.0,-2.3,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1643438,Marta Suarez,1611661317,PHX,F,6,21,0.2857142857142857,-27.0,-4.5,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1642820,Liatu King,1611661324,MIN,F,7,20,0.35,-29.0,-4.142857142857143,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1629581,Emese Hof,1611661324,MIN,C,3,20,0.15,-29.0,-9.666666666666666,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1643487,Quionche Carter,1611661317,PHX,G,13,21,0.6190476190476191,-29.0,-2.230769230769231,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1630150,Chennedy Carter,1611661319,LVA,G,13,21,0.6190476190476191,-30.0,-2.3076923076923075,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1630149,Satou Sabally,1611661313,NYL,F,13,21,0.6190476190476191,-32.0,-2.4615384615384617,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1628915,Kia Nurse,1611661332,TOR,G,20,20,1.0,-35.0,-1.75,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1642287,Cameron Brink,1611661320,LAS,F,14,18,0.7777777777777778,-35.0,-2.5,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1631118,Lexi Held,1611661317,PHX,G,20,21,0.9523809523809523,-42.0,-2.1,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1643433,Raven Johnson,1611661325,IND,G,20,20,1.0,-42.0,-2.1,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1629566,Han Xu,1611661313,NYL,C,21,21,1.0,-45.0,-2.142857142857143,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1642793,Aziaha James,1611661321,DAL,G,21,21,1.0,-55.0,-2.619047619047619,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1643469,Indya Nivar,1611661330,ATL,G,19,21,0.9047619047619048,-60.0,-3.1578947368421053,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1642797,Anastasiia Olairi Kosu,1611661324,MIN,F,19,20,0.95,-62.0,-3.263157894736842,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1630471,Maya Caldwell,1611661324,MIN,G,20,20,1.0,-66.0,-3.3,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1643489,Antonia Delaere,1611661324,MIN,F,20,20,1.0,-74.0,-3.7,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,203822,Rebekah Gardner,1611661313,NYL,G,20,21,0.9523809523809523,-91.0,-4.55,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,204322,Elizabeth Williams,1611661329,CHI,C,20,20,1.0,-121.0,-6.05,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1643462,Chance Gray,1611661320,LAS,G,16,18,0.8888888888888888,-134.0,-8.375,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1627671,Rachel Banham,1611661329,CHI,G,17,20,0.85,,,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1631083,Emily Engstler,1611661327,PDX,F,21,21,1.0,,,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1630154,Kamiah Smalls,1611661327,PDX,F,2,21,0.09523809523809523,,,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1642788,Bree Hall,1611661325,IND,G,1,20,0.05,,,False,Ineligible,Below minimum All-Star board workload thresholds
+2026,2026-07-07,1629498,Jackie Young,1611661319,LVA,G,21,21,1.0,297.0,14.142857142857142,False,Watchlist,Meets watchlist workload but falls short of full eligibility
+2026,2026-07-07,1642784,Paige Bueckers,1611661321,DAL,G,20,21,0.9523809523809523,293.0,14.65,False,Watchlist,Meets watchlist workload but falls short of full eligibility
+2026,2026-07-07,203833,Chelsea Gray,1611661319,LVA,G,21,21,1.0,290.0,13.80952380952381,False,Watchlist,Meets watchlist workload but falls short of full eligibility
+2026,2026-07-07,1628269,Nia Coffey,1611661324,MIN,F,20,20,1.0,288.0,14.4,False,Watchlist,Meets watchlist workload but falls short of full eligibility
+2026,2026-07-07,203014,Nneka Ogwumike,1611661320,LAS,F,17,18,0.9444444444444444,287.0,16.88235294117647,False,Watchlist,Meets watchlist workload but falls short of full eligibility
+2026,2026-07-07,1642286,Caitlin Clark,1611661325,IND,G,17,20,0.85,283.0,16.647058823529413,False,Watchlist,Meets watchlist workload but falls short of full eligibility
+2026,2026-07-07,203866,Kayla Thornton,1611661331,GSV,F,21,21,1.0,282.0,13.428571428571429,False,Watchlist,Meets watchlist workload but falls short of full eligibility
+2026,2026-07-07,1643426,Olivia Miles,1611661324,MIN,G,20,20,1.0,281.0,14.05,False,Watchlist,Meets watchlist workload but falls short of full eligibility
+2026,2026-07-07,1629497,Marina Mabrey,1611661332,TOR,G,19,20,0.95,277.0,14.578947368421053,False,Watchlist,Meets watchlist workload but falls short of full eligibility
+2026,2026-07-07,1628277,Allisha Gray,1611661330,ATL,G,21,21,1.0,268.0,12.761904761904763,False,Watchlist,Meets watchlist workload but falls short of full eligibility
+2026,2026-07-07,203825,Kayla McBride,1611661324,MIN,G,20,20,1.0,262.0,13.1,False,Watchlist,Meets watchlist workload but falls short of full eligibility
+2026,2026-07-07,1629546,Marine Johannes,1611661313,NYL,G,21,21,1.0,255.0,12.142857142857142,False,Watchlist,Meets watchlist workload but falls short of full eligibility
+2026,2026-07-07,1628878,Ariel Atkins,1611661320,LAS,G,16,18,0.8888888888888888,247.0,15.4375,False,Watchlist,Meets watchlist workload but falls short of full eligibility
+2026,2026-07-07,1641649,Diamond Miller,1611661323,CON,F,20,20,1.0,246.0,12.3,False,Watchlist,Meets watchlist workload but falls short of full eligibility
+2026,2026-07-07,1631009,Rhyne Howard,1611661330,ATL,G,20,21,0.9523809523809523,244.0,12.2,False,Watchlist,Meets watchlist workload but falls short of full eligibility
+2026,2026-07-07,1628881,Monique Billings,1611661325,IND,F,19,20,0.95,242.0,12.736842105263158,False,Watchlist,Meets watchlist workload but falls short of full eligibility
+2026,2026-07-07,1627675,Courtney Williams,1611661324,MIN,G,20,20,1.0,242.0,12.1,False,Watchlist,Meets watchlist workload but falls short of full eligibility
+2026,2026-07-07,1643425,Azzi Fudd,1611661321,DAL,G,20,21,0.9523809523809523,238.0,11.9,False,Watchlist,Meets watchlist workload but falls short of full eligibility
+2026,2026-07-07,1631007,Veronica Burton,1611661331,GSV,G,21,21,1.0,238.0,11.333333333333334,False,Watchlist,Meets watchlist workload but falls short of full eligibility
+2026,2026-07-07,1643493,Noemie Brochant,1611661317,PHX,F,20,21,0.9523809523809523,236.0,11.8,False,Watchlist,Meets watchlist workload but falls short of full eligibility
+2026,2026-07-07,1627673,Jonquel Jones,1611661313,NYL,C,20,21,0.9523809523809523,228.0,11.4,False,Watchlist,Meets watchlist workload but falls short of full eligibility
+2026,2026-07-07,1628279,Brittney Sykes,1611661332,TOR,G,15,20,0.75,227.0,15.133333333333333,False,Watchlist,Meets watchlist workload but falls short of full eligibility
+2026,2026-07-07,1631044,Naz Hillmon,1611661330,ATL,F,20,21,0.9523809523809523,212.0,10.6,False,Watchlist,Meets watchlist workload but falls short of full eligibility
+2026,2026-07-07,1643443,Awa Fam,1611661328,SEA,C,16,22,0.7272727272727273,210.0,13.125,False,Watchlist,Meets watchlist workload but falls short of full eligibility
+2026,2026-07-07,1627674,Kahleah Copper,1611661317,PHX,G,20,21,0.9523809523809523,210.0,10.5,False,Watchlist,Meets watchlist workload but falls short of full eligibility
+2026,2026-07-07,1642785,Sonia Citron,1611661322,WAS,G,17,19,0.8947368421052632,208.0,12.235294117647058,False,Watchlist,Meets watchlist workload but falls short of full eligibility
+2026,2026-07-07,1629484,Megan Gustafson,1611661327,PDX,C,21,21,1.0,206.0,9.80952380952381,False,Watchlist,Meets watchlist workload but falls short of full eligibility
+2026,2026-07-07,1628508,Cecilia Zandalasini,1611661331,GSV,F,17,21,0.8095238095238095,205.0,12.058823529411764,False,Watchlist,Meets watchlist workload but falls short of full eligibility
+2026,2026-07-07,1642782,Sarah Ashlee Barker,1611661327,PDX,G,21,21,1.0,204.0,9.714285714285714,False,Watchlist,Meets watchlist workload but falls short of full eligibility
+2026,2026-07-07,203855,Stephanie Talbot,1611661319,LVA,F,21,21,1.0,204.0,9.714285714285714,False,Watchlist,Meets watchlist workload but falls short of full eligibility
+2026,2026-07-07,1643494,Frieda Buhner,1611661327,PDX,F,18,21,0.8571428571428571,201.0,11.166666666666666,False,Watchlist,Meets watchlist workload but falls short of full eligibility
+2026,2026-07-07,1642303,Leila Lacan,1611661323,CON,G,11,20,0.55,200.0,18.181818181818183,False,Watchlist,Meets watchlist workload but falls short of full eligibility
+2026,2026-07-07,1630996,Rae Burrell,1611661320,LAS,G,18,18,1.0,198.0,11.0,False,Watchlist,Meets watchlist workload but falls short of full eligibility
+2026,2026-07-07,1628909,Kelsey Mitchell,1611661325,IND,G,20,20,1.0,198.0,9.9,False,Watchlist,Meets watchlist workload but falls short of full eligibility
+2026,2026-07-07,1628922,Azura Stevens,1611661329,CHI,F,15,20,0.75,195.0,13.0,False,Watchlist,Meets watchlist workload but falls short of full eligibility
+2026,2026-07-07,1641648,Aliyah Boston,1611661325,IND,C,19,20,0.95,194.0,10.210526315789474,False,Watchlist,Meets watchlist workload but falls short of full eligibility
+2026,2026-07-07,1628276,Kelsey Plum,1611661320,LAS,G,12,18,0.6666666666666666,194.0,16.166666666666668,False,Watchlist,Meets watchlist workload but falls short of full eligibility
+2026,2026-07-07,203398,Brittney Griner,1611661323,CON,C,12,20,0.6,188.0,15.666666666666666,False,Watchlist,Meets watchlist workload but falls short of full eligibility
+2026,2026-07-07,1631022,Shakira Austin,1611661322,WAS,C,18,19,0.9473684210526315,183.0,10.166666666666666,False,Watchlist,Meets watchlist workload but falls short of full eligibility
