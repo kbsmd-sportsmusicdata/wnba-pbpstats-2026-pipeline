@@ -25,6 +25,8 @@ Candidate tiers:
 | `Watchlist` | Has enough workload to monitor but falls short of full eligibility |
 | `Ineligible` | Below minimum board workload thresholds |
 
+The candidate pool and metric panel retain all tiers for diagnostics. The main board, top 10 summary, and social-card outputs filter to `eligible_flag == True`, so watchlist and ineligible rows do not enter the public All-Star ranking.
+
 ## Score Components
 
 All component inputs are converted to 0-100 percentile-style scores before weighting.
@@ -64,4 +66,3 @@ Initial archetypes:
 - SportsDataverse files provide position, game-log, standings, and box-score context.
 - Numeric standings fields are coerced before use because some SportsDataverse standings snapshots store them as object/string columns.
 - SportsDataverse files are read from `data/raw/sportsdataverse/wnba_2026` first, then from `2026_scout_report` as a local fallback.
-
