@@ -1,0 +1,368 @@
+import json
+import subprocess
+import sys
+import tempfile
+import unittest
+from pathlib import Path
+
+import pandas as pd
+
+
+ROOT = Path(__file__).resolve().parents[1]
+
+
+class MidseasonTeamGradesTest(unittest.TestCase):
+    def _write_fixture_sources(self, tmpdir: Path) -> Path:
+        source_root = tmpdir / "sportsdataverse"
+        pbp_root = tmpdir / "pbpstats"
+        allstar_root = tmpdir / "allstar"
+        out_root = tmpdir / "analysis" / "midseason_team_grades"
+        source_root.mkdir(parents=True)
+        (pbp_root / "features_latest" / "2026").mkdir(parents=True)
+        (allstar_root / "data" / "processed").mkdir(parents=True)
+
+        player_box = pd.DataFrame(
+            [
+                {
+                    "game_id": "g1",
+                    "game_date": "2026-07-01",
+                    "athlete_id": "1",
+                    "athlete_display_name": "Alpha Starter",
+                    "team_abbreviation": "ATL",
+                    "opponent_team_abbreviation": "MIN",
+                    "home_away": "home",
+                    "minutes": 30,
+                    "starter": True,
+                    "did_not_play": False,
+                    "points": 20,
+                    "field_goals_made": 8,
+                    "field_goals_attempted": 16,
+                    "three_point_field_goals_made": 2,
+                    "free_throws_attempted": 2,
+                    "rebounds": 5,
+                    "assists": 4,
+                    "turnovers": 2,
+                    "plus_minus": "+10",
+                },
+                {
+                    "game_id": "g1",
+                    "game_date": "2026-07-01",
+                    "athlete_id": "2",
+                    "athlete_display_name": "Beta Bench",
+                    "team_abbreviation": "ATL",
+                    "opponent_team_abbreviation": "MIN",
+                    "home_away": "home",
+                    "minutes": 10,
+                    "starter": False,
+                    "did_not_play": False,
+                    "points": 12,
+                    "field_goals_made": 5,
+                    "field_goals_attempted": 8,
+                    "three_point_field_goals_made": 1,
+                    "free_throws_attempted": 2,
+                    "rebounds": 3,
+                    "assists": 2,
+                    "turnovers": 1,
+                    "plus_minus": "+5",
+                },
+                {
+                    "game_id": "g1",
+                    "game_date": "2026-07-01",
+                    "athlete_id": "3",
+                    "athlete_display_name": "DNP Bench",
+                    "team_abbreviation": "ATL",
+                    "opponent_team_abbreviation": "MIN",
+                    "home_away": "home",
+                    "minutes": None,
+                    "starter": False,
+                    "did_not_play": True,
+                    "points": 0,
+                    "field_goals_made": 0,
+                    "field_goals_attempted": 0,
+                    "three_point_field_goals_made": 0,
+                    "free_throws_attempted": 0,
+                    "rebounds": 0,
+                    "assists": 0,
+                    "turnovers": 0,
+                    "plus_minus": "0",
+                },
+                {
+                    "game_id": "g1",
+                    "game_date": "2026-07-01",
+                    "athlete_id": "4",
+                    "athlete_display_name": "Gamma Starter",
+                    "team_abbreviation": "MIN",
+                    "opponent_team_abbreviation": "ATL",
+                    "home_away": "away",
+                    "minutes": 30,
+                    "starter": True,
+                    "did_not_play": False,
+                    "points": 18,
+                    "field_goals_made": 7,
+                    "field_goals_attempted": 14,
+                    "three_point_field_goals_made": 1,
+                    "free_throws_attempted": 3,
+                    "rebounds": 7,
+                    "assists": 3,
+                    "turnovers": 3,
+                    "plus_minus": "-10",
+                },
+                {
+                    "game_id": "g1",
+                    "game_date": "2026-07-01",
+                    "athlete_id": "5",
+                    "athlete_display_name": "Delta Bench",
+                    "team_abbreviation": "MIN",
+                    "opponent_team_abbreviation": "ATL",
+                    "home_away": "away",
+                    "minutes": 10,
+                    "starter": False,
+                    "did_not_play": False,
+                    "points": 6,
+                    "field_goals_made": 2,
+                    "field_goals_attempted": 5,
+                    "three_point_field_goals_made": 0,
+                    "free_throws_attempted": 2,
+                    "rebounds": 2,
+                    "assists": 1,
+                    "turnovers": 1,
+                    "plus_minus": "-5",
+                },
+            ]
+        )
+        team_box = pd.DataFrame(
+            [
+                {
+                    "game_id": "g1",
+                    "game_date": "2026-07-01",
+                    "team_id": "100.0",
+                    "team_abbreviation": "ATL",
+                    "team_display_name": "Atlanta Dream",
+                    "team_home_away": "home",
+                    "team_score": 70,
+                    "team_winner": True,
+                    "field_goals_made": 28,
+                    "field_goals_attempted": 60,
+                    "three_point_field_goals_made": 8,
+                    "free_throws_attempted": 16,
+                    "offensive_rebounds": 10,
+                    "defensive_rebounds": 25,
+                    "turnovers": 12,
+                    "opponent_team_id": "200",
+                    "opponent_team_abbreviation": "MIN",
+                    "opponent_team_score": 60,
+                },
+                {
+                    "game_id": "g1",
+                    "game_date": "2026-07-01",
+                    "team_id": "200.0",
+                    "team_abbreviation": "MIN",
+                    "team_display_name": "Minnesota Lynx",
+                    "team_home_away": "away",
+                    "team_score": 60,
+                    "team_winner": False,
+                    "field_goals_made": 24,
+                    "field_goals_attempted": 58,
+                    "three_point_field_goals_made": 6,
+                    "free_throws_attempted": 12,
+                    "offensive_rebounds": 8,
+                    "defensive_rebounds": 22,
+                    "turnovers": 14,
+                    "opponent_team_id": "100",
+                    "opponent_team_abbreviation": "ATL",
+                    "opponent_team_score": 70,
+                },
+            ]
+        )
+        espn_pbp = pd.DataFrame(
+            [
+                {
+                    "game_id": "g1",
+                    "game_date": "2026-07-01",
+                    "home_team_id": "100",
+                    "home_team_abbrev": "ATL",
+                    "away_team_id": "200",
+                    "away_team_abbrev": "MIN",
+                    "team_id": "100",
+                    "home_score": 66,
+                    "away_score": 60,
+                    "start_game_seconds_remaining": 250,
+                    "score_value": 2,
+                    "scoring_play": True,
+                },
+                {
+                    "game_id": "g1",
+                    "game_date": "2026-07-01",
+                    "home_team_id": "100",
+                    "home_team_abbrev": "ATL",
+                    "away_team_id": "200",
+                    "away_team_abbrev": "MIN",
+                    "team_id": "200",
+                    "home_score": 66,
+                    "away_score": 63,
+                    "start_game_seconds_remaining": 220,
+                    "score_value": 3,
+                    "scoring_play": True,
+                },
+            ]
+        )
+        wnba_pbp = pd.DataFrame(
+            [
+                {
+                    "game_id": "g1",
+                    "event_num": 1,
+                    "score_value": 2,
+                    "player1_team_abbreviation": "ATL",
+                    "home_player1": "1",
+                    "home_player2": "2",
+                    "home_player3": "9",
+                    "home_player4": "10",
+                    "home_player5": "11",
+                    "away_player1": "4",
+                    "away_player2": "5",
+                    "away_player3": "12",
+                    "away_player4": "13",
+                    "away_player5": "14",
+                    "garbage_time": 0,
+                }
+            ]
+        )
+        player_features = pd.DataFrame(
+            [
+                {
+                    "entity_id_feature": "1",
+                    "entity_name_feature": "Alpha Starter",
+                    "team_abbreviation": "ATL",
+                    "usage": 24,
+                    "ts_pct_feature": 0.58,
+                    "rim_fga_share": 0.30,
+                    "three_point_fga_share": 0.35,
+                    "shot_diet_profile_label": "Balanced Shot Diet",
+                },
+                {
+                    "entity_id_feature": "2",
+                    "entity_name_feature": "Beta Bench",
+                    "team_abbreviation": "ATL",
+                    "usage": 18,
+                    "ts_pct_feature": 0.62,
+                    "rim_fga_share": 0.40,
+                    "three_point_fga_share": 0.30,
+                    "shot_diet_profile_label": "Modern Shot Diet",
+                },
+            ]
+        )
+        team_features = pd.DataFrame(
+            [
+                {"entity_id_feature": "100", "team_abbreviation": "ATL", "games_played": 1, "points": 70, "opponent_points": 60, "off_poss": 70, "def_poss": 70},
+                {"entity_id_feature": "200", "team_abbreviation": "MIN", "games_played": 1, "points": 60, "opponent_points": 70, "off_poss": 70, "def_poss": 70},
+            ]
+        )
+        standings = pd.DataFrame(
+            [
+                {"team_id": "100", "team_abbreviation": "ATL", "win_pct": "1.000"},
+                {"team_id": "200", "team_abbreviation": "MIN", "win_pct": "0.000"},
+            ]
+        )
+        allstar_board = pd.DataFrame(
+            [
+                {"player_id": "1", "player_name": "Alpha Starter", "team_abbreviation": "ATL", "allstar_value_score": 70, "starter_role_flag": True},
+                {"player_id": "2", "player_name": "Beta Bench", "team_abbreviation": "ATL", "allstar_value_score": 55, "starter_role_flag": False},
+            ]
+        )
+
+        player_box.to_parquet(source_root / "player_box_2026.parquet", index=False)
+        team_box.to_parquet(source_root / "team_box_2026.parquet", index=False)
+        espn_pbp.to_parquet(source_root / "play_by_play_2026.parquet", index=False)
+        wnba_pbp.to_parquet(source_root / "wnbastats_play_by_play_20260602.parquet", index=False)
+        standings.to_parquet(source_root / "standings_2026.parquet", index=False)
+        player_features.to_csv(pbp_root / "features_latest" / "2026" / "player_totals_features_latest.csv", index=False)
+        team_features.to_csv(pbp_root / "features_latest" / "2026" / "team_totals_features_latest.csv", index=False)
+        allstar_board.to_csv(allstar_root / "data" / "processed" / "allstar_value_board_2026.csv", index=False)
+
+        config = {
+            "season": 2026,
+            "as_of_date": "2026-07-01",
+            "sportsdataverse_data_root": str(source_root),
+            "sportsdataverse_fallback_root": str(source_root),
+            "pbpstats_data_root": str(pbp_root),
+            "allstar_value_board_root": str(allstar_root),
+            "output_root": str(out_root),
+            "rapm": {"min_scoring_events": 2, "ridge_alpha": 10.0},
+            "source_files": {
+                "player_box": "player_box_2026.parquet",
+                "team_box": "team_box_2026.parquet",
+                "standings": "standings_2026.parquet",
+                "espn_pbp": "play_by_play_2026.parquet",
+                "wnba_stats_pbp": "wnbastats_play_by_play_20260602.parquet",
+            },
+        }
+        config_path = tmpdir / "config.json"
+        config_path.write_text(json.dumps(config), encoding="utf-8")
+        return config_path
+
+    def test_cli_writes_analysis_ready_team_grade_outputs(self):
+        with tempfile.TemporaryDirectory() as raw_tmpdir:
+            tmpdir = Path(raw_tmpdir)
+            config_path = self._write_fixture_sources(tmpdir)
+
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    str(ROOT / "scripts" / "build_midseason_team_grades.py"),
+                    "--config",
+                    str(config_path),
+                    "--stage",
+                    "all",
+                ],
+                cwd=ROOT,
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+
+            self.assertEqual(result.returncode, 0, msg=result.stderr)
+            out_root = tmpdir / "analysis" / "midseason_team_grades"
+            processed = out_root / "data" / "processed"
+            expected = [
+                "team_game_four_factors_2026.csv",
+                "team_grade_panel_2026.csv",
+                "bench_player_game_2026.csv",
+                "bench_team_game_2026.csv",
+                "bench_team_summary_2026.csv",
+                "clutch_team_game_2026.csv",
+                "player_midseason_impact_2026.csv",
+                "player_fit_profiles_2026.csv",
+                "rapm_player_2026.csv",
+                "run_manifest_2026.json",
+            ]
+            for name in expected:
+                self.assertTrue((processed / name).exists(), name)
+            self.assertTrue((out_root / "data" / "eda" / "eda_manifest_2026.json").exists())
+
+            four = pd.read_csv(processed / "team_game_four_factors_2026.csv")
+            atl = four[four["team_abbreviation"] == "ATL"].iloc[0]
+            self.assertEqual(atl["opponent_team_abbreviation"], "MIN")
+            self.assertAlmostEqual(atl["off_efg_pct"], 53.3, places=1)
+            self.assertAlmostEqual(atl["def_efg_pct"], 46.6, places=1)
+
+            bench_players = pd.read_csv(processed / "bench_player_game_2026.csv")
+            self.assertEqual(set(bench_players["player_name"]), {"Beta Bench", "Delta Bench"})
+            self.assertNotIn("DNP Bench", set(bench_players["player_name"]))
+
+            bench_game = pd.read_csv(processed / "bench_team_game_2026.csv")
+            atl_bench = bench_game[bench_game["team_abbreviation"] == "ATL"].iloc[0]
+            self.assertEqual(atl_bench["bench_points"], 12)
+            self.assertAlmostEqual(atl_bench["bench_points_share"], 17.1, places=1)
+            self.assertAlmostEqual(atl_bench["bench_minutes_share"], 25.0, places=1)
+
+            clutch = pd.read_csv(processed / "clutch_team_game_2026.csv")
+            self.assertEqual(set(clutch["team_abbreviation"]), {"ATL", "MIN"})
+            self.assertEqual(clutch.loc[clutch["team_abbreviation"] == "ATL", "clutch_points"].iloc[0], 2)
+
+            manifest = json.loads((processed / "run_manifest_2026.json").read_text(encoding="utf-8"))
+            self.assertEqual(manifest["metric_status"]["vorp_status"], "unavailable_exact_formula_required")
+            self.assertEqual(manifest["metric_status"]["rapm_status"], "skipped_insufficient_scoring_events")
+
+
+if __name__ == "__main__":
+    unittest.main()

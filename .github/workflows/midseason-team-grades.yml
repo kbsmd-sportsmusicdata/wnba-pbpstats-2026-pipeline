@@ -1,0 +1,144 @@
+name: Midseason Team Grades
+
+on:
+  workflow_dispatch:
+    inputs:
+      run_tests:
+        description: "Run midseason team grades tests before building"
+        required: true
+        type: boolean
+        default: true
+      build_core:
+        description: "Build four factors, player impact, fit profiles, and team grades"
+        required: true
+        type: boolean
+        default: true
+      build_bench:
+        description: "Build bench analysis datasets"
+        required: true
+        type: boolean
+        default: true
+      build_clutch:
+        description: "Build clutch context datasets"
+        required: true
+        type: boolean
+        default: true
+      build_rapm:
+        description: "Build RAPM-style outputs when lineup validation passes"
+        required: true
+        type: boolean
+        default: true
+      build_eda_bundle:
+        description: "Build EDA manifest and prompt bundle"
+        required: true
+        type: boolean
+        default: true
+      commit_outputs:
+        description: "Commit generated analysis/midseason_team_grades outputs"
+        required: true
+        type: boolean
+        default: false
+      sportsdataverse_data_root:
+        description: "SportsDataverse WNBA 2026 data root"
+        required: true
+        type: string
+        default: "data/raw/sportsdataverse/wnba_2026"
+      pbpstats_data_root:
+        description: "PBPStats WNBA 2026 data root"
+        required: true
+        type: string
+        default: "data/pbpstats_wnba_2026"
+
+jobs:
+  midseason-team-grades:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      CONFIG_PATH: analysis/midseason_team_grades/config/midseason_team_grades_config.json
+      SPORTSDATAVERSE_ROOT: ${{ inputs.sportsdataverse_data_root }}
+      PBPSTATS_ROOT: ${{ inputs.pbpstats_data_root }}
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run Midseason Team Grades tests
+        if: ${{ inputs.run_tests }}
+        run: python -m unittest tests/test_midseason_team_grades.py
+
+      - name: Build core team grades outputs
+        if: ${{ inputs.build_core }}
+        run: |
+          python scripts/build_midseason_team_grades.py \
+            --config "$CONFIG_PATH" \
+            --stage core \
+            --sportsdataverse-data-root "$SPORTSDATAVERSE_ROOT" \
+            --pbpstats-data-root "$PBPSTATS_ROOT"
+
+      - name: Build bench outputs
+        if: ${{ inputs.build_bench }}
+        run: |
+          python scripts/build_midseason_team_grades.py \
+            --config "$CONFIG_PATH" \
+            --stage bench \
+            --sportsdataverse-data-root "$SPORTSDATAVERSE_ROOT" \
+            --pbpstats-data-root "$PBPSTATS_ROOT"
+
+      - name: Build clutch outputs
+        if: ${{ inputs.build_clutch }}
+        run: |
+          python scripts/build_midseason_team_grades.py \
+            --config "$CONFIG_PATH" \
+            --stage clutch \
+            --sportsdataverse-data-root "$SPORTSDATAVERSE_ROOT" \
+            --pbpstats-data-root "$PBPSTATS_ROOT"
+
+      - name: Build RAPM-style outputs
+        if: ${{ inputs.build_rapm }}
+        run: |
+          python scripts/build_midseason_team_grades.py \
+            --config "$CONFIG_PATH" \
+            --stage rapm \
+            --sportsdataverse-data-root "$SPORTSDATAVERSE_ROOT" \
+            --pbpstats-data-root "$PBPSTATS_ROOT"
+
+      - name: Build EDA bundle
+        if: ${{ inputs.build_eda_bundle }}
+        run: |
+          python scripts/build_midseason_team_grades.py \
+            --config "$CONFIG_PATH" \
+            --stage eda \
+            --sportsdataverse-data-root "$SPORTSDATAVERSE_ROOT" \
+            --pbpstats-data-root "$PBPSTATS_ROOT"
+
+      - name: Write output summary
+        run: |
+          python scripts/build_midseason_team_grades.py \
+            --config "$CONFIG_PATH" \
+            --stage eda \
+            --sportsdataverse-data-root "$SPORTSDATAVERSE_ROOT" \
+            --pbpstats-data-root "$PBPSTATS_ROOT" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Commit generated team grades outputs if requested
+        if: ${{ inputs.commit_outputs }}
+        run: |
+          git add analysis/midseason_team_grades
+          if git diff --cached --quiet; then
+            echo "No Midseason Team Grades output changes to commit"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "chore: refresh midseason team grades"
+          git push

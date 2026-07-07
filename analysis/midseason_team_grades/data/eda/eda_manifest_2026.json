@@ -1,0 +1,106 @@
+{
+  "agent_usage_note": "Use Codex chat for narrative EDA first; this repo provides deterministic datasets, not an LLM agent runner.",
+  "datasets": {
+    "bench_player_game_2026.csv": {
+      "grain": "one row per bench player-game",
+      "keys": [
+        "game_id",
+        "player_id",
+        "team_abbreviation"
+      ],
+      "recommended_questions": [
+        "Which reserves combine efficiency and real minutes?",
+        "Which bench players swing matchups by opponent?"
+      ]
+    },
+    "bench_team_game_2026.csv": {
+      "grain": "one row per team-game bench unit",
+      "keys": [
+        "game_id",
+        "team_abbreviation"
+      ],
+      "recommended_questions": [
+        "Which teams rely most on bench scoring?",
+        "Which benches are gaining or losing trust over time?"
+      ]
+    },
+    "bench_team_summary_2026.csv": {
+      "grain": "one row per team",
+      "keys": [
+        "team_abbreviation"
+      ],
+      "recommended_questions": [
+        "Which teams have the deepest second units?",
+        "Which bench profiles are efficient versus volume-only?"
+      ]
+    },
+    "clutch_team_game_2026.csv": {
+      "grain": "one row per team-game clutch window",
+      "keys": [
+        "game_id",
+        "team_abbreviation"
+      ],
+      "recommended_questions": [
+        "Which teams create late-game scoring separation?",
+        "Where does clutch sample size limit conclusions?"
+      ]
+    },
+    "player_fit_profiles_2026.csv": {
+      "grain": "one row per player",
+      "keys": [
+        "player_id",
+        "team_abbreviation"
+      ],
+      "recommended_questions": [
+        "Which player skill profiles complement team needs?",
+        "Where do spacing, rim pressure, and usage overlap?"
+      ]
+    },
+    "player_midseason_impact_2026.csv": {
+      "grain": "one row per player",
+      "keys": [
+        "player_id",
+        "team_abbreviation"
+      ],
+      "recommended_questions": [
+        "How does All-Star value map to team grades?",
+        "Which non-headliners still shape team outcomes?"
+      ]
+    },
+    "rapm_player_2026.csv": {
+      "grain": "one row per player when lineup validation passes",
+      "keys": [
+        "player_id"
+      ],
+      "recommended_questions": [
+        "Which RAPM-style signals agree or disagree with box-score value?",
+        "Which estimates are sample-size fragile?"
+      ]
+    },
+    "team_game_four_factors_2026.csv": {
+      "grain": "one row per team-game",
+      "keys": [
+        "game_id",
+        "team_abbreviation"
+      ],
+      "recommended_questions": [
+        "Which four-factor edges explain each team's grade?",
+        "Which defenses suppress opponent eFG and free throws?"
+      ]
+    }
+  },
+  "purpose": "EDA-ready dataset manifest for WNBA midseason team grades.",
+  "row_counts": {
+    "bench_player_game_2026.csv": 1476,
+    "bench_team_game_2026.csv": 300,
+    "bench_team_summary_2026.csv": 15,
+    "clutch_team_game_2026.csv": 138,
+    "eda_manifest_2026.json": 1,
+    "eda_prompt_2026.md": 5,
+    "player_fit_profiles_2026.csv": 210,
+    "player_midseason_impact_2026.csv": 94,
+    "rapm_player_2026.csv": 192,
+    "team_game_four_factors_2026.csv": 300,
+    "team_grade_panel_2026.csv": 15
+  }
+}
