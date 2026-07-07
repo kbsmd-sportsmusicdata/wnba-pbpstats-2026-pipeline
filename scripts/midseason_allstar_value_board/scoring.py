@@ -8,7 +8,9 @@ import pandas as pd
 from .candidate_pool import safe_divide
 
 
-def percentile_score(series: pd.Series, *, higher_is_better: bool = True) -> pd.Series:
+def percentile_score(series: pd.Series | None, *, higher_is_better: bool = True) -> pd.Series:
+    if series is None:
+        return pd.Series(dtype=float)
     values = pd.to_numeric(series, errors="coerce")
     if not higher_is_better:
         values = -values
