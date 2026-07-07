@@ -15,12 +15,12 @@ Data through: 2026-07-07
 | Rank | Player | Team | Score | Archetype |
 | ---: | --- | --- | ---: | --- |
 | 1 | Natasha Howard | MIN | 74.7 | Efficient Interior Anchor |
-| 2 | Olivia Miles | MIN | 74.0 | Primary Engine |
-| 3 | Nia Coffey | MIN | 72.6 | Shot-Making Wing |
-| 4 | A'ja Wilson | LVA | 72.5 | Defense/Glass Value |
-| 5 | Veronica Burton | GSV | 70.2 | Rising Sample Watch |
-| 6 | Han Xu | NYL | 69.6 | Shot-Making Wing |
-| 7 | Jonquel Jones | NYL | 68.9 | Shot-Making Wing |
-| 8 | Rhyne Howard | ATL | 68.1 | Spacing Guard/Wing |
-| 9 | Gabby Williams | GSV | 67.8 | Spacing Guard/Wing |
-| 10 | Courtney Vandersloot | CHI | 67.4 | Rim-Pressure Finisher |
+| 2 | A'ja Wilson | LVA | 72.5 | Defense/Glass Value |
+| 3 | Gabby Williams | GSV | 67.8 | Spacing Guard/Wing |
+| 4 | Jessica Shepard | DAL | 67.1 | Efficient Interior Anchor |
+| 5 | Breanna Stewart | NYL | 67.1 | Defense/Glass Value |
+| 6 | NaLyssa Smith | LVA | 65.5 | Rim-Pressure Finisher |
+| 7 | Kamilla Cardoso | CHI | 63.9 | Efficient Interior Anchor |
+| 8 | Alyssa Thomas | PHX | 57.8 | High-Leverage Connector |
+| 9 | Flau'jae Johnson | SEA | 54.6 | High-Leverage Connector |
+| 10 | Skylar Diggins | CHI | 53.8 | High-Leverage Connector |

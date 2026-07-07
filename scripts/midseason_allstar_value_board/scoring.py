@@ -185,6 +185,9 @@ def build_value_board(metric_panel: pd.DataFrame, weights: Dict[str, float]) -> 
         sum_weights += df[score_col].notna() * weight
     df["allstar_value_score"] = safe_divide(weighted_sum, sum_weights)
 
+    if "eligible_flag" in df.columns:
+        df = df[df["eligible_flag"].fillna(False).astype(bool)].copy()
+
     df = df.sort_values("allstar_value_score", ascending=False).reset_index(drop=True)
     df["overall_rank"] = np.arange(1, len(df) + 1)
     df["team_rank"] = df.groupby("team_abbreviation")["allstar_value_score"].rank(ascending=False, method="first").astype(int)
@@ -198,4 +201,3 @@ def build_value_board(metric_panel: pd.DataFrame, weights: Dict[str, float]) -> 
         axis=1,
     )
     return df
-

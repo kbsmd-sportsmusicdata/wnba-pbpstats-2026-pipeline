@@ -284,15 +284,22 @@ class MidseasonAllStarValueBoardTest(unittest.TestCase):
                 self.assertTrue((out_root / relative).exists(), relative)
 
             board = pd.read_csv(out_root / "data/processed/allstar_value_board_2026.csv")
-            self.assertEqual(board.iloc[0]["player_name"], "Alpha Star")
+            self.assertEqual(list(board["player_name"]), ["Alpha Star"])
+            self.assertTrue(board["eligible_flag"].all())
             self.assertIn("allstar_value_score", board.columns)
-            self.assertGreater(board.iloc[0]["allstar_value_score"], board.iloc[-1]["allstar_value_score"])
 
             pool = pd.read_csv(out_root / "data/processed/candidate_pool_2026.csv")
+            self.assertEqual(len(pool), 3)
             tiers = dict(zip(pool["player_name"], pool["candidate_tier"]))
             self.assertEqual(tiers["Alpha Star"], "Core Candidate")
             self.assertEqual(tiers["Beta Watch"], "Watchlist")
             self.assertEqual(tiers["Gamma Reserve"], "Ineligible")
+
+            metric_panel = pd.read_csv(out_root / "data/processed/player_metric_panel_2026.csv")
+            self.assertEqual(len(metric_panel), 3)
+
+            social = pd.read_csv(out_root / "data/viz/social_card_players_2026.csv")
+            self.assertEqual(list(social["player_name"]), ["Alpha Star"])
 
             archetypes = pd.read_csv(out_root / "data/processed/player_archetypes_2026.csv")
             self.assertIn("Primary Engine", set(archetypes["primary_archetype"]))

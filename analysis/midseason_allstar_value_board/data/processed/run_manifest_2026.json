@@ -2,14 +2,14 @@
   "as_of_date": "2026-07-07",
   "config_hash": "ed0a0c41e7d53dc02347c706a9b66fb08bd0c1e7a116f5ddfc7074d010467faf",
   "config_path": "analysis/midseason_allstar_value_board/config/allstar_value_board_config.json",
-  "generated_at_utc": "2026-07-07T06:10:42+00:00",
+  "generated_at_utc": "2026-07-07T07:19:14+00:00",
   "outputs": {
-    "allstar_value_board_2026.csv": 210,
+    "allstar_value_board_2026.csv": 12,
     "candidate_pool_2026.csv": 210,
     "player_archetypes_2026.csv": 210,
     "player_metric_panel_2026.csv": 210
   },
-  "run_id": "20260707T061042+0000",
+  "run_id": "20260707T071914+0000",
   "season": 2026,
   "source_manifest": {
     "player_box": {

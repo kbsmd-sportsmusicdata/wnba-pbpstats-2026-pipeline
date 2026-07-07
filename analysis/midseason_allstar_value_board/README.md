@@ -56,6 +56,8 @@ analysis/midseason_allstar_value_board/data/processed/player_archetypes_2026.csv
 analysis/midseason_allstar_value_board/data/processed/run_manifest_2026.json
 ```
 
+`candidate_pool_2026.csv` and `player_metric_panel_2026.csv` keep every player for diagnostics. `allstar_value_board_2026.csv` is the public board and includes only rows where `eligible_flag == True`.
+
 Visualization-ready outputs:
 
 ```text
@@ -65,6 +67,8 @@ analysis/midseason_allstar_value_board/data/viz/archetype_scatter_viz_2026.csv
 analysis/midseason_allstar_value_board/data/viz/team_representation_viz_2026.csv
 analysis/midseason_allstar_value_board/data/viz/social_card_players_2026.csv
 ```
+
+The ranked board and social-card datasets inherit the eligible-only public board filter.
 
 Editorial outputs:
 
@@ -78,4 +82,3 @@ analysis/midseason_allstar_value_board/editorial/substack_draft_2026.md
 The manual workflow at `.github/workflows/midseason-allstar-value-board.yml` can run tests and any combination of processed, viz, and editorial stages. It writes a GitHub Step Summary with row counts and the top 10 board.
 
 The workflow does not commit outputs unless `commit_outputs` is set to `true`.
-

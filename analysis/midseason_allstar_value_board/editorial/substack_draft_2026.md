@@ -10,29 +10,29 @@ All-Star Value Score: **74.7**. Archetype: **Efficient Interior Anchor**.
 
 Why the model likes this case: All-Star Case: Core Candidate with 67.9 production and 84.1 impact scores. paint-heavy shot diet with strong rebounding volume.
 
-### 2. Olivia Miles, MIN
-
-All-Star Value Score: **74.0**. Archetype: **Primary Engine**.
-
-Why the model likes this case: All-Star Case: Watchlist with 63.2 production and 81.6 impact scores. watchlist workload keeps the signal promising but not fully eligible; high usage paired with strong playmaking volume.
-
-### 3. Nia Coffey, MIN
-
-All-Star Value Score: **72.6**. Archetype: **Shot-Making Wing**.
-
-Why the model likes this case: All-Star Case: Watchlist with 69.3 production and 74.1 impact scores. watchlist workload keeps the signal promising but not fully eligible; positive shot-making delta with real perimeter volume.
-
-### 4. A'ja Wilson, LVA
+### 2. A'ja Wilson, LVA
 
 All-Star Value Score: **72.5**. Archetype: **Defense/Glass Value**.
 
 Why the model likes this case: All-Star Case: Core Candidate with 73.3 production and 88.9 impact scores. defensive event or rebounding value leads the profile.
 
-### 5. Veronica Burton, GSV
+### 3. Gabby Williams, GSV
 
-All-Star Value Score: **70.2**. Archetype: **Rising Sample Watch**.
+All-Star Value Score: **67.8**. Archetype: **Spacing Guard/Wing**.
 
-Why the model likes this case: All-Star Case: Watchlist with 65.1 production and 80.8 impact scores. watchlist workload keeps the signal promising but not fully eligible.
+Why the model likes this case: All-Star Case: Core Candidate with 66.3 production and 73.5 impact scores. three-point volume is the clearest offensive value signal.
+
+### 4. Jessica Shepard, DAL
+
+All-Star Value Score: **67.1**. Archetype: **Efficient Interior Anchor**.
+
+Why the model likes this case: All-Star Case: Core Candidate with 66.8 production and 43.7 impact scores. paint-heavy shot diet with strong rebounding volume.
+
+### 5. Breanna Stewart, NYL
+
+All-Star Value Score: **67.1**. Archetype: **Defense/Glass Value**.
+
+Why the model likes this case: All-Star Case: Core Candidate with 70.0 production and 74.6 impact scores. defensive event or rebounding value leads the profile.
 
 ## Chart Checklist
 
