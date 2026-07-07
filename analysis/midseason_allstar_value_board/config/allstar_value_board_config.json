@@ -9,7 +9,8 @@
     "min_minutes": 300,
     "watchlist_min_minutes": 180,
     "min_games": 8,
-    "min_team_game_share": 0.45
+    "min_team_game_share": 0.45,
+    "starter_role_start_rate_threshold": 0.5
   },
   "weights": {
     "production": 0.25,
@@ -30,4 +31,3 @@
     "team_season_stats": "team_season_stats_2026.parquet"
   }
 }
-
