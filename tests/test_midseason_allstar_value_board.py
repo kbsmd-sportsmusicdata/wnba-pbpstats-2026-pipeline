@@ -25,7 +25,7 @@ class MidseasonAllStarValueBoardTest(unittest.TestCase):
                 {
                     "entity_id_feature": "1",
                     "entity_name_feature": "Alpha Star",
-                    "team_id": "100",
+                    "team_id": "pbp-atl",
                     "team_abbreviation": "ATL",
                     "games_played": 12,
                     "minutes": 360,
@@ -60,7 +60,7 @@ class MidseasonAllStarValueBoardTest(unittest.TestCase):
                 {
                     "entity_id_feature": "2",
                     "entity_name_feature": "Beta Watch",
-                    "team_id": "100",
+                    "team_id": "pbp-atl",
                     "team_abbreviation": "ATL",
                     "games_played": 9,
                     "minutes": 220,
@@ -95,7 +95,7 @@ class MidseasonAllStarValueBoardTest(unittest.TestCase):
                 {
                     "entity_id_feature": "3",
                     "entity_name_feature": "Gamma Reserve",
-                    "team_id": "200",
+                    "team_id": "pbp-min",
                     "team_abbreviation": "MIN",
                     "games_played": 6,
                     "minutes": 120,
@@ -132,9 +132,9 @@ class MidseasonAllStarValueBoardTest(unittest.TestCase):
         teams = pd.DataFrame(
             [
                 {
-                    "entity_id_feature": "100",
+                    "entity_id_feature": "pbp-atl",
                     "entity_name_feature": "Atlanta Dream",
-                    "team_id": "100",
+                    "team_id": "pbp-atl",
                     "team_abbreviation": "ATL",
                     "games_played": 20,
                     "points": 1700,
@@ -146,9 +146,9 @@ class MidseasonAllStarValueBoardTest(unittest.TestCase):
                     "shotquality_pbp_feature": 0.52,
                 },
                 {
-                    "entity_id_feature": "200",
+                    "entity_id_feature": "pbp-min",
                     "entity_name_feature": "Minnesota Lynx",
-                    "team_id": "200",
+                    "team_id": "pbp-min",
                     "team_abbreviation": "MIN",
                     "games_played": 20,
                     "points": 1800,
@@ -165,10 +165,10 @@ class MidseasonAllStarValueBoardTest(unittest.TestCase):
         teams.to_csv(pbp_root / "features_latest" / "2026" / "team_totals_features_latest.csv", index=False)
 
         player_box_rows = []
-        for player_id, name, position, games, minutes in [
-            ("1", "Alpha Star", "G", 12, 30),
-            ("2", "Beta Watch", "F", 9, 36),
-            ("3", "Gamma Reserve", "G", 6, 20),
+        for player_id, name, position, games, minutes, starts in [
+            ("1", "Alpha Star", "G", 12, 30, 10),
+            ("2", "Beta Watch", "F", 9, 36, 4),
+            ("3", "Gamma Reserve", "G", 6, 20, 1),
         ]:
             for game_num in range(games):
                 player_box_rows.append(
@@ -181,14 +181,45 @@ class MidseasonAllStarValueBoardTest(unittest.TestCase):
                         "team_abbreviation": "ATL" if name != "Gamma Reserve" else "MIN",
                         "game_date": f"2026-07-{game_num + 1:02d}",
                         "minutes": minutes,
+                        "starter": game_num < starts,
                         "did_not_play": False,
                     }
                 )
+        player_box_rows.append(
+            {
+                "game_id": "2-dnp-starter",
+                "athlete_id": "2",
+                "athlete_display_name": "Beta Watch",
+                "athlete_position_abbreviation": "F",
+                "team_id": "100",
+                "team_abbreviation": "ATL",
+                "game_date": "2026-07-15",
+                "minutes": None,
+                "starter": True,
+                "did_not_play": True,
+            }
+        )
         player_box = pd.DataFrame(player_box_rows)
         standings = pd.DataFrame(
             [
-                {"team_id": "100", "team_name": "Dream", "wins": "12", "losses": "8", "win_pct": "0.600", "season": 2026},
-                {"team_id": "200", "team_name": "Lynx", "wins": "15", "losses": "5", "win_pct": "0.750", "season": 2026},
+                {
+                    "team_id": "100",
+                    "team_abbreviation": "ATL",
+                    "team_name": "Dream",
+                    "wins": "12",
+                    "losses": "8",
+                    "win_pct": "0.600",
+                    "season": 2026,
+                },
+                {
+                    "team_id": "200",
+                    "team_abbreviation": "MIN",
+                    "team_name": "Lynx",
+                    "wins": "15",
+                    "losses": "5",
+                    "win_pct": "0.750",
+                    "season": 2026,
+                },
             ]
         )
         season_stats = pd.DataFrame(
@@ -229,6 +260,7 @@ class MidseasonAllStarValueBoardTest(unittest.TestCase):
                 "watchlist_min_minutes": 180,
                 "min_games": 8,
                 "min_team_game_share": 0.45,
+                "starter_role_start_rate_threshold": 0.50,
             },
             "weights": {
                 "production": 0.25,
@@ -296,16 +328,33 @@ class MidseasonAllStarValueBoardTest(unittest.TestCase):
             beta = pool[pool["player_name"] == "Beta Watch"].iloc[0]
             self.assertEqual(beta["box_games_played"], 9)
             self.assertEqual(beta["box_minutes"], 324)
+            self.assertEqual(beta["box_starts"], 4)
+            self.assertAlmostEqual(beta["start_rate"], 4 / 9)
+            self.assertFalse(beta["starter_role_flag"])
             self.assertEqual(beta["pbpstats_minutes"], 220)
             self.assertEqual(beta["eligibility_minutes_source"], "sportsdataverse_player_box")
+            alpha = pool[pool["player_name"] == "Alpha Star"].iloc[0]
+            self.assertEqual(alpha["box_starts"], 10)
+            self.assertAlmostEqual(alpha["start_rate"], 10 / 12)
+            self.assertTrue(alpha["starter_role_flag"])
+            self.assertEqual(alpha["team_win_pct"], 0.6)
 
             metric_panel = pd.read_csv(out_root / "data/processed/player_metric_panel_2026.csv")
             self.assertEqual(len(metric_panel), 3)
             self.assertIn("box_minutes", metric_panel.columns)
+            self.assertIn("box_starts", metric_panel.columns)
+            self.assertIn("start_rate", metric_panel.columns)
+            self.assertIn("starter_role_flag", metric_panel.columns)
             self.assertIn("pbpstats_minutes", metric_panel.columns)
+            self.assertEqual(metric_panel.loc[metric_panel["player_name"] == "Alpha Star", "team_win_pct"].iloc[0], 0.6)
 
             social = pd.read_csv(out_root / "data/viz/social_card_players_2026.csv")
             self.assertEqual(list(social["player_name"]), ["Alpha Star", "Beta Watch"])
+
+            rankings = pd.read_csv(out_root / "data/viz/board_rankings_viz_2026.csv")
+            self.assertIn("box_starts", rankings.columns)
+            self.assertIn("start_rate", rankings.columns)
+            self.assertIn("starter_role_flag", rankings.columns)
 
             archetypes = pd.read_csv(out_root / "data/processed/player_archetypes_2026.csv")
             self.assertIn("Primary Engine", set(archetypes["primary_archetype"]))

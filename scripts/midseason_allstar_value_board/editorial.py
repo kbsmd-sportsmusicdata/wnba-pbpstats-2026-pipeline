@@ -16,6 +16,9 @@ def export_viz_tables(value_board: pd.DataFrame, metric_panel: pd.DataFrame, arc
         "team_abbreviation",
         "position",
         "candidate_tier",
+        "box_starts",
+        "start_rate",
+        "starter_role_flag",
         "allstar_value_score",
         "score_band",
         "production_score",
@@ -170,4 +173,3 @@ def export_editorial_assets(value_board: pd.DataFrame, archetypes: pd.DataFrame,
         "substack_asset_manifest_2026.md": len(manifest_lines),
         "substack_draft_2026.md": len(draft_lines),
     }
-
