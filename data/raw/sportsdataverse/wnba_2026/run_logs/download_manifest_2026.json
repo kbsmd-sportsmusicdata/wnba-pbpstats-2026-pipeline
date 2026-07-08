@@ -1,0 +1,117 @@
+{
+  "file_count": 11,
+  "files": [
+    {
+      "column_count": 64,
+      "filename": "espn_pbp_2026.parquet",
+      "row_count": 65180,
+      "sha256": "b93b22bcc0c5407847b7b28106915d7ef1cc801cc09f2f7381985153f564ea49",
+      "size_note": "~633 KB",
+      "source": "ESPN",
+      "success": true,
+      "url": "https://github.com/sportsdataverse/sportsdataverse-data/releases/download/espn_wnba_pbp/play_by_play_2026.parquet"
+    },
+    {
+      "column_count": 22,
+      "filename": "game_rosters_2026.parquet",
+      "row_count": 3779,
+      "sha256": "cafebdf174d10682901e1566cc2bb9485232c427ad9a5b5e56c4289696a684ef",
+      "size_note": "~32-70 KB",
+      "source": "ESPN",
+      "success": true,
+      "url": "https://github.com/sportsdataverse/sportsdataverse-data/releases/download/espn_wnba_game_rosters/game_rosters_2026.parquet"
+    },
+    {
+      "column_count": 57,
+      "filename": "player_box_2026.parquet",
+      "row_count": 3779,
+      "sha256": "5bde98888586ff3433954ee5d62f7bd66b4d5484e42e13002d89eec2e3e1a1ba",
+      "size_note": "~50-170 KB",
+      "source": "ESPN",
+      "success": true,
+      "url": "https://github.com/sportsdataverse/sportsdataverse-data/releases/download/espn_wnba_player_boxscores/player_box_2026.parquet"
+    },
+    {
+      "column_count": 34,
+      "filename": "player_game_logs_2026.parquet",
+      "row_count": 3099,
+      "sha256": "355c11f8cd611385394fffb4e64c8f66edeb6f236a23afa5a04d9bc584de3f89",
+      "size_note": "~22-126 KB",
+      "source": "WNBA.com",
+      "success": true,
+      "url": "https://github.com/sportsdataverse/sportsdataverse-data/releases/download/wnba_stats_player_game_logs/player_game_logs_2026.parquet"
+    },
+    {
+      "column_count": 16,
+      "filename": "player_season_stats_2026.parquet",
+      "row_count": 8801,
+      "sha256": "678a21e920b312beaa6a67d7251c039dc8c7fd95805f11f1493e359c44d52102",
+      "size_note": "~57-61 KB",
+      "source": "ESPN",
+      "success": true,
+      "url": "https://github.com/sportsdataverse/sportsdataverse-data/releases/download/espn_wnba_player_season_stats/player_season_stats_2026.parquet"
+    },
+    {
+      "column_count": 77,
+      "filename": "schedule_2026.parquet",
+      "row_count": 332,
+      "sha256": "c27caaa3edc9f4a5956a5b8c2a0f1c481d5ed9ac575382a88262f697acd6f93f",
+      "size_note": "~91-97 KB",
+      "source": "ESPN",
+      "success": true,
+      "url": "https://github.com/sportsdataverse/sportsdataverse-data/releases/download/espn_wnba_schedules/wnba_schedule_2026.parquet"
+    },
+    {
+      "column_count": 15,
+      "filename": "shots_2026.parquet",
+      "row_count": 28228,
+      "sha256": "36e5fe9465e32ea8dfee7b6ba427c99ad826a64311f4491e30db30a829871535",
+      "size_note": "~58-463 KB",
+      "source": "ESPN",
+      "success": true,
+      "url": "https://github.com/sportsdataverse/sportsdataverse-data/releases/download/espn_wnba_shots/shots_2026.parquet"
+    },
+    {
+      "column_count": 24,
+      "filename": "standings_2026.parquet",
+      "row_count": 330,
+      "sha256": "6cdab456a64bb30c8cddd1e5c526dccb7f4d2bfaa480bfc5245400bfe84c12d7",
+      "size_note": "~15-16 KB",
+      "source": "ESPN",
+      "success": true,
+      "url": "https://github.com/sportsdataverse/sportsdataverse-data/releases/download/espn_wnba_standings/standings_2026.parquet"
+    },
+    {
+      "column_count": 59,
+      "filename": "team_box_2026.parquet",
+      "row_count": 314,
+      "sha256": "ca8110f4eccce838a2c1cc71d8f8672744166b8f2c61858023b2a59936765e8a",
+      "size_note": "~32-54 KB",
+      "source": "ESPN",
+      "success": true,
+      "url": "https://github.com/sportsdataverse/sportsdataverse-data/releases/download/espn_wnba_team_boxscores/team_box_2026.parquet"
+    },
+    {
+      "column_count": 16,
+      "filename": "team_season_stats_2026.parquet",
+      "row_count": 675,
+      "sha256": "82c2d08e7d8b2f915dd4ef2f5b029d5233e5da9b4582f1ca4bd9d76fb092cc03",
+      "size_note": "~16-18 KB",
+      "source": "ESPN",
+      "success": true,
+      "url": "https://github.com/sportsdataverse/sportsdataverse-data/releases/download/espn_wnba_team_season_stats/team_season_stats_2026.parquet"
+    },
+    {
+      "column_count": 85,
+      "filename": "wnba_pbp_2026.parquet",
+      "row_count": 59187,
+      "sha256": "8927f65dc7a72a1e86d8e9feb2c4146b4ce1a40bd099cb3415507b1c0b20c86a",
+      "size_note": "~367 KB",
+      "source": "WNBA.com",
+      "success": true,
+      "url": "https://github.com/sportsdataverse/sportsdataverse-data/releases/download/wnba_stats_pbp/play_by_play_2026.parquet"
+    }
+  ],
+  "output_dir": "data/raw/sportsdataverse/wnba_2026",
+  "season": "2026"
+}

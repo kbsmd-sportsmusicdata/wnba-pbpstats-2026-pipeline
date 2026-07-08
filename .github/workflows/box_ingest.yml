@@ -1,0 +1,101 @@
+name: WNBA Box Score Ingest
+
+on:
+  workflow_dispatch:
+    inputs:
+
+      # ── Tier 1: Core box scores (always runs) ──────────────────────────────
+      # team_box and player_box are always downloaded — no toggle needed.
+
+      # ── Tier 2: Reference files ────────────────────────────────────────────
+      include_rosters:
+        description: "Download rosters reference file"
+        required: false
+        default: "false"
+        type: choice
+        options:
+          - "false"
+          - "true"
+
+      include_schedule:
+        description: "Download schedule reference file"
+        required: false
+        default: "false"
+        type: choice
+        options:
+          - "false"
+          - "true"
+
+      include_standings:
+        description: "Download standings reference file"
+        required: false
+        default: "false"
+        type: choice
+        options:
+          - "false"
+          - "true"
+
+      # ── Tier 3: Validation ─────────────────────────────────────────────────
+      skip_validation:
+        description: "Skip post-download validation checks"
+        required: false
+        default: "false"
+        type: choice
+        options:
+          - "false"
+          - "true"
+
+      output_dir:
+        description: "Output directory for raw files (default: data/raw)"
+        required: false
+        default: "data/raw"
+        type: string
+
+jobs:
+  ingest:
+    name: Run Box Score Ingest
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Build ingest flags
+        id: flags
+        run: |
+          FLAGS=""
+          [[ "${{ github.event.inputs.include_rosters }}"   == "true" ]] && FLAGS="$FLAGS --rosters"
+          [[ "${{ github.event.inputs.include_schedule }}"  == "true" ]] && FLAGS="$FLAGS --schedule"
+          [[ "${{ github.event.inputs.include_standings }}" == "true" ]] && FLAGS="$FLAGS --standings"
+          [[ "${{ github.event.inputs.skip_validation }}"   == "true" ]] && FLAGS="$FLAGS --skip-validation"
+          FLAGS="$FLAGS --output-dir ${{ github.event.inputs.output_dir }}"
+          echo "flags=$FLAGS" >> $GITHUB_OUTPUT
+          echo "Resolved flags: $FLAGS"
+
+      - name: Run box_ingest.py
+        run: |
+          python 01_ingest/box_ingest.py ${{ steps.flags.outputs.flags }}
+
+      - name: Upload raw parquet artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: wnba-raw-box-${{ github.run_id }}
+          path: ${{ github.event.inputs.output_dir }}/
+          retention-days: 7
+
+      - name: Upload ingest logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ingest-logs-${{ github.run_id }}
+          path: logs/
+          retention-days: 14
