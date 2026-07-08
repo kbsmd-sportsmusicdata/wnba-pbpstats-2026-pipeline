@@ -1,0 +1,67 @@
+{
+  "run_id": "20260708T155612Z",
+  "started_at_utc": "2026-07-08T15:56:12+00:00",
+  "season": "2026",
+  "season_type": "Regular Season",
+  "raw": [
+    {
+      "dataset": "teams_directory",
+      "api_rows": 15,
+      "master_before": 45,
+      "master_added": 0,
+      "master_after": 45
+    },
+    {
+      "dataset": "players_directory",
+      "api_rows": 732,
+      "master_before": 2212,
+      "master_added": 0,
+      "master_after": 2212
+    },
+    {
+      "dataset": "player_totals",
+      "api_rows": 211,
+      "master_before": 2427,
+      "master_added": 43,
+      "master_after": 2470
+    },
+    {
+      "dataset": "team_totals",
+      "api_rows": 15,
+      "master_before": 204,
+      "master_added": 4,
+      "master_after": 208
+    }
+  ],
+  "clean": [
+    {
+      "dataset": "teams_directory",
+      "clean_rows": 15,
+      "master_before": 45,
+      "master_added": 0,
+      "master_after": 45
+    },
+    {
+      "dataset": "players_directory",
+      "clean_rows": 732,
+      "master_before": 2212,
+      "master_added": 0,
+      "master_after": 2212
+    },
+    {
+      "dataset": "player_totals",
+      "clean_rows": 211,
+      "master_before": 2930,
+      "master_added": 43,
+      "master_after": 2973
+    },
+    {
+      "dataset": "team_totals",
+      "clean_rows": 15,
+      "master_before": 258,
+      "master_added": 4,
+      "master_after": 262
+    }
+  ],
+  "finished_at_utc": "2026-07-08T15:56:17+00:00"
+}
