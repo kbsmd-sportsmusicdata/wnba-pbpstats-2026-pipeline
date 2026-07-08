@@ -105,9 +105,9 @@ def build_outputs(config: Dict, stage: str) -> Dict:
         row_counts["rapm_player_2026.csv"] = _write(paths["rapm_player"], rapm)
 
     if stage in {"core", "bench", "all"}:
-        four = _read_optional(paths["four_factors"])
-        bench_summary = _read_optional(paths["bench_team_summary"])
-        team_grade = build_team_grade_panel(four, bench_summary, sources.team_features, sources.standings)
+        four_df = four if stage in {"core", "all"} else _read_optional(paths["four_factors"])
+        bench_summary_df = bench_summary if stage in {"bench", "all"} else _read_optional(paths["bench_team_summary"])
+        team_grade = build_team_grade_panel(four_df, bench_summary_df, sources.team_features, sources.standings)
         row_counts["team_grade_panel_2026.csv"] = _write(paths["team_grade_panel"], team_grade)
 
     if stage in {"eda", "all"}:
