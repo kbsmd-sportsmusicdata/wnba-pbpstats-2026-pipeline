@@ -9,6 +9,9 @@ import pandas as pd
 
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "scripts"))
+
+from midseason_team_grades.metrics import build_rapm_player  # noqa: E402
 
 
 class MidseasonTeamGradesTest(unittest.TestCase):
@@ -362,6 +365,90 @@ class MidseasonTeamGradesTest(unittest.TestCase):
             manifest = json.loads((processed / "run_manifest_2026.json").read_text(encoding="utf-8"))
             self.assertEqual(manifest["metric_status"]["vorp_status"], "unavailable_exact_formula_required")
             self.assertEqual(manifest["metric_status"]["rapm_status"], "skipped_insufficient_scoring_events")
+
+    def test_clutch_stage_does_not_rewrite_team_grade_panel(self):
+        with tempfile.TemporaryDirectory() as raw_tmpdir:
+            tmpdir = Path(raw_tmpdir)
+            config_path = self._write_fixture_sources(tmpdir)
+
+            all_result = subprocess.run(
+                [
+                    sys.executable,
+                    str(ROOT / "scripts" / "build_midseason_team_grades.py"),
+                    "--config",
+                    str(config_path),
+                    "--stage",
+                    "all",
+                ],
+                cwd=ROOT,
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+            self.assertEqual(all_result.returncode, 0, msg=all_result.stderr)
+
+            panel_path = tmpdir / "analysis" / "midseason_team_grades" / "data" / "processed" / "team_grade_panel_2026.csv"
+            sentinel = "team_abbreviation,team_grade_score\nKEEP,99\n"
+            panel_path.write_text(sentinel, encoding="utf-8")
+
+            clutch_result = subprocess.run(
+                [
+                    sys.executable,
+                    str(ROOT / "scripts" / "build_midseason_team_grades.py"),
+                    "--config",
+                    str(config_path),
+                    "--stage",
+                    "clutch",
+                ],
+                cwd=ROOT,
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+
+            self.assertEqual(clutch_result.returncode, 0, msg=clutch_result.stderr)
+            self.assertEqual(panel_path.read_text(encoding="utf-8"), sentinel)
+
+    def test_rapm_handles_missing_garbage_time_column(self):
+        pbp = pd.DataFrame(
+            [
+                {
+                    "score_value": 2,
+                    "player1_team_abbreviation": "ATL",
+                    "team_home": "ATL",
+                    "home_player1": "1",
+                    "home_player2": "2",
+                    "home_player3": "3",
+                    "home_player4": "4",
+                    "home_player5": "5",
+                    "away_player1": "6",
+                    "away_player2": "7",
+                    "away_player3": "8",
+                    "away_player4": "9",
+                    "away_player5": "10",
+                },
+                {
+                    "score_value": 3,
+                    "player1_team_abbreviation": "ATL",
+                    "team_home": "ATL",
+                    "home_player1": "1",
+                    "home_player2": "2",
+                    "home_player3": "3",
+                    "home_player4": "4",
+                    "home_player5": "5",
+                    "away_player1": "6",
+                    "away_player2": "7",
+                    "away_player3": "8",
+                    "away_player4": "9",
+                    "away_player5": "10",
+                },
+            ]
+        )
+
+        rapm, status = build_rapm_player(pbp, {"rapm": {"min_scoring_events": 1, "ridge_alpha": 10.0}})
+
+        self.assertEqual(status, "rapm_style_scoring_event_ridge")
+        self.assertFalse(rapm.empty)
 
 
 if __name__ == "__main__":

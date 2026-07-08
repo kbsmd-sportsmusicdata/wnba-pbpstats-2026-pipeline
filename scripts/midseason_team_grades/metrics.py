@@ -300,6 +300,13 @@ def build_clutch_team_game(espn_pbp: pd.DataFrame) -> pd.DataFrame:
         & (pbp.get("scoring_play", True) == True)  # noqa: E712
         & (pd.to_numeric(pbp.get("score_value"), errors="coerce") > 0)
     ].copy()
+    clutch["score_value"] = pd.to_numeric(clutch["score_value"], errors="coerce").fillna(0)
+    clutch["team_id_key"] = clutch["team_id"].map(id_key)
+    clutch_points = (
+        clutch.groupby(["game_id", "team_id_key"], dropna=False)["score_value"]
+        .sum()
+        .to_dict()
+    )
     games = pbp.drop_duplicates("game_id")[
         ["game_id", "game_date", "home_team_id", "home_team_abbrev", "away_team_id", "away_team_abbrev"]
     ]
@@ -309,10 +316,9 @@ def build_clutch_team_game(espn_pbp: pd.DataFrame) -> pd.DataFrame:
             team_id = id_key(game[f"{side}_team_id"])
             team = game[f"{side}_team_abbrev"]
             opp = game["away_team_abbrev"] if side == "home" else game["home_team_abbrev"]
-            scoring_ids = clutch["team_id"].map(id_key)
-            pts = clutch[(clutch["game_id"] == game["game_id"]) & (scoring_ids == team_id)]["score_value"].sum()
+            pts = clutch_points.get((game["game_id"], team_id), 0)
             opp_id = id_key(game["away_team_id"] if side == "home" else game["home_team_id"])
-            opp_pts = clutch[(clutch["game_id"] == game["game_id"]) & (scoring_ids == opp_id)]["score_value"].sum()
+            opp_pts = clutch_points.get((game["game_id"], opp_id), 0)
             rows.append(
                 {
                     "game_id": game["game_id"],
@@ -455,7 +461,11 @@ def build_rapm_player(wnba_stats_pbp: pd.DataFrame, config: Dict) -> Tuple[pd.Da
     if pbp["rapm_event_points"].notna().sum() == 0 and "shot_value" in pbp.columns:
         made = pbp.get("shot_result", pd.Series("", index=pbp.index)).astype(str).str.lower().eq("made")
         pbp["rapm_event_points"] = np.where(made, pd.to_numeric(pbp["shot_value"], errors="coerce"), np.nan)
-    rows = pbp[(pbp["rapm_event_points"] > 0) & (pd.to_numeric(pbp.get("garbage_time", 0), errors="coerce").fillna(0) != 1)].copy()
+    if "garbage_time" in pbp.columns:
+        garbage_time = pd.to_numeric(pbp["garbage_time"], errors="coerce").fillna(0)
+    else:
+        garbage_time = pd.Series(0, index=pbp.index)
+    rows = pbp[(pbp["rapm_event_points"] > 0) & (garbage_time != 1)].copy()
     lineup_cols = [f"home_player{i}" for i in range(1, 6)] + [f"away_player{i}" for i in range(1, 6)]
     rows = rows.dropna(subset=lineup_cols)
     min_events = int(config.get("rapm", {}).get("min_scoring_events", 100))

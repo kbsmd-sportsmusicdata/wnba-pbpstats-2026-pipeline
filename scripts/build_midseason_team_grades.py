@@ -104,10 +104,11 @@ def build_outputs(config: Dict, stage: str) -> Dict:
         metric_status["rapm_status"] = rapm_status
         row_counts["rapm_player_2026.csv"] = _write(paths["rapm_player"], rapm)
 
-    four = _read_optional(paths["four_factors"])
-    bench_summary = _read_optional(paths["bench_team_summary"])
-    team_grade = build_team_grade_panel(four, bench_summary, sources.team_features, sources.standings)
-    row_counts["team_grade_panel_2026.csv"] = _write(paths["team_grade_panel"], team_grade)
+    if stage in {"core", "bench", "all"}:
+        four = _read_optional(paths["four_factors"])
+        bench_summary = _read_optional(paths["bench_team_summary"])
+        team_grade = build_team_grade_panel(four, bench_summary, sources.team_features, sources.standings)
+        row_counts["team_grade_panel_2026.csv"] = _write(paths["team_grade_panel"], team_grade)
 
     if stage in {"eda", "all"}:
         eda_counts = export_eda_bundle(output_root, row_counts)
