@@ -182,7 +182,7 @@ def build_team_context(team_features: pd.DataFrame, standings: pd.DataFrame) -> 
         team_context = team_context.merge(stand_by_id, on="team_id_key", how="left")
         missing_win_pct = team_context["team_win_pct"].isna()
         if missing_win_pct.any() and "team_key" in team_context.columns:
-            stand_by_key = stand[stand["team_key"].astype(bool)][["team_key", "team_win_pct"]].drop_duplicates("team_key")
+            stand_by_key = stand[stand["team_key"] != ""][["team_key", "team_win_pct"]].drop_duplicates("team_key")
             team_context = team_context.merge(stand_by_key, on="team_key", how="left", suffixes=("", "_by_team_key"))
             team_context["team_win_pct"] = team_context["team_win_pct"].fillna(team_context["team_win_pct_by_team_key"])
             team_context = team_context.drop(columns=["team_win_pct_by_team_key"])
