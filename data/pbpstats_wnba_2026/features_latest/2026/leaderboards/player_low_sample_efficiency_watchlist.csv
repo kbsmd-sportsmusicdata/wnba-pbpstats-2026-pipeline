@@ -1,5 +1,5 @@
 season,entity_id_feature,entity_name_feature,sample_size_flag,detected_zone_fga_total,efg_pct_feature,ts_pct_feature,shotquality_pbp_feature,shot_making_over_shotquality_pbp,specialized_shooter_label,shot_diet_profile_label
-2026,1643506,Teja Oblak,Low,85.0,0.5882352941176471,0.6055555555555555,0.488302380952381,0.09993291316526609,Low-Volume Efficient Shooter,Balanced Shot Diet
+2026,1643506,Teja Oblak,Low,97.0,0.5618556701030928,0.5784313725490197,0.4881401041666666,0.0737155659364262,Low-Volume Efficient Shooter,Balanced Shot Diet
 2026,1642777,Monique Akoa Makani,Low,94.0,0.5904255319148937,0.6478260869565218,0.4982739361702127,0.09215159574468096,Low-Volume Efficient Shooter,Diversified Shot Profile
 2026,1627700,Julie Allemand,Low,85.0,0.6529411764705882,0.6629213483146067,0.5431223529411765,0.10981882352941175,Low-Volume Efficient Shooter,Modern Shot Diet
 2026,1643445,Kiki Rice,Low,75.0,0.5933333333333334,0.6827956989247311,0.5612736486486487,0.032059684684684675,Low-Volume Efficient Shooter,Modern Shot Diet
