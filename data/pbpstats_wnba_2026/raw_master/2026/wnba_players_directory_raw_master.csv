@@ -2211,3 +2211,4 @@ PlayerId,PlayerName,_dataset,_league,_season,_season_type,_source_endpoint,_sour
 1641657,Dorka Juhasz,players_directory,wnba,,,/get-all-players-for-league/wnba,{},20260614T153113Z,2026-06-14T15:31:13+00:00,08ade05e9f2439a1f2b9e8bc98a0cfe9ea295b4c5d0266746f5e59a91fb7dcc0,"[""players""]"
 1643453,Grace Vanslooten,players_directory,wnba,,,/get-all-players-for-league/wnba,{},20260619T162636Z,2026-06-19T16:26:37+00:00,e79cde3b60ed4b3f908a1fad366ea1e3ebe59855c6b303e1a9b8ca4670865da5,"[""players""]"
 1643706,Ornella Bankole,players_directory,wnba,,,/get-all-players-for-league/wnba,{},20260706T164636Z,2026-07-06T16:46:36+00:00,721e0fa6ca3699cc7b156a3a26b59381d484a0e568de87d0f9a47c759290aea0,"[""players""]"
+1643439,Tonie Morgan,players_directory,wnba,,,/get-all-players-for-league/wnba,{},20260718T144253Z,2026-07-18T14:42:53+00:00,60e8b77375d6769c1c003fec16c420bc8fb5fdcb9e97b28f2f1f95e28aa99885,"[""players""]"
