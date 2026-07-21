@@ -34,8 +34,8 @@
     {
       "column_count": 34,
       "filename": "player_game_logs_2026.parquet",
-      "row_count": 3817,
-      "sha256": "33bd73b5b7ffd85052cd4cc060449a56b04e90150859e1727d7b8ca89c35fe4a",
+      "row_count": 3894,
+      "sha256": "387689766d614b5f9ecbb936416fefcc275a22b0071db6238a64de7d402747bb",
       "size_note": "~22-126 KB",
       "source": "WNBA.com",
       "success": true,
