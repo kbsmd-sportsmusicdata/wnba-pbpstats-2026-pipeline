@@ -44,8 +44,8 @@
     {
       "column_count": 16,
       "filename": "player_season_stats_2026.parquet",
-      "row_count": 8801,
-      "sha256": "5fbe612707b41962b43c20cb42a3232bc7aaf38b687bc91ce906c3ffded7dd12",
+      "row_count": 9583,
+      "sha256": "553f35158a89add92fc6a248ac3322820627537c0606d1b58128eec86438a82a",
       "size_note": "~57-61 KB",
       "source": "ESPN",
       "success": true,
