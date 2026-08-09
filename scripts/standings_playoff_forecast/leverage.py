@@ -180,9 +180,13 @@ def _validate_inputs(
     standings["current_rank"] = ranks_numeric.astype(int)
     for column in ("wins", "losses"):
         values = pd.to_numeric(standings[column], errors="coerce")
-        if not np.isfinite(values.to_numpy(dtype=float)).all() or values.lt(0).any():
+        if (
+            not np.isfinite(values.to_numpy(dtype=float)).all()
+            or values.lt(0).any()
+            or values.mod(1).ne(0).any()
+        ):
             raise ValueError(f"current_standings contains invalid {column}")
-        standings[column] = values
+        standings[column] = values.astype(int)
     return remaining, standings, team_ids, game_ids
 
 
@@ -282,8 +286,10 @@ def calculate_game_leverage(
         rank_pair = {int(home_standing.current_rank), int(away_standing.current_rank)}
         direct_h2h = bool(
             h2h_configured
-            and home_standing.wins == away_standing.wins
-            and home_standing.losses == away_standing.losses
+            and int(home_standing.wins)
+            * int(away_standing.wins + away_standing.losses)
+            == int(away_standing.wins)
+            * int(home_standing.wins + home_standing.losses)
         )
         cutline = rank_pair == {playoff_limit, playoff_limit + 1}
         top4 = top4_limit < cfg.team_count and rank_pair == {top4_limit, top4_limit + 1}

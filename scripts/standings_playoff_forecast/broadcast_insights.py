@@ -182,11 +182,34 @@ def _validate_inputs(
         raise ValueError("game_leverage scores must be within [0, 100]")
     if not leverage["leverage_label"].isin(("Critical", "High", "Moderate", "Low")).all():
         raise ValueError("game_leverage contains an invalid label")
+    expected_labels = leverage["leverage_score"].map(_leverage_label)
+    if not leverage["leverage_label"].eq(expected_labels).all():
+        raise ValueError("game_leverage score-label threshold mismatch")
+    flag_columns = (
+        "direct_h2h_tiebreak_flag",
+        "cutline_matchup_flag",
+        "top4_matchup_flag",
+    )
+    strict_boolean = leverage[list(flag_columns)].map(
+        lambda value: isinstance(value, (bool, np.bool_))
+    )
+    if not strict_boolean.all().all():
+        raise ValueError("game_leverage flags must contain strict boolean values")
     return forecast, standings, strength, remaining, leverage
 
 
 def _pct(value: float) -> str:
     return f"{100 * value:.1f}%"
+
+
+def _leverage_label(score: float) -> str:
+    if score >= 85:
+        return "Critical"
+    if score >= 65:
+        return "High"
+    if score >= 35:
+        return "Moderate"
+    return "Low"
 
 
 def _story(
@@ -466,15 +489,31 @@ def build_broadcast_insights(
             )
         )
     else:
-        schedule_game = _game_extreme(leverage, largest=False)
-        if schedule_game is None:
+        if high_game is None:
             schedule_name = "League schedule"
             schedule_data = "No remaining games; the configured schedule is complete."
             schedule_quick = "Use the completed-schedule state instead of unavailable history."
+            schedule_sources = "scored_remaining.game_id"
+        elif len(leverage) == 1:
+            schedule_name = "League schedule"
+            schedule_data = (
+                "Remaining schedule contains 1 game; no distinct second matchup "
+                "is available."
+            )
+            schedule_quick = (
+                "The sole remaining matchup already owns the high-leverage slot; "
+                "this story reports schedule concentration."
+            )
+            schedule_sources = "scored_remaining.game_id"
         else:
+            schedule_game = _game_extreme(
+                leverage.loc[leverage["game_id"].ne(high_game.game_id)],
+                largest=False,
+            )
             schedule_name = f"{schedule_game.home_id} / {schedule_game.away_id}"
             schedule_data = f"{schedule_game.game_id}: {schedule_game.home_id} vs {schedule_game.away_id}, leverage {schedule_game.leverage_score:.1f}"
             schedule_quick = f"{schedule_game.game_id} is a second, distinct schedule watch after the top leverage game."
+            schedule_sources = "game_leverage.game_id, game_leverage.home_id, game_leverage.away_id, game_leverage.leverage_score"
         stories.append(
             _story(
                 category="schedule_watch",
@@ -483,7 +522,7 @@ def build_broadcast_insights(
                 quick_read=schedule_quick,
                 focus="the secondary schedule or tiebreak angle",
                 why="Unavailable historical context is replaced with a supplied current-schedule story.",
-                sources="game_leverage.game_id, game_leverage.home_id, game_leverage.away_id, game_leverage.leverage_score",
+                sources=schedule_sources,
             )
         )
 

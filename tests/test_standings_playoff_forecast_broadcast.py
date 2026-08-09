@@ -207,6 +207,26 @@ class GameLeverageTest(unittest.TestCase):
                 _cfg(),
             )
 
+    def test_direct_h2h_flag_uses_exact_win_percentage_not_identical_record(self) -> None:
+        """Catches unflagging teams Task 5 places in the same record group."""
+        from standings_playoff_forecast.leverage import calculate_game_leverage
+
+        tied = _standings()
+        tied.loc[tied["team_id"].eq("A"), ["wins", "losses"]] = [10, 5]
+        tied.loc[tied["team_id"].eq("B"), ["wins", "losses"]] = [12, 6]
+        tied_result = calculate_game_leverage(
+            _remaining(), _simulation_result(), tied, _cfg()
+        ).set_index("game_id")
+
+        not_tied = tied.copy()
+        not_tied.loc[not_tied["team_id"].eq("B"), ["wins", "losses"]] = [12, 7]
+        untied_result = calculate_game_leverage(
+            _remaining(), _simulation_result(), not_tied, _cfg()
+        ).set_index("game_id")
+
+        self.assertTrue(tied_result.loc["g1", "direct_h2h_tiebreak_flag"])
+        self.assertFalse(untied_result.loc["g1", "direct_h2h_tiebreak_flag"])
+
 
 class BroadcastInsightsTest(unittest.TestCase):
     def _leverage(self) -> pd.DataFrame:
@@ -315,6 +335,82 @@ class BroadcastInsightsTest(unittest.TestCase):
                 self._leverage(),
                 _cfg(),
             )
+
+    def test_one_game_history_fallback_is_a_truthful_schedule_summary(self) -> None:
+        """Catches repeating the sole high-leverage game as a claimed second watch."""
+        from standings_playoff_forecast.broadcast_insights import build_broadcast_insights
+
+        remaining = _remaining().iloc[[0]].reset_index(drop=True)
+        leverage = self._leverage().iloc[[0]].reset_index(drop=True)
+        insights = build_broadcast_insights(
+            _forecast_summary(),
+            _standings(),
+            _strength(),
+            remaining,
+            leverage,
+            _cfg(),
+            historical_context=pd.DataFrame(),
+        )
+
+        high = insights.loc[insights["priority"].eq(9)].iloc[0]
+        fallback = insights.loc[insights["priority"].eq(10)].iloc[0]
+        self.assertEqual(high["category"], "high_leverage_game")
+        self.assertEqual(fallback["category"], "schedule_watch")
+        self.assertEqual(fallback["team_or_race"], "League schedule")
+        self.assertEqual(
+            fallback["data_point"],
+            "Remaining schedule contains 1 game; no distinct second matchup is available.",
+        )
+        self.assertEqual(fallback["source_fields"], "scored_remaining.game_id")
+        self.assertNotIn("g1:", fallback["data_point"])
+        self.assertNotIn("second, distinct schedule watch", fallback["quick_read_snippet"])
+
+    def test_rejects_score_label_mismatch_at_every_threshold_boundary(self) -> None:
+        """Catches semantically invalid labels despite valid score and vocabulary."""
+        from standings_playoff_forecast.broadcast_insights import build_broadcast_insights
+
+        invalid_pairs = (
+            (34.999, "Moderate"),
+            (35.0, "Low"),
+            (64.999, "High"),
+            (65.0, "Moderate"),
+            (84.999, "Critical"),
+            (85.0, "High"),
+        )
+        for score, label in invalid_pairs:
+            with self.subTest(score=score, label=label):
+                leverage = self._leverage()
+                leverage.loc[0, ["leverage_score", "leverage_label"]] = [score, label]
+                with self.assertRaisesRegex(ValueError, "score-label"):
+                    build_broadcast_insights(
+                        _forecast_summary(),
+                        _standings(),
+                        _strength(),
+                        _remaining(),
+                        leverage,
+                        _cfg(),
+                    )
+
+    def test_rejects_non_boolean_leverage_flags(self) -> None:
+        """Catches truthy strings and numeric stand-ins creating unsupported stories."""
+        from standings_playoff_forecast.broadcast_insights import build_broadcast_insights
+
+        for invalid in ("False", 0, 1):
+            with self.subTest(invalid=invalid):
+                leverage = self._leverage()
+                leverage["direct_h2h_tiebreak_flag"] = leverage[
+                    "direct_h2h_tiebreak_flag"
+                ].astype(object)
+                leverage.loc[0, "direct_h2h_tiebreak_flag"] = invalid
+                with self.assertRaisesRegex(ValueError, "boolean"):
+                    build_broadcast_insights(
+                        _forecast_summary(),
+                        _standings(),
+                        _strength(),
+                        _remaining(),
+                        leverage,
+                        _cfg(),
+                    )
 
 
 if __name__ == "__main__":
