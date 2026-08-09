@@ -544,7 +544,7 @@ class OrchestratorIntegrationTests(unittest.TestCase):
             with self.assertRaisesRegex(FileNotFoundError, "missing schedule"):
                 builder.run_forecast(options())
 
-    def test_render_all_registers_excel_then_names_remaining_renderers(self):
+    def test_render_all_registers_excel_and_markdown_then_names_remaining_renderers(self):
         cfg = season_config(Path("/tmp"))
         result = SimpleNamespace(
             output_path=Path("/tmp/output/data/processed/season=2026/latest"),
@@ -555,10 +555,11 @@ class OrchestratorIntegrationTests(unittest.TestCase):
             patch.object(builder, "load_model_config", return_value=model_config()),
             patch.object(builder, "_run_pipeline", return_value=result),
             patch.object(builder, "render_excel", return_value=Path("/tmp/forecast.xlsx")) as excel,
+            patch.object(builder, "render_markdown", return_value=Path("/tmp/brief.md")) as markdown,
         ):
             with self.assertRaisesRegex(
                 NotImplementedError,
-                "Markdown, stat-pack, and dashboard renderers",
+                "stat-pack and dashboard renderers",
             ):
                 builder.run_forecast(options(render="all"))
 
@@ -567,8 +568,9 @@ class OrchestratorIntegrationTests(unittest.TestCase):
             result.stage_artifacts["team_games"],
             cfg=cfg,
         )
+        markdown.assert_called_once_with(result.output_path, cfg=cfg)
 
-    def test_render_none_never_invokes_excel(self):
+    def test_render_none_never_invokes_excel_or_markdown(self):
         cfg = season_config(Path("/tmp"))
         result = SimpleNamespace()
         with (
@@ -576,9 +578,11 @@ class OrchestratorIntegrationTests(unittest.TestCase):
             patch.object(builder, "load_model_config", return_value=model_config()),
             patch.object(builder, "_run_pipeline", return_value=result),
             patch.object(builder, "render_excel") as excel,
+            patch.object(builder, "render_markdown") as markdown,
         ):
             self.assertIs(builder.run_forecast(options(render="none")), result)
         excel.assert_not_called()
+        markdown.assert_not_called()
 
 
 if __name__ == "__main__":

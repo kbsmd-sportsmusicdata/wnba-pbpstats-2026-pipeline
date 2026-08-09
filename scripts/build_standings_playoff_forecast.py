@@ -34,6 +34,7 @@ from standings_playoff_forecast.matchup_model import score_matchups
 from standings_playoff_forecast.outputs import ForecastOutputBundle, write_output_bundle
 from standings_playoff_forecast.remaining_schedule import build_remaining_schedule
 from standings_playoff_forecast.render_excel import render_excel
+from standings_playoff_forecast.render_markdown import render_markdown
 from standings_playoff_forecast.simulation import simulate_season
 from standings_playoff_forecast.standings import (
     build_current_standings,
@@ -421,9 +422,10 @@ def run_forecast(options: argparse.Namespace) -> OrchestrationResult:
             result.stage_artifacts["team_games"],
             cfg=cfg,
         )
+        render_markdown(result.output_path, cfg=cfg)
         raise NotImplementedError(
-            "Excel was rendered, but Markdown, stat-pack, and dashboard renderers "
-            "are registered in Tasks 14-15; use --render none until then"
+            "Excel and Markdown were rendered, but stat-pack and dashboard renderers "
+            "are registered in Task 15; use --render none until then"
         )
     return result
 
