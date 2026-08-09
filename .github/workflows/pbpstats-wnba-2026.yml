@@ -14,7 +14,7 @@ jobs:
       PBPSTATS_PIPELINE_DATA_ROOT: data/pbpstats_wnba_2026
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Set up Python
         uses: actions/setup-python@v5
