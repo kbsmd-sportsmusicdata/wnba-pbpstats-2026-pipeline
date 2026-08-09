@@ -453,6 +453,41 @@ class SimulationInputValidationTest(unittest.TestCase):
                 seed=1,
             )
 
+    def test_rejects_blank_normalized_game_and_team_identifiers(self) -> None:
+        from standings_playoff_forecast.simulation import simulate_season
+
+        cases = (
+            (
+                pd.DataFrame(_completed_game("   ", "A", "B")),
+                _remaining(),
+                "completed_games contains blank normalized identifiers: game_id",
+            ),
+            (
+                _empty_completed(),
+                _remaining((" \t ", "A", "B", 2.0, 1.0, 0.75)),
+                "scored_remaining contains blank normalized identifiers: game_id",
+            ),
+            (
+                _empty_completed(),
+                _remaining(("g1", "  ", "B", 2.0, 1.0, 0.75)),
+                "scored_remaining contains blank normalized identifiers: home_id",
+            ),
+            (
+                pd.DataFrame(_completed_game("g1", "  ", "B")),
+                _remaining(),
+                "completed_games contains blank normalized identifiers: team_id",
+            ),
+        )
+        for completed, remaining, message in cases:
+            with self.subTest(message=message):
+                with self.assertRaisesRegex(ValueError, message):
+                    simulate_season(
+                        completed,
+                        remaining,
+                        _season_config(simulations=1),
+                        seed=1,
+                    )
+
     def test_rejects_duplicate_or_overlapping_normalized_game_ids(self) -> None:
         from standings_playoff_forecast.simulation import simulate_season
 
@@ -676,6 +711,22 @@ class SimulationInputValidationTest(unittest.TestCase):
             simulate_season(
                 _empty_completed(),
                 _remaining(("g1", "A", "B", 3_000_000_000.0, 0.01, 1.0)),
+                _season_config(simulations=1),
+                seed=1,
+            )
+
+    def test_rejects_int32_minimum_before_reciprocal_negation(self) -> None:
+        from standings_playoff_forecast.simulation import simulate_season
+
+        with self.assertRaisesRegex(
+            ValueError,
+            r"simulated margin must be within \[-2147483647, 2147483647\]",
+        ):
+            simulate_season(
+                _empty_completed(),
+                _remaining(
+                    ("g1", "A", "B", -2_147_483_648.0, 0.01, 0.0)
+                ),
                 _season_config(simulations=1),
                 seed=1,
             )

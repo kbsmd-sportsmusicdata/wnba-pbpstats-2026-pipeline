@@ -62,6 +62,14 @@ def _validate_identifiers(
     identifier_columns = ("game_id", *participant_columns)
     if frame[list(identifier_columns)].isna().any().any():
         raise ValueError(f"{name} contains missing game or team identifiers")
+    blank_columns = [
+        column for column in identifier_columns if frame[column].eq("").any()
+    ]
+    if blank_columns:
+        raise ValueError(
+            f"{name} contains blank normalized identifiers: "
+            + ", ".join(blank_columns)
+        )
     same_team = frame[participant_columns[0]].eq(frame[participant_columns[1]])
     if same_team.any():
         game_id = frame.loc[same_team, "game_id"].iloc[0]
@@ -507,8 +515,12 @@ def simulate_season(
     draw_nonnegative = draws >= 0
     np.rint(draws, out=draws)
     integer_bounds = np.iinfo(np.int32)
-    if np.any(draws < integer_bounds.min) or np.any(draws > integer_bounds.max):
-        raise ValueError("simulated margin exceeds supported integer range")
+    minimum_margin = -integer_bounds.max
+    if np.any(draws < minimum_margin) or np.any(draws > integer_bounds.max):
+        raise ValueError(
+            "simulated margin exceeds supported integer range; simulated margin "
+            f"must be within [{minimum_margin}, {integer_bounds.max}]"
+        )
     simulated_home_margins = draws.astype(np.int32)
     rounded_zero = simulated_home_margins == 0
     simulated_home_margins[rounded_zero] = np.where(
