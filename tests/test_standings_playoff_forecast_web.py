@@ -43,13 +43,30 @@ class _QuietHttpHandler(SimpleHTTPRequestHandler):
         return
 
 
-def _run_dashboard_dom_contract(root: Path) -> str:
-    node_modules = (
-        Path.home()
-        / ".cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules"
+def _find_playwright_node_modules() -> Path:
+    candidates = [
+        Path(entry).expanduser()
+        for entry in os.environ.get("NODE_PATH", "").split(os.pathsep)
+        if entry
+    ]
+    candidates.extend(
+        (
+            ROOT / "node_modules",
+            Path.home()
+            / ".cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules",
+        )
     )
-    if not (node_modules / "playwright-core").exists():
-        raise unittest.SkipTest("bundled playwright-core is required for the DOM contract")
+    candidates.extend(sorted((Path.home() / ".npm/_npx").glob("*/node_modules")))
+    for candidate in candidates:
+        if (candidate / "playwright-core").is_dir():
+            return candidate
+    raise unittest.SkipTest(
+        "playwright-core is unavailable in NODE_PATH, the workspace, or bundled runtimes"
+    )
+
+
+def _run_dashboard_dom_contract(root: Path) -> str:
+    node_modules = _find_playwright_node_modules()
 
     dashboard_root = root / "dashboard"
     index_path = dashboard_root / "index.html"
@@ -166,7 +183,65 @@ const assert = (condition, message) => { if (!condition) throw new Error(message
         thread.join(timeout=2)
 
 
+def _measure_stat_pack_top_band(root: Path, filename: str) -> dict:
+    node_modules = _find_playwright_node_modules()
+
+    runner = root / "measure_stat_pack.cjs"
+    runner.write_text(
+        """const { chromium } = require("playwright-core");
+(async () => {
+  const browser = await chromium.launch({channel: "chrome", headless: true});
+  try {
+    const page = await browser.newPage({viewport: {width: 1920, height: 1200}});
+    await page.goto(process.argv[2]);
+    const geometry = await page.evaluate(() => {
+      const masthead = document.querySelector(".masthead");
+      const measure = (element) => ({
+        clientWidth: element.clientWidth,
+        scrollWidth: element.scrollWidth,
+        clientHeight: element.clientHeight,
+        scrollHeight: element.scrollHeight,
+      });
+      return {masthead: measure(masthead), children: [...masthead.children].map(measure)};
+    });
+    console.log(JSON.stringify(geometry));
+  } finally {
+    await browser.close();
+  }
+})().catch((error) => { console.error(error); process.exit(1); });
+""",
+        encoding="utf-8",
+    )
+    handler = partial(_QuietHttpHandler, directory=str(root))
+    server = ThreadingHTTPServer(("127.0.0.1", 0), handler)
+    thread = threading.Thread(target=server.serve_forever, daemon=True)
+    thread.start()
+    try:
+        url = f"http://127.0.0.1:{server.server_port}/{filename}"
+        completed = subprocess.run(
+            ["node", str(runner), url],
+            check=True,
+            capture_output=True,
+            text=True,
+            timeout=20,
+            env={**os.environ, "NODE_PATH": str(node_modules)},
+        )
+        return json.loads(completed.stdout)
+    finally:
+        server.shutdown()
+        server.server_close()
+        thread.join(timeout=2)
+
+
 class WebRendererTests(unittest.TestCase):
+    def test_browser_runtime_discovery_honors_portable_node_path_fallback(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            node_modules = Path(temporary) / "node_modules"
+            (node_modules / "playwright-core").mkdir(parents=True)
+            finder = globals().get("_find_playwright_node_modules", lambda: None)
+            with patch.dict(os.environ, {"NODE_PATH": str(node_modules)}):
+                self.assertEqual(finder(), node_modules)
+
     def test_stat_pack_has_exact_path_zones_five_nuggets_and_escaped_source_text(self):
         from standings_playoff_forecast.render_stat_pack import render_stat_pack
 
@@ -220,7 +295,7 @@ class WebRendererTests(unittest.TestCase):
             self.assertEqual(output.read_bytes(), first)
             self.assertFalse(list(output.parent.glob(f".{output.name}.*.tmp")))
 
-    def test_stat_pack_top_status_uses_manifest_source_and_pbp_values(self):
+    def test_stat_pack_top_status_uses_compact_manifest_count_and_exact_pbp_value(self):
         from standings_playoff_forecast.render_stat_pack import render_stat_pack
 
         with tempfile.TemporaryDirectory() as temporary:
@@ -228,11 +303,70 @@ class WebRendererTests(unittest.TestCase):
             output = render_stat_pack(processed_root, cfg=cfg)
             text = output.read_text(encoding="utf-8")
             top_status = text[text.index('<header class="masthead">') : text.index("</header>")]
+            methodology = text[text.index('<section class="zone methodology"') :]
 
-            self.assertIn("Source files", top_status)
-            self.assertIn("source.bin", top_status)
+            self.assertIn("Source status", top_status)
+            self.assertIn("1 validated file", top_status)
+            self.assertNotIn("source.bin", top_status)
+            self.assertIn("source.bin", methodology)
             self.assertIn("PBPStats", top_status)
             self.assertIn("safe_for_cutoff", top_status)
+
+    def test_stat_pack_six_source_manifest_has_compact_top_status_without_clipping(self):
+        from standings_playoff_forecast.render_stat_pack import render_stat_pack
+
+        source_names = (
+            "schedule_2026_regular_season_snapshot.csv",
+            "standings_2026_official_snapshot.csv",
+            "team_box_scores_2026_complete.parquet",
+            "pbpstats_team_features_2026_latest.csv",
+            "net_ratings_manual_20260809.csv",
+            "rosters_2026_verified_snapshot.csv",
+        )
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            cfg, processed_root = _literal_bundle(root)
+            manifest_path = processed_root / "run_manifest.json"
+            manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+            manifest["source_files"] = [
+                {
+                    "name": f"source_{index}",
+                    "path": f"/validated/2026/{name}",
+                    "sha256": f"{index:064x}",
+                    "size_bytes": index * 1000,
+                }
+                for index, name in enumerate(source_names, start=1)
+            ]
+            manifest_path.write_text(
+                json.dumps(manifest, sort_keys=True, separators=(",", ":")) + "\n",
+                encoding="utf-8",
+            )
+            payload_path = processed_root / "forecast_payload.json"
+            payload = json.loads(payload_path.read_text(encoding="utf-8"))
+            payload["metadata"] = manifest
+            payload_path.write_text(
+                json.dumps(payload, sort_keys=True, separators=(",", ":")) + "\n",
+                encoding="utf-8",
+            )
+
+            output = render_stat_pack(processed_root, cfg=cfg)
+            text = output.read_text(encoding="utf-8")
+            top_status = text[text.index('<header class="masthead">') : text.index("</header>")]
+            methodology = text[text.index('<section class="zone methodology"') :]
+            geometry = _measure_stat_pack_top_band(output.parent, output.name)
+            self.assertLessEqual(
+                geometry["masthead"]["scrollHeight"],
+                geometry["masthead"]["clientHeight"],
+            )
+            for child in geometry["children"]:
+                self.assertLessEqual(child["scrollHeight"], child["clientHeight"])
+                self.assertLessEqual(child["scrollWidth"], child["clientWidth"])
+
+            self.assertIn("6 validated files", top_status)
+            self.assertIn("safe_for_cutoff", top_status)
+            for source_name in source_names:
+                self.assertNotIn(source_name, top_status)
+                self.assertIn(source_name, methodology)
 
     def test_stat_pack_publication_failure_preserves_prior_bytes_and_cleans_temp(self):
         from standings_playoff_forecast import render_stat_pack as stat_pack_module

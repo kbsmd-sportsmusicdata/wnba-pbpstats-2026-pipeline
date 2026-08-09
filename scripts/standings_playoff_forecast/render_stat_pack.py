@@ -220,6 +220,8 @@ def _build_stat_pack(
         _text(Path(str(source.get("path", source.get("name", "source")))).name)
         for source in manifest["source_files"]
     )
+    source_count = len(manifest["source_files"])
+    source_status = f"{source_count} validated {'file' if source_count == 1 else 'files'}"
     method = (
         f"{int(manifest['simulation_count']):,} simulations · seed "
         f"{int(manifest['random_seed'])} · model {_text(manifest['model_version'])}. "
@@ -234,7 +236,7 @@ def _build_stat_pack(
         "CUTOFF": _text(manifest["cutoff_date"]),
         "MODEL": _text(manifest["model_version"]),
         "SIMULATIONS": f"{int(manifest['simulation_count']):,}",
-        "SOURCE_FILES": source_names,
+        "SOURCE_STATUS": source_status,
         "PBP_STATUS": _text(manifest["pbpstats_enrichment_status"]),
         "CURRENT_FIELD": field_table,
         "CUTLINE": cutline_markup,
