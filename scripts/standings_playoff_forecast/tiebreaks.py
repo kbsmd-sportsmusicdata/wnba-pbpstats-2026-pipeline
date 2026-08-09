@@ -165,6 +165,34 @@ def _normalized_games(all_games: pd.DataFrame) -> pd.DataFrame:
     return normalized
 
 
+def _normalized_tied_group(
+    team_ids: Iterable[object], final_team_state: pd.DataFrame
+) -> tuple[str, ...]:
+    normalized = tuple(normalize_id(team_id) for team_id in team_ids)
+    if any(team_id is None for team_id in normalized):
+        raise ValueError("tied group contains missing team_id")
+
+    duplicate_ids = tuple(
+        dict.fromkeys(
+            team_id for team_id in normalized if normalized.count(team_id) > 1
+        )
+    )
+    if duplicate_ids:
+        raise ValueError(
+            "tied group contains duplicate normalized team_id: "
+            + ", ".join(duplicate_ids)
+        )
+
+    final_team_ids = set(final_team_state["team_id"])
+    unknown_ids = sorted(set(normalized).difference(final_team_ids))
+    if unknown_ids:
+        raise ValueError(
+            "tied group contains team_id absent from final_team_state: "
+            + ", ".join(unknown_ids)
+        )
+    return normalized
+
+
 def _resolve_at_criterion(
     team_ids: tuple[str, ...],
     final_team_state: pd.DataFrame,
@@ -221,7 +249,7 @@ def resolve_tied_group(
 
     criteria = _configured_criteria(cfg)
     state = _normalized_state(final_team_state)
-    normalized_team_ids = tuple(normalize_id(team_id) for team_id in team_ids)
+    normalized_team_ids = _normalized_tied_group(team_ids, state)
     normalized_games = _normalized_games(all_games)
     return _resolve_at_criterion(
         normalized_team_ids,
@@ -242,6 +270,7 @@ def rank_teams(
 
     criteria = _configured_criteria(cfg)
     state = _normalized_state(final_team_state)
+    normalized_games = _normalized_games(all_games)
     record_groups: dict[Fraction, list[str]] = {}
     for row in state.itertuples(index=False):
         games_played = int(row.wins + row.losses)
@@ -250,14 +279,11 @@ def rank_teams(
 
     ordered: list[str] = []
     fallback_count = 0
-    normalized_games: pd.DataFrame | None = None
     for record in sorted(record_groups, reverse=True):
         team_ids = tuple(record_groups[record])
         if len(team_ids) == 1:
             ordered.extend(team_ids)
             continue
-        if normalized_games is None:
-            normalized_games = _normalized_games(all_games)
         resolved = _resolve_at_criterion(
             team_ids,
             state,

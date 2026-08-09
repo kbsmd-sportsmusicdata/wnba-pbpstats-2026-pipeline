@@ -283,6 +283,78 @@ class TiebreakConfigurationTest(unittest.TestCase):
                 _season_config("overall_point_diff"),
             )
 
+    def test_rank_teams_validates_duplicate_games_when_no_record_is_tied(self) -> None:
+        from standings_playoff_forecast.tiebreaks import rank_teams
+
+        final_state = _final_state((10, 21, 19, 10), (20, 19, 21, -10))
+        rows = _game("1", 10, 20)
+        duplicate = dict(rows[0])
+        duplicate["game_id"] = "1.0"
+        duplicate["team_id"] = "10.0"
+        duplicate["opponent_id"] = "20.0"
+        all_games = pd.DataFrame([*rows, duplicate])
+
+        with self.assertRaisesRegex(
+            ValueError, "duplicate directional all-games rows: 1/10"
+        ):
+            rank_teams(
+                final_state,
+                all_games,
+                _season_config("head_to_head_win_pct"),
+            )
+
+    def test_resolve_tied_group_rejects_null_team_id(self) -> None:
+        from standings_playoff_forecast.tiebreaks import resolve_tied_group
+
+        final_state = _final_state(("A", 20, 20, 0), ("B", 20, 20, 0))
+        all_games = pd.DataFrame(
+            columns=["game_id", "team_id", "opponent_id", "win", "margin"]
+        )
+
+        with self.assertRaisesRegex(ValueError, "tied group contains missing team_id"):
+            resolve_tied_group(
+                ["A", None],
+                final_state,
+                all_games,
+                _season_config("head_to_head_win_pct"),
+            )
+
+    def test_resolve_tied_group_rejects_duplicate_normalized_team_id(self) -> None:
+        from standings_playoff_forecast.tiebreaks import resolve_tied_group
+
+        final_state = _final_state((2, 20, 20, 0), (3, 20, 20, 0))
+        all_games = pd.DataFrame(
+            columns=["game_id", "team_id", "opponent_id", "win", "margin"]
+        )
+
+        with self.assertRaisesRegex(
+            ValueError, "tied group contains duplicate normalized team_id: 2"
+        ):
+            resolve_tied_group(
+                [2, "2.0"],
+                final_state,
+                all_games,
+                _season_config("head_to_head_win_pct"),
+            )
+
+    def test_resolve_tied_group_rejects_team_id_absent_from_final_state(self) -> None:
+        from standings_playoff_forecast.tiebreaks import resolve_tied_group
+
+        final_state = _final_state(("A", 20, 20, 0), ("B", 20, 20, 0))
+        all_games = pd.DataFrame(
+            columns=["game_id", "team_id", "opponent_id", "win", "margin"]
+        )
+
+        with self.assertRaisesRegex(
+            ValueError, "tied group contains team_id absent from final_team_state: C"
+        ):
+            resolve_tied_group(
+                ["A", "C"],
+                final_state,
+                all_games,
+                _season_config("head_to_head_win_pct"),
+            )
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -91,3 +91,60 @@ Both exited successfully.
 
 - The required temporary virtualenv lacks `pytest`; verification used Python's standard `unittest` runner with that same interpreter.
 - The engine deliberately treats a fallback use as one unresolved subgroup, not one team. The contract exposes this directly for downstream manifest aggregation.
+
+## Fix Round 1 — Public Entry Validation
+
+### Findings Addressed
+
+- `rank_teams` now normalizes and validates `all_games` at entry even when every final record is distinct. Normalized-colliding directional keys can no longer bypass validation through the no-tie fast path.
+- `resolve_tied_group` now validates the normalized supplied group before criteria run. Group IDs must be non-null, unique after normalization, and present in the normalized `final_team_state`.
+- The deferred reviewer Minor requesting an explicit criterion-2 0-0 opponent test was intentionally left out of this fix round.
+
+### Focused Regression Tests
+
+- `test_rank_teams_validates_duplicate_games_when_no_record_is_tied`
+- `test_resolve_tied_group_rejects_null_team_id`
+- `test_resolve_tied_group_rejects_duplicate_normalized_team_id`
+- `test_resolve_tied_group_rejects_team_id_absent_from_final_state`
+
+RED command:
+
+```text
+/private/tmp/wnba_forecast_venv/bin/python -m unittest -v tests.test_standings_playoff_forecast_tiebreaks.TiebreakConfigurationTest.test_rank_teams_validates_duplicate_games_when_no_record_is_tied tests.test_standings_playoff_forecast_tiebreaks.TiebreakConfigurationTest.test_resolve_tied_group_rejects_null_team_id tests.test_standings_playoff_forecast_tiebreaks.TiebreakConfigurationTest.test_resolve_tied_group_rejects_duplicate_normalized_team_id tests.test_standings_playoff_forecast_tiebreaks.TiebreakConfigurationTest.test_resolve_tied_group_rejects_team_id_absent_from_final_state
+Ran 4 tests ... FAILED (failures=3, errors=1)
+```
+
+The no-tie rank path and duplicate/unknown group cases failed because the expected `ValueError` was absent. The null group case reached fallback sorting and raised `TypeError: '<' not supported between instances of 'NoneType' and 'str'`, confirming that invalid IDs were reaching criterion/fallback logic.
+
+GREEN command:
+
+```text
+/private/tmp/wnba_forecast_venv/bin/python -m unittest -v tests.test_standings_playoff_forecast_tiebreaks.TiebreakConfigurationTest.test_rank_teams_validates_duplicate_games_when_no_record_is_tied tests.test_standings_playoff_forecast_tiebreaks.TiebreakConfigurationTest.test_resolve_tied_group_rejects_null_team_id tests.test_standings_playoff_forecast_tiebreaks.TiebreakConfigurationTest.test_resolve_tied_group_rejects_duplicate_normalized_team_id tests.test_standings_playoff_forecast_tiebreaks.TiebreakConfigurationTest.test_resolve_tied_group_rejects_team_id_absent_from_final_state
+Ran 4 tests ... OK
+```
+
+### Verification
+
+```text
+/private/tmp/wnba_forecast_venv/bin/python -m unittest tests.test_standings_playoff_forecast_tiebreaks -v
+Ran 14 tests ... OK
+
+/private/tmp/wnba_forecast_venv/bin/python -m unittest discover -s tests -p 'test_*.py'
+Ran 69 tests ... OK
+```
+
+`py_compile` and `git diff --check` also exited successfully.
+
+### Files Changed
+
+- `scripts/standings_playoff_forecast/tiebreaks.py`
+- `tests/test_standings_playoff_forecast_tiebreaks.py`
+- `.superpowers/sdd/2026-08-09-wnba-standings-playoff-forecast-implementation-plan/task-5-report.md`
+
+### Self-Review
+
+- Confirmed `rank_teams` validates normalized game keys before record grouping, so validation is independent of whether tiebreak criteria are needed.
+- Confirmed the already-normalized game table is reused by all tied record groups rather than normalized redundantly.
+- Confirmed tied-group validation occurs after final-state normalization and before any criterion or fallback operation.
+- Confirmed numeric/string aliases such as `2` and `"2.0"` collide explicitly, null IDs fail with a stable `ValueError`, and unknown group IDs cannot enter the result.
+- Confirmed official criterion order, restart behavior, and fallback counting are unchanged.
