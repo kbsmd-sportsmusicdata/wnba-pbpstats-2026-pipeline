@@ -58,7 +58,12 @@ def _empty_context() -> pd.DataFrame:
     return pd.DataFrame(columns=HISTORICAL_CONTEXT_COLUMNS)
 
 
-def discover_history(normalized_root: str | Path, forecast_season: int) -> list[Path]:
+def discover_history(
+    normalized_root: str | Path,
+    forecast_season: int,
+    *,
+    history_start: int | None = None,
+) -> list[Path]:
     """Return prior numeric ``season=<year>`` partition directories by year.
 
     Current, future, malformed, and non-directory entries are intentionally
@@ -77,7 +82,9 @@ def discover_history(normalized_root: str | Path, forecast_season: int) -> list[
         if not year_text.isascii() or not year_text.isdecimal():
             continue
         season = int(year_text)
-        if season < forecast_season:
+        if season < forecast_season and (
+            history_start is None or season >= history_start
+        ):
             partitions.append((season, candidate))
     return [path for _, path in sorted(partitions, key=lambda item: item[0])]
 
@@ -389,6 +396,7 @@ def build_historical_context(
     *,
     target_progress_pct: float = 1.0,
     season_config_loader: Callable[[int], Any] = load_season_config,
+    history_start: int | None = None,
 ) -> pd.DataFrame:
     """Build optional historical benchmarks using only verified prior seasons.
 
@@ -401,7 +409,11 @@ def build_historical_context(
     if not np.isfinite(target_progress_pct) or not 0 < target_progress_pct <= 1:
         raise ValueError("target_progress_pct must be finite and in (0, 1]")
     rows: list[dict[str, Any]] = []
-    for partition in discover_history(normalized_root, forecast_season):
+    if history_start is not None and history_start >= forecast_season:
+        raise ValueError("history_start must be earlier than forecast_season")
+    for partition in discover_history(
+        normalized_root, forecast_season, history_start=history_start
+    ):
         season = int(partition.name.removeprefix("season="))
         try:
             cfg = season_config_loader(season)
