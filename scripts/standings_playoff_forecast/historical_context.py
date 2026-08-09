@@ -145,11 +145,34 @@ def _validate_history_frame(
     ):
         raise ValueError(f"historical season {season} violates win/loss invariant")
     expected_game_numbers = set(range(1, regular_season_games + 1))
-    game_numbers = result.groupby("team_id", sort=False)["season_game_number"].agg(set)
-    if len(game_numbers) != team_count or not game_numbers.map(
-        lambda values: values == expected_game_numbers
-    ).all():
+    teams = result.groupby("team_id", sort=False)
+    game_numbers = teams["season_game_number"].agg(set)
+    row_counts = teams.size()
+    if (
+        len(game_numbers) != team_count
+        or not game_numbers.map(lambda values: values == expected_game_numbers).all()
+        or not row_counts.eq(regular_season_games).all()
+    ):
         raise ValueError(f"historical season {season} has incomplete season outcomes")
+    for _, game_rows in result.groupby("game_id", sort=False):
+        if len(game_rows) != 2:
+            raise ValueError(f"historical season {season} violates reciprocal game accounting")
+        first, second = game_rows.itertuples(index=False)
+        if (
+            first.team_id == second.team_id
+            or first.opponent_id != second.team_id
+            or second.opponent_id != first.team_id
+            or first.win + second.win != 1
+            or first.loss + second.loss != 1
+            or first.win != second.loss
+            or first.loss != second.win
+            or first.margin == 0
+            or second.margin == 0
+            or first.margin != -second.margin
+        ):
+            raise ValueError(
+                f"historical season {season} violates reciprocal game accounting"
+            )
     return result
 
 

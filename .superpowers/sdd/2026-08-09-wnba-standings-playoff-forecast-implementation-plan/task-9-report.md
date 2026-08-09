@@ -169,3 +169,70 @@ New coverage:
 - Task 5's fallback count propagates transparently in the context output.
 - Incomplete outcomes remain excluded rather than becoming partial benchmark
   observations.  Invalid per-row accounting still fails closed.
+
+## Fix Round 2 — Canonical directional game accounting
+
+### Changes
+
+Completeness now requires both the configured distinct game-number set and
+exactly the configured number of directional rows for every team.  A third
+distinct directional row that reuses an existing game number is therefore an
+`incomplete_season_outcomes` availability result rather than an eligible
+historical season.
+
+Before any Task 5 official ranking or benchmark aggregation, each historical
+`game_id` must have exactly two rows.  The rows must contain two different teams
+with mirrored team/opponent IDs, exactly one win and one loss, matching W/L
+reciprocals, and opposite non-zero margins.  Structural season shortfalls retain
+the existing explicit-unavailable behavior; malformed reciprocal accounting
+raises a clear `ValueError` and fails closed.
+
+### TDD evidence
+
+RED command:
+
+```text
+PYTHONPYCACHEPREFIX=/private/tmp/wnba_forecast_pycache \
+  /private/tmp/wnba_forecast_venv/bin/python -m unittest \
+  tests/test_standings_playoff_forecast_history.py
+# Ran 15 tests — FAILED (2 failures)
+# extra directional game number reuse was available
+# reciprocal rows both marked winners did not raise
+```
+
+GREEN command:
+
+```text
+PYTHONPYCACHEPREFIX=/private/tmp/wnba_forecast_pycache \
+  /private/tmp/wnba_forecast_venv/bin/python -m unittest \
+  tests/test_standings_playoff_forecast_history.py
+# Ran 15 tests — OK
+```
+
+Added tests:
+
+- `test_extra_directional_game_reusing_number_is_reported_incomplete`
+- `test_reciprocal_rows_cannot_both_be_winners`
+
+Final verification:
+
+```text
+PYTHONPYCACHEPREFIX=/private/tmp/wnba_forecast_pycache \
+  /private/tmp/wnba_forecast_venv/bin/python -m unittest discover -s tests
+# Ran 134 tests — OK
+
+PYTHONPYCACHEPREFIX=/private/tmp/wnba_forecast_pycache \
+  /private/tmp/wnba_forecast_venv/bin/python -m compileall -q \
+  scripts/standings_playoff_forecast tests/test_standings_playoff_forecast_history.py
+# exit 0
+
+git diff --check
+# exit 0
+```
+
+### Self-review
+
+The validation is restricted to the canonical directional team-game contract:
+per-team configured row/game-number completeness and reciprocal game accounting.
+It does not duplicate standings ranking logic, and it runs before the official
+tiebreak engine receives historical data.

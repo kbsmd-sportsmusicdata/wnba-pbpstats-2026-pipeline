@@ -330,6 +330,50 @@ class HistoricalContextTest(unittest.TestCase):
 
         self.assertEqual(context["availability_status"].tolist(), ["season_config_unavailable"])
 
+    def test_extra_directional_game_reusing_number_is_reported_incomplete(self) -> None:
+        from standings_playoff_forecast.historical_context import build_historical_context
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            _write_partition(root, 2025)
+            path = root / "season=2025" / "team_game.parquet"
+            rows = pd.read_parquet(path)
+            extra = pd.DataFrame(
+                [
+                    {
+                        **rows.loc[rows["team_id"].eq("B")].iloc[0].to_dict(),
+                        "game_id": "2025-extra-BC", "team_id": "B", "opponent_id": "C",
+                        "season_game_number": 1, "win": 1, "loss": 0, "margin": 5,
+                    },
+                    {
+                        **rows.loc[rows["team_id"].eq("C")].iloc[0].to_dict(),
+                        "game_id": "2025-extra-BC", "team_id": "C", "opponent_id": "B",
+                        "season_game_number": 1, "win": 0, "loss": 1, "margin": -5,
+                    },
+                ]
+            )
+            pd.concat([rows, extra], ignore_index=True).to_parquet(path, index=False)
+            context = build_historical_context(
+                root, 2026, target_progress_pct=1.0, season_config_loader=_season_config
+            )
+
+        self.assertEqual(context["availability_status"].tolist(), ["incomplete_season_outcomes"])
+
+    def test_reciprocal_rows_cannot_both_be_winners(self) -> None:
+        from standings_playoff_forecast.historical_context import build_historical_context
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            _write_partition(root, 2025)
+            path = root / "season=2025" / "team_game.parquet"
+            rows = pd.read_parquet(path)
+            rows.loc[rows["game_id"].eq("2025-AB") & rows["team_id"].eq("B"), ["win", "loss"]] = (1, 0)
+            rows.to_parquet(path, index=False)
+            with self.assertRaisesRegex(ValueError, "reciprocal game accounting"):
+                build_historical_context(
+                    root, 2026, target_progress_pct=1.0, season_config_loader=_season_config
+                )
+
 
 if __name__ == "__main__":
     unittest.main()
