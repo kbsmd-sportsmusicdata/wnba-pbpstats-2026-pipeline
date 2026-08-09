@@ -58,16 +58,18 @@ def _source_provenance(
         else:
             path = Path(supplied).expanduser().resolve()
             evidence = {}
+        reserved_fields = {"name", "path", "size_bytes", "sha256"}
+        extra_evidence = {
+            key: value for key, value in evidence.items() if key not in reserved_fields
+        }
         if path.is_file():
             entry = {
                 "name": str(name),
                 "path": str(path),
                 "size_bytes": path.stat().st_size,
                 "sha256": _sha256(path),
+                **extra_evidence,
             }
-            for key, value in evidence.items():
-                if key not in {"name", "path", "size_bytes", "sha256"}:
-                    entry[str(key)] = value
         else:
             if not {"size_bytes", "sha256"}.issubset(evidence):
                 raise FileNotFoundError(
@@ -89,9 +91,13 @@ def _source_provenance(
                 raise ValueError(
                     f"source provenance for {name} must include a valid SHA-256"
                 )
-            evidence["size_bytes"] = int(size_bytes)
-            evidence["sha256"] = sha256.lower()
-            entry = {"name": str(name), "path": str(path), **evidence}
+            entry = {
+                "name": str(name),
+                "path": str(path),
+                "size_bytes": int(size_bytes),
+                "sha256": sha256.lower(),
+                **extra_evidence,
+            }
         provenance.append(entry)
     return provenance
 

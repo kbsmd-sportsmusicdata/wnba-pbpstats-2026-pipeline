@@ -71,6 +71,8 @@ FORECAST_SUMMARY_COLUMNS = [
     "home_court_probability",
 ]
 
+AGGREGATE_ABSOLUTE_TOLERANCE = 1e-12
+
 
 @dataclass(frozen=True)
 class ForecastOutputBundle:
@@ -143,13 +145,34 @@ def _validate_probability_outputs(
     if summary["team_id"].duplicated().any() or tuple(summary["team_id"]) != team_ids:
         raise ValueError("forecast_summary team order must match SimulationResult")
     expected_cells = {(team_id, rank) for team_id in team_ids for rank in range(1, cfg.team_count + 1)}
-    actual_cells = list(zip(matrix["team_id"], matrix["final_rank"]))
+    final_rank = pd.to_numeric(matrix["final_rank"], errors="coerce")
+    if (
+        final_rank.isna().any()
+        or not np.equal(final_rank, np.floor(final_rank)).all()
+    ):
+        raise ValueError("rank_probability_matrix final_rank must contain integers")
+    actual_cells = list(zip(matrix["team_id"], final_rank.astype(int)))
     if len(actual_cells) != len(expected_cells) or set(actual_cells) != expected_cells:
         raise ValueError("rank_probability_matrix must contain every team-rank cell exactly once")
     probability = pd.to_numeric(matrix["probability"], errors="coerce")
     if not np.isfinite(probability.to_numpy(dtype=float)).all() or not probability.between(0, 1).all():
         raise ValueError("rank probabilities must be finite and within [0, 1]")
-    pivot = matrix.assign(probability=probability).pivot(
+    raw_playoff_rank = matrix["playoff_rank"]
+    playoff_rank = pd.to_numeric(raw_playoff_rank, errors="coerce")
+    qualifying = final_rank.le(cfg.playoff_qualifiers)
+    invalid_playoff_rank = (
+        raw_playoff_rank.notna() & playoff_rank.isna()
+    ) | (
+        qualifying & playoff_rank.ne(final_rank)
+    ) | (~qualifying & playoff_rank.notna())
+    if invalid_playoff_rank.any():
+        raise ValueError(
+            "rank_probability_matrix playoff_rank must equal qualifying final_rank "
+            "and be null otherwise"
+        )
+    pivot = matrix.assign(
+        final_rank=final_rank.astype(int), probability=probability
+    ).pivot(
         index="team_id", columns="final_rank", values="probability"
     ).reindex(team_ids)
     exact = summary.set_index("team_id").reindex(team_ids)[
@@ -157,6 +180,62 @@ def _validate_probability_outputs(
     ].apply(pd.to_numeric, errors="coerce")
     if not np.array_equal(pivot.to_numpy(), exact.to_numpy(), equal_nan=True):
         raise ValueError("forecast_summary exact rank probabilities must match the rank matrix")
+
+    summary_by_team = summary.set_index("team_id").reindex(team_ids)
+    top4_limit = min(4, cfg.playoff_qualifiers)
+    expected_aggregates = {
+        "playoff_probability": pivot.loc[
+            :, range(1, cfg.playoff_qualifiers + 1)
+        ].sum(axis=1),
+        "top4_probability": pivot.loc[:, range(1, top4_limit + 1)].sum(axis=1),
+        "home_court_probability": pivot.loc[
+            :, range(1, top4_limit + 1)
+        ].sum(axis=1),
+        "out_probability": pivot.loc[
+            :, range(cfg.playoff_qualifiers + 1, cfg.team_count + 1)
+        ].sum(axis=1),
+        "expected_final_rank": pivot.mul(
+            np.arange(1, cfg.team_count + 1), axis=1
+        ).sum(axis=1),
+    }
+    for column, expected_values in expected_aggregates.items():
+        supplied_values = pd.to_numeric(
+            summary_by_team[column], errors="coerce"
+        )
+        if (
+            not np.isfinite(supplied_values.to_numpy(dtype=float)).all()
+            or not np.allclose(
+                supplied_values.to_numpy(dtype=float),
+                expected_values.to_numpy(dtype=float),
+                rtol=0.0,
+                atol=AGGREGATE_ABSOLUTE_TOLERANCE,
+            )
+        ):
+            raise ValueError(
+                f"forecast_summary {column} must match rank_probability_matrix"
+            )
+
+
+def _same_values(left: pd.Series, right: pd.Series) -> bool:
+    left_missing = left.isna()
+    right_missing = right.isna()
+    if not left_missing.equals(right_missing):
+        return False
+    present = ~left_missing
+    return bool(
+        left.loc[present]
+        .reset_index(drop=True)
+        .eq(right.loc[present].reset_index(drop=True))
+        .all()
+    )
+
+
+def _same_game_dates(left: pd.Series, right: pd.Series) -> bool:
+    left_dates = pd.to_datetime(left, errors="coerce", utc=True)
+    right_dates = pd.to_datetime(right, errors="coerce", utc=True)
+    if left_dates.isna().any() or right_dates.isna().any():
+        return False
+    return bool(left_dates.eq(right_dates).all())
 
 
 def _validate_and_normalize(
@@ -303,10 +382,33 @@ def _validate_and_normalize(
             raise ValueError(f"{name} contains identical participants")
         if not (set(frame["home_id"]) | set(frame["away_id"])).issubset(team_ids):
             raise ValueError(f"{name} contains a team outside current_standings")
-    schedule_keys = remaining[["game_id", "home_id", "away_id"]].sort_values("game_id").reset_index(drop=True)
-    matchup_keys = matchups[["game_id", "home_id", "away_id"]].sort_values("game_id").reset_index(drop=True)
-    if not schedule_keys.equals(matchup_keys):
+    shared_schedule_columns = [
+        "game_date",
+        "home_id",
+        "away_id",
+        "home_rest_days",
+        "away_rest_days",
+        "home_b2b",
+        "away_b2b",
+    ]
+    schedule_keys = remaining[
+        ["game_id", *shared_schedule_columns]
+    ].sort_values("game_id").reset_index(drop=True)
+    matchup_keys = matchups[
+        ["game_id", *shared_schedule_columns]
+    ].sort_values("game_id").reset_index(drop=True)
+    if not schedule_keys["game_id"].equals(matchup_keys["game_id"]):
         raise ValueError("remaining_schedule and matchup_probabilities game keys must match")
+    for column in shared_schedule_columns:
+        equal = (
+            _same_game_dates(schedule_keys[column], matchup_keys[column])
+            if column == "game_date"
+            else _same_values(schedule_keys[column], matchup_keys[column])
+        )
+        if not equal:
+            raise ValueError(
+                f"{column} in matchup_probabilities must match remaining_schedule"
+            )
     if tuple(matchups["game_id"]) != tuple(
         normalize_id(value) for value in bundle.simulation_result.remaining_game_ids
     ):
@@ -323,9 +425,22 @@ def _validate_and_normalize(
         raise ValueError("matchup probabilities must be finite, bounded, and complementary")
 
     leverage = normalized["playoff_leverage_games"]
-    leverage_keys = leverage[["game_id", "home_id", "away_id"]].sort_values("game_id").reset_index(drop=True)
-    if not leverage_keys.equals(matchup_keys):
+    leverage_keys = leverage[
+        ["game_id", "game_date", "home_id", "away_id"]
+    ].sort_values("game_id").reset_index(drop=True)
+    matchup_leverage_keys = matchup_keys[
+        ["game_id", "game_date", "home_id", "away_id"]
+    ]
+    if not leverage_keys[["game_id", "home_id", "away_id"]].equals(
+        matchup_leverage_keys[["game_id", "home_id", "away_id"]]
+    ):
         raise ValueError("playoff_leverage_games game keys must match matchup_probabilities")
+    if not _same_game_dates(
+        leverage_keys["game_date"], matchup_leverage_keys["game_date"]
+    ):
+        raise ValueError(
+            "game_date in playoff_leverage_games must match matchup_probabilities"
+        )
     scores = pd.to_numeric(leverage["leverage_score"], errors="coerce")
     if not np.isfinite(scores.to_numpy(dtype=float)).all():
         raise ValueError("playoff_leverage_games leverage_score must be finite")
@@ -578,7 +693,13 @@ def _ordered_frames(
         "forecast_summary": forecast_summary,
         "rank_probability_matrix": rank_matrix,
         "playoff_leverage_games": frames["playoff_leverage_games"].sort_values("game_id", kind="stable").reset_index(drop=True),
-        "historical_context": frames["historical_context"].reset_index(drop=True),
+        "historical_context": frames["historical_context"]
+        .sort_values(
+            HISTORICAL_CONTEXT_COLUMNS,
+            kind="stable",
+            na_position="last",
+        )
+        .reset_index(drop=True),
         "broadcast_insights": frames["broadcast_insights"].sort_values("priority", kind="stable").reset_index(drop=True),
     }
 

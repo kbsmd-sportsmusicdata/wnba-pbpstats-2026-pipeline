@@ -285,6 +285,33 @@ def _inputs(root: Path):
     return cfg, model_cfg, bundle
 
 
+def _write_fixture_bundle(
+    root: Path,
+    cfg,
+    model_cfg,
+    bundle,
+):
+    from standings_playoff_forecast.outputs import write_output_bundle
+
+    root.mkdir(parents=True, exist_ok=True)
+    season_config = root / "season.json"
+    model_config = root / "model.json"
+    source = root / "source.bin"
+    season_config.write_bytes(b"season")
+    model_config.write_bytes(b"model")
+    source.write_bytes(b"source")
+    return write_output_bundle(
+        bundle,
+        cfg=cfg,
+        model_cfg=model_cfg,
+        cutoff="2031-06-01",
+        season_config_path=season_config,
+        model_config_path=model_config,
+        source_files={"schedule": source},
+        repository_root=root,
+    )
+
+
 class OutputBundleTest(unittest.TestCase):
     def test_writes_complete_deterministic_bundle_with_joined_forecast_contract(self) -> None:
         """Catches missing files, hardcoded season paths, or recalculated probabilities."""
@@ -762,6 +789,170 @@ class OutputBundleTest(unittest.TestCase):
             self.assertEqual(
                 _git_provenance(ROOT),
                 (None, "unavailable"),
+            )
+
+    def test_rejects_forecast_aggregates_inconsistent_with_exact_rank_matrix(self) -> None:
+        """Catches trusting drifted aggregate fields while exact rank cells remain valid."""
+        aggregate_cases = {
+            "playoff_probability": [0.60, 0.40],
+            "top4_probability": [0.60, 0.40],
+            "home_court_probability": [0.60, 0.40],
+            "out_probability": [0.40, 0.60],
+            "expected_final_rank": [1.40, 1.60],
+        }
+        with tempfile.TemporaryDirectory() as tmp:
+            for column, bad_values in aggregate_cases.items():
+                with self.subTest(column=column):
+                    root = Path(tmp) / column
+                    cfg, model_cfg, bundle = _inputs(root)
+                    summary = bundle.simulation_result.forecast_summary.copy()
+                    summary[column] = bad_values
+                    simulation = replace(bundle.simulation_result, forecast_summary=summary)
+                    bundle = replace(bundle, simulation_result=simulation)
+
+                    with self.assertRaisesRegex(
+                        ValueError,
+                        f"{column}.*rank_probability_matrix",
+                    ):
+                        _write_fixture_bundle(root, cfg, model_cfg, bundle)
+
+            tolerance_root = Path(tmp) / "within_tolerance"
+            cfg, model_cfg, bundle = _inputs(tolerance_root)
+            summary = bundle.simulation_result.forecast_summary.copy()
+            supplied_probability = 0.7500000000005
+            summary.loc[summary["team_id"].eq("A"), "playoff_probability"] = (
+                supplied_probability
+            )
+            simulation = replace(bundle.simulation_result, forecast_summary=summary)
+            bundle = replace(bundle, simulation_result=simulation)
+            output = _write_fixture_bundle(tolerance_root, cfg, model_cfg, bundle)
+            payload = json.loads((output / "forecast_payload.json").read_text())
+            alpha = next(
+                row for row in payload["forecast_summary"] if row["team_id"] == "A"
+            )
+            self.assertEqual(alpha["playoff_probability"], supplied_probability)
+
+    def test_rejects_invalid_playoff_rank_semantics(self) -> None:
+        """Catches qualifying ranks marked null or out ranks marked as playoff seeds."""
+        matrix_cases = {
+            "qualifying_rank_is_null": (0, pd.NA),
+            "out_rank_is_populated": (1, 2),
+            "out_rank_is_malformed": (1, "not-a-rank"),
+        }
+        with tempfile.TemporaryDirectory() as tmp:
+            for name, (row_index, bad_value) in matrix_cases.items():
+                with self.subTest(case=name):
+                    root = Path(tmp) / name
+                    cfg, model_cfg, bundle = _inputs(root)
+                    matrix = bundle.simulation_result.rank_probability_matrix.copy()
+                    matrix.loc[row_index, "playoff_rank"] = bad_value
+                    simulation = replace(
+                        bundle.simulation_result,
+                        rank_probability_matrix=matrix,
+                    )
+                    bundle = replace(bundle, simulation_result=simulation)
+
+                    with self.assertRaisesRegex(
+                        ValueError,
+                        "playoff_rank.*qualifying final_rank",
+                    ):
+                        _write_fixture_bundle(root, cfg, model_cfg, bundle)
+
+    def test_validates_shared_schedule_and_leverage_fields_against_matchups(self) -> None:
+        """Catches same-key rows whose date, rest, or B2B context silently diverges."""
+        matchup_changes = {
+            "game_date": pd.Timestamp("2031-06-04"),
+            "home_rest_days": 9,
+            "away_rest_days": 8,
+            "home_b2b": True,
+            "away_b2b": True,
+        }
+        with tempfile.TemporaryDirectory() as tmp:
+            for column, bad_value in matchup_changes.items():
+                with self.subTest(frame="matchup_probabilities", column=column):
+                    root = Path(tmp) / f"matchup_{column}"
+                    cfg, model_cfg, bundle = _inputs(root)
+                    matchups = bundle.matchup_probabilities.copy()
+                    matchups[column] = bad_value
+                    bundle = replace(bundle, matchup_probabilities=matchups)
+
+                    with self.assertRaisesRegex(
+                        ValueError,
+                        f"{column}.*remaining_schedule",
+                    ):
+                        _write_fixture_bundle(root, cfg, model_cfg, bundle)
+
+            root = Path(tmp) / "matchup_missing_home_rest_days"
+            cfg, model_cfg, bundle = _inputs(root)
+            matchups = bundle.matchup_probabilities.copy()
+            matchups["home_rest_days"] = pd.NA
+            bundle = replace(bundle, matchup_probabilities=matchups)
+            with self.assertRaisesRegex(
+                ValueError,
+                "home_rest_days.*remaining_schedule",
+            ):
+                _write_fixture_bundle(root, cfg, model_cfg, bundle)
+
+            root = Path(tmp) / "leverage_game_date"
+            cfg, model_cfg, bundle = _inputs(root)
+            leverage = bundle.playoff_leverage_games.copy()
+            leverage["game_date"] = pd.Timestamp("2031-06-05")
+            bundle = replace(bundle, playoff_leverage_games=leverage)
+            with self.assertRaisesRegex(
+                ValueError,
+                "game_date.*matchup_probabilities",
+            ):
+                _write_fixture_bundle(root, cfg, model_cfg, bundle)
+
+    def test_historical_context_bytes_are_stable_for_equivalent_row_order(self) -> None:
+        """Catches leaking historical input order into canonical CSV or JSON bytes."""
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            cfg, model_cfg, bundle = _inputs(root)
+            output = _write_fixture_bundle(root, cfg, model_cfg, bundle)
+            first_csv = (output / "historical_context.csv").read_bytes()
+            first_payload = (output / "forecast_payload.json").read_bytes()
+
+            reversed_history = bundle.historical_context.iloc[::-1].reset_index(drop=True)
+            reversed_bundle = replace(bundle, historical_context=reversed_history)
+            output = _write_fixture_bundle(root, cfg, model_cfg, reversed_bundle)
+
+            self.assertEqual(
+                (output / "historical_context.csv").read_bytes(),
+                first_csv,
+            )
+            self.assertEqual(
+                (output / "forecast_payload.json").read_bytes(),
+                first_payload,
+            )
+
+    def test_unavailable_source_cannot_override_canonical_provenance_name(self) -> None:
+        """Catches caller evidence replacing the manifest's configured source name."""
+        from standings_playoff_forecast.metadata import _source_provenance
+
+        with tempfile.TemporaryDirectory() as tmp:
+            missing = Path(tmp) / "missing.parquet"
+            provenance = _source_provenance(
+                {
+                    "schedule": {
+                        "path": missing,
+                        "name": "spoofed-source",
+                        "size_bytes": 7,
+                        "sha256": "a" * 64,
+                    }
+                }
+            )
+
+            self.assertEqual(
+                provenance,
+                [
+                    {
+                        "name": "schedule",
+                        "path": str(missing.resolve()),
+                        "size_bytes": 7,
+                        "sha256": "a" * 64,
+                    }
+                ],
             )
 
 
