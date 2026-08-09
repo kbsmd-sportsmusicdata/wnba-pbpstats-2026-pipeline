@@ -76,6 +76,25 @@ class StandingsAggregationTest(unittest.TestCase):
             {"games_played": 2, "wins": 1, "losses": 1, "points_for": 151, "points_against": 159, "point_differential": -8},
         )
 
+    def test_current_standings_rejects_metadata_drift_instead_of_splitting_a_team_record(self) -> None:
+        from standings_playoff_forecast.config import load_season_config
+        from standings_playoff_forecast.standings import build_current_standings
+
+        team_games = _team_games()
+        team_games.loc[(team_games["game_id"] == "4") & (team_games["team_id"] == "A"), "team_name"] = "Alpha Renamed"
+
+        with self.assertRaisesRegex(ValueError, "conflicting presentation metadata for team_id=A"):
+            build_current_standings(team_games, load_season_config(2026))
+
+    def test_head_to_head_rejects_metadata_drift_instead_of_splitting_a_pair_record(self) -> None:
+        from standings_playoff_forecast.standings import build_head_to_head
+
+        team_games = _team_games()
+        team_games.loc[(team_games["game_id"] == "4") & (team_games["team_id"] == "A"), "opponent_franchise_id"] = "bravo_renamed"
+
+        with self.assertRaisesRegex(ValueError, "conflicting presentation metadata for team_id=A, opponent_id=B"):
+            build_head_to_head(team_games)
+
 
 class StandingsReconciliationTest(unittest.TestCase):
     def test_latest_cutoff_reconciles_derived_record_against_long_form_source(self) -> None:
@@ -103,6 +122,20 @@ class StandingsReconciliationTest(unittest.TestCase):
                 derived,
                 _long_form_standings(alpha_wins=2, alpha_losses=1),
                 cutoff="2026-06-04",
+                latest_completed_game_date="2026-06-04",
+            )
+
+    def test_later_than_latest_cutoff_rejects_stale_source_record(self) -> None:
+        from standings_playoff_forecast.config import load_season_config
+        from standings_playoff_forecast.standings import build_current_standings, reconcile_standings
+
+        derived = build_current_standings(_team_games(), load_season_config(2026))
+
+        with self.assertRaisesRegex(ValueError, "source standings mismatch.*team_id=A"):
+            reconcile_standings(
+                derived,
+                _long_form_standings(alpha_wins=2, alpha_losses=1),
+                cutoff="2026-06-05",
                 latest_completed_game_date="2026-06-04",
             )
 

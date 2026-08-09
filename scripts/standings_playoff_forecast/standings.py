@@ -70,6 +70,34 @@ def _identity_columns(team_games: pd.DataFrame) -> list[str]:
     ]
 
 
+def _presentation_metadata(
+    team_games: pd.DataFrame,
+    key_columns: list[str],
+    metadata_columns: list[str],
+) -> pd.DataFrame:
+    """Attach stable presentation metadata after aggregating stable identifiers."""
+
+    available_columns = [
+        column for column in metadata_columns if column in team_games.columns
+    ]
+    if not available_columns:
+        return team_games[key_columns].drop_duplicates()
+
+    metadata_counts = (
+        team_games.groupby(key_columns, dropna=False)[available_columns]
+        .nunique(dropna=False)
+    )
+    conflicts = metadata_counts.gt(1).any(axis=1)
+    if conflicts.any():
+        key = conflicts.index[conflicts][0]
+        key_values = key if isinstance(key, tuple) else (key,)
+        key_text = ", ".join(
+            f"{column}={value}" for column, value in zip(key_columns, key_values)
+        )
+        raise ValueError(f"conflicting presentation metadata for {key_text}")
+    return team_games[key_columns + available_columns].drop_duplicates(key_columns)
+
+
 def _aggregate_records(
     team_games: pd.DataFrame, group_columns: list[str]
 ) -> pd.DataFrame:
@@ -99,8 +127,14 @@ def build_current_standings(
     if team_games.empty:
         return pd.DataFrame(columns=STANDINGS_COLUMNS)
 
-    identity_columns = _identity_columns(team_games)
-    result = _aggregate_records(team_games, ["team_id", *identity_columns])
+    metadata_columns = _identity_columns(team_games)
+    result = _aggregate_records(team_games, ["team_id"])
+    result = result.merge(
+        _presentation_metadata(team_games, ["team_id"], metadata_columns),
+        on="team_id",
+        how="left",
+        validate="one_to_one",
+    )
     return result.reindex(columns=STANDINGS_COLUMNS)
 
 
@@ -111,13 +145,17 @@ def build_head_to_head(team_games: pd.DataFrame) -> pd.DataFrame:
     if team_games.empty:
         return pd.DataFrame(columns=HEAD_TO_HEAD_COLUMNS)
 
-    team_identity_columns = _identity_columns(team_games)
-    opponent_identity_columns = [
-        column for column in ("opponent_franchise_id",) if column in team_games.columns
+    key_columns = ["team_id", "opponent_id"]
+    metadata_columns = [
+        *_identity_columns(team_games),
+        "opponent_franchise_id",
     ]
-    result = _aggregate_records(
-        team_games,
-        ["team_id", *team_identity_columns, "opponent_id", *opponent_identity_columns],
+    result = _aggregate_records(team_games, key_columns)
+    result = result.merge(
+        _presentation_metadata(team_games, key_columns, metadata_columns),
+        on=key_columns,
+        how="left",
+        validate="one_to_one",
     )
     return result.reindex(columns=HEAD_TO_HEAD_COLUMNS)
 
@@ -190,15 +228,15 @@ def reconcile_standings(
     """Validate derived standings at a cutoff without leaking a future snapshot.
 
     The SportsDataverse standings extract is a latest snapshot rather than a
-    dated history. Therefore, only a cutoff equal to the latest completed game
-    date compares GP/W/L to that source; earlier cutoffs validate the derived
-    table's accounting invariants only.
+    dated history. Therefore, cutoffs at or after the latest completed game
+    date compare GP/W/L to that source; only earlier cutoffs validate the
+    derived table's accounting invariants.
     """
 
     _validate_derived_invariants(derived_standings)
     cutoff_date = pd.Timestamp(cutoff).normalize()
     latest_date = pd.Timestamp(latest_completed_game_date).normalize()
-    if cutoff_date != latest_date:
+    if cutoff_date < latest_date:
         return "historical_cutoff_invariants_validated"
 
     source_records = _source_records(source_standings)
