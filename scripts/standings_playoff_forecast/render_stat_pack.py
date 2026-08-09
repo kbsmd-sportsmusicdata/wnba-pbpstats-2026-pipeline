@@ -234,6 +234,8 @@ def _build_stat_pack(
         "CUTOFF": _text(manifest["cutoff_date"]),
         "MODEL": _text(manifest["model_version"]),
         "SIMULATIONS": f"{int(manifest['simulation_count']):,}",
+        "SOURCE_FILES": source_names,
+        "PBP_STATUS": _text(manifest["pbpstats_enrichment_status"]),
         "CURRENT_FIELD": field_table,
         "CUTLINE": cutline_markup,
         "PROJECTED": projected_table,
@@ -254,6 +256,10 @@ def _build_stat_pack(
     return rendered
 
 
+def _replace_file(source: Path, target: Path) -> None:
+    os.replace(source, target)
+
+
 def _atomic_write(text: str, final_path: Path) -> None:
     final_path.parent.mkdir(parents=True, exist_ok=True)
     descriptor, temporary_name = tempfile.mkstemp(
@@ -265,7 +271,7 @@ def _atomic_write(text: str, final_path: Path) -> None:
             handle.write(text)
             handle.flush()
             os.fsync(handle.fileno())
-        os.replace(temporary_path, final_path)
+        _replace_file(temporary_path, final_path)
     finally:
         temporary_path.unlink(missing_ok=True)
 

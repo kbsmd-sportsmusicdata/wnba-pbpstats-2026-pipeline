@@ -85,6 +85,13 @@
     return rows.find((row) => String(row.team_id) === state.team) || rows[0];
   }
 
+  function modalRankEvidence(row) {
+    const mode = payload.rank_probability_matrix
+      .filter((cell) => String(cell.team_id) === String(row.team_id))
+      .sort((a, b) => Number(b.probability) - Number(a.probability) || Number(a.final_rank) - Number(b.final_rank))[0];
+    return mode ? `Rank ${formatInteger(mode.final_rank)} · ${formatProbability(mode.probability)}` : "Unavailable";
+  }
+
   function updateTeamOptions(rows) {
     const select = byId("team-select");
     const visibleIds = new Set(rows.map((row) => String(row.team_id)));
@@ -137,8 +144,8 @@
     let evidence;
     let note;
     if (state.probability === "rank") {
-      evidence = { label: "Expected rank", value: (row) => formatNumber(row.expected_final_rank, 2) };
-      note = "Primary evidence: supplied expected final rank; the exact-rank matrix remains visible below.";
+      evidence = { label: "Modal final rank", value: modalRankEvidence };
+      note = "Primary evidence: each team's supplied modal exact-rank cell; ties use the lowest final rank.";
     } else if (state.probability === "wins") {
       evidence = { label: "Wins P10 · P50 · P90", value: (row) => `${formatNumber(row.wins_p10, 1)} · ${formatNumber(row.wins_p50, 1)} · ${formatNumber(row.wins_p90, 1)}` };
       note = "Primary evidence: supplied projected-wins uncertainty range.";

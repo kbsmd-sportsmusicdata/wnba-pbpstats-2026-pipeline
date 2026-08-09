@@ -47,6 +47,7 @@ fieldset label { min-height: 44px; display: grid; place-items: center; padding: 
 fieldset label:first-of-type { border-radius: 3px 0 0 3px; }
 fieldset label:last-of-type { border-right: 1px solid #aab5c0; border-radius: 0 3px 3px 0; }
 fieldset label:has(input:checked) { background: var(--navy); color: white; border-color: var(--navy); box-shadow: inset 0 0 0 2px white; }
+fieldset label:has(input:focus-visible) { outline: 3px solid var(--focus); outline-offset: 2px; position: relative; z-index: 1; }
 fieldset input { position: absolute; opacity: 0; pointer-events: none; }
 :focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
 .status-message { min-height: 1.5rem; margin: var(--space-2) 0; color: var(--muted); }
