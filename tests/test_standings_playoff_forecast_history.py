@@ -128,6 +128,22 @@ class HistoricalContextTest(unittest.TestCase):
         self.assertEqual(set(season_rows["season"]), {2025})
         self.assertEqual(set(aggregate["season_count"]), {1})
 
+    def test_records_each_historical_partition_actually_read(self) -> None:
+        from standings_playoff_forecast.historical_context import build_historical_context
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            _write_partition(root, 2025)
+            expected = root / "season=2025" / "team_game.parquet"
+            context = build_historical_context(
+                root,
+                2026,
+                target_progress_pct=0.5,
+                season_config_loader=_season_config,
+            )
+
+        self.assertEqual(context.attrs["historical_team_game_paths"], [expected])
+
     def test_builds_generalized_cutline_seed_band_and_progress_benchmarks(self) -> None:
         from standings_playoff_forecast.historical_context import build_historical_context
 

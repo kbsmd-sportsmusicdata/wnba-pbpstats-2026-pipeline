@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import argparse
+import json
+import os
 import sys
 import tempfile
 import unittest
@@ -22,7 +24,7 @@ if str(SCRIPTS) not in sys.path:
 import build_standings_playoff_forecast as builder
 from standings_playoff_forecast.contracts import ForecastModelConfig, SeasonConfig
 from standings_playoff_forecast.historical_context import HISTORICAL_CONTEXT_COLUMNS
-from standings_playoff_forecast.outputs import CSV_FILENAMES
+from standings_playoff_forecast.outputs import CSV_FILENAMES, PAYLOAD_KEYS
 
 
 def season_config(root: Path) -> SeasonConfig:
@@ -90,7 +92,166 @@ def options(**overrides: object) -> argparse.Namespace:
     return argparse.Namespace(**values)
 
 
+def literal_sources(root: Path) -> SimpleNamespace:
+    schedule = pd.DataFrame(
+        {
+            "season": [2026, 2026],
+            "season_type": [2, 2],
+            "type_abbreviation": ["STD", "STD"],
+            "game_id": ["g1", "g2"],
+            "game_date": pd.to_datetime(["2026-06-01", "2026-06-08"]),
+            "home_id": ["A", "B"],
+            "away_id": ["B", "A"],
+            "home_abbreviation": ["AAA", "BBB"],
+            "away_abbreviation": ["BBB", "AAA"],
+            "home_display_name": ["Alpha", "Beta"],
+            "away_display_name": ["Beta", "Alpha"],
+            "home_score": [80.0, pd.NA],
+            "away_score": [70.0, pd.NA],
+            "status_type_completed": [True, False],
+            "status_type_name": ["STATUS_FINAL", "STATUS_SCHEDULED"],
+            "format_regulation_periods": [4, 4],
+            "status_period": [4, 0],
+        }
+    )
+    team_box = pd.DataFrame(
+        {
+            "game_id": ["g1", "g1"],
+            "team_id": ["A", "B"],
+            "field_goals_made": [30, 27],
+            "field_goals_attempted": [70, 68],
+            "three_point_field_goals_made": [8, 7],
+            "free_throws_made": [12, 9],
+            "free_throws_attempted": [14, 11],
+            "offensive_rebounds": [10, 8],
+            "defensive_rebounds": [25, 24],
+            "turnovers": [12, 13],
+        }
+    )
+    standings = pd.DataFrame(
+        {
+            "team_id": ["A", "A", "B", "B"],
+            "stat_name": ["wins", "losses", "wins", "losses"],
+            "value": [1, 0, 0, 1],
+        }
+    )
+    team_history = pd.DataFrame(
+        {
+            "season": [2026, 2026],
+            "sportsdataverse_team_id": ["A", "B"],
+            "franchise_id": ["alpha", "beta"],
+        }
+    )
+    source_root = root / "sources"
+    source_root.mkdir(parents=True)
+    schedule_path = source_root / "schedule.parquet"
+    team_box_path = source_root / "team_box.parquet"
+    standings_path = source_root / "standings.parquet"
+    team_history_path = source_root / "team_history.csv"
+    schedule.to_parquet(schedule_path, index=False)
+    team_box.to_parquet(team_box_path, index=False)
+    standings.to_parquet(standings_path, index=False)
+    team_history.to_csv(team_history_path, index=False)
+    return SimpleNamespace(
+        schedule=schedule,
+        team_box=team_box,
+        standings=standings,
+        team_history=team_history,
+        pbp_team_features=None,
+        schedule_path=schedule_path,
+        team_box_path=team_box_path,
+        standings_path=standings_path,
+        team_history_path=team_history_path,
+        pbp_team_features_path=None,
+    )
+
+
 class OrchestratorIntegrationTests(unittest.TestCase):
+    def test_literal_two_team_pipeline_runs_real_stages_from_alternate_cwd(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            repository_root = root / "repository"
+            alternate_cwd = root / "elsewhere"
+            config_root = repository_root / "analysis" / "standings_playoff_forecast" / "config"
+            (config_root / "seasons").mkdir(parents=True)
+            alternate_cwd.mkdir()
+            (config_root / "seasons" / "default.json").write_text(
+                '{"fixture": "default"}\n', encoding="utf-8"
+            )
+            (config_root / "seasons" / "2026.json").write_text(
+                '{"fixture": "season"}\n', encoding="utf-8"
+            )
+            (config_root / "forecast_model.json").write_text(
+                '{"fixture": "model"}\n', encoding="utf-8"
+            )
+            cfg = season_config(repository_root)
+            cfg = SeasonConfig(
+                **{
+                    **cfg.__dict__,
+                    "output_root": "analysis/literal_forecast",
+                    "normalized_team_game_root": str(repository_root / "normalized"),
+                }
+            )
+            sources = literal_sources(root)
+            original_cwd = Path.cwd()
+            try:
+                os.chdir(alternate_cwd)
+                with (
+                    patch.object(builder, "REPOSITORY_ROOT", repository_root),
+                    patch.object(builder, "CONFIG_ROOT", config_root),
+                    patch.object(builder, "load_season_config", return_value=cfg),
+                    patch.object(builder, "load_model_config", return_value=model_config()),
+                    patch.object(builder, "load_forecast_sources", return_value=sources),
+                ):
+                    with warnings.catch_warnings(record=True):
+                        result = builder.run_forecast(
+                            options(simulations=20, skip_history=True)
+                        )
+            finally:
+                os.chdir(original_cwd)
+
+            expected = (
+                repository_root
+                / "analysis"
+                / "literal_forecast"
+                / "data"
+                / "processed"
+                / "season=2026"
+                / "latest"
+            )
+            self.assertEqual(result.output_path, expected)
+            self.assertTrue(expected.is_dir())
+            self.assertEqual(
+                sorted(path.name for path in expected.iterdir()),
+                sorted([*CSV_FILENAMES.values(), "forecast_payload.json", "run_manifest.json"]),
+            )
+            payload = json.loads((expected / "forecast_payload.json").read_text())
+            manifest = json.loads((expected / "run_manifest.json").read_text())
+            self.assertEqual(set(payload), PAYLOAD_KEYS)
+            self.assertEqual(payload["metadata"], manifest)
+            self.assertEqual(manifest["simulation_count"], 20)
+            self.assertEqual(manifest["conditional_simulation_count"], 0)
+            self.assertEqual(
+                {entry["name"] for entry in manifest["source_files"]},
+                {
+                    "schedule",
+                    "season_config_default",
+                    "standings",
+                    "team_box",
+                    "team_history",
+                },
+            )
+            forecast = pd.read_csv(expected / "forecast_summary.csv")
+            ranks = pd.read_csv(expected / "rank_probability_matrix.csv")
+            self.assertEqual(len(forecast), 2)
+            self.assertAlmostEqual(forecast["playoff_probability"].sum(), 1.0)
+            self.assertTrue(
+                ranks.groupby("team_id")["probability"].sum().sub(1.0).abs().lt(1e-12).all()
+            )
+            self.assertTrue(
+                ranks.groupby("final_rank")["probability"].sum().sub(1.0).abs().lt(1e-12).all()
+            )
+
     def test_parse_args_supports_runtime_overrides_and_rejects_invalid_numbers(self):
         args = builder.parse_args(
             [
@@ -206,7 +367,10 @@ class OrchestratorIntegrationTests(unittest.TestCase):
                     (output_root / filename).write_text("fixture\n", encoding="utf-8")
                 self.assertEqual(bundle.current_standings["current_rank"].tolist(), [2, 1])
                 self.assertEqual(kwargs["conditional_simulation_count"], 0)
-                self.assertEqual(set(kwargs["source_files"]), set(source_paths))
+                self.assertEqual(
+                    set(kwargs["source_files"]),
+                    {*source_paths, "season_config_default"},
+                )
                 return output_root
 
             with (
@@ -293,6 +457,81 @@ class OrchestratorIntegrationTests(unittest.TestCase):
                 root, 2026, history_start=2023
             )
             self.assertEqual([path.name for path in discovered], ["season=2023"])
+
+    def test_historical_provenance_includes_read_partition_and_season_config(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            config_root = root / "config"
+            (config_root / "seasons").mkdir(parents=True)
+            default_path = config_root / "seasons" / "default.json"
+            season_path = config_root / "seasons" / "2025.json"
+            default_path.write_text("{}\n", encoding="utf-8")
+            season_path.write_text("{}\n", encoding="utf-8")
+            history_path = root / "season=2025" / "team_game.parquet"
+            history_path.parent.mkdir()
+            history_path.write_bytes(b"historical-fixture")
+            context = pd.DataFrame(
+                [
+                    {
+                        **{column: pd.NA for column in HISTORICAL_CONTEXT_COLUMNS},
+                        "context_level": "season",
+                        "metric": "fixture",
+                        "season": 2025,
+                        "season_count": 1,
+                        "availability_status": "available",
+                    }
+                ]
+            )
+            context.attrs["historical_team_game_paths"] = [history_path]
+            sources = SimpleNamespace(
+                schedule_path=root / "schedule",
+                team_box_path=root / "team_box",
+                standings_path=root / "standings",
+                team_history_path=root / "team_history",
+                pbp_team_features_path=None,
+            )
+            for path in (
+                sources.schedule_path,
+                sources.team_box_path,
+                sources.standings_path,
+                sources.team_history_path,
+            ):
+                path.write_text("fixture", encoding="utf-8")
+            with patch.object(builder, "CONFIG_ROOT", config_root):
+                provenance = builder._source_files(sources, context)
+
+            self.assertEqual(provenance["season_config_default"], default_path)
+            self.assertEqual(provenance["historical_season_config_2025"], season_path)
+            self.assertEqual(provenance["historical_team_game_2025"], history_path)
+
+    def test_mixed_history_warns_once_and_preserves_context(self):
+        available = {column: pd.NA for column in HISTORICAL_CONTEXT_COLUMNS}
+        available.update(
+            context_level="season",
+            metric="fixture",
+            season=2024,
+            season_count=1,
+            availability_status="available",
+        )
+        unavailable = {column: pd.NA for column in HISTORICAL_CONTEXT_COLUMNS}
+        unavailable.update(
+            context_level="availability",
+            metric="historical_season_status",
+            season=2025,
+            season_count=0,
+            availability_status="incomplete_season_outcomes",
+        )
+        context = pd.DataFrame([available, unavailable])
+        with warnings.catch_warnings(record=True) as caught:
+            warnings.simplefilter("always")
+            builder._warn_for_history(context)
+
+        history_warnings = [
+            str(item.message) for item in caught if "Historical context" in str(item.message)
+        ]
+        self.assertEqual(len(history_warnings), 1)
+        self.assertIn("partially unavailable", history_warnings[0])
+        self.assertEqual(context["availability_status"].tolist(), ["available", "incomplete_season_outcomes"])
 
     def test_unsupported_conditional_run_and_stage_failures_propagate(self):
         with self.assertRaisesRegex(ValueError, "conditional simulations"):

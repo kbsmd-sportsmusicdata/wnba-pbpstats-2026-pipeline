@@ -409,6 +409,7 @@ def build_historical_context(
     if not np.isfinite(target_progress_pct) or not 0 < target_progress_pct <= 1:
         raise ValueError("target_progress_pct must be finite and in (0, 1]")
     rows: list[dict[str, Any]] = []
+    read_team_game_paths: list[Path] = []
     if history_start is not None and history_start >= forecast_season:
         raise ValueError("history_start must be earlier than forecast_season")
     for partition in discover_history(
@@ -428,6 +429,7 @@ def build_historical_context(
             rows.append(_status_row(season, "team_game_unavailable"))
             continue
         frame = pd.read_parquet(parquet_path)
+        read_team_game_paths.append(parquet_path)
         try:
             validated = _validate_history_frame(
                 frame,
@@ -449,7 +451,9 @@ def build_historical_context(
             )
         )
     if not rows:
-        return _empty_context()
+        empty = _empty_context()
+        empty.attrs["historical_team_game_paths"] = read_team_game_paths
+        return empty
     result = pd.DataFrame(rows, columns=HISTORICAL_CONTEXT_COLUMNS)
     aggregate = _aggregate(result)
     if aggregate:
@@ -457,4 +461,6 @@ def build_historical_context(
             [result, pd.DataFrame(aggregate, columns=HISTORICAL_CONTEXT_COLUMNS)],
             ignore_index=True,
         )
-    return result[HISTORICAL_CONTEXT_COLUMNS]
+    result = result[HISTORICAL_CONTEXT_COLUMNS]
+    result.attrs["historical_team_game_paths"] = read_team_game_paths
+    return result

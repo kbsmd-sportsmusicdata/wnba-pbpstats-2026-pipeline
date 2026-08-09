@@ -115,10 +115,15 @@ def apply_runtime_overrides(
         for name, value in (
             ("sportsdataverse_data_root", sportsdataverse_data_root),
             ("pbpstats_data_root", pbpstats_data_root),
-            ("output_root", output_root),
         )
         if value is not None
     }
+    effective_output_root = Path(
+        cfg.output_root if output_root is None else output_root
+    ).expanduser()
+    if not effective_output_root.is_absolute():
+        effective_output_root = REPOSITORY_ROOT / effective_output_root
+    replacements["output_root"] = str(effective_output_root)
     return replace(cfg, **replacements)
 
 
@@ -172,20 +177,73 @@ def _normalized_root(cfg: SeasonConfig) -> Path:
     return root if root.is_absolute() else REPOSITORY_ROOT / root
 
 
-def _source_files(sources: ForecastSources) -> dict[str, Path]:
+def _source_files(
+    sources: ForecastSources, historical_context: pd.DataFrame
+) -> dict[str, Path]:
     paths = {
         "schedule": sources.schedule_path,
+        "season_config_default": CONFIG_ROOT / "seasons" / "default.json",
         "team_box": sources.team_box_path,
         "standings": sources.standings_path,
         "team_history": sources.team_history_path,
     }
     if sources.pbp_team_features_path is not None:
         paths["pbp_team_features"] = sources.pbp_team_features_path
+    historical_paths = historical_context.attrs.get(
+        "historical_team_game_paths", []
+    )
+    for supplied_path in historical_paths:
+        path = Path(supplied_path)
+        partition_name = path.parent.name
+        if not partition_name.startswith("season="):
+            raise ValueError(
+                f"historical provenance path has invalid partition: {path}"
+            )
+        season_text = partition_name.removeprefix("season=")
+        if not season_text.isascii() or not season_text.isdecimal():
+            raise ValueError(
+                f"historical provenance path has invalid season: {path}"
+            )
+        season = int(season_text)
+        paths[f"historical_team_game_{season}"] = path
+        season_config_path = CONFIG_ROOT / "seasons" / f"{season}.json"
+        if season_config_path.is_file():
+            paths[f"historical_season_config_{season}"] = season_config_path
     return paths
 
 
 def _empty_history() -> pd.DataFrame:
     return pd.DataFrame(columns=HISTORICAL_CONTEXT_COLUMNS)
+
+
+def _warn_for_history(historical_context: pd.DataFrame) -> None:
+    """Emit one precise warning for absent or partially unavailable history."""
+
+    if historical_context.empty:
+        warnings.warn(
+            "Historical context is unavailable; current forecast continues.",
+            RuntimeWarning,
+            stacklevel=2,
+        )
+        return
+    statuses = historical_context["availability_status"]
+    available = statuses.eq("available").any()
+    unavailable_seasons = historical_context["context_level"].eq(
+        "availability"
+    ) & statuses.ne("available")
+    if not available:
+        warnings.warn(
+            "Historical context is unavailable; current forecast continues.",
+            RuntimeWarning,
+            stacklevel=2,
+        )
+    elif unavailable_seasons.any():
+        warnings.warn(
+            "Historical context is partially unavailable; available seasons "
+            "are retained with explicit unavailable-season status rows.",
+            RuntimeWarning,
+            stacklevel=2,
+        )
 
 
 def _run_pipeline(
@@ -265,14 +323,7 @@ def _run_pipeline(
             target_progress_pct=progress,
             history_start=options.history_start,
         )
-        if historical_context.empty or not historical_context[
-            "availability_status"
-        ].eq("available").any():
-            warnings.warn(
-                "Historical context is unavailable; current forecast continues.",
-                RuntimeWarning,
-                stacklevel=2,
-            )
+        _warn_for_history(historical_context)
 
     playoff_leverage_games = calculate_game_leverage(
         matchup_probabilities, simulation_result, current_standings, cfg
@@ -304,7 +355,7 @@ def _run_pipeline(
         cutoff=cutoff,
         season_config_path=CONFIG_ROOT / "seasons" / f"{cfg.season}.json",
         model_config_path=CONFIG_ROOT / "forecast_model.json",
-        source_files=_source_files(sources),
+        source_files=_source_files(sources, historical_context),
         conditional_simulation_count=0,
         repository_root=REPOSITORY_ROOT,
     )
