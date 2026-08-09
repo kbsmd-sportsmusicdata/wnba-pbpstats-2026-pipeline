@@ -37,7 +37,7 @@ python scripts/build_standings_playoff_forecast.py \
   --render none
 ```
 
-Supported runtime options are `--cutoff YYYY-MM-DD`, `--simulations`, `--conditional-simulations`, `--random-seed`, `--history-start`, `--skip-history`, `--render {none,all}`, `--sportsdataverse-data-root`, `--pbpstats-data-root`, and `--output-root`. V1 derives conditional leverage from the retained main simulations, so a nonzero `--conditional-simulations` request fails rather than claiming a second run occurred. Presentation rendering is added in Tasks 13–15; until then, use `--render none`.
+Supported runtime options are `--cutoff YYYY-MM-DD`, `--simulations`, `--conditional-simulations`, `--random-seed`, `--history-start`, `--skip-history`, `--render {none,all}`, `--sportsdataverse-data-root`, `--pbpstats-data-root`, and `--output-root`. V1 derives conditional leverage from the retained main simulations, so a nonzero `--conditional-simulations` request fails rather than claiming a second run occurred. Use `--render none` for the validated machine-readable bundle only. Use `--render all` to write that bundle plus the Excel workbook, Markdown brief, one-page stat-pack, and interactive dashboard.
 
 Refresh upstream sources, then build:
 
@@ -45,7 +45,10 @@ Refresh upstream sources, then build:
 python scripts/fetch_wnba_sportsdataverse_2026.py
 python scripts/pbpstats_2026_pull_clean.py
 python scripts/pbpstats_2026_features.py
-python scripts/build_standings_playoff_forecast.py --season 2026
+python scripts/build_standings_playoff_forecast.py \
+  --season 2026 \
+  --simulations 100000 \
+  --render all
 ```
 
 Run the forecast test suite:
