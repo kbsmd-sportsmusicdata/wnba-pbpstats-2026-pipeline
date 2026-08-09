@@ -178,6 +178,11 @@ class ExcelRendererTests(unittest.TestCase):
 
             workbook = load_workbook(workbook_path, data_only=False)
             self.assertEqual(workbook.sheetnames, EXPECTED_SHEETS)
+            self.assertTrue(
+                workbook["Dashboard"].sheet_properties.pageSetUpPr.fitToPage
+            )
+            self.assertEqual(workbook["Dashboard"].page_setup.fitToWidth, 1)
+            self.assertEqual(workbook["Model Notes"].page_setup.fitToHeight, 1)
             dashboard_text = {
                 cell.value
                 for row in workbook["Dashboard"].iter_rows()
