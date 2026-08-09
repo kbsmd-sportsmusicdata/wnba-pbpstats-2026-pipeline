@@ -261,7 +261,7 @@ class MarkdownRendererTests(unittest.TestCase):
             self.assertLess(table.index("2031-06-05"), table.index("2031-06-04"))
             self.assertLess(table.index("2031-06-04"), table.index("2031-06-03"))
 
-    def test_every_rendered_key_game_gets_each_checkpoint_label_once(self):
+    def test_top_five_key_games_each_get_four_checkpoints_and_lower_games_are_omitted(self):
         from standings_playoff_forecast.render_markdown import render_markdown
 
         with tempfile.TemporaryDirectory() as temporary:
@@ -295,7 +295,18 @@ class MarkdownRendererTests(unittest.TestCase):
                 )
             ]
             for label in ("Pregame", "Halftime", "Entering Q4", "Postgame"):
-                self.assertEqual(checkpoints.count(f"- **{label}:**"), 6)
+                self.assertEqual(checkpoints.count(f"- **{label}:**"), 5)
+            # All six games have the same leverage score. Stable normalized
+            # game ID therefore selects extra-1..extra-5 ahead of g2.
+            for _game_id, game_date in game_specs:
+                self.assertIn(f"### {game_date}", checkpoints)
+            self.assertNotIn("### 2031-06-03", checkpoints)
+            leverage_table = text[
+                text.index("## High-leverage games") : text.index(
+                    "## Useful broadcast checkpoints"
+                )
+            ]
+            self.assertIn("2031-06-03", leverage_table)
 
     def test_status_requires_strict_nullable_boolean_proof(self):
         from standings_playoff_forecast.render_markdown import render_markdown

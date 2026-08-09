@@ -20,6 +20,7 @@ from .team_game_layer import normalize_id
 
 
 BRIEF_FILENAME = "wnba_broadcast_forecast_brief.md"
+MAX_CHECKPOINT_GAMES = 5
 SECTION_ORDER = (
     "Data cutoff and source status",
     "Current playoff picture",
@@ -815,7 +816,7 @@ def _build_markdown(
     else:
         game_story = insights.loc[insights["category"].eq("high_leverage_game")]
         story = game_story.iloc[0] if not game_story.empty else insights.iloc[0]
-        for row in leverage.itertuples():
+        for row in leverage.head(MAX_CHECKPOINT_GAMES).itertuples():
             home = abbreviations[row.home_id]
             away = abbreviations[row.away_id]
             lines.extend(
