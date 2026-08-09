@@ -17,44 +17,60 @@ def _season_config(season: int) -> SimpleNamespace:
         team_count=3,
         regular_season_games_per_team=2,
         playoff_qualifiers=2,
+        tiebreaks=("head_to_head_win_pct", "overall_point_diff"),
+        multi_team_restart_after_elimination=True,
     )
 
 
 def _history_rows(season: int) -> list[dict]:
-    # The 0.50 rows are deliberately different from the completed-season rows:
-    # a progress benchmark must retain these values rather than use future data.
+    return _complete_directional_rows(
+        season,
+        [("AB", "A", "B", 110, 100), ("BC", "B", "C", 107, 100), ("AC", "A", "C", 120, 100)],
+    )
+
+
+def _complete_directional_rows(
+    season: int,
+    games: list[tuple[str, str, str, int, int]],
+    *,
+    games_per_team: int = 2,
+) -> list[dict]:
+    """Build real reciprocal rows with hand-derived cumulative fields."""
+    teams = sorted({team for _, home, away, _, _ in games for team in (home, away)})
+    state = {team: {"games": 0, "wins": 0, "losses": 0, "point_diff": 0} for team in teams}
     rows = []
-    final_records = {
-        "A": [(1, 0, 10, 100), (2, 0, 30, 100)],
-        "B": [(1, 0, -3, 100), (2, 0, 4, 100)],
-        "C": [(1, 0, 2, 100), (1, 1, -12, 100)],
-    }
-    for team_id, games in final_records.items():
-        previous_point_diff = 0
-        for game_number, (wins, losses, point_diff, possessions) in enumerate(
-            games, start=1
+    for game_id, home, away, home_points, away_points in games:
+        for team, opponent, points_for, points_against in (
+            (home, away, home_points, away_points),
+            (away, home, away_points, home_points),
         ):
+            margin = points_for - points_against
+            team_state = state[team]
+            team_state["games"] += 1
+            team_state["wins"] += int(margin > 0)
+            team_state["losses"] += int(margin < 0)
+            team_state["point_diff"] += margin
             rows.append(
                 {
                     "season": season,
-                    "game_id": f"{season}-{team_id}-{game_number}",
-                    "team_id": team_id,
-                    "season_game_number": game_number,
-                    "season_progress_pct": game_number / 2,
-                    "win": int(game_number == 1 or team_id in {"A", "B"}),
-                    "loss": int(not (game_number == 1 or team_id in {"A", "B"})),
-                    "wins_to_date": wins,
-                    "losses_to_date": losses,
-                    "win_pct_to_date": wins / game_number,
-                    "point_diff_to_date": point_diff,
-                    "margin": point_diff - previous_point_diff,
-                    "points_for": 100 + point_diff - previous_point_diff,
-                    "points_against": 100,
-                    "possessions_est": possessions,
-                    "net_rating_est": 999.0 if game_number == 2 else point_diff,
+                    "game_id": f"{season}-{game_id}",
+                    "team_id": team,
+                    "opponent_id": opponent,
+                    "season_game_number": team_state["games"],
+                    "season_progress_pct": team_state["games"] / games_per_team,
+                    "win": int(margin > 0),
+                    "loss": int(margin < 0),
+                    "wins_to_date": team_state["wins"],
+                    "losses_to_date": team_state["losses"],
+                    "win_pct_to_date": team_state["wins"] / team_state["games"],
+                    "point_diff_to_date": team_state["point_diff"],
+                    "margin": margin,
+                    "points_for": points_for,
+                    "points_against": points_against,
+                    "possessions_est": 100,
+                    "net_rating_est": 999.0 if team_state["games"] == 2 else margin,
                 }
             )
-            previous_point_diff = point_diff
     return rows
 
 
@@ -109,11 +125,11 @@ class HistoricalContextTest(unittest.TestCase):
         aggregate = context.loc[context["context_level"].eq("aggregate")]
         self.assertEqual(
             aggregate.loc[aggregate["metric"].eq("final_qualifier_wins"), "value"].iloc[0],
-            2.0,
+            1.0,
         )
         self.assertEqual(
             aggregate.loc[aggregate["metric"].eq("final_first_out_wins"), "value"].iloc[0],
-            1.0,
+            0.0,
         )
         self.assertEqual(
             aggregate.loc[aggregate["metric"].eq("final_cutline_gap_wins"), "value"].iloc[0],
@@ -153,7 +169,7 @@ class HistoricalContextTest(unittest.TestCase):
 
         as_of_rows = context.loc[context["metric"].eq("same_progress_team_outcome")]
         self.assertEqual(as_of_rows["as_of_progress_pct"].tolist(), [0.5, 0.5, 0.5])
-        self.assertEqual(as_of_rows["as_of_net_rating"].tolist(), [10.0, -3.0, 2.0])
+        self.assertEqual(as_of_rows["as_of_net_rating"].tolist(), [10.0, -10.0, -7.0])
         self.assertEqual(as_of_rows["final_rank"].tolist(), [1.0, 2.0, 3.0])
 
     def test_unknown_historical_rules_are_reported_unavailable_not_guessed(self) -> None:
@@ -203,6 +219,116 @@ class HistoricalContextTest(unittest.TestCase):
                 build_historical_context(
                     root, 2026, target_progress_pct=0.5, season_config_loader=_season_config
                 )
+
+    def test_tied_cutline_uses_configured_head_to_head_rank_for_seed_bands(self) -> None:
+        from standings_playoff_forecast.historical_context import build_historical_context
+
+        games = [
+            ("CA", "C", "A", 80, 79), ("CB", "C", "B", 80, 79),
+            ("CD", "C", "D", 80, 79), ("CE", "C", "E", 80, 79),
+            ("AD", "A", "D", 130, 70), ("DB", "D", "B", 81, 80),
+            ("ED", "E", "D", 81, 80), ("BA", "B", "A", 81, 80),
+            ("AE", "A", "E", 81, 80), ("BE", "B", "E", 81, 80),
+        ]
+        config = SimpleNamespace(
+            season=2025, team_count=5, regular_season_games_per_team=4,
+            playoff_qualifiers=2,
+            tiebreaks=("head_to_head_win_pct", "overall_point_diff"),
+            multi_team_restart_after_elimination=True,
+        )
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            output = root / "season=2025"
+            output.mkdir()
+            pd.DataFrame(_complete_directional_rows(2025, games, games_per_team=4)).to_parquet(
+                output / "team_game.parquet", index=False
+            )
+            context = build_historical_context(
+                root, 2026, target_progress_pct=1.0, season_config_loader=lambda _: config
+            )
+
+        final_bands = context.loc[context["metric"].eq("final_seed_band_net_rating")]
+        self.assertEqual(final_bands.loc[final_bands["team_id"].eq("B"), "seed_band"].iloc[0], "playoff_field")
+        self.assertEqual(final_bands.loc[final_bands["team_id"].eq("A"), "seed_band"].iloc[0], "outside_playoff")
+
+    def test_exhausted_tiebreak_fallback_is_labeled_and_counted(self) -> None:
+        from standings_playoff_forecast.historical_context import build_historical_context
+
+        config = SimpleNamespace(
+            season=2025, team_count=2, regular_season_games_per_team=2,
+            playoff_qualifiers=1, tiebreaks=("head_to_head_win_pct", "overall_point_diff"),
+            multi_team_restart_after_elimination=True,
+        )
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            output = root / "season=2025"
+            output.mkdir()
+            pd.DataFrame(_complete_directional_rows(2025, [
+                ("AB1", "A", "B", 80, 70), ("BA2", "B", "A", 80, 70),
+            ])).to_parquet(output / "team_game.parquet", index=False)
+            context = build_historical_context(
+                root, 2026, target_progress_pct=1.0, season_config_loader=lambda _: config
+            )
+
+        fallback = context.loc[context["metric"].eq("final_tiebreak_fallback_count")]
+        self.assertEqual(fallback["value"].tolist(), [1.0, 1.0])
+
+    def test_as_of_net_rating_accumulates_all_games_before_target_progress(self) -> None:
+        from standings_playoff_forecast.historical_context import build_historical_context
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            _write_partition(root, 2025)
+            context = build_historical_context(
+                root, 2026, target_progress_pct=1.0, season_config_loader=_season_config
+            )
+
+        as_of_rows = context.loc[context["metric"].eq("same_progress_team_outcome")]
+        self.assertEqual(as_of_rows["as_of_net_rating"].tolist(), [15.0, -1.5, -13.5])
+
+    def test_game_number_gap_is_reported_as_incomplete_outcome(self) -> None:
+        from standings_playoff_forecast.historical_context import build_historical_context
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            _write_partition(root, 2025)
+            path = root / "season=2025" / "team_game.parquet"
+            rows = pd.read_parquet(path)
+            rows.loc[(rows["team_id"].eq("B")) & (rows["season_game_number"].eq(1)), "season_game_number"] = 2
+            rows.to_parquet(path, index=False)
+            context = build_historical_context(
+                root, 2026, target_progress_pct=1.0, season_config_loader=_season_config
+            )
+
+        self.assertEqual(context["availability_status"].tolist(), ["incomplete_season_outcomes"])
+
+    def test_non_binary_win_loss_row_fails_closed(self) -> None:
+        from standings_playoff_forecast.historical_context import build_historical_context
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            _write_partition(root, 2025)
+            path = root / "season=2025" / "team_game.parquet"
+            rows = pd.read_parquet(path)
+            rows.loc[0, "loss"] = 1
+            rows.to_parquet(path, index=False)
+            with self.assertRaisesRegex(ValueError, "win/loss invariant"):
+                build_historical_context(
+                    root, 2026, target_progress_pct=1.0, season_config_loader=_season_config
+                )
+
+    def test_wrong_season_config_is_reported_unavailable(self) -> None:
+        from standings_playoff_forecast.historical_context import build_historical_context
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            _write_partition(root, 2025)
+            wrong_config = _season_config(2024)
+            context = build_historical_context(
+                root, 2026, target_progress_pct=1.0, season_config_loader=lambda _: wrong_config
+            )
+
+        self.assertEqual(context["availability_status"].tolist(), ["season_config_unavailable"])
 
 
 if __name__ == "__main__":

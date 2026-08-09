@@ -117,3 +117,55 @@ git diff --check
 - The remaining design dependency is data availability: prior seasons need
   their own verified season configs and complete canonical partitions before
   they can contribute to benchmarks.
+
+## Fix Round 1 — Official historical ranking and integrity guards
+
+### Changes
+
+- Final historical ranks now call Task 5's `rank_teams` with the verified
+  historical season config and complete directional historical rows.  The
+  final-state input contains normalized team IDs, final W/L totals, and final
+  point differential.  The prior local point-differential/team-ID sort has been
+  removed, so qualifier/first-out, seed-band, playoff-rate, and final-rank
+  benchmarks inherit the configured official tiebreak behavior.
+- The long-form stable contract now emits a clearly named
+  `final_tiebreak_fallback_count` metric at both season and aggregate levels.
+  A positive value records Task 5's explicit deterministic fallback rather
+  than presenting that order as an official tiebreak resolution.
+- As-of matching still selects each team's latest eligible row for the progress
+  label, but the as-of Net Rating now aggregates *all* rows at or before that
+  progress: `100 * sum(margin) / sum(possessions_est)`.  Future rows remain
+  excluded before either the aggregation or final-outcome join.
+- Completeness now requires exactly the configured set of game numbers
+  `{1, ..., regular_season_games_per_team}` for every configured team, not just
+  a matching maximum.  Game numbers must be positive integers; every row must
+  have binary W/L values summing to one.  Gapped/incomplete outcomes report
+  `incomplete_season_outcomes`; malformed W/L rows fail closed.
+- The loaded config must identify the partition season exactly.  A mismatch is
+  reported as `season_config_unavailable` and excluded from aggregates.
+
+### TDD evidence
+
+New tests were written before the fix and the focused suite was RED with seven
+observable failures: H2H-driven tied cutline incorrectly put A over B by point
+differential; the fallback metric was absent; as-of ratings used only the
+latest game (`20.0, 7.0, -20.0` instead of `15.0, -1.5, -13.5`); a game-number
+gap was accepted; non-binary W/L was accepted; and a config for 2024 was used
+for a 2025 partition.  GREEN after the changes: all 13 history tests pass.
+
+New coverage:
+
+- `test_tied_cutline_uses_configured_head_to_head_rank_for_seed_bands`
+- `test_exhausted_tiebreak_fallback_is_labeled_and_counted`
+- `test_as_of_net_rating_accumulates_all_games_before_target_progress`
+- `test_game_number_gap_is_reported_as_incomplete_outcome`
+- `test_non_binary_win_loss_row_fails_closed`
+- `test_wrong_season_config_is_reported_unavailable`
+
+### Self-review
+
+- The tiebreak engine receives the original, validated directional historical
+  table; no synthetic historical head-to-head table is constructed.
+- Task 5's fallback count propagates transparently in the context output.
+- Incomplete outcomes remain excluded rather than becoming partial benchmark
+  observations.  Invalid per-row accounting still fails closed.

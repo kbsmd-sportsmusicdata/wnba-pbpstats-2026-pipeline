@@ -14,6 +14,8 @@ import numpy as np
 import pandas as pd
 
 from .config import load_season_config
+from .team_game_layer import normalize_id
+from .tiebreaks import rank_teams
 
 
 HISTORICAL_CONTEXT_COLUMNS = [
@@ -37,6 +39,7 @@ _REQUIRED_COLUMNS = {
     "season",
     "game_id",
     "team_id",
+    "opponent_id",
     "season_game_number",
     "season_progress_pct",
     "win",
@@ -106,6 +109,10 @@ def _validate_history_frame(
         raise ValueError(f"historical partition season={season} contains another season")
     if result.duplicated(["season", "team_id", "game_id"]).any():
         raise ValueError(f"historical season {season} has duplicate season-team-game rows")
+    for column in ("team_id", "opponent_id"):
+        result[column] = result[column].map(normalize_id)
+        if result[column].isna().any() or result[column].eq("").any():
+            raise ValueError(f"historical season {season} has invalid {column}")
     result["season_progress_pct"] = pd.to_numeric(
         result["season_progress_pct"], errors="coerce"
     )
@@ -125,16 +132,29 @@ def _validate_history_frame(
         if values.isna().any() or (~np.isfinite(values)).any():
             raise ValueError(f"historical season {season} has invalid {column}")
         result[column] = values
-    if result["team_id"].isna().any() or result["team_id"].astype(str).str.strip().eq("").any():
-        raise ValueError(f"historical season {season} has invalid team_id")
-    games_by_team = result.groupby("team_id", sort=False)["season_game_number"].max()
-    if len(games_by_team) != team_count or not games_by_team.eq(regular_season_games).all():
+    if (
+        result["season_game_number"].mod(1).ne(0).any()
+        or result["season_game_number"].le(0).any()
+    ):
+        raise ValueError(f"historical season {season} has invalid season_game_number")
+    result["season_game_number"] = result["season_game_number"].astype(int)
+    if (
+        ~result["win"].isin((0, 1)).all()
+        or ~result["loss"].isin((0, 1)).all()
+        or result["win"].add(result["loss"]).ne(1).any()
+    ):
+        raise ValueError(f"historical season {season} violates win/loss invariant")
+    expected_game_numbers = set(range(1, regular_season_games + 1))
+    game_numbers = result.groupby("team_id", sort=False)["season_game_number"].agg(set)
+    if len(game_numbers) != team_count or not game_numbers.map(
+        lambda values: values == expected_game_numbers
+    ).all():
         raise ValueError(f"historical season {season} has incomplete season outcomes")
     return result
 
 
-def _final_standings(frame: pd.DataFrame) -> pd.DataFrame:
-    """Derive deterministic final descriptive ranks after the full season ends."""
+def _final_standings(frame: pd.DataFrame, cfg: object) -> tuple[pd.DataFrame, int]:
+    """Derive official-config final ranks from completed directional games."""
 
     final = (
         frame.sort_values(["team_id", "season_game_number", "game_id"], kind="stable")
@@ -153,13 +173,21 @@ def _final_standings(frame: pd.DataFrame) -> pd.DataFrame:
     final["final_win_pct"] = final["final_wins"] / (
         final["final_wins"] + final["final_losses"]
     )
-    final = final.sort_values(
-        ["final_wins", "final_losses", "final_point_diff", "team_id"],
-        ascending=[False, True, False, True],
-        kind="stable",
-    ).reset_index(drop=True)
-    final["final_rank"] = final.index + 1
-    return final
+    final_state = final.rename(
+        columns={
+            "final_wins": "wins",
+            "final_losses": "losses",
+            "final_point_diff": "point_differential",
+        }
+    )[["team_id", "wins", "losses", "point_differential"]]
+    ranking = rank_teams(final_state, frame, cfg)
+    rank_by_team = {
+        team_id: rank for rank, team_id in enumerate(ranking.ordered_team_ids, start=1)
+    }
+    final["final_rank"] = final["team_id"].map(rank_by_team)
+    if final["final_rank"].isna().any():
+        raise ValueError("historical final ranking omitted a team")
+    return final.sort_values("final_rank", kind="stable").reset_index(drop=True), ranking.fallback_count
 
 
 def _seed_band(final_rank: int, playoff_qualifiers: int) -> str:
@@ -173,10 +201,11 @@ def _seed_band(final_rank: int, playoff_qualifiers: int) -> str:
 def _season_rows(
     frame: pd.DataFrame,
     season: int,
-    playoff_qualifiers: int,
+    cfg: object,
     target_progress_pct: float,
 ) -> list[dict[str, Any]]:
-    final = _final_standings(frame)
+    final, fallback_count = _final_standings(frame, cfg)
+    playoff_qualifiers = cfg.playoff_qualifiers
     qualifier = final.iloc[playoff_qualifiers - 1]
     first_out = final.iloc[playoff_qualifiers]
     rows: list[dict[str, Any]] = []
@@ -208,6 +237,7 @@ def _season_rows(
     add("final_first_out_win_pct", first_out.final_win_pct)
     add("final_cutline_gap_wins", qualifier.final_wins - first_out.final_wins)
     add("final_cutline_gap_win_pct", qualifier.final_win_pct - first_out.final_win_pct)
+    add("final_tiebreak_fallback_count", fallback_count)
     for team in final.itertuples(index=False):
         rows.append(
             {
@@ -230,12 +260,12 @@ def _season_rows(
 
     # Freeze each team's latest row at or before target progress, then join only
     # those frozen features to fully completed final outcomes.
-    as_of = frame.loc[frame["season_progress_pct"].le(target_progress_pct)].copy()
-    as_of = as_of.sort_values(
+    eligible_as_of = frame.loc[frame["season_progress_pct"].le(target_progress_pct)].copy()
+    as_of = eligible_as_of.sort_values(
         ["team_id", "season_progress_pct", "season_game_number", "game_id"],
         kind="stable",
     ).groupby("team_id", as_index=False, sort=False).tail(1)
-    as_of_ratings = as_of.groupby("team_id", sort=False).agg(
+    as_of_ratings = eligible_as_of.groupby("team_id", sort=False).agg(
         as_of_margin=("margin", "sum"),
         as_of_possessions=("possessions_est", "sum"),
     )
@@ -280,6 +310,7 @@ def _aggregate(rows: pd.DataFrame) -> list[dict[str, Any]]:
         "final_first_out_win_pct",
         "final_cutline_gap_wins",
         "final_cutline_gap_win_pct",
+        "final_tiebreak_fallback_count",
     ):
         values = season_rows.loc[season_rows["metric"].eq(metric), "value"]
         if values.empty:
@@ -354,6 +385,9 @@ def build_historical_context(
         except (FileNotFoundError, ValueError, KeyError):
             rows.append(_status_row(season, "season_config_unavailable"))
             continue
+        if getattr(cfg, "season", None) != season:
+            rows.append(_status_row(season, "season_config_unavailable"))
+            continue
         parquet_path = partition / "team_game.parquet"
         if not parquet_path.is_file():
             rows.append(_status_row(season, "team_game_unavailable"))
@@ -376,7 +410,7 @@ def build_historical_context(
             continue
         rows.extend(
             _season_rows(
-                validated, season, cfg.playoff_qualifiers, float(target_progress_pct)
+                validated, season, cfg, float(target_progress_pct)
             )
         )
     if not rows:
