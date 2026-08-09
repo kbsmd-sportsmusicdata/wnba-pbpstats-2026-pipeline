@@ -17,6 +17,17 @@ REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
 WORKFLOW_PATH = (
     REPOSITORY_ROOT / ".github/workflows/standings-playoff-forecast.yml"
 )
+REQUIRED_ARTIFACTS = (
+    "analysis/standings_playoff_forecast/deliverables/season=2026/latest/wnba_standings_playoff_forecast.xlsx",
+    "analysis/standings_playoff_forecast/deliverables/season=2026/latest/wnba_broadcast_forecast_brief.md",
+    "analysis/standings_playoff_forecast/deliverables/season=2026/latest/wnba_playoff_stat_pack_insert.html",
+    "analysis/standings_playoff_forecast/deliverables/season=2026/latest/dashboard/index.html",
+    "analysis/standings_playoff_forecast/deliverables/season=2026/latest/dashboard/assets/styles.css",
+    "analysis/standings_playoff_forecast/deliverables/season=2026/latest/dashboard/assets/app.js",
+    "analysis/standings_playoff_forecast/deliverables/season=2026/latest/dashboard/assets/charts.js",
+    "analysis/standings_playoff_forecast/deliverables/season=2026/latest/dashboard/data/forecast_payload.json",
+    "analysis/standings_playoff_forecast/data/processed/season=2026/latest/run_manifest.json",
+)
 
 
 def _run(
@@ -223,11 +234,20 @@ class WorkflowContractTests(unittest.TestCase):
             'python -m unittest discover -s tests -p "test_standings_playoff_forecast*.py"',
         )
 
-        build_index = names.index("Build forecast and deliverables")
+        required_order = [
+            "Validate inputs",
+            "Refresh SportsDataverse",
+            "Refresh PBPStats",
+            "Run forecast tests",
+            "Build forecast and deliverables",
+            "Validate forecast artifacts",
+            "actions/upload-artifact@v7",
+            "Commit forecast outputs if requested",
+        ]
+        positions = [names.index(item) for item in required_order]
+        self.assertEqual(positions, sorted(positions))
+
         upload_index = names.index("actions/upload-artifact@v7")
-        commit_index = names.index("Commit forecast outputs if requested")
-        self.assertLess(build_index, upload_index)
-        self.assertLess(upload_index, commit_index)
 
         upload = steps[upload_index]
         self.assertEqual(
@@ -241,8 +261,54 @@ class WorkflowContractTests(unittest.TestCase):
                 "analysis/standings_playoff_forecast/data/processed/season=${{ inputs.season }}/latest/run_manifest.json",
             ],
         )
+        self.assertEqual(upload["with"]["if-no-files-found"], "error")
         commit = _named_step(workflow, "Commit forecast outputs if requested")
         self.assertEqual(commit["if"], "${{ inputs.commit_outputs }}")
+
+    def test_preupload_validation_requires_every_nonempty_artifact(self) -> None:
+        workflow = _load_workflow()
+        validation = _named_step(workflow, "Validate forecast artifacts")["run"]
+
+        def materialize(root: Path) -> None:
+            for relative in REQUIRED_ARTIFACTS:
+                destination = root / relative
+                destination.parent.mkdir(parents=True, exist_ok=True)
+                destination.write_bytes(b"validated-artifact\n")
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            materialize(root)
+            complete = _run(
+                ["bash", "-euo", "pipefail", "-c", validation],
+                cwd=root,
+                env=_workflow_env(),
+                check=False,
+            )
+            self.assertEqual(complete.returncode, 0, complete.stderr)
+
+            for relative in REQUIRED_ARTIFACTS:
+                with self.subTest(relative=relative, failure="missing"):
+                    target = root / relative
+                    target.unlink()
+                    missing = _run(
+                        ["bash", "-euo", "pipefail", "-c", validation],
+                        cwd=root,
+                        env=_workflow_env(),
+                        check=False,
+                    )
+                    self.assertNotEqual(missing.returncode, 0)
+                    target.write_bytes(b"validated-artifact\n")
+
+                with self.subTest(relative=relative, failure="empty"):
+                    target.write_bytes(b"")
+                    empty = _run(
+                        ["bash", "-euo", "pipefail", "-c", validation],
+                        cwd=root,
+                        env=_workflow_env(),
+                        check=False,
+                    )
+                    self.assertNotEqual(empty.returncode, 0)
+                    target.write_bytes(b"validated-artifact\n")
 
     def test_build_array_preserves_argument_boundaries_and_optional_cutoff(self) -> None:
         workflow = _load_workflow()

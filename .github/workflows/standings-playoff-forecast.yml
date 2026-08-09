@@ -128,10 +128,34 @@ jobs:
           fi
           python scripts/build_standings_playoff_forecast.py "${ARGS[@]}"
 
+      - name: Validate forecast artifacts
+        run: |
+          set -euo pipefail
+          DELIVERABLE_ROOT="analysis/standings_playoff_forecast/deliverables/season=$FORECAST_SEASON/latest"
+          PROCESSED_ROOT="analysis/standings_playoff_forecast/data/processed/season=$FORECAST_SEASON/latest"
+          REQUIRED_FILES=(
+            "$DELIVERABLE_ROOT/wnba_standings_playoff_forecast.xlsx"
+            "$DELIVERABLE_ROOT/wnba_broadcast_forecast_brief.md"
+            "$DELIVERABLE_ROOT/wnba_playoff_stat_pack_insert.html"
+            "$DELIVERABLE_ROOT/dashboard/index.html"
+            "$DELIVERABLE_ROOT/dashboard/assets/styles.css"
+            "$DELIVERABLE_ROOT/dashboard/assets/app.js"
+            "$DELIVERABLE_ROOT/dashboard/assets/charts.js"
+            "$DELIVERABLE_ROOT/dashboard/data/forecast_payload.json"
+            "$PROCESSED_ROOT/run_manifest.json"
+          )
+          for artifact in "${REQUIRED_FILES[@]}"; do
+            if [[ ! -s "$artifact" ]]; then
+              echo "required forecast artifact is missing or empty: $artifact" >&2
+              exit 1
+            fi
+          done
+
       - name: Upload forecast artifact
         uses: actions/upload-artifact@v7
         with:
           name: wnba-standings-forecast-${{ inputs.season }}-${{ github.run_id }}
+          if-no-files-found: error
           path: |
             analysis/standings_playoff_forecast/deliverables/season=${{ inputs.season }}/latest/**
             analysis/standings_playoff_forecast/data/processed/season=${{ inputs.season }}/latest/run_manifest.json
