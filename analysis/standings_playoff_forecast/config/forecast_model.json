@@ -1,0 +1,30 @@
+{
+  "model_version": "v1_heuristic_margin",
+  "predictive_rating": {
+    "season_net_rating_weight": 0.7,
+    "recent_net_rating_weight": 0.3
+  },
+  "context_adjustments": {
+    "home_court_points": 1.5,
+    "rest_day_points": 0.35,
+    "max_rest_day_adjustment": 2,
+    "back_to_back_penalty_points": 0.75
+  },
+  "margin_model": {
+    "minimum_sigma": 8.0,
+    "maximum_sigma": 18.0
+  },
+  "explanatory_strength": {
+    "season_net_rating": 0.35,
+    "season_win_pct": 0.2,
+    "recent_net_rating": 0.15,
+    "efg_diff": 0.1,
+    "tov_diff": 0.08,
+    "oreb_diff": 0.07,
+    "ftr_diff": 0.05
+  },
+  "pbpstats_enrichment": {
+    "enabled": true,
+    "required": false
+  }
+}
