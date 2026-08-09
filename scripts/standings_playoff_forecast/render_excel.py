@@ -404,7 +404,17 @@ def _team_context(frames: Mapping[str, pd.DataFrame]) -> pd.DataFrame:
         ["composite_strength", "team_id"], ascending=[False, True], kind="stable"
     ).reset_index(drop=True)
     strength["strength_rank"] = range(1, len(strength) + 1)
-    context = current.merge(strength, on="team_id", how="left", validate="one_to_one")
+    strength_enrichment_columns = [
+        column
+        for column in strength.columns
+        if column == "team_id" or column not in current.columns
+    ]
+    context = current.merge(
+        strength[strength_enrichment_columns],
+        on="team_id",
+        how="left",
+        validate="one_to_one",
+    )
     context = context.merge(
         forecast[
             ["team_id", "playoff_probability", "expected_final_rank"]

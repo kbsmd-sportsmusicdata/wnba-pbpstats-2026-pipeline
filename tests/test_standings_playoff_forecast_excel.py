@@ -159,6 +159,35 @@ def _header_map(sheet) -> dict[str, int]:
 
 
 class ExcelRendererTests(unittest.TestCase):
+    def test_current_standings_owns_identity_when_strength_repeats_metadata(self):
+        from standings_playoff_forecast.render_excel import render_excel
+
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            cfg, processed_root = _literal_bundle(root)
+            current = pd.read_csv(processed_root / "current_standings.csv")
+            strength_path = processed_root / "team_strength.csv"
+            strength = pd.read_csv(strength_path)
+            production_identity = current[
+                ["team_id", "franchise_id", "team_abbreviation", "team_name"]
+            ]
+            strength = strength.merge(
+                production_identity,
+                on="team_id",
+                how="left",
+                validate="one_to_one",
+            )
+            strength.to_csv(strength_path, index=False)
+
+            workbook_path = render_excel(processed_root, _team_games(), cfg=cfg)
+            workbook = load_workbook(workbook_path, data_only=False)
+            standings = workbook["Current Standings"]
+            headers = _header_map(standings)
+            self.assertEqual(
+                [standings.cell(row, headers["Team"]).value for row in (3, 4)],
+                ["ALP", "BRV"],
+            )
+
     def test_renders_exact_workbook_contract_without_recalculating_forecast(self):
         from standings_playoff_forecast.render_excel import render_excel
 
