@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import math
 import os
 import tempfile
 from pathlib import Path
@@ -141,12 +142,56 @@ PROBABILITY_COLUMNS = {
         "out_probability",
     ),
     "rank_probability_matrix": ("probability",),
-    "playoff_leverage_games": tuple(
-        column
-        for column in LEVERAGE_COLUMNS
-        if "probability" in column and not column.endswith("available")
-    ),
 }
+
+BOOLEAN_FLAG_COLUMNS = (
+    "conditional_estimate_available",
+    "direct_h2h_tiebreak_flag",
+    "cutline_matchup_flag",
+    "top4_matchup_flag",
+)
+
+CONDITIONAL_PROBABILITY_GROUPS = (
+    (
+        "home_playoff_probability_if_home_win",
+        "home_playoff_probability_if_home_loss",
+        "home_playoff_probability_swing",
+    ),
+    (
+        "away_playoff_probability_if_home_win",
+        "away_playoff_probability_if_home_loss",
+        "away_playoff_probability_swing",
+    ),
+    (
+        "home_top4_probability_if_home_win",
+        "home_top4_probability_if_home_loss",
+        "home_top4_probability_swing",
+    ),
+    (
+        "away_top4_probability_if_home_win",
+        "away_top4_probability_if_home_loss",
+        "away_top4_probability_swing",
+    ),
+)
+
+CONDITIONAL_RANK_GROUPS = (
+    (
+        "home_expected_rank_if_home_win",
+        "home_expected_rank_if_home_loss",
+        "home_expected_rank_swing",
+    ),
+    (
+        "away_expected_rank_if_home_win",
+        "away_expected_rank_if_home_loss",
+        "away_expected_rank_swing",
+    ),
+)
+
+CONDITIONAL_VALUE_COLUMNS = tuple(
+    column
+    for group in (*CONDITIONAL_PROBABILITY_GROUPS, *CONDITIONAL_RANK_GROUPS)
+    for column in group
+)
 
 TIEBREAK_LABELS = {
     "head_to_head_win_pct": "Head-to-head record",
@@ -200,6 +245,128 @@ def _validate_probability_columns(
             or not present.between(0, 1).all()
         ):
             raise ValueError(f"{name} probabilities must be finite and within [0, 1]")
+
+
+def _nullable_boolean(value: object, label: str) -> bool | None:
+    if value is None or value is pd.NA:
+        return None
+    try:
+        if pd.isna(value):
+            return None
+    except (TypeError, ValueError):
+        pass
+    if isinstance(value, (bool, np.bool_)):
+        return bool(value)
+    if isinstance(value, str):
+        normalized = value.strip().lower()
+        if normalized == "true":
+            return True
+        if normalized == "false":
+            return False
+    raise ValueError(f"{label} must use the strict nullable Boolean domain")
+
+
+def _validate_status_proof(forecast: pd.DataFrame) -> None:
+    for index, row in forecast.iterrows():
+        clinched = _nullable_boolean(
+            row["clinched_playoffs"], "forecast_summary clinched_playoffs"
+        )
+        eliminated = _nullable_boolean(
+            row["eliminated_from_playoffs"],
+            "forecast_summary eliminated_from_playoffs",
+        )
+        if clinched is True and eliminated is True:
+            raise ValueError(
+                "forecast_summary clinched_playoffs and eliminated_from_playoffs "
+                "cannot both be true"
+            )
+        note = str(row.get("status_note", "")).strip().lower()
+        if clinched is True and ("eliminat" in note or note == "not_evaluated"):
+            raise ValueError("forecast_summary status_note contradicts clinched proof")
+        if eliminated is True and ("clinch" in note or note == "not_evaluated"):
+            raise ValueError("forecast_summary status_note contradicts eliminated proof")
+        forecast.at[index, "clinched_playoffs"] = clinched
+        forecast.at[index, "eliminated_from_playoffs"] = eliminated
+
+
+def _validate_conditional_state(
+    leverage: pd.DataFrame, *, simulation_count: int, team_count: int
+) -> None:
+    for column in BOOLEAN_FLAG_COLUMNS:
+        leverage[column] = leverage[column].map(
+            lambda value, label=column: _nullable_boolean(
+                value, f"playoff_leverage_games {label}"
+            )
+        )
+        if leverage[column].isna().any():
+            raise ValueError(
+                f"playoff_leverage_games {column} must use a non-null Boolean"
+            )
+
+    for _, row in leverage.iterrows():
+        home_wins = int(row["home_win_branch_n"])
+        home_losses = int(row["home_loss_branch_n"])
+        if home_wins + home_losses != simulation_count:
+            raise ValueError(
+                "playoff_leverage_games branch counts must sum to simulation_count"
+            )
+        available = bool(row["conditional_estimate_available"])
+        raw_supplied = pd.Series(
+            [row[column] for column in CONDITIONAL_VALUE_COLUMNS], dtype=object
+        )
+        supplied = pd.to_numeric(raw_supplied, errors="coerce")
+        if available:
+            if home_wins <= 0 or home_losses <= 0:
+                raise ValueError(
+                    "available conditional estimates require both branches to be positive"
+                )
+            if supplied.isna().any() or not np.isfinite(
+                supplied.to_numpy(dtype=float)
+            ).all():
+                raise ValueError(
+                    "available conditional values must all be finite and populated"
+                )
+            for win_column, loss_column, swing_column in CONDITIONAL_PROBABILITY_GROUPS:
+                win_value = float(row[win_column])
+                loss_value = float(row[loss_column])
+                swing_value = float(row[swing_column])
+                if not 0 <= win_value <= 1 or not 0 <= loss_value <= 1:
+                    raise ValueError(
+                        "conditional probabilities must be within [0, 1]"
+                    )
+                if not math.isclose(
+                    swing_value,
+                    win_value - loss_value,
+                    rel_tol=0.0,
+                    abs_tol=1e-12,
+                ):
+                    raise ValueError(
+                        "conditional swing must equal home-win minus home-loss rate"
+                    )
+            for win_column, loss_column, swing_column in CONDITIONAL_RANK_GROUPS:
+                win_value = float(row[win_column])
+                loss_value = float(row[loss_column])
+                swing_value = float(row[swing_column])
+                if not 1 <= win_value <= team_count or not 1 <= loss_value <= team_count:
+                    raise ValueError("conditional expected ranks must be configured ranks")
+                if not math.isclose(
+                    swing_value,
+                    loss_value - win_value,
+                    rel_tol=0.0,
+                    abs_tol=1e-12,
+                ):
+                    raise ValueError(
+                        "conditional swing must equal home-loss minus home-win expected rank"
+                    )
+        else:
+            if home_wins > 0 and home_losses > 0:
+                raise ValueError(
+                    "unavailable conditional estimates require an empty branch"
+                )
+            if raw_supplied.notna().any():
+                raise ValueError(
+                    "unavailable conditional values must all be null"
+                )
 
 
 def _load_inputs(
@@ -283,6 +450,7 @@ def _load_inputs(
         raise ValueError("current_standings team universe must match configured season")
     if set(forecast["team_id"]) != team_ids or forecast["team_id"].duplicated().any():
         raise ValueError("forecast_summary team universe must match current_standings")
+    _validate_status_proof(forecast)
     ranks = pd.to_numeric(forecast["current_rank"], errors="coerce")
     if sorted(ranks.tolist()) != list(range(1, int(cfg.team_count) + 1)):
         raise ValueError("forecast_summary current_rank must be a complete permutation")
@@ -341,6 +509,11 @@ def _load_inputs(
         or branch_counts.mod(1).ne(0).any().any()
     ):
         raise ValueError("playoff_leverage_games score/branch values are invalid")
+    _validate_conditional_state(
+        leverage,
+        simulation_count=int(manifest["simulation_count"]),
+        team_count=int(cfg.team_count),
+    )
 
     for name in ("forecast_summary", "rank_probability_matrix"):
         seasons = pd.to_numeric(frames[name]["season"], errors="coerce")
@@ -405,11 +578,8 @@ def _date(value: object) -> str:
 
 
 def _boolean(value: object) -> bool:
-    if value is None or pd.isna(value):
-        return False
-    if isinstance(value, str):
-        return value.strip().lower() in {"true", "1", "yes"}
-    return bool(value)
+    parsed = _nullable_boolean(value, "validated Boolean")
+    return parsed is True
 
 
 def _table(headers: tuple[str, ...], rows: list[tuple[object, ...]]) -> list[str]:
@@ -427,7 +597,23 @@ def _status(row: pd.Series) -> str:
     if _boolean(row.get("eliminated_from_playoffs")):
         return "Mathematically eliminated"
     note = _clean_text(row.get("status_note"))
+    proof_language = "clinch" in note.lower() or "eliminat" in note.lower()
+    if (
+        row.get("clinched_playoffs") is None
+        or pd.isna(row.get("clinched_playoffs"))
+        or row.get("eliminated_from_playoffs") is None
+        or pd.isna(row.get("eliminated_from_playoffs"))
+    ):
+        if (
+            note.lower() != "not_evaluated"
+            and note != "Unavailable"
+            and not proof_language
+        ):
+            return note.replace("_", " ").capitalize()
+        return "Status not evaluated"
     if note.lower() == "not_evaluated" or note == "Unavailable":
+        return "Status not evaluated"
+    if proof_language:
         return "Status not evaluated"
     return note.replace("_", " ").capitalize()
 
@@ -484,7 +670,7 @@ def _build_markdown(
             f"`{_clean_text(manifest['model_version'])}`; PBP enrichment "
             f"**{_clean_text(manifest['pbpstats_enrichment_status'])}**; history "
             f"**{history_state}** ({history_season_text}); "
-            f"{int(manifest['official_tiebreak_fallback_count']):,} stable-ID fallbacks."
+            f"{int(manifest['official_tiebreak_fallback_count']):,} stable-ID fallback events."
         ),
         "",
         f"## {SECTION_ORDER[0]}",
@@ -629,7 +815,7 @@ def _build_markdown(
     else:
         game_story = insights.loc[insights["category"].eq("high_leverage_game")]
         story = game_story.iloc[0] if not game_story.empty else insights.iloc[0]
-        for row in leverage.head(5).itertuples():
+        for row in leverage.itertuples():
             home = abbreviations[row.home_id]
             away = abbreviations[row.away_id]
             lines.extend(
@@ -667,7 +853,7 @@ def _build_markdown(
         )
         lines.append(f"\n- Direct-H2H watch: {_clean_text(flagged_games)}.")
     lines.append(
-        f"- Fallback audit: **{int(manifest['official_tiebreak_fallback_count']):,}** simulations required stable-ID ordering after the official criteria remained tied. Stable normalized team ID is an implementation fallback, not an official WNBA tiebreak rule."
+        f"- Fallback audit: **{int(manifest['official_tiebreak_fallback_count']):,} stable-ID fallback events** — unresolved tied subgroups across simulation rankings after the official criteria remained tied. Stable normalized team ID is an implementation fallback, not an official WNBA tiebreak rule."
     )
 
     lines.extend(["", f"## {SECTION_ORDER[8]}", ""])
