@@ -1,0 +1,76 @@
+@page { size: 17in 11in; margin: 0.25in; }
+
+:root {
+  --navy: #12233f;
+  --navy-2: #1b3153;
+  --blue: #1f5f9c;
+  --blue-pale: #eaf2f9;
+  --amber: #bd6900;
+  --amber-pale: #fff4df;
+  --ink: #1d2734;
+  --muted: #5e6978;
+  --rule: #cbd5df;
+  --paper: #ffffff;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; background: var(--paper); color: var(--ink); }
+body { font-family: Arial, Helvetica, sans-serif; font-size: 9px; line-height: 1.25; }
+.sheet { width: 16.5in; height: 10.5in; overflow: hidden; display: grid; grid-template-rows: 1.75in 5.55in 3.08in; gap: 0.06in; }
+h1, h2, h3, p, dl, ol { margin-top: 0; }
+h1, h2, h3 { font-family: Georgia, "Times New Roman", serif; color: var(--navy); }
+h1 { margin-bottom: 0.05in; font-size: 28px; line-height: 1; text-transform: uppercase; letter-spacing: -0.4px; }
+h2 { margin: 0; padding: 0.07in 0.1in; font-size: 13px; line-height: 1.05; background: var(--navy); color: white; text-transform: uppercase; letter-spacing: 0.25px; }
+h3 { margin: 0.08in 0 0.03in; font-size: 10px; text-transform: uppercase; }
+.masthead { display: grid; grid-template-columns: 2.8fr 1.5fr 2fr 1.4fr; border: 1px solid var(--navy); min-height: 0; }
+.masthead > * { min-width: 0; padding: 0.1in; border-right: 1px solid var(--navy); overflow: hidden; }
+.masthead > *:last-child { border-right: 0; }
+.masthead h2 { margin: -0.1in -0.1in 0.08in; }
+.title-block { display: flex; flex-direction: column; justify-content: center; }
+.title-block p { margin: 0; font: 700 14px/1.2 Arial, sans-serif; color: var(--navy-2); letter-spacing: 1.4px; text-transform: uppercase; }
+dl { margin-bottom: 0; }
+dl div { display: grid; grid-template-columns: 0.9fr 1.1fr; gap: 0.05in; padding: 0.025in 0; }
+dt { font-weight: 700; }
+dd { margin: 0; }
+.cutline-block { text-align: center; }
+.cutline-callout { margin: 0.18in 0 0.08in; color: var(--amber); font: 700 17px/1.1 Georgia, serif; text-transform: uppercase; border-bottom: 2px dashed var(--amber); padding-bottom: 0.08in; }
+.cutline-teams { font-size: 11px; line-height: 1.4; }
+.primary-grid { display: grid; grid-template-columns: 1.35fr 1.45fr 1.65fr; gap: 0.06in; min-height: 0; }
+.bottom-grid { display: grid; grid-template-columns: 1.25fr 1fr 1.15fr; gap: 0.06in; min-height: 0; }
+.zone { border: 1px solid var(--navy); min-width: 0; overflow: hidden; }
+.zone > :not(h2) { margin-left: 0.08in; margin-right: 0.08in; }
+.zone-note { margin-top: 0.05in; margin-bottom: 0.04in; font-style: italic; color: var(--muted); }
+.table-scroll { overflow: hidden; }
+table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+th, td { padding: 0.025in 0.035in; border-bottom: 1px solid #e2e8ef; text-align: right; white-space: nowrap; }
+th { color: var(--navy); font-size: 8px; text-transform: uppercase; border-bottom-color: var(--navy); }
+th:nth-child(2), td:nth-child(2) { text-align: left; }
+tbody tr:nth-child(even) { background: #f5f8fb; }
+.field-block table { font-size: 8px; }
+.field-block th, .field-block td { padding: 0.008in 0.025in; line-height: 1.05; }
+.probability { color: var(--blue); }
+.heat-table { font-size: 7.5px; }
+.heat-table th, .heat-table td { padding: 0.021in 0.018in; text-align: center; }
+.heat-table th:first-child, .heat-table td:first-child { text-align: left; font-weight: 700; }
+.heat-cell { display: block; padding: 0.03in 0.01in; background: color-mix(in srgb, var(--blue) var(--heat), white); color: var(--navy); }
+.schedule table { font-size: 8px; }
+.schedule .data-table th:last-child, .schedule .data-table td:last-child { white-space: normal; }
+.nuggets ol { list-style: none; padding: 0; margin-top: 0.06in; }
+.nugget { display: grid; grid-template-columns: 0.25in 1fr; gap: 0.04in; border-bottom: 1px solid var(--rule); padding: 0.045in 0; }
+.nugget-number { width: 0.2in; height: 0.2in; display: grid; place-items: center; background: var(--navy); color: white; font-weight: 700; }
+.nugget em { display: block; color: var(--muted); margin-top: 0.015in; }
+.tiebreak ol { margin: 0.05in 0 0.05in 0.25in; padding: 0; }
+.tiebreak li { padding: 0.025in 0; }
+.methodology p { margin-top: 0.08in; font-size: 9px; line-height: 1.4; }
+.caveat { padding-top: 0.05in; border-top: 1px solid var(--rule); color: var(--muted); font-style: italic; }
+.empty-state { padding: 0.08in; background: var(--blue-pale); color: var(--muted); }
+
+@media screen {
+  body { padding: 20px; background: #dfe5ec; }
+  .sheet { margin: 0 auto; background: white; box-shadow: 0 8px 30px rgba(18, 35, 63, 0.18); }
+}
+
+@media print {
+  body { background: white; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+  .sheet { margin: 0; box-shadow: none; }
+}

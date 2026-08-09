@@ -544,7 +544,7 @@ class OrchestratorIntegrationTests(unittest.TestCase):
             with self.assertRaisesRegex(FileNotFoundError, "missing schedule"):
                 builder.run_forecast(options())
 
-    def test_render_all_registers_excel_and_markdown_then_names_remaining_renderers(self):
+    def test_render_all_runs_all_four_renderers(self):
         cfg = season_config(Path("/tmp"))
         result = SimpleNamespace(
             output_path=Path("/tmp/output/data/processed/season=2026/latest"),
@@ -556,12 +556,10 @@ class OrchestratorIntegrationTests(unittest.TestCase):
             patch.object(builder, "_run_pipeline", return_value=result),
             patch.object(builder, "render_excel", return_value=Path("/tmp/forecast.xlsx")) as excel,
             patch.object(builder, "render_markdown", return_value=Path("/tmp/brief.md")) as markdown,
+            patch.object(builder, "render_stat_pack", return_value=Path("/tmp/stat-pack.html")) as stat_pack,
+            patch.object(builder, "render_dashboard", return_value=Path("/tmp/dashboard/index.html")) as dashboard,
         ):
-            with self.assertRaisesRegex(
-                NotImplementedError,
-                "stat-pack and dashboard renderers",
-            ):
-                builder.run_forecast(options(render="all"))
+            self.assertIs(builder.run_forecast(options(render="all")), result)
 
         excel.assert_called_once_with(
             result.output_path,
@@ -569,8 +567,10 @@ class OrchestratorIntegrationTests(unittest.TestCase):
             cfg=cfg,
         )
         markdown.assert_called_once_with(result.output_path, cfg=cfg)
+        stat_pack.assert_called_once_with(result.output_path, cfg=cfg)
+        dashboard.assert_called_once_with(result.output_path, cfg=cfg)
 
-    def test_render_none_never_invokes_excel_or_markdown(self):
+    def test_render_none_never_invokes_any_renderer(self):
         cfg = season_config(Path("/tmp"))
         result = SimpleNamespace()
         with (
@@ -579,10 +579,14 @@ class OrchestratorIntegrationTests(unittest.TestCase):
             patch.object(builder, "_run_pipeline", return_value=result),
             patch.object(builder, "render_excel") as excel,
             patch.object(builder, "render_markdown") as markdown,
+            patch.object(builder, "render_stat_pack") as stat_pack,
+            patch.object(builder, "render_dashboard") as dashboard,
         ):
             self.assertIs(builder.run_forecast(options(render="none")), result)
         excel.assert_not_called()
         markdown.assert_not_called()
+        stat_pack.assert_not_called()
+        dashboard.assert_not_called()
 
 
 if __name__ == "__main__":
