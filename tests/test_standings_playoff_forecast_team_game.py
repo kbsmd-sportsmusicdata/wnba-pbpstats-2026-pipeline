@@ -11,6 +11,20 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 
 
+def _fixture_config(
+    source_root: Path, *, season: int = 2026, games_per_team: int = 1
+):
+    from standings_playoff_forecast.config import load_season_config
+
+    return replace(
+        load_season_config(2026),
+        season=season,
+        team_count=2,
+        regular_season_games_per_team=games_per_team,
+        normalized_team_game_root=str(source_root / "processed"),
+    )
+
+
 def _write_source_fixture(source_root: Path) -> dict[str, Path]:
     paths = {
         "schedule_path": source_root / "schedule.parquet",
@@ -25,6 +39,7 @@ def _write_source_fixture(source_root: Path) -> dict[str, Path]:
                 "season_type": 2,
                 "game_date": "2026-06-01",
                 "status_type_completed": True,
+                "status_type_name": "STATUS_FINAL",
                 "type_abbreviation": "STD",
                 "format_regulation_periods": 4,
                 "status_period": 4,
@@ -172,12 +187,9 @@ class TeamGameLayerTest(unittest.TestCase):
         from standings_playoff_forecast.data_sources import load_forecast_sources
         from standings_playoff_forecast.team_game_layer import build_team_game_layer
 
-        cfg = load_season_config(2026)
         with tempfile.TemporaryDirectory() as temp_dir:
             source_root = Path(temp_dir)
-            cfg = replace(
-                cfg, normalized_team_game_root=str(source_root / "processed")
-            )
+            cfg = _fixture_config(source_root)
             paths = _write_source_fixture(source_root)
             sources = load_forecast_sources(
                 cfg,
@@ -203,10 +215,7 @@ class TeamGameLayerTest(unittest.TestCase):
 
         with tempfile.TemporaryDirectory() as temp_dir:
             source_root = Path(temp_dir)
-            cfg = replace(
-                load_season_config(2026),
-                normalized_team_game_root=str(source_root / "processed"),
-            )
+            cfg = _fixture_config(source_root)
             paths = _write_source_fixture(source_root)
             schedule = pd.read_parquet(paths["schedule_path"])
             schedule["status_type_completed"] = False
@@ -233,12 +242,9 @@ class TeamGameLayerTest(unittest.TestCase):
         from standings_playoff_forecast.data_sources import load_forecast_sources
         from standings_playoff_forecast.team_game_layer import build_team_game_layer
 
-        cfg = load_season_config(2026)
         with tempfile.TemporaryDirectory() as temp_dir:
             source_root = Path(temp_dir)
-            cfg = replace(
-                cfg, normalized_team_game_root=str(source_root / "processed")
-            )
+            cfg = _fixture_config(source_root)
             paths = _write_source_fixture(source_root)
             team_games = build_team_game_layer(
                 load_forecast_sources(
@@ -263,10 +269,7 @@ class TeamGameLayerTest(unittest.TestCase):
 
         with tempfile.TemporaryDirectory() as temp_dir:
             source_root = Path(temp_dir)
-            cfg = replace(
-                load_season_config(2026),
-                normalized_team_game_root=str(source_root / "processed"),
-            )
+            cfg = _fixture_config(source_root)
             paths = _write_source_fixture(source_root)
             history_path = source_root / "team_history.csv"
             pd.DataFrame(
@@ -293,12 +296,9 @@ class TeamGameLayerTest(unittest.TestCase):
         from standings_playoff_forecast.data_sources import load_forecast_sources
         from standings_playoff_forecast.team_game_layer import build_team_game_layer
 
-        cfg = load_season_config(2026)
         with tempfile.TemporaryDirectory() as temp_dir:
             source_root = Path(temp_dir)
-            cfg = replace(
-                cfg, normalized_team_game_root=str(source_root / "processed")
-            )
+            cfg = _fixture_config(source_root, games_per_team=2)
             paths = _write_source_fixture(source_root)
             _append_game(
                 paths,
@@ -345,12 +345,9 @@ class TeamGameLayerTest(unittest.TestCase):
         from standings_playoff_forecast.data_sources import load_forecast_sources
         from standings_playoff_forecast.team_game_layer import build_team_game_layer
 
-        cfg = load_season_config(2026)
         with tempfile.TemporaryDirectory() as temp_dir:
             source_root = Path(temp_dir)
-            cfg = replace(
-                cfg, normalized_team_game_root=str(source_root / "processed")
-            )
+            cfg = _fixture_config(source_root, games_per_team=2)
             paths = _write_source_fixture(source_root)
             _append_game(
                 paths,
@@ -374,19 +371,16 @@ class TeamGameLayerTest(unittest.TestCase):
         self.assertEqual(las_vegas["losses_to_date"].tolist(), [0, 1])
         self.assertEqual(las_vegas["win_pct_to_date"].tolist(), [1.0, 0.5])
         self.assertEqual(las_vegas["point_diff_to_date"].tolist(), [10, 9])
-        self.assertEqual(las_vegas["season_progress_pct"].tolist(), [1 / 44, 2 / 44])
+        self.assertEqual(las_vegas["season_progress_pct"].tolist(), [0.5, 1.0])
 
     def test_consecutive_game_dates_mark_a_back_to_back(self) -> None:
         from standings_playoff_forecast.config import load_season_config
         from standings_playoff_forecast.data_sources import load_forecast_sources
         from standings_playoff_forecast.team_game_layer import build_team_game_layer
 
-        cfg = load_season_config(2026)
         with tempfile.TemporaryDirectory() as temp_dir:
             source_root = Path(temp_dir)
-            cfg = replace(
-                cfg, normalized_team_game_root=str(source_root / "processed")
-            )
+            cfg = _fixture_config(source_root, games_per_team=2)
             paths = _write_source_fixture(source_root)
             _append_game(
                 paths,
@@ -414,12 +408,9 @@ class TeamGameLayerTest(unittest.TestCase):
         from standings_playoff_forecast.data_sources import load_forecast_sources
         from standings_playoff_forecast.team_game_layer import build_team_game_layer
 
-        cfg = load_season_config(2026)
         with tempfile.TemporaryDirectory() as temp_dir:
             source_root = Path(temp_dir)
-            cfg = replace(
-                cfg, normalized_team_game_root=str(source_root / "processed")
-            )
+            cfg = _fixture_config(source_root)
             paths = _write_source_fixture(source_root)
             team_games = build_team_game_layer(
                 load_forecast_sources(
@@ -452,10 +443,7 @@ class TeamGameLayerTest(unittest.TestCase):
 
         with tempfile.TemporaryDirectory() as temp_dir:
             source_root = Path(temp_dir)
-            cfg = replace(
-                load_season_config(2026),
-                normalized_team_game_root=str(source_root / "processed"),
-            )
+            cfg = _fixture_config(source_root)
             paths = _write_source_fixture(source_root)
             schedule = pd.read_parquet(paths["schedule_path"])
             schedule["status_period"] = 5
@@ -478,12 +466,9 @@ class TeamGameLayerTest(unittest.TestCase):
         from standings_playoff_forecast.data_sources import load_forecast_sources
         from standings_playoff_forecast.team_game_layer import build_team_game_layer
 
-        cfg = load_season_config(2026)
         with tempfile.TemporaryDirectory() as temp_dir:
             source_root = Path(temp_dir)
-            cfg = replace(
-                cfg, normalized_team_game_root=str(source_root / "processed")
-            )
+            cfg = _fixture_config(source_root)
             paths = _write_source_fixture(source_root)
             pd.DataFrame(
                 {"game_id": [501.0, 501.0], "team_id": [17.0, 19.0]}
@@ -522,10 +507,7 @@ class TeamGameLayerTest(unittest.TestCase):
 
         with tempfile.TemporaryDirectory() as temp_dir:
             source_root = Path(temp_dir)
-            cfg = replace(
-                load_season_config(2026),
-                normalized_team_game_root=str(source_root / "processed"),
-            )
+            cfg = _fixture_config(source_root)
             paths = _write_source_fixture(source_root)
             team_box = pd.read_parquet(paths["team_box_path"])
             metric_columns = [
@@ -566,11 +548,7 @@ class TeamGameLayerTest(unittest.TestCase):
 
         with tempfile.TemporaryDirectory() as temp_dir:
             source_root = Path(temp_dir)
-            cfg = replace(
-                load_season_config(2026),
-                season=2030,
-                normalized_team_game_root=str(source_root / "processed"),
-            )
+            cfg = _fixture_config(source_root, season=2030)
             paths = _write_source_fixture(source_root)
             schedule = pd.read_parquet(paths["schedule_path"])
             schedule["season"] = 2030
@@ -609,11 +587,7 @@ class TeamGameLayerTest(unittest.TestCase):
 
         with tempfile.TemporaryDirectory() as temp_dir:
             source_root = Path(temp_dir)
-            cfg = replace(
-                load_season_config(2026),
-                season=2030,
-                normalized_team_game_root=str(source_root / "processed"),
-            )
+            cfg = _fixture_config(source_root, season=2030)
             paths = _write_source_fixture(source_root)
             _append_game(
                 paths,
@@ -653,10 +627,7 @@ class TeamGameLayerTest(unittest.TestCase):
 
         with tempfile.TemporaryDirectory() as temp_dir:
             source_root = Path(temp_dir)
-            cfg = replace(
-                load_season_config(2026),
-                normalized_team_game_root=str(source_root / "processed"),
-            )
+            cfg = _fixture_config(source_root, games_per_team=2)
             paths = _write_source_fixture(source_root)
             _append_game(
                 paths,
@@ -703,6 +674,46 @@ class TeamGameLayerTest(unittest.TestCase):
         self.assertEqual(
             team_games.groupby("game_id").size().to_dict(), {"501": 2, "502": 2}
         )
+
+    def test_full_std_schedule_excludes_an_extra_completed_cup_final(self) -> None:
+        from standings_playoff_forecast.data_sources import load_forecast_sources
+        from standings_playoff_forecast.team_game_layer import build_team_game_layer
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            source_root = Path(temp_dir)
+            cfg = _fixture_config(source_root, games_per_team=2)
+            paths = _write_source_fixture(source_root)
+            _append_game(
+                paths,
+                game_id=502.0,
+                game_date="2026-06-02",
+                home_score=75,
+                away_score=76,
+            )
+            _append_game(
+                paths,
+                game_id=503.0,
+                game_date="2026-06-03",
+                home_score=81,
+                away_score=79,
+            )
+            schedule = pd.read_parquet(paths["schedule_path"])
+            schedule.loc[
+                schedule["game_id"] == 503.0, "type_abbreviation"
+            ] = "CC"
+            schedule.to_parquet(paths["schedule_path"])
+
+            team_games = build_team_game_layer(
+                load_forecast_sources(
+                    cfg,
+                    **paths,
+                    pbp_team_features_path=source_root / "not-present.csv",
+                ),
+                cfg,
+            )
+
+        self.assertEqual(set(team_games["game_id"]), {"501", "502"})
+        self.assertEqual(len(team_games), 4)
 
     def test_output_contract_does_not_smear_optional_season_totals_across_games(self) -> None:
         from standings_playoff_forecast.config import load_season_config
@@ -763,10 +774,7 @@ class TeamGameLayerTest(unittest.TestCase):
         ]
         with tempfile.TemporaryDirectory() as temp_dir:
             source_root = Path(temp_dir)
-            cfg = replace(
-                load_season_config(2026),
-                normalized_team_game_root=str(source_root / "processed"),
-            )
+            cfg = _fixture_config(source_root)
             paths = _write_source_fixture(source_root)
             pbp_path = source_root / "team_totals_features_latest.csv"
             pd.DataFrame(

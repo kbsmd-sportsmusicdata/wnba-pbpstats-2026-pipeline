@@ -20,6 +20,93 @@ def normalize_id(value: object) -> str | None:
     return text[:-2] if text.endswith(".0") else text
 
 
+def _qualifying_cup_games(
+    schedule: pd.DataFrame, cfg: SeasonConfig
+) -> pd.DataFrame:
+    standard = schedule.loc[schedule["type_abbreviation"].eq("STD")].copy()
+    participant_counts = pd.concat(
+        [standard["home_id"], standard["away_id"]], ignore_index=True
+    ).value_counts().to_dict()
+    qualifying_indexes: list[object] = []
+    cup_games = schedule.loc[schedule["type_abbreviation"].eq("CC")].sort_values(
+        ["game_date", "game_id"], kind="stable"
+    )
+    for game in cup_games.itertuples():
+        home_count = participant_counts.get(game.home_id, 0)
+        away_count = participant_counts.get(game.away_id, 0)
+        if (
+            home_count < cfg.regular_season_games_per_team
+            and away_count < cfg.regular_season_games_per_team
+        ):
+            qualifying_indexes.append(game.Index)
+            participant_counts[game.home_id] = home_count + 1
+            participant_counts[game.away_id] = away_count + 1
+    return pd.concat([standard, schedule.loc[qualifying_indexes]], ignore_index=True)
+
+
+def qualify_regular_season_schedule(
+    schedule_df: pd.DataFrame, cfg: SeasonConfig
+) -> pd.DataFrame:
+    """Return the normalized, fully reconciled configured-season schedule."""
+
+    schedule = schedule_df.copy()
+    for column in ("game_id", "home_id", "away_id"):
+        schedule[column] = schedule[column].map(normalize_id)
+    schedule["game_date"] = pd.to_datetime(schedule["game_date"])
+    schedule = schedule.loc[
+        pd.to_numeric(schedule["season"], errors="coerce").eq(cfg.season)
+        & pd.to_numeric(schedule["season_type"], errors="coerce").eq(
+            SPORTSDATAVERSE_REGULAR_SEASON_TYPE
+        )
+        & schedule["type_abbreviation"]
+        .astype("string")
+        .str.strip()
+        .str.upper()
+        .isin(REGULAR_SEASON_EVENT_ABBREVIATIONS)
+    ].copy()
+    schedule["type_abbreviation"] = (
+        schedule["type_abbreviation"].astype("string").str.strip().str.upper()
+    )
+    schedule = schedule.loc[
+        ~schedule["status_type_name"]
+        .astype("string")
+        .str.strip()
+        .str.upper()
+        .eq("STATUS_POSTPONED")
+    ].copy()
+    if schedule["game_id"].isna().any():
+        raise ValueError("schedule has invalid game_id values")
+    if schedule["game_id"].duplicated().any():
+        raise ValueError("schedule contains duplicate game_id values")
+    invalid_participants = (
+        schedule["home_id"].isna()
+        | schedule["away_id"].isna()
+        | schedule["home_id"].eq("")
+        | schedule["away_id"].eq("")
+        | schedule["home_id"].eq(schedule["away_id"])
+    )
+    if invalid_participants.any():
+        raise ValueError("schedule has invalid home/away participants")
+    schedule = _qualifying_cup_games(schedule, cfg)
+    counts = pd.concat(
+        [schedule["home_id"], schedule["away_id"]], ignore_index=True
+    ).value_counts()
+    if len(counts) != cfg.team_count or not counts.eq(
+        cfg.regular_season_games_per_team
+    ).all():
+        count_text = ", ".join(
+            f"{team_id}={count}" for team_id, count in counts.sort_index().items()
+        )
+        raise ValueError(
+            "schedule reconciliation failed: "
+            f"expected {cfg.team_count} teams with "
+            f"{cfg.regular_season_games_per_team} games each; observed {count_text}"
+        )
+    return schedule.sort_values(["game_date", "game_id"], kind="stable").reset_index(
+        drop=True
+    )
+
+
 BOX_SCORE_COLUMNS = [
     "field_goals_made",
     "field_goals_attempted",
@@ -108,24 +195,7 @@ def build_team_game_layer(
     game estimate to the WNBA's 40-minute regulation length.
     """
 
-    schedule = sources.schedule.copy()
-    schedule["game_id"] = schedule["game_id"].map(normalize_id)
-    schedule["home_id"] = schedule["home_id"].map(normalize_id)
-    schedule["away_id"] = schedule["away_id"].map(normalize_id)
-    schedule["game_date"] = pd.to_datetime(schedule["game_date"])
-    schedule = schedule.loc[
-        pd.to_numeric(schedule["season"], errors="coerce").eq(cfg.season)
-    ].copy()
-    schedule = schedule.loc[
-        pd.to_numeric(schedule["season_type"], errors="coerce").eq(
-            SPORTSDATAVERSE_REGULAR_SEASON_TYPE
-        )
-        & schedule["type_abbreviation"]
-        .astype("string")
-        .str.strip()
-        .str.upper()
-        .isin(REGULAR_SEASON_EVENT_ABBREVIATIONS)
-    ].copy()
+    schedule = qualify_regular_season_schedule(sources.schedule, cfg)
     if cutoff is not None:
         schedule = schedule.loc[schedule["game_date"] <= pd.Timestamp(cutoff)].copy()
 

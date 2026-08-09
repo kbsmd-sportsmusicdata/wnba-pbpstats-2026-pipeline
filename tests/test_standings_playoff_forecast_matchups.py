@@ -1,4 +1,5 @@
 import sys
+import tempfile
 import unittest
 from dataclasses import replace
 from pathlib import Path
@@ -298,6 +299,38 @@ class RemainingScheduleTest(unittest.TestCase):
                 schedule, "2026-06-01", _season_cfg(games_per_team=2)
             )
 
+    def test_rejects_blank_normalized_schedule_participant_ids(self) -> None:
+        from standings_playoff_forecast.remaining_schedule import (
+            build_remaining_schedule,
+        )
+
+        schedule = pd.DataFrame(
+            [
+                _schedule_row(
+                    "1", "2026-06-01", completed=True, away_id="   "
+                )
+            ]
+        )
+
+        with self.assertRaisesRegex(ValueError, "invalid home/away participants"):
+            build_remaining_schedule(
+                schedule, "2026-06-01", _season_cfg(games_per_team=1)
+            )
+
+    def test_rejects_null_normalized_schedule_game_id(self) -> None:
+        from standings_playoff_forecast.remaining_schedule import (
+            build_remaining_schedule,
+        )
+
+        schedule = pd.DataFrame(
+            [_schedule_row(None, "2026-06-01", completed=True)]
+        )
+
+        with self.assertRaisesRegex(ValueError, "invalid game_id"):
+            build_remaining_schedule(
+                schedule, "2026-06-01", _season_cfg(games_per_team=1)
+            )
+
 
 class MatchupModelTest(unittest.TestCase):
     def test_scores_exact_pace_scaled_strength_and_context_formula(self) -> None:
@@ -539,6 +572,192 @@ class MatchupModelTest(unittest.TestCase):
         self.assertAlmostEqual(result["expected_home_margin"], 16.5)
         self.assertTrue(0.0 <= result["home_win_probability"] <= 1.0)
         self.assertTrue(0.0 <= result["away_win_probability"] <= 1.0)
+
+    def test_residual_estimation_rejects_a_missing_reciprocal_away_row(self) -> None:
+        from standings_playoff_forecast.config import load_model_config
+        from standings_playoff_forecast.matchup_model import score_matchups
+
+        remaining = pd.DataFrame(
+            [
+                {
+                    "game_id": "future",
+                    "game_date": "2026-06-10",
+                    "home_id": "A",
+                    "away_id": "B",
+                    "home_rest_days": 2,
+                    "away_rest_days": 2,
+                    "home_b2b": False,
+                    "away_b2b": False,
+                }
+            ]
+        )
+        strength = pd.DataFrame(
+            {
+                "team_id": ["A", "B"],
+                "predictive_net_rating": [5.0, -5.0],
+            }
+        )
+        games = _completed_team_games([1.5, 21.5])
+        games = games.loc[
+            ~(
+                games["game_id"].eq("played-2")
+                & games["is_home"].eq(False)
+            )
+        ]
+
+        with self.assertRaisesRegex(ValueError, "reciprocal directional rows"):
+            score_matchups(remaining, strength, games, load_model_config())
+
+    def test_residual_estimation_rejects_missing_completed_game_context(self) -> None:
+        from standings_playoff_forecast.config import load_model_config
+        from standings_playoff_forecast.matchup_model import score_matchups
+
+        remaining = pd.DataFrame(
+            [
+                {
+                    "game_id": "future",
+                    "game_date": "2026-06-10",
+                    "home_id": "A",
+                    "away_id": "B",
+                    "home_rest_days": 2,
+                    "away_rest_days": 2,
+                    "home_b2b": False,
+                    "away_b2b": False,
+                }
+            ]
+        )
+        strength = pd.DataFrame(
+            {
+                "team_id": ["A", "B"],
+                "predictive_net_rating": [5.0, -5.0],
+            }
+        )
+        known = _completed_team_games([1.5])
+        missing = _completed_team_games([5.0]).replace(
+            {"A": "C", "B": "D", "played-1": "missing-context"}
+        )
+
+        with self.assertRaisesRegex(
+            ValueError, "completed games have missing strength or pace"
+        ):
+            score_matchups(
+                remaining,
+                strength,
+                pd.concat([known, missing], ignore_index=True),
+                load_model_config(),
+            )
+
+    def test_canonical_team_games_exclude_extra_cup_before_pace_and_sigma(self) -> None:
+        from standings_playoff_forecast.config import load_model_config
+        from standings_playoff_forecast.data_sources import ForecastSources
+        from standings_playoff_forecast.matchup_model import score_matchups
+        from standings_playoff_forecast.remaining_schedule import (
+            build_remaining_schedule,
+        )
+        from standings_playoff_forecast.team_game_layer import build_team_game_layer
+
+        schedule = pd.DataFrame(
+            [
+                {
+                    **_schedule_row("std-1", "2026-06-01", completed=True),
+                    "home_score": 91.5,
+                    "away_score": 100.0,
+                    "format_regulation_periods": 4,
+                    "status_period": 4,
+                },
+                {
+                    **_schedule_row("std-2", "2026-06-03", completed=True),
+                    "home_score": 111.5,
+                    "away_score": 100.0,
+                    "format_regulation_periods": 4,
+                    "status_period": 4,
+                },
+                {
+                    **_schedule_row("future", "2026-06-05", completed=False),
+                    "home_score": pd.NA,
+                    "away_score": pd.NA,
+                    "format_regulation_periods": 4,
+                    "status_period": 0,
+                },
+                {
+                    **_schedule_row(
+                        "extra-cup",
+                        "2026-06-04",
+                        completed=True,
+                        event_type="CC",
+                    ),
+                    "home_score": 200.0,
+                    "away_score": 50.0,
+                    "format_regulation_periods": 4,
+                    "status_period": 4,
+                },
+            ]
+        )
+        box_rows: list[dict[str, object]] = []
+        for game_id, pace in (
+            ("std-1", 100.0),
+            ("std-2", 80.0),
+            ("extra-cup", 20.0),
+        ):
+            for team_id in ("A", "B"):
+                box_rows.append(
+                    {
+                        "game_id": game_id,
+                        "team_id": team_id,
+                        "field_goals_made": pace / 2,
+                        "field_goals_attempted": pace,
+                        "three_point_field_goals_made": 0,
+                        "free_throws_made": 0,
+                        "free_throws_attempted": 0,
+                        "offensive_rebounds": 0,
+                        "defensive_rebounds": pace / 4,
+                        "turnovers": 0,
+                    }
+                )
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            temp_root = Path(temp_dir)
+            cfg = replace(
+                _season_cfg(games_per_team=3),
+                normalized_team_game_root=str(temp_root / "processed"),
+            )
+            sources = ForecastSources(
+                schedule=schedule,
+                team_box=pd.DataFrame(box_rows),
+                standings=pd.DataFrame({"team_id": ["A", "B"]}),
+                team_history=pd.DataFrame(
+                    {
+                        "season": [2026, 2026],
+                        "sportsdataverse_team_id": ["A", "B"],
+                        "franchise_id": ["alpha", "bravo"],
+                    }
+                ),
+                pbp_team_features=None,
+                schedule_path=temp_root / "schedule.parquet",
+                team_box_path=temp_root / "team_box.parquet",
+                standings_path=temp_root / "standings.parquet",
+                team_history_path=temp_root / "team_history.csv",
+                pbp_team_features_path=None,
+            )
+            team_games = build_team_game_layer(sources, cfg, cutoff="2026-06-04")
+            remaining = build_remaining_schedule(schedule, "2026-06-04", cfg)
+            scored = score_matchups(
+                remaining,
+                pd.DataFrame(
+                    {
+                        "team_id": ["A", "B"],
+                        "predictive_net_rating": [0.0, 0.0],
+                    }
+                ),
+                team_games,
+                load_model_config(),
+            ).iloc[0]
+
+        self.assertEqual(set(team_games["game_id"]), {"std-1", "std-2"})
+        self.assertNotIn("extra-cup", set(team_games["game_id"]))
+        self.assertAlmostEqual(scored["home_pace"], 90.0)
+        self.assertAlmostEqual(scored["away_pace"], 90.0)
+        self.assertAlmostEqual(scored["margin_sigma"], 14.142135623730951)
 
 
 if __name__ == "__main__":

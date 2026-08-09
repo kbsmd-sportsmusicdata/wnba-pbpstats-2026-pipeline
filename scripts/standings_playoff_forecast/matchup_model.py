@@ -50,6 +50,27 @@ def _add_model_frame(
     return framed
 
 
+def _validate_reciprocal_team_games(team_games: pd.DataFrame) -> None:
+    for game_id, game_rows in team_games.groupby("game_id", dropna=False):
+        home_rows = game_rows.loc[game_rows["is_home"].astype(bool)]
+        away_rows = game_rows.loc[~game_rows["is_home"].astype(bool)]
+        if len(game_rows) != 2 or len(home_rows) != 1 or len(away_rows) != 1:
+            raise ValueError(
+                "completed team_games must contain reciprocal directional rows: "
+                f"{game_id}"
+            )
+        home = home_rows.iloc[0]
+        away = away_rows.iloc[0]
+        if (
+            home["team_id"] != away["opponent_id"]
+            or home["opponent_id"] != away["team_id"]
+        ):
+            raise ValueError(
+                "completed team_games must contain reciprocal directional rows: "
+                f"{game_id}"
+            )
+
+
 def _estimate_sigma(
     team_games: pd.DataFrame,
     context: pd.DataFrame,
@@ -88,6 +109,28 @@ def _estimate_sigma(
         how="left",
         validate="many_to_one",
     )
+    completed_context = (
+        "home_predictive_net_rating",
+        "away_predictive_net_rating",
+        "home_pace",
+        "away_pace",
+    )
+    context_is_finite = pd.DataFrame(
+        {
+            column: pd.to_numeric(completed[column], errors="coerce").map(
+                math.isfinite
+            )
+            for column in completed_context
+        }
+    ).all(axis=1)
+    if not context_is_finite.all():
+        invalid_games = ", ".join(
+            completed.loc[~context_is_finite, "game_id"].astype(str)
+        )
+        raise ValueError(
+            "completed games have missing strength or pace context: "
+            f"{invalid_games}"
+        )
     completed = _add_model_frame(completed, model_cfg)
     residuals = pd.to_numeric(
         completed["actual_home_margin"], errors="coerce"
@@ -109,6 +152,7 @@ def score_matchups(
 ) -> pd.DataFrame:
     """Score remaining games using current strength and completed-game pace."""
 
+    _validate_reciprocal_team_games(team_games)
     ratings = strength[["team_id", "predictive_net_rating"]].copy()
     pace = (
         team_games.assign(
