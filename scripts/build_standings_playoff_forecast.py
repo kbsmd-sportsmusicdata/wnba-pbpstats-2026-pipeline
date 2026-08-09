@@ -33,6 +33,7 @@ from standings_playoff_forecast.leverage import calculate_game_leverage
 from standings_playoff_forecast.matchup_model import score_matchups
 from standings_playoff_forecast.outputs import ForecastOutputBundle, write_output_bundle
 from standings_playoff_forecast.remaining_schedule import build_remaining_schedule
+from standings_playoff_forecast.render_excel import render_excel
 from standings_playoff_forecast.simulation import simulate_season
 from standings_playoff_forecast.standings import (
     build_current_standings,
@@ -415,8 +416,14 @@ def run_forecast(options: argparse.Namespace) -> OrchestrationResult:
         historical_context_override=historical_context_override,
     )
     if options.render == "all":
+        render_excel(
+            result.output_path,
+            result.stage_artifacts["team_games"],
+            cfg=cfg,
+        )
         raise NotImplementedError(
-            "presentation renderers are registered in Tasks 13-15; use --render none"
+            "Excel was rendered, but Markdown, stat-pack, and dashboard renderers "
+            "are registered in Tasks 14-15; use --render none until then"
         )
     return result
 

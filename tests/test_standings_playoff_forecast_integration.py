@@ -544,11 +544,41 @@ class OrchestratorIntegrationTests(unittest.TestCase):
             with self.assertRaisesRegex(FileNotFoundError, "missing schedule"):
                 builder.run_forecast(options())
 
-    def test_render_all_fails_clearly_until_renderers_are_registered(self):
-        with patch.object(builder, "_run_pipeline") as pipeline:
-            pipeline.return_value = SimpleNamespace()
-            with self.assertRaisesRegex(NotImplementedError, "renderers"):
+    def test_render_all_registers_excel_then_names_remaining_renderers(self):
+        cfg = season_config(Path("/tmp"))
+        result = SimpleNamespace(
+            output_path=Path("/tmp/output/data/processed/season=2026/latest"),
+            stage_artifacts={"team_games": pd.DataFrame({"team_id": ["A"]})},
+        )
+        with (
+            patch.object(builder, "load_season_config", return_value=cfg),
+            patch.object(builder, "load_model_config", return_value=model_config()),
+            patch.object(builder, "_run_pipeline", return_value=result),
+            patch.object(builder, "render_excel", return_value=Path("/tmp/forecast.xlsx")) as excel,
+        ):
+            with self.assertRaisesRegex(
+                NotImplementedError,
+                "Markdown, stat-pack, and dashboard renderers",
+            ):
                 builder.run_forecast(options(render="all"))
+
+        excel.assert_called_once_with(
+            result.output_path,
+            result.stage_artifacts["team_games"],
+            cfg=cfg,
+        )
+
+    def test_render_none_never_invokes_excel(self):
+        cfg = season_config(Path("/tmp"))
+        result = SimpleNamespace()
+        with (
+            patch.object(builder, "load_season_config", return_value=cfg),
+            patch.object(builder, "load_model_config", return_value=model_config()),
+            patch.object(builder, "_run_pipeline", return_value=result),
+            patch.object(builder, "render_excel") as excel,
+        ):
+            self.assertIs(builder.run_forecast(options(render="none")), result)
+        excel.assert_not_called()
 
 
 if __name__ == "__main__":
