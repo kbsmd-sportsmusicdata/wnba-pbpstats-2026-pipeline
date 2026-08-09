@@ -603,6 +603,15 @@ class SimulationInputValidationTest(unittest.TestCase):
 
         self.assertEqual(configured.simulation_count, 3)
         self.assertEqual(overridden.simulation_count, 2)
+        numpy_controls = simulate_season(
+            _empty_completed(),
+            remaining,
+            cfg,
+            simulation_count=np.int64(2),
+            seed=np.int64(7),
+        )
+        self.assertIs(type(numpy_controls.simulation_count), int)
+        self.assertIs(type(numpy_controls.seed), int)
         for invalid_count in (0, -1, 1.5, True):
             with self.subTest(simulation_count=invalid_count):
                 with self.assertRaisesRegex(

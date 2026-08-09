@@ -432,6 +432,8 @@ def simulate_season(
         raise ValueError("seed must be an integer")
     if seed < 0:
         raise ValueError("seed must be non-negative")
+    count = int(count)
+    seed = int(seed)
     if cfg.team_count <= 0:
         raise ValueError("team_count must be positive")
     if cfg.regular_season_games_per_team <= 0:
