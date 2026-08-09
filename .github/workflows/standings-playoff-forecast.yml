@@ -1,0 +1,158 @@
+name: WNBA Standings and Playoff Forecast
+
+"on":
+  workflow_dispatch:
+    inputs:
+      season:
+        description: "WNBA season"
+        required: true
+        type: string
+        default: "2026"
+      cutoff:
+        description: "Optional YYYY-MM-DD cutoff"
+        required: false
+        type: string
+        default: ""
+      simulations:
+        description: "Monte Carlo runs"
+        required: true
+        type: string
+        default: "100000"
+      refresh_sportsdataverse:
+        description: "Refresh 2026 SportsDataverse sources"
+        required: true
+        type: boolean
+        default: false
+      refresh_pbpstats:
+        description: "Refresh 2026 PBPStats sources"
+        required: true
+        type: boolean
+        default: false
+      run_tests:
+        description: "Run standings forecast tests before building"
+        required: true
+        type: boolean
+        default: true
+      commit_outputs:
+        description: "Commit only generated forecast outputs"
+        required: true
+        type: boolean
+        default: false
+
+concurrency:
+  group: standings-playoff-forecast-${{ inputs.season }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  standings-playoff-forecast:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    permissions:
+      contents: write
+    env:
+      FORECAST_SEASON: ${{ inputs.season }}
+      FORECAST_CUTOFF: ${{ inputs.cutoff }}
+      FORECAST_SIMULATIONS: ${{ inputs.simulations }}
+      REFRESH_SPORTSDATAVERSE: ${{ inputs.refresh_sportsdataverse }}
+      REFRESH_PBPSTATS: ${{ inputs.refresh_pbpstats }}
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Validate inputs
+        run: |
+          set -euo pipefail
+
+          if [[ ! "$FORECAST_SEASON" =~ ^[0-9]{4}$ ]]; then
+            echo "season must be exactly four digits" >&2
+            exit 2
+          fi
+          if [[ ! "$FORECAST_SIMULATIONS" =~ ^[0-9]+$ ]] || [[ "$FORECAST_SIMULATIONS" =~ ^0+$ ]]; then
+            echo "simulations must be a positive integer" >&2
+            exit 2
+          fi
+          if [[ -n "$FORECAST_CUTOFF" ]]; then
+            if [[ ! "$FORECAST_CUTOFF" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]]; then
+              echo "cutoff must use strict YYYY-MM-DD format" >&2
+              exit 2
+            fi
+            python - "$FORECAST_CUTOFF" <<'PY'
+          import datetime as dt
+          import sys
+
+          try:
+              parsed = dt.date.fromisoformat(sys.argv[1])
+          except ValueError as error:
+              raise SystemExit(f"cutoff must be a real calendar date: {error}")
+          if parsed.isoformat() != sys.argv[1]:
+              raise SystemExit("cutoff must use strict YYYY-MM-DD format")
+          PY
+          fi
+          if [[ "$FORECAST_SEASON" != "2026" ]] && \
+             [[ "$REFRESH_SPORTSDATAVERSE" == "true" || "$REFRESH_PBPSTATS" == "true" ]]; then
+            echo "source refresh is supported only for season 2026" >&2
+            exit 2
+          fi
+
+      - name: Refresh SportsDataverse
+        if: ${{ inputs.refresh_sportsdataverse && inputs.season == '2026' }}
+        run: python scripts/fetch_wnba_sportsdataverse_2026.py
+
+      - name: Refresh PBPStats
+        if: ${{ inputs.refresh_pbpstats && inputs.season == '2026' }}
+        run: |
+          python scripts/pbpstats_2026_pull_clean.py
+          python scripts/pbpstats_2026_features.py
+
+      - name: Run forecast tests
+        if: ${{ inputs.run_tests }}
+        run: python -m unittest discover -s tests -p "test_standings_playoff_forecast*.py"
+
+      - name: Build forecast and deliverables
+        run: |
+          set -euo pipefail
+          ARGS=(--season "$FORECAST_SEASON" --simulations "$FORECAST_SIMULATIONS" --render all)
+          if [[ -n "$FORECAST_CUTOFF" ]]; then
+            ARGS+=(--cutoff "$FORECAST_CUTOFF")
+          fi
+          python scripts/build_standings_playoff_forecast.py "${ARGS[@]}"
+
+      - name: Upload forecast artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: wnba-standings-forecast-${{ inputs.season }}-${{ github.run_id }}
+          path: |
+            analysis/standings_playoff_forecast/deliverables/season=${{ inputs.season }}/latest/**
+            analysis/standings_playoff_forecast/data/processed/season=${{ inputs.season }}/latest/run_manifest.json
+
+      - name: Commit forecast outputs if requested
+        if: ${{ inputs.commit_outputs }}
+        run: |
+          set -euo pipefail
+          if [[ "${GITHUB_REF_TYPE:-}" != "branch" || -z "${GITHUB_REF_NAME:-}" ]]; then
+            echo "commit_outputs requires a branch ref" >&2
+            exit 2
+          fi
+          git add -- \
+            "analysis/standings_playoff_forecast/data/processed/season=$FORECAST_SEASON/latest" \
+            "analysis/standings_playoff_forecast/deliverables/season=$FORECAST_SEASON/latest" \
+            "data/processed/wnba_team_game/season=$FORECAST_SEASON/team_game.parquet"
+          if git diff --cached --quiet; then
+            echo "No standings forecast output changes to commit"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "chore: refresh WNBA $FORECAST_SEASON standings forecast"
+          git push origin "HEAD:$GITHUB_REF_NAME"
