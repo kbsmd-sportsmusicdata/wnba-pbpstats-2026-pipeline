@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import datetime as dt
 import json
 import sys
 import tempfile
@@ -234,6 +235,21 @@ class ExcelRendererTests(unittest.TestCase):
             self.assertEqual(source.cell(3, source_headers["Team ID"]).value, "A")
             self.assertEqual(source.freeze_panes, "F3")
             self.assertTrue(source.tables)
+            cumulative_contract = {
+                "Wins To Date": (1, "#,##0"),
+                "Losses To Date": (0, "#,##0"),
+                "Win Pct To Date": (1.0, "0.0%"),
+                "Point Diff To Date": (10, "+0;-0;0"),
+            }
+            for header, (expected_value, expected_format) in cumulative_contract.items():
+                cell = source.cell(3, source_headers[header])
+                self.assertEqual(cell.value, expected_value)
+                self.assertIsInstance(cell.value, (int, float))
+                self.assertNotIsInstance(cell.value, (dt.date, dt.time))
+                self.assertEqual(cell.number_format, expected_format)
+            date_cell = source.cell(3, source_headers["Date"])
+            self.assertIsInstance(date_cell.value, dt.datetime)
+            self.assertEqual(date_cell.number_format, "yyyy-mm-dd")
 
             formulas = [
                 cell.value

@@ -312,8 +312,12 @@ def _number_format_for_header(header: str) -> str | None:
     lower = header.lower()
     if "%" in header or "probability" in lower or "win pct" in lower:
         return "0.0%"
-    if header == "Date" or lower.endswith(" date"):
+    if lower in {"date", "game date", "cutoff date", "pbpstats snapshot as of"}:
         return "yyyy-mm-dd"
+    if lower in {"wins to date", "losses to date"}:
+        return "#,##0"
+    if lower == "point diff to date":
+        return "+0;-0;0"
     if any(token in lower for token in ("netrtg", "margin", "point diff", "strength", "expected rank", "projected wins")):
         return "0.0"
     if lower in {"gp", "w", "l", "rank", "strength rank", "sos rank", "priority"}:
