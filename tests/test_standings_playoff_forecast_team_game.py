@@ -256,6 +256,38 @@ class TeamGameLayerTest(unittest.TestCase):
         self.assertEqual(chicago["franchise_id"], "chicago_sky")
         self.assertEqual(chicago["opponent_franchise_id"], "las_vegas_aces")
 
+    def test_missing_season_franchise_mapping_fails_with_team_ids(self) -> None:
+        from standings_playoff_forecast.config import load_season_config
+        from standings_playoff_forecast.data_sources import load_forecast_sources
+        from standings_playoff_forecast.team_game_layer import build_team_game_layer
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            source_root = Path(temp_dir)
+            cfg = replace(
+                load_season_config(2026),
+                normalized_team_game_root=str(source_root / "processed"),
+            )
+            paths = _write_source_fixture(source_root)
+            history_path = source_root / "team_history.csv"
+            pd.DataFrame(
+                {
+                    "season": [2026],
+                    "sportsdataverse_team_id": [17],
+                    "franchise_id": ["las_vegas_aces"],
+                }
+            ).to_csv(history_path, index=False)
+            sources = load_forecast_sources(
+                cfg,
+                **paths,
+                team_history_path=history_path,
+                pbp_team_features_path=source_root / "not-present.csv",
+            )
+
+            with self.assertRaisesRegex(
+                ValueError, "missing franchise mappings for season 2026: 19"
+            ):
+                build_team_game_layer(sources, cfg)
+
     def test_post_cutoff_mutation_cannot_change_as_of_team_games(self) -> None:
         from standings_playoff_forecast.config import load_season_config
         from standings_playoff_forecast.data_sources import load_forecast_sources
@@ -613,6 +645,64 @@ class TeamGameLayerTest(unittest.TestCase):
 
         self.assertEqual(team_games["game_id"].tolist(), ["502", "502"])
         self.assertEqual(team_games["season"].tolist(), [2030, 2030])
+
+    def test_regular_season_filter_keeps_std_and_cc_but_excludes_postseason(self) -> None:
+        from standings_playoff_forecast.config import load_season_config
+        from standings_playoff_forecast.data_sources import load_forecast_sources
+        from standings_playoff_forecast.team_game_layer import build_team_game_layer
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            source_root = Path(temp_dir)
+            cfg = replace(
+                load_season_config(2026),
+                normalized_team_game_root=str(source_root / "processed"),
+            )
+            paths = _write_source_fixture(source_root)
+            _append_game(
+                paths,
+                game_id=502.0,
+                game_date="2026-06-02",
+                home_score=75,
+                away_score=76,
+            )
+            _append_game(
+                paths,
+                game_id=503.0,
+                game_date="2026-09-20",
+                home_score=81,
+                away_score=79,
+            )
+            _append_game(
+                paths,
+                game_id=504.0,
+                game_date="2026-07-20",
+                home_score=120,
+                away_score=119,
+            )
+            schedule = pd.read_parquet(paths["schedule_path"])
+            schedule.loc[
+                schedule["game_id"] == 502.0, "type_abbreviation"
+            ] = "CC"
+            schedule.loc[
+                schedule["game_id"] == 503.0, "season_type"
+            ] = 3
+            schedule.loc[
+                schedule["game_id"] == 504.0, "type_abbreviation"
+            ] = "ALLSTAR"
+            schedule.to_parquet(paths["schedule_path"])
+            team_games = build_team_game_layer(
+                load_forecast_sources(
+                    cfg,
+                    **paths,
+                    pbp_team_features_path=source_root / "not-present.csv",
+                ),
+                cfg,
+            )
+
+        self.assertEqual(set(team_games["game_id"]), {"501", "502"})
+        self.assertEqual(
+            team_games.groupby("game_id").size().to_dict(), {"501": 2, "502": 2}
+        )
 
     def test_output_contract_does_not_smear_optional_season_totals_across_games(self) -> None:
         from standings_playoff_forecast.config import load_season_config

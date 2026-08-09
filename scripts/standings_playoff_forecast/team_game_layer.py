@@ -9,6 +9,8 @@ from .data_sources import ForecastSources
 
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
+SPORTSDATAVERSE_REGULAR_SEASON_TYPE = 2
+REGULAR_SEASON_EVENT_ABBREVIATIONS = frozenset({"STD", "CC"})
 
 
 def normalize_id(value: object) -> str | None:
@@ -113,6 +115,16 @@ def build_team_game_layer(
     schedule["game_date"] = pd.to_datetime(schedule["game_date"])
     schedule = schedule.loc[
         pd.to_numeric(schedule["season"], errors="coerce").eq(cfg.season)
+    ].copy()
+    schedule = schedule.loc[
+        pd.to_numeric(schedule["season_type"], errors="coerce").eq(
+            SPORTSDATAVERSE_REGULAR_SEASON_TYPE
+        )
+        & schedule["type_abbreviation"]
+        .astype("string")
+        .str.strip()
+        .str.upper()
+        .isin(REGULAR_SEASON_EVENT_ABBREVIATIONS)
     ].copy()
     if cutoff is not None:
         schedule = schedule.loc[schedule["game_date"] <= pd.Timestamp(cutoff)].copy()
@@ -244,6 +256,18 @@ def build_team_game_layer(
         how="left",
         validate="many_to_one",
     )
+    missing_team_ids = set(
+        team_rows.loc[team_rows["franchise_id"].isna(), "team_id"]
+    ) | set(
+        team_rows.loc[
+            team_rows["opponent_franchise_id"].isna(), "opponent_id"
+        ]
+    )
+    if missing_team_ids:
+        missing_text = ", ".join(sorted(missing_team_ids))
+        raise ValueError(
+            f"missing franchise mappings for season {cfg.season}: {missing_text}"
+        )
 
     team_possessions = (
         team_rows["field_goals_attempted"]
