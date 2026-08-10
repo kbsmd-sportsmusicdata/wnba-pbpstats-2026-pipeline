@@ -59,10 +59,17 @@ def build_2026_file_list() -> Dict[str, Dict[str, str]]:
             "size_note": "~16-18 KB",
             "source": "ESPN",
         },
+        # ESPN WNBA Standings (explicitly targeted from tag: espn_wnba_standings)
         f"standings_{year}.parquet": {
             "url": espn("espn_wnba_standings", f"standings_{year}.parquet"),
             "size_note": "~15-16 KB",
-            "source": "ESPN",
+            "source": "ESPN WNBA Standings",
+        },
+        # Optional: Add the stats.wnba.com standings under a distinct local name if you wish to compare them
+        f"wnba_stats_standings_{year}.parquet": {
+            "url": wnba("wnba_stats_standings", f"standings_{year}.parquet"),
+            "size_note": "~35 KB",
+            "source": "WNBA.com Stats",
         },
         f"shots_{year}.parquet": {
             "url": espn("espn_wnba_shots", f"shots_{year}.parquet"),
