@@ -60,10 +60,17 @@ def build_2026_file_list() -> Dict[str, Dict[str, str]]:
             "size_note": "~16-18 KB",
             "source": "ESPN",
         },
+        # ESPN WNBA Standings
         f"standings_{year}.parquet": {
             "url": espn("espn_wnba_standings", f"standings_{year}.parquet"),
             "size_note": "~15-16 KB",
             "source": "ESPN",
+        },
+        # WNBA.com Stats Standings
+        f"wnba_stats_standings_{year}.parquet": {
+            "url": wnba("wnba_stats_standings", f"standings_{year}.parquet"),
+            "size_note": "~35 KB",
+            "source": "WNBA.com",
         },
         f"shots_{year}.parquet": {
             "url": espn("espn_wnba_shots", f"shots_{year}.parquet"),
