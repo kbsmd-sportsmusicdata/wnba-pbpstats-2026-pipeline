@@ -1,5 +1,5 @@
 {
-  "file_count": 11,
+  "file_count": 12,
   "files": [
     {
       "column_count": 67,
@@ -77,7 +77,7 @@
       "row_count": 330,
       "sha256": "fc245fce420417c8f47dbd74f883fd017f3ee4b0d61c4e4bf9ff50a2f66e9af2",
       "size_note": "~15-16 KB",
-      "source": "ESPN",
+      "source": "ESPN WNBA Standings",
       "success": true,
       "url": "https://github.com/sportsdataverse/sportsdataverse-data/releases/download/espn_wnba_standings/standings_2026.parquet"
     },
@@ -110,6 +110,16 @@
       "source": "WNBA.com",
       "success": true,
       "url": "https://github.com/sportsdataverse/sportsdataverse-data/releases/download/wnba_stats_pbp/play_by_play_2026.parquet"
+    },
+    {
+      "column_count": 94,
+      "filename": "wnba_stats_standings_2026.parquet",
+      "row_count": 15,
+      "sha256": "3797c3cb5399a87c67052cbbb6390300286716e240a31212481402d4263005fb",
+      "size_note": "~35 KB",
+      "source": "WNBA.com Stats",
+      "success": true,
+      "url": "https://github.com/sportsdataverse/sportsdataverse-data/releases/download/wnba_stats_standings/standings_2026.parquet"
     }
   ],
   "output_dir": "data/raw/sportsdataverse/wnba_2026",
