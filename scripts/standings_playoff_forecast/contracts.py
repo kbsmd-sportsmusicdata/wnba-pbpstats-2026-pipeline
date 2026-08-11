@@ -1,6 +1,7 @@
 """Typed configuration contracts for the standings forecast."""
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+from types import MappingProxyType
 from typing import Mapping
 
 
@@ -24,6 +25,9 @@ class SeasonConfig:
     source_files: Mapping[str, str]
     output_root: str
     normalized_team_game_root: str
+    optional_validation_files: Mapping[str, str] = field(
+        default_factory=lambda: MappingProxyType({})
+    )
 
 
 @dataclass(frozen=True)

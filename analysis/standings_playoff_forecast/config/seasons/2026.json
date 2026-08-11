@@ -16,8 +16,10 @@
   "source_files": {
     "schedule": "schedule_2026.parquet",
     "team_box": "team_box_2026.parquet",
-    "standings": "standings_2026.parquet",
     "pbp_team_features": "features_latest/2026/team_totals_features_latest.csv"
+  },
+  "optional_validation_files": {
+    "standings": "standings_2026.parquet"
   },
   "output_root": "analysis/standings_playoff_forecast",
   "normalized_team_game_root": "data/processed/wnba_team_game"

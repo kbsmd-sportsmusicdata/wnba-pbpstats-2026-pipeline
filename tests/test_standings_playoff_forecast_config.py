@@ -22,6 +22,19 @@ class StandingsPlayoffForecastConfigTest(unittest.TestCase):
         self.assertEqual(cfg.regular_season_games_per_team, 44)
         self.assertEqual(cfg.playoff_qualifiers, 8)
 
+    def test_2026_standings_is_optional_validation_source(self) -> None:
+        from standings_playoff_forecast.config import load_season_config
+
+        cfg = load_season_config(2026)
+
+        self.assertIn("schedule", cfg.source_files)
+        self.assertIn("team_box", cfg.source_files)
+        self.assertNotIn("standings", cfg.source_files)
+        self.assertEqual(
+            cfg.optional_validation_files["standings"],
+            "standings_2026.parquet",
+        )
+
     def test_rejects_unknown_season_without_a_verified_config(self) -> None:
         from standings_playoff_forecast.config import load_season_config
 
