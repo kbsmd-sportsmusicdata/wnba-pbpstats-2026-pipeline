@@ -5,6 +5,8 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+import re
+import signal
 import shutil
 import subprocess
 import sys
@@ -41,6 +43,48 @@ DASHBOARD_FILES = {
 class _QuietHttpHandler(SimpleHTTPRequestHandler):
     def log_message(self, format, *args):  # noqa: A002
         return
+
+    def copyfile(self, source, outputfile):
+        try:
+            super().copyfile(source, outputfile)
+        except (BrokenPipeError, ConnectionResetError):
+            # Browser navigation can abandon an in-flight fixture response.
+            return
+
+
+def _run_node_browser(
+    command: list[str], *, node_modules: Path, timeout: int
+) -> subprocess.CompletedProcess[str]:
+    """Run a browser helper with bounded whole-process-tree cleanup."""
+
+    process = subprocess.Popen(
+        command,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+        env={**os.environ, "NODE_PATH": str(node_modules)},
+        start_new_session=True,
+    )
+    try:
+        stdout, stderr = process.communicate(timeout=timeout)
+    except subprocess.TimeoutExpired as error:
+        os.killpg(process.pid, signal.SIGTERM)
+        try:
+            stdout, stderr = process.communicate(timeout=3)
+        except subprocess.TimeoutExpired:
+            os.killpg(process.pid, signal.SIGKILL)
+            stdout, stderr = process.communicate()
+        partial_stderr = error.stderr or stderr or ""
+        if isinstance(partial_stderr, bytes):
+            partial_stderr = partial_stderr.decode("utf-8", errors="replace")
+        raise AssertionError(
+            f"browser helper timed out after {timeout}s; partial stderr:\n"
+            f"{partial_stderr}"
+        ) from error
+    completed = subprocess.CompletedProcess(command, process.returncode, stdout, stderr)
+    if completed.returncode:
+        raise AssertionError(completed.stderr or completed.stdout)
+    return completed
 
 
 def _find_playwright_node_modules() -> Path:
@@ -85,8 +129,21 @@ history.replaceState = (...args) => { window.__historyCalls.replace += 1; return
         ),
         encoding="utf-8",
     )
+    fallback_root = root / "dashboard-fallback"
+    shutil.copytree(dashboard_root, fallback_root)
+    fallback_index = fallback_root / "index.html"
+    fallback_index.write_text(
+        re.sub(
+            r'\s*<script id="forecast-payload" type="application/json">.*?</script>',
+            "",
+            fallback_index.read_text(encoding="utf-8"),
+            count=1,
+            flags=re.DOTALL,
+        ),
+        encoding="utf-8",
+    )
     error_root = root / "dashboard-error"
-    shutil.copytree(dashboard_root, error_root)
+    shutil.copytree(fallback_root, error_root)
     (error_root / "data/forecast_payload.json").unlink()
 
     runner = root / "dashboard_dom_runner.html"
@@ -129,6 +186,11 @@ const assert = (condition, message) => { if (!condition) throw new Error(message
   assert(doc.querySelector('input[name="probability"][value="rank"]').checked, "probability control not restored");
   assert(doc.querySelector('input[name="race"][value="all"]').checked, "race control not restored");
 
+  frame.src = "dashboard-fallback/index.html";
+  await waitFor(() => frame.contentDocument?.getElementById("app-status")?.textContent.includes("teams shown"), "hosted JSON fallback");
+  doc = frame.contentDocument;
+  assert(doc.getElementById("current-table").textContent.includes("ALP"), "hosted fallback content missing");
+
   frame.src = "dashboard-error/index.html";
   await waitFor(() => frame.contentDocument?.getElementById("error-state")?.textContent.includes("Forecast unavailable"), "payload error");
   doc = frame.contentDocument;
@@ -151,9 +213,12 @@ const assert = (condition, message) => { if (!condition) throw new Error(message
     await page.waitForFunction(() => document.getElementById("result").textContent !== "RUNNING", null, {timeout: 10000});
     console.log(await page.locator("#result").textContent());
   } finally {
-    await browser.close();
+    await Promise.race([
+      browser.close(),
+      new Promise((resolve) => setTimeout(resolve, 3000)),
+    ]);
   }
-})().catch((error) => { console.error(error); process.exit(1); });
+})().then(() => process.exit(0)).catch((error) => { console.error(error); process.exit(1); });
 """,
         encoding="utf-8",
     )
@@ -164,23 +229,78 @@ const assert = (condition, message) => { if (!condition) throw new Error(message
     thread.start()
     try:
         url = f"http://127.0.0.1:{server.server_port}/{runner.name}"
-        completed = subprocess.run(
-            [
-                "node",
-                str(browser_runner),
-                url,
-            ],
-            check=True,
-            capture_output=True,
-            text=True,
-            timeout=20,
-            env={**os.environ, "NODE_PATH": str(node_modules)},
+        completed = _run_node_browser(
+            ["node", str(browser_runner), url],
+            node_modules=node_modules,
+            timeout=45,
         )
         return completed.stdout
     finally:
         server.shutdown()
         server.server_close()
         thread.join(timeout=2)
+
+
+def _run_dashboard_file_contract(index_path: Path) -> str:
+    """Open the published index directly and exercise real browser controls."""
+
+    node_modules = _find_playwright_node_modules()
+    runner = index_path.parent.parent / "run_dashboard_file.cjs"
+    runner.write_text(
+        """const { chromium } = require("playwright-core");
+(async () => {
+  console.error("STAGE chromium.launch start");
+  const browser = await chromium.launch({channel: "chrome", headless: true});
+  console.error("STAGE chromium.launch complete");
+  try {
+    const page = await browser.newPage();
+    console.error("STAGE browser.newPage complete");
+    await page.goto(process.argv[2]);
+    console.error("STAGE page.goto complete");
+    await page.waitForFunction(() => document.getElementById("app-status").textContent.includes("teams shown"), null, {timeout: 10000});
+    console.error("STAGE waitForFunction complete");
+    console.error("STAGE selectOption start");
+    await page.locator("#team-select").selectOption("B", {timeout: 5000});
+    console.error("STAGE selectOption complete");
+    console.error("STAGE radio label click start");
+    await page.locator('label:has(input[name="probability"][value="rank"])').click({timeout: 5000});
+    console.error("STAGE radio label click complete");
+    const result = await page.evaluate(() => ({
+      status: document.getElementById("app-status").textContent,
+      current: document.getElementById("current-table").textContent,
+      projected: document.getElementById("projected-table").textContent,
+      selectedTeam: document.getElementById("team-select").value,
+      rankChecked: document.querySelector('input[name="probability"][value="rank"]').checked,
+      errorHidden: document.getElementById("error-state").hidden,
+    }));
+    if (!result.status.includes("teams shown") ||
+        !result.current.includes("ALP") ||
+        !result.current.includes("Home") ||
+        !result.current.includes("Current .500+") ||
+        !result.projected.includes("Modal final rank") ||
+        result.selectedTeam !== "B" || !result.rankChecked || !result.errorHidden) {
+      throw new Error(`direct-file contract failed: ${JSON.stringify(result)}`);
+    }
+    console.error("STAGE assertions complete");
+    console.log("PASS");
+  } finally {
+    console.error("STAGE browser.close start");
+    await Promise.race([
+      browser.close(),
+      new Promise((resolve) => setTimeout(resolve, 3000)),
+    ]);
+    console.error("STAGE browser.close complete");
+  }
+})().then(() => process.exit(0)).catch((error) => { console.error(error); process.exit(1); });
+""",
+        encoding="utf-8",
+    )
+    completed = _run_node_browser(
+        ["node", str(runner), index_path.as_uri()],
+        node_modules=node_modules,
+        timeout=45,
+    )
+    return completed.stdout
 
 
 def _measure_stat_pack_top_band(root: Path, filename: str) -> dict:
@@ -206,9 +326,12 @@ def _measure_stat_pack_top_band(root: Path, filename: str) -> dict:
     });
     console.log(JSON.stringify(geometry));
   } finally {
-    await browser.close();
+    await Promise.race([
+      browser.close(),
+      new Promise((resolve) => setTimeout(resolve, 3000)),
+    ]);
   }
-})().catch((error) => { console.error(error); process.exit(1); });
+})().then(() => process.exit(0)).catch((error) => { console.error(error); process.exit(1); });
 """,
         encoding="utf-8",
     )
@@ -218,13 +341,10 @@ def _measure_stat_pack_top_band(root: Path, filename: str) -> dict:
     thread.start()
     try:
         url = f"http://127.0.0.1:{server.server_port}/{filename}"
-        completed = subprocess.run(
+        completed = _run_node_browser(
             ["node", str(runner), url],
-            check=True,
-            capture_output=True,
-            text=True,
-            timeout=20,
-            env={**os.environ, "NODE_PATH": str(node_modules)},
+            node_modules=node_modules,
+            timeout=45,
         )
         return json.loads(completed.stdout)
     finally:
@@ -276,6 +396,37 @@ class WebRendererTests(unittest.TestCase):
             self.assertIn("Literal &lt;script&gt;alert(1)&lt;/script&gt; story.", text)
             self.assertNotIn("<script>alert(1)</script>", text)
             self.assertIn("@page { size: 17in 11in; margin: 0.25in; }", text)
+
+    def test_stat_pack_surfaces_supplied_current_context_and_exact_methodology(self):
+        """Catches omission or reconstruction of supplied standings context."""
+        from standings_playoff_forecast.render_stat_pack import render_stat_pack
+
+        with tempfile.TemporaryDirectory() as temporary:
+            cfg, processed_root = _literal_bundle(Path(temporary))
+            standings_path = processed_root / "current_standings.csv"
+            current = pd.read_csv(standings_path)
+            current["games_back"] = current["games_back"].astype(float)
+            current.loc[current["team_id"].eq("A"), "games_back"] = 7.25
+            current.loc[current["team_id"].eq("A"), "home_record"] = "9-1"
+            current.loc[current["team_id"].eq("A"), "road_record"] = "4-6"
+            current.loc[current["team_id"].eq("A"), "last10_record"] = "8-2"
+            current.loc[current["team_id"].eq("A"), "current_streak_label"] = "W6"
+            current.loc[
+                current["team_id"].eq("A"), "record_vs_current_500_plus"
+            ] = "7-3"
+            current.to_csv(standings_path, index=False)
+
+            text = render_stat_pack(processed_root, cfg=cfg).read_text(encoding="utf-8")
+            for expected in ("7.25", "9-1", "4-6", "8-2", "W6", "7-3"):
+                self.assertIn(expected, text)
+            self.assertIn(
+                "Current standings reconstructed from completed regular-season schedule + team-box results.",
+                text,
+            )
+            self.assertIn(
+                "Current .500+ records are descriptive. Official final tiebreak simulations recompute the .500+ opponent set from each simulated final season.",
+                text,
+            )
 
     def test_stat_pack_is_deterministic_and_schema_failure_preserves_existing_output(self):
         from standings_playoff_forecast.render_stat_pack import render_stat_pack
@@ -427,6 +578,7 @@ class WebRendererTests(unittest.TestCase):
                 self.assertIn(f'id="{control}"', html)
             self.assertIn('data-team-count="2"', html)
             self.assertIn('data-playoff-qualifiers="1"', html)
+            self.assertIn('id="forecast-payload"', html)
 
             app = (dashboard_root / "assets/app.js").read_text(encoding="utf-8")
             self.assertIn(
@@ -439,8 +591,58 @@ class WebRendererTests(unittest.TestCase):
             self.assertIn("pushState", app)
             self.assertIn("aria-live", html)
             self.assertNotIn("innerHTML", app)
-            for forbidden in ("Math.random", "simulate", "Minnesota Lynx", "Las Vegas Aces"):
+            for forbidden in (
+                "Math.random",
+                "function simulate",
+                "Minnesota Lynx",
+                "Las Vegas Aces",
+            ):
                 self.assertNotIn(forbidden, app + html)
+
+    def test_dashboard_embedded_payload_escapes_script_terminators_and_separators(self):
+        """Catches executable markup or invalid JS separators in embedded JSON."""
+        from standings_playoff_forecast.render_dashboard import render_dashboard
+
+        hostile = "literal </script><script>window.__payloadPwned = true</script> & \u2028 \u2029"
+        with tempfile.TemporaryDirectory() as temporary:
+            cfg, processed_root = _literal_bundle(Path(temporary))
+            insights_path = processed_root / "broadcast_insights.csv"
+            insights = pd.read_csv(insights_path)
+            insights.loc[0, "quick_read_snippet"] = hostile
+            insights.to_csv(insights_path, index=False)
+            payload_path = processed_root / "forecast_payload.json"
+            payload = json.loads(payload_path.read_text(encoding="utf-8"))
+            payload["broadcast_insights"][0]["quick_read_snippet"] = hostile
+            payload_path.write_text(
+                json.dumps(payload, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
+                + "\n",
+                encoding="utf-8",
+            )
+            source_bytes = payload_path.read_bytes()
+
+            output = render_dashboard(processed_root, cfg=cfg)
+            html = output.read_text(encoding="utf-8")
+            match = re.search(
+                r'<script id="forecast-payload" type="application/json">(.*?)</script>',
+                html,
+                flags=re.DOTALL,
+            )
+            self.assertIsNotNone(match)
+            embedded = match.group(1)
+            self.assertNotIn("</script>", embedded.lower())
+            self.assertIn(r"\u003c/script\u003e", embedded)
+            self.assertIn(r"\u003e", embedded)
+            self.assertIn(r"\u0026", embedded)
+            self.assertIn(r"\u2028", embedded)
+            self.assertIn(r"\u2029", embedded)
+            self.assertEqual(
+                json.loads(embedded)["broadcast_insights"][0]["quick_read_snippet"],
+                hostile,
+            )
+            self.assertEqual(
+                (output.parent / "data/forecast_payload.json").read_bytes(),
+                source_bytes,
+            )
 
     def test_dashboard_responsive_accessible_and_explicit_empty_error_states(self):
         from standings_playoff_forecast.render_dashboard import render_dashboard
@@ -506,6 +708,15 @@ class WebRendererTests(unittest.TestCase):
             shutil.copytree(output.parent, dom_root / "dashboard")
             dumped_dom = _run_dashboard_dom_contract(dom_root)
             self.assertEqual(dumped_dom.strip(), "PASS")
+
+    def test_dashboard_opens_directly_from_file_and_controls_load(self):
+        """Catches the browser fetch restriction that broke downloaded dashboards."""
+        from standings_playoff_forecast.render_dashboard import render_dashboard
+
+        with tempfile.TemporaryDirectory() as temporary:
+            cfg, processed_root = _literal_bundle(Path(temporary))
+            output = render_dashboard(processed_root, cfg=cfg)
+            self.assertEqual(_run_dashboard_file_contract(output).strip(), "PASS")
 
     def test_dashboard_publication_is_deterministic_and_atomic_on_validation_failure(self):
         from standings_playoff_forecast.render_dashboard import render_dashboard

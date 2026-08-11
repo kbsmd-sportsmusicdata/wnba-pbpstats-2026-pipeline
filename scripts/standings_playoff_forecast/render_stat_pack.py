@@ -10,7 +10,12 @@ from typing import Mapping
 
 import pandas as pd
 
-from .render_markdown import _load_inputs, _nullable_boolean
+from .render_markdown import (
+    CURRENT_500_METHOD,
+    CURRENT_STANDINGS_METHOD,
+    _load_inputs,
+    _nullable_boolean,
+)
 
 
 STAT_PACK_FILENAME = "wnba_playoff_stat_pack_insert.html"
@@ -85,6 +90,7 @@ def _build_stat_pack(
     forecast = frames["forecast_summary"].sort_values(
         ["current_rank", "team_id"], kind="stable"
     )
+    current = frames["current_standings"].set_index("team_id")
     abbreviations = forecast.set_index("team_id")["team_abbreviation"].to_dict()
     matrix = frames["rank_probability_matrix"].copy()
     insights = frames["broadcast_insights"].sort_values(
@@ -101,10 +107,21 @@ def _build_stat_pack(
             _text(row.team_abbreviation),
             f"{_integer(row.current_wins)}–{_integer(row.current_losses)}",
             _pct(row.current_win_pct),
+            _number(current.loc[row.team_id, "games_back"], 2),
+            (
+                f"{_text(current.loc[row.team_id, 'home_record'])} / "
+                f"{_text(current.loc[row.team_id, 'road_record'])}"
+            ),
+            _text(current.loc[row.team_id, "last10_record"]),
+            _text(current.loc[row.team_id, "current_streak_label"]),
+            _text(current.loc[row.team_id, "record_vs_current_500_plus"]),
         )
         for row in current_field.itertuples()
     ]
-    field_table = _table(("Rank", "Team", "W–L", "Pct"), field_rows)
+    field_table = _table(
+        ("Rank", "Team", "W–L", "Pct", "GB", "Home / Road", "L10", "Streak", "Current .500+"),
+        field_rows,
+    )
 
     cutline = forecast.loc[
         forecast["current_rank"].isin((qualifier, qualifier + 1))
@@ -226,7 +243,8 @@ def _build_stat_pack(
         f"{int(manifest['simulation_count']):,} simulations · seed "
         f"{int(manifest['random_seed'])} · model {_text(manifest['model_version'])}. "
         f"Sources: {source_names}. PBPStats enrichment: "
-        f"{_text(manifest['pbpstats_enrichment_status'])}. Probabilities are estimates, "
+        f"{_text(manifest['pbpstats_enrichment_status'])}. "
+        f"{CURRENT_STANDINGS_METHOD} {CURRENT_500_METHOD} Probabilities are estimates, "
         "not mathematical clinch or elimination proof."
     )
 

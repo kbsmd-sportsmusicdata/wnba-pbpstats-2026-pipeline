@@ -7,6 +7,7 @@
   <link rel="icon" href="data:,">
   <title>WNBA {{SEASON}} Standings &amp; Playoff Forecast</title>
   <link rel="stylesheet" href="./assets/styles.css">
+  <script id="forecast-payload" type="application/json">{{EMBEDDED_PAYLOAD}}</script>
   <script src="./assets/charts.js" defer></script>
   <script src="./assets/app.js" defer></script>
 </head>
@@ -56,7 +57,7 @@
       <section id="current-standings" class="section-band" aria-labelledby="current-title">
         <h2 id="current-title">Current standings / cutline</h2>
         <div id="current-table" class="table-wrap" tabindex="0" aria-label="Scrollable current standings table">
-          <table><caption>Current official order from the supplied forecast bundle</caption><tbody></tbody></table>
+          <table><caption>Current standings reconstructed from completed regular-season schedule + team-box results.</caption><tbody></tbody></table>
         </div>
       </section>
       <section id="projected-standings" class="section-band" aria-labelledby="projected-title">
@@ -99,6 +100,8 @@
     <section id="method-cutoff" class="section-band method-band" aria-labelledby="method-title">
       <h2 id="method-title">Method / cutoff</h2>
       <dl id="method-list" class="method-list"></dl>
+      <p>Current standings reconstructed from completed regular-season schedule + team-box results.</p>
+      <p>Current .500+ records are descriptive. Official final tiebreak simulations recompute the .500+ opponent set from each simulated final season.</p>
       <p>All probabilities, exact ranks, projected wins, leverage values, and insight text come from the validated static payload. This page filters, sorts, and formats; it does not forecast or rerank.</p>
     </section>
   </main>

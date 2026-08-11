@@ -99,6 +99,50 @@ def _render(root: Path, *, history_available: bool = True):
 
 
 class MarkdownRendererTests(unittest.TestCase):
+    def test_current_picture_surfaces_supplied_context_and_exact_methodology(self):
+        """Catches renderers that derive context instead of presenting it."""
+        from standings_playoff_forecast.render_markdown import render_markdown
+
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            cfg, processed_root = _literal_bundle(root)
+            standings_path = processed_root / "current_standings.csv"
+            current = pd.read_csv(standings_path)
+            current["games_back"] = current["games_back"].astype(float)
+            current.loc[current["team_id"].eq("A"), "games_back"] = 7.25
+            current.loc[current["team_id"].eq("A"), "home_record"] = "9-1"
+            current.loc[current["team_id"].eq("A"), "road_record"] = "4-6"
+            current.loc[current["team_id"].eq("A"), "last10_record"] = "8-2"
+            current.loc[current["team_id"].eq("A"), "current_streak_label"] = "W6"
+            current.loc[current["team_id"].eq("A"), "conference_record"] = pd.NA
+            current.loc[
+                current["team_id"].eq("A"), "record_vs_current_500_plus"
+            ] = "7-3"
+            current.to_csv(standings_path, index=False)
+
+            text = render_markdown(processed_root, cfg=cfg).read_text(encoding="utf-8")
+            picture = text[
+                text.index("## Current playoff picture") : text.index("## Main findings")
+            ]
+            for expected in (
+                "7.25",
+                "9-1",
+                "4-6",
+                "8-2",
+                "W6",
+                "Unavailable",
+                "7-3",
+            ):
+                self.assertIn(expected, picture)
+            self.assertIn(
+                "Current standings reconstructed from completed regular-season schedule + team-box results.",
+                text,
+            )
+            self.assertIn(
+                "Current .500+ records are descriptive. Official final tiebreak simulations recompute the .500+ opponent set from each simulated final season.",
+                text,
+            )
+
     def test_exact_sections_all_insights_checkpoints_and_supplied_probability(self):
         with tempfile.TemporaryDirectory() as temporary:
             cfg, processed_root, brief_path = _render(Path(temporary))

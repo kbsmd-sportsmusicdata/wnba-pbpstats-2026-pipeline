@@ -21,7 +21,23 @@ TEMPLATE_ROOT = (
 )
 
 
-def _render_index(template: str, *, cfg: object) -> str:
+def _embedded_payload(payload_bytes: bytes) -> str:
+    """Return JSON safe for raw text inside an application/json script element."""
+
+    payload = payload_bytes.decode("utf-8")
+    return (
+        payload.replace("&", r"\u0026")
+        .replace("<", r"\u003c")
+        .replace(">", r"\u003e")
+        .replace("\u2028", r"\u2028")
+        .replace("\u2029", r"\u2029")
+    )
+
+
+def _render_index(template: str, *, cfg: object, payload_bytes: bytes) -> str:
+    payload_marker = "{{EMBEDDED_PAYLOAD}}"
+    if template.count(payload_marker) != 1:
+        raise ValueError("dashboard template must contain one embedded payload marker")
     replacements = {
         "SEASON": html.escape(str(int(cfg.season)), quote=True),
         "TEAM_COUNT": html.escape(str(int(cfg.team_count)), quote=True),
@@ -35,9 +51,9 @@ def _render_index(template: str, *, cfg: object) -> str:
     rendered = template
     for key, value in replacements.items():
         rendered = rendered.replace("{{" + key + "}}", value)
-    if "{{" in rendered:
+    if "{{" in rendered.replace(payload_marker, ""):
         raise ValueError("dashboard template contains unresolved placeholders")
-    return rendered
+    return rendered.replace(payload_marker, _embedded_payload(payload_bytes))
 
 
 def _write_file(path: Path, content: bytes) -> None:
@@ -71,7 +87,7 @@ def render_dashboard(processed_root: str | Path, *, cfg: object) -> Path:
     _frames, _manifest, _payload = _load_inputs(root, cfg)
     payload_bytes = (root / "forecast_payload.json").read_bytes()
     template = (TEMPLATE_ROOT / "dashboard_index.html").read_text(encoding="utf-8")
-    index = _render_index(template, cfg=cfg).encode("utf-8")
+    index = _render_index(template, cfg=cfg, payload_bytes=payload_bytes).encode("utf-8")
     assets = {
         "assets/styles.css": (TEMPLATE_ROOT / "dashboard_styles.css").read_bytes(),
         "assets/app.js": (TEMPLATE_ROOT / "dashboard_app.js").read_bytes(),

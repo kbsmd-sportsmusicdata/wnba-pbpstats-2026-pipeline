@@ -159,6 +159,60 @@ def _header_map(sheet) -> dict[str, int]:
 
 
 class ExcelRendererTests(unittest.TestCase):
+    def test_current_context_and_methodology_use_supplied_standings_fields(self):
+        """Catches renderer-side GB/.500 recomputation and lost context fields."""
+        from standings_playoff_forecast.render_excel import render_excel
+
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            cfg, processed_root = _literal_bundle(root)
+            standings_path = processed_root / "current_standings.csv"
+            current = pd.read_csv(standings_path)
+            current["games_back"] = current["games_back"].astype(float)
+            current.loc[current["team_id"].eq("A"), "games_back"] = 7.25
+            current.loc[current["team_id"].eq("A"), "home_record"] = "9-1"
+            current.loc[current["team_id"].eq("A"), "road_record"] = "4-6"
+            current.loc[current["team_id"].eq("A"), "last10_record"] = "8-2"
+            current.loc[current["team_id"].eq("A"), "current_streak_label"] = "W6"
+            current.loc[current["team_id"].eq("A"), "conference_record"] = pd.NA
+            current.loc[
+                current["team_id"].eq("A"), "record_vs_current_500_plus"
+            ] = "7-3"
+            current.to_csv(standings_path, index=False)
+
+            workbook_path = render_excel(processed_root, _team_games(), cfg=cfg)
+            workbook = load_workbook(workbook_path, data_only=False)
+            standings = workbook["Current Standings"]
+            headers = _header_map(standings)
+            alpha_row = 3
+            expected = {
+                "GB": 7.25,
+                "Home": "9-1",
+                "Road": "4-6",
+                "Last 10": "8-2",
+                "Streak": "W6",
+                "Conference": None,
+                "Current .500+": "7-3",
+            }
+            for header, value in expected.items():
+                self.assertEqual(standings.cell(alpha_row, headers[header]).value, value)
+
+            notes = workbook["Model Notes"]
+            note_values = {
+                cell.value
+                for row in notes.iter_rows()
+                for cell in row
+                if isinstance(cell.value, str)
+            }
+            self.assertIn(
+                "Current standings reconstructed from completed regular-season schedule + team-box results.",
+                note_values,
+            )
+            self.assertIn(
+                "Current .500+ records are descriptive. Official final tiebreak simulations recompute the .500+ opponent set from each simulated final season.",
+                note_values,
+            )
+
     def test_current_standings_owns_identity_when_strength_repeats_metadata(self):
         from standings_playoff_forecast.render_excel import render_excel
 

@@ -16,6 +16,7 @@ from openpyxl.utils import get_column_letter
 from openpyxl.worksheet.table import Table, TableStyleInfo
 
 from .outputs import CSV_FILENAMES, PAYLOAD_KEYS
+from .render_markdown import CURRENT_500_METHOD, CURRENT_STANDINGS_METHOD
 from .team_game_layer import normalize_id
 
 
@@ -62,6 +63,13 @@ REQUIRED_COLUMNS = {
         "losses",
         "win_pct",
         "point_differential",
+        "games_back",
+        "home_record",
+        "road_record",
+        "last10_record",
+        "current_streak_label",
+        "conference_record",
+        "record_vs_current_500_plus",
     },
     "head_to_head": {
         "team_id",
@@ -435,23 +443,7 @@ def _team_context(frames: Mapping[str, pd.DataFrame]) -> pd.DataFrame:
             )
         h2h_strings[team_id] = "; ".join(parts) if parts else "No completed H2H games"
 
-    current_500_ids = set(current.loc[current["win_pct"].ge(0.5), "team_id"])
-    record_500: dict[str, str] = {}
-    for team_id in current["team_id"]:
-        rows = head_to_head.loc[
-            head_to_head["team_id"].eq(team_id)
-            & head_to_head["opponent_id"].isin(current_500_ids)
-        ]
-        games = int(rows["games_played"].sum())
-        if games:
-            wins = int(rows["wins"].sum())
-            losses = int(rows["losses"].sum())
-            record_500[team_id] = f"{wins}-{losses} ({wins / games:.3f})"
-        else:
-            record_500[team_id] = "No completed games"
-
     context["h2h_context"] = context["team_id"].map(h2h_strings)
-    context["current_500_context"] = context["team_id"].map(record_500)
     context["seed_strength_gap"] = context["current_rank"] - context["strength_rank"]
     return context.sort_values(["current_rank", "team_id"], kind="stable")
 
@@ -468,6 +460,12 @@ def _current_standings_sheet(workbook: Workbook, frames: Mapping[str, pd.DataFra
         "L",
         "Win %",
         "GB",
+        "Home",
+        "Road",
+        "Last 10",
+        "Streak",
+        "Conference",
+        "Current .500+",
         "Point Diff",
         "Season NetRtg",
         "Recent NetRtg",
@@ -475,15 +473,11 @@ def _current_standings_sheet(workbook: Workbook, frames: Mapping[str, pd.DataFra
         "Strength Rank",
         "Seed vs Strength Gap",
         "H2H Context",
-        "Current .500+ Context",
         "Playoff %",
         "Expected Rank",
     ]
-    leader_wins = float(context.iloc[0]["wins"])
-    leader_losses = float(context.iloc[0]["losses"])
     rows = []
     for row in context.itertuples():
-        games_back = ((leader_wins - float(row.wins)) + (float(row.losses) - leader_losses)) / 2
         rows.append(
             [
                 row.current_rank,
@@ -493,7 +487,13 @@ def _current_standings_sheet(workbook: Workbook, frames: Mapping[str, pd.DataFra
                 row.wins,
                 row.losses,
                 row.win_pct,
-                games_back,
+                row.games_back,
+                row.home_record,
+                row.road_record,
+                row.last10_record,
+                row.current_streak_label,
+                row.conference_record,
+                row.record_vs_current_500_plus,
                 row.point_differential,
                 row.season_net_rating,
                 row.recent_net_rating,
@@ -501,7 +501,6 @@ def _current_standings_sheet(workbook: Workbook, frames: Mapping[str, pd.DataFra
                 row.strength_rank,
                 row.seed_strength_gap,
                 row.h2h_context,
-                row.current_500_context,
                 row.playoff_probability,
                 row.expected_final_rank,
             ]
@@ -514,15 +513,19 @@ def _current_standings_sheet(workbook: Workbook, frames: Mapping[str, pd.DataFra
         table_name="CurrentStandingsTable",
         freeze_panes="D3",
     )
-    sheet.column_dimensions["O"].width = 34
-    sheet.column_dimensions["P"].width = 23
+    header_columns = {header: index for index, header in enumerate(headers, start=1)}
+    sheet.column_dimensions[get_column_letter(header_columns["H2H Context"])].width = 34
+    sheet.column_dimensions[get_column_letter(header_columns["Current .500+"])].width = 18
     for row in range(3, sheet.max_row + 1):
         sheet.row_dimensions[row].height = 72
-        for column in (15, 16):
+        for column in (
+            header_columns["H2H Context"],
+            header_columns["Current .500+"],
+        ):
             sheet.cell(row, column).alignment = Alignment(
                 wrap_text=True, vertical="top"
             )
-    for column in (7, 17):
+    for column in (header_columns["Win %"], header_columns["Playoff %"]):
         sheet.conditional_formatting.add(
             f"{get_column_letter(column)}3:{get_column_letter(column)}{sheet.max_row}",
             ColorScaleRule(
@@ -972,6 +975,8 @@ def _model_notes_sheet(workbook: Workbook, frames: Mapping[str, pd.DataFrame], c
         ["Home-court definition", "Top four probability is also reported as home-court probability for this V1 forecast."],
         ["SOS definition", "Remaining SOS rank is ordered by mean supplied opponent playoff probability; rank 1 is hardest."],
         ["Strength definition", "Composite strength is explanatory; predictive NetRtg drives matchup expected margin upstream."],
+        ["Current standings source", CURRENT_STANDINGS_METHOD],
+        ["Current vs simulated-final .500+", CURRENT_500_METHOD],
         ["Probability source", "All probabilities come from the validated machine-readable forecast bundle; this workbook does not resimulate or recalculate them."],
         ["Linked standings leader", "='Current Standings'!B3"],
         ["Caveat", "Forecasts are probabilistic, source-snapshot dependent, and subject to official standings/tiebreak updates."],

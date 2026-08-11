@@ -14,6 +14,10 @@
   let payload = null;
 
   async function loadForecast() {
+    const embedded = document.getElementById("forecast-payload");
+    if (embedded && embedded.textContent.trim()) {
+      return JSON.parse(embedded.textContent);
+    }
     const response = await fetch("./data/forecast_payload.json", { cache: "no-store" });
     if (!response.ok) throw new Error(`Forecast payload failed: ${response.status}`);
     return response.json();
@@ -124,13 +128,20 @@
     const currentByTeam = new Map(payload.standings.map((row) => [String(row.team_id), row]));
     charts.renderTable(
       byId("current-table"),
-      "Current official order from the supplied forecast bundle",
+      "Current standings reconstructed from completed regular-season schedule + team-box results.",
       [
         { label: "Rank", value: (row) => formatInteger(row.current_rank) },
         { label: "Team", value: (row) => row.team_abbreviation },
         { label: "W", value: (row) => formatInteger(currentByTeam.get(String(row.team_id)).wins) },
         { label: "L", value: (row) => formatInteger(currentByTeam.get(String(row.team_id)).losses) },
         { label: "Pct", value: (row) => formatProbability(currentByTeam.get(String(row.team_id)).win_pct) },
+        { label: "GB", value: (row) => formatNumber(currentByTeam.get(String(row.team_id)).games_back, 2) },
+        { label: "Home", value: (row) => currentByTeam.get(String(row.team_id)).home_record ?? "Unavailable" },
+        { label: "Road", value: (row) => currentByTeam.get(String(row.team_id)).road_record ?? "Unavailable" },
+        { label: "Last 10", value: (row) => currentByTeam.get(String(row.team_id)).last10_record ?? "Unavailable" },
+        { label: "Streak", value: (row) => currentByTeam.get(String(row.team_id)).current_streak_label ?? "Unavailable" },
+        { label: "Conference", value: (row) => currentByTeam.get(String(row.team_id)).conference_record ?? "Unavailable" },
+        { label: "Current .500+", value: (row) => currentByTeam.get(String(row.team_id)).record_vs_current_500_plus ?? "Unavailable" },
         { label: "Point diff", value: (row) => formatNumber(currentByTeam.get(String(row.team_id)).point_differential, 1) },
         { label: "Playoff", value: (row) => charts.probabilityBar(row.playoff_probability, formatProbability(row.playoff_probability)) },
       ],
@@ -196,8 +207,14 @@
       makeDefinitionList(byId("team-detail-list"), [["Status", "No team is visible in this race view"]]);
       return;
     }
+    const current = payload.standings.find((row) => String(row.team_id) === String(team.team_id));
     makeDefinitionList(byId("team-detail-list"), [
       ["Current record", `${formatInteger(team.current_wins)}–${formatInteger(team.current_losses)}`],
+      ["Games back", formatNumber(current?.games_back, 2)],
+      ["Home / Road", `${current?.home_record ?? "Unavailable"} / ${current?.road_record ?? "Unavailable"}`],
+      ["Last 10 / Streak", `${current?.last10_record ?? "Unavailable"} / ${current?.current_streak_label ?? "Unavailable"}`],
+      ["Conference", current?.conference_record ?? "Unavailable"],
+      ["Current .500+", current?.record_vs_current_500_plus ?? "Unavailable"],
       ["Playoff probability", formatProbability(team.playoff_probability)],
       ["Top 4 / home court", formatProbability(team.home_court_probability)],
       ["Expected final rank", formatNumber(team.expected_final_rank, 2)],

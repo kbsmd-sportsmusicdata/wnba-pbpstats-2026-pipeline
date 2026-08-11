@@ -21,6 +21,14 @@ from .team_game_layer import normalize_id
 
 BRIEF_FILENAME = "wnba_broadcast_forecast_brief.md"
 MAX_CHECKPOINT_GAMES = 5
+CURRENT_STANDINGS_METHOD = (
+    "Current standings reconstructed from completed regular-season schedule + "
+    "team-box results."
+)
+CURRENT_500_METHOD = (
+    "Current .500+ records are descriptive. Official final tiebreak simulations "
+    "recompute the .500+ opponent set from each simulated final season."
+)
 SECTION_ORDER = (
     "Data cutoff and source status",
     "Current playoff picture",
@@ -61,6 +69,13 @@ REQUIRED_COLUMNS = {
         "losses",
         "win_pct",
         "point_differential",
+        "games_back",
+        "home_record",
+        "road_record",
+        "last10_record",
+        "current_streak_label",
+        "conference_record",
+        "record_vs_current_500_plus",
     },
     "head_to_head": {
         "team_id",
@@ -643,6 +658,7 @@ def _build_markdown(
     frames: Mapping[str, pd.DataFrame], manifest: dict, cfg: object
 ) -> str:
     current = frames["current_standings"]
+    current_by_team = current.set_index("team_id")
     forecast = frames["forecast_summary"].sort_values(
         ["current_rank", "team_id"], kind="stable"
     )
@@ -690,14 +706,23 @@ def _build_markdown(
     lines.extend(f"  - {_source_summary(source)}" for source in manifest["source_files"])
 
     lines.extend(["", f"## {SECTION_ORDER[1]}", ""])
+    lines.extend([CURRENT_STANDINGS_METHOD, ""])
     picture_rows = []
     for row in forecast.to_dict("records"):
+        context = current_by_team.loc[row["team_id"]]
         picture_rows.append(
             (
                 _integer(row["current_rank"]),
                 row["team_abbreviation"],
                 f"{_integer(row['current_wins'])}-{_integer(row['current_losses'])}",
                 _probability(row["current_win_pct"]),
+                _number(context["games_back"], 2),
+                _clean_text(context["home_record"]),
+                _clean_text(context["road_record"]),
+                _clean_text(context["last10_record"]),
+                _clean_text(context["current_streak_label"]),
+                _clean_text(context["conference_record"]),
+                _clean_text(context["record_vs_current_500_plus"]),
                 _number(row["current_point_diff"]),
                 _probability(row["playoff_probability"]),
                 _number(row["expected_final_rank"], 2),
@@ -706,7 +731,23 @@ def _build_markdown(
         )
     lines.extend(
         _table(
-            ("Rank", "Team", "Record", "Win %", "Point diff", "Playoff %", "Expected rank", "Status"),
+            (
+                "Rank",
+                "Team",
+                "Record",
+                "Win %",
+                "GB",
+                "Home",
+                "Road",
+                "Last 10",
+                "Streak",
+                "Conference",
+                "Current .500+",
+                "Point diff",
+                "Playoff %",
+                "Expected rank",
+                "Status",
+            ),
             picture_rows,
         )
     )
@@ -909,6 +950,10 @@ def _build_markdown(
                 "dependent and are not mathematical clinch or elimination proof."
             ),
             "",
+            CURRENT_STANDINGS_METHOD,
+            "",
+            CURRENT_500_METHOD,
+            "",
             "The brief selects and formats supplied standings, probabilities, conditional swings, leverage labels, and insight text. It does not rerank teams, resimulate games, or calculate a second forecast. Official tiebreak criteria appear above; stable-ID fallback is disclosed separately.",
             "",
         ]
@@ -952,4 +997,10 @@ def render_markdown(processed_root: str | Path, *, cfg: object) -> Path:
     return final_path
 
 
-__all__ = ["BRIEF_FILENAME", "SECTION_ORDER", "render_markdown"]
+__all__ = [
+    "BRIEF_FILENAME",
+    "CURRENT_500_METHOD",
+    "CURRENT_STANDINGS_METHOD",
+    "SECTION_ORDER",
+    "render_markdown",
+]
