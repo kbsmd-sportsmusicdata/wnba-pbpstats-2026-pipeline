@@ -450,6 +450,26 @@ class ExternalStandingsQATest(unittest.TestCase):
         ):
             compare_external_standings(invalid, None)
 
+    def test_derived_ids_fail_closed_after_canonical_normalization(self) -> None:
+        """Catches normalized collisions and missing canonical derived IDs."""
+        from standings_playoff_forecast.standings import compare_external_standings
+
+        collision = self._derived_standings()
+        collision["team_id"] = ["1", "1.0", "3"]
+        with self.assertRaisesRegex(
+            ValueError, "derived standings contains duplicate normalized team_id values"
+        ):
+            compare_external_standings(collision, None)
+
+        for invalid_id in (None, "   "):
+            with self.subTest(invalid_id=invalid_id):
+                invalid = self._derived_standings()
+                invalid.loc[0, "team_id"] = invalid_id
+                with self.assertRaisesRegex(
+                    ValueError, "derived standings contains invalid team_id values"
+                ):
+                    compare_external_standings(invalid, None)
+
 
 if __name__ == "__main__":
     unittest.main()

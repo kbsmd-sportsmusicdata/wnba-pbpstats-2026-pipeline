@@ -369,8 +369,13 @@ def _validate_derived_invariants(standings: pd.DataFrame) -> None:
         },
         "derived standings",
     )
-    if standings["team_id"].duplicated().any():
-        raise ValueError("derived standings contains duplicate team_id values")
+    normalized_team_ids = standings["team_id"].map(normalize_id)
+    if normalized_team_ids.isna().any() or normalized_team_ids.eq("").any():
+        raise ValueError("derived standings contains invalid team_id values")
+    if normalized_team_ids.duplicated().any():
+        raise ValueError(
+            "derived standings contains duplicate normalized team_id values"
+        )
 
     numeric_columns = [
         "games_played",
