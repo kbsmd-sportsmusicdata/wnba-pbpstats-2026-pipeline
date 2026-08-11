@@ -1,0 +1,77 @@
+name: Snapshot Window Panel
+
+on:
+  workflow_dispatch:
+    inputs:
+      run_tests:
+        description: "Run snapshot window panel tests before building"
+        required: true
+        type: boolean
+        default: true
+      stage:
+        description: "Panel level to build"
+        required: true
+        type: choice
+        options:
+          - all
+          - team
+          - player
+        default: all
+      commit_outputs:
+        description: "Commit generated analysis/snapshot_window_panel outputs"
+        required: true
+        type: boolean
+        default: false
+      pbpstats_data_root:
+        description: "PBPStats WNBA 2026 data root"
+        required: true
+        type: string
+        default: "data/pbpstats_wnba_2026"
+
+jobs:
+  snapshot-window-panel:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      CONFIG_PATH: analysis/snapshot_window_panel/config/snapshot_window_panel_config.json
+      PBPSTATS_ROOT: ${{ inputs.pbpstats_data_root }}
+      STAGE: ${{ inputs.stage }}
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run Snapshot Window Panel tests
+        if: ${{ inputs.run_tests }}
+        run: python -m unittest tests/test_snapshot_window_panel.py
+
+      - name: Build snapshot window panel
+        run: |
+          python scripts/build_snapshot_window_panel.py \
+            --config "$CONFIG_PATH" \
+            --stage "$STAGE" \
+            --pbpstats-data-root "$PBPSTATS_ROOT"
+
+      - name: Commit generated snapshot window panel outputs if requested
+        if: ${{ inputs.commit_outputs }}
+        run: |
+          git add analysis/snapshot_window_panel
+          if git diff --cached --quiet; then
+            echo "No Snapshot Window Panel output changes to commit"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "chore: refresh snapshot window panel"
+          git push

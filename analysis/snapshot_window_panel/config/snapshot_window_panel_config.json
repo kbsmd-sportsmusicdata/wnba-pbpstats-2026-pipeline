@@ -1,0 +1,58 @@
+{
+  "season": 2026,
+  "pbpstats_data_root": "data/pbpstats_wnba_2026",
+  "output_root": "analysis/snapshot_window_panel",
+  "source_files": {
+    "team_master": "features_master/2026/team_totals_features_master.csv",
+    "player_master": "features_master/2026/player_totals_features_master.csv"
+  },
+  "panel": {
+    "timestamp_column": "_featured_at_utc",
+    "games_played_column": "games_played",
+    "entity_column": "entity_id",
+    "min_games_in_window": 1,
+    "emit_baseline_block": true
+  },
+  "restatement_detection": {
+    "ratio_threshold": 5.0,
+    "entity_share_threshold": 0.5,
+    "min_history_windows": 3,
+    "max_out_of_envelope_share": 0.02
+  },
+  "weighted_averages": {
+    "team": [
+      {
+        "column": "shotquality_pbp_avg",
+        "weight": "fga",
+        "note": "Expected points per shot attempt; weight is total field goal attempts."
+      },
+      {
+        "column": "off_fgrebound_pct",
+        "weight": "missed_fga",
+        "note": "Approximate: own missed field goals stand in for the OREB + opponent DREB denominator."
+      }
+    ],
+    "player": [
+      {
+        "column": "shotquality_pbp_avg",
+        "weight": "fga",
+        "note": "Expected points per shot attempt; weight is total field goal attempts."
+      },
+      {
+        "column": "usage",
+        "weight": "off_poss",
+        "note": "Usage rate averaged over on-court offensive possessions."
+      },
+      {
+        "column": "on_off_rtg",
+        "weight": "off_poss",
+        "note": "On-court offensive rating; weight is on-court offensive possessions."
+      },
+      {
+        "column": "on_def_rtg",
+        "weight": "def_poss",
+        "note": "On-court defensive rating; weight is on-court defensive possessions."
+      }
+    ]
+  }
+}
