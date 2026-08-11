@@ -175,6 +175,24 @@ def literal_sources(root: Path) -> SimpleNamespace:
 
 
 class OrchestratorIntegrationTests(unittest.TestCase):
+    def test_false_string_completion_token_cannot_advance_default_cutoff(self):
+        """Catches truthy string coercion selecting an unplayed game's date."""
+        with tempfile.TemporaryDirectory() as temporary:
+            cfg = season_config(Path(temporary))
+            schedule = literal_sources(Path(temporary)).schedule
+            schedule["status_type_completed"] = schedule[
+                "status_type_completed"
+            ].astype(object)
+            schedule.loc[schedule["game_id"].eq("g2"), "status_type_completed"] = (
+                "False"
+            )
+
+            cutoff, latest_completed = builder._resolve_cutoff(None, schedule, cfg)
+
+            expected = pd.Timestamp("2026-06-01")
+            self.assertEqual(cutoff, expected)
+            self.assertEqual(latest_completed, expected)
+
     def test_literal_two_team_pipeline_runs_real_stages_from_alternate_cwd(self):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)

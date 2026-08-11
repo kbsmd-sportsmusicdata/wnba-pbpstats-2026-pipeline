@@ -29,7 +29,8 @@ def normalize_id(value: object) -> str | None:
     return text[:-2] if text.endswith(".0") else text
 
 
-def _normalize_completion_flags(values: pd.Series) -> pd.Series:
+def normalize_completion_flags(values: pd.Series) -> pd.Series:
+    """Normalize the schedule completion contract without truthiness coercion."""
     normalized: list[bool] = []
     invalid: list[str] = []
     for value in values:
@@ -156,7 +157,7 @@ def validate_completed_game_ledger(
 
     qualified = qualify_regular_season_schedule(schedule, cfg)
     completed = qualified.loc[
-        _normalize_completion_flags(qualified["status_type_completed"])
+        normalize_completion_flags(qualified["status_type_completed"])
     ].copy()
     if cutoff is not None:
         completed = completed.loc[
@@ -458,7 +459,7 @@ def _completed_schedule_as_of(
     schedule: pd.DataFrame, cutoff: object | None
 ) -> pd.DataFrame:
     completed = schedule.loc[
-        _normalize_completion_flags(schedule["status_type_completed"])
+        normalize_completion_flags(schedule["status_type_completed"])
     ].copy()
     if cutoff is not None:
         completed = completed.loc[

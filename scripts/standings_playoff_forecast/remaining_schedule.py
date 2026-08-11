@@ -5,7 +5,11 @@ import math
 import pandas as pd
 
 from .contracts import SeasonConfig
-from .team_game_layer import normalize_id, qualify_regular_season_schedule
+from .team_game_layer import (
+    normalize_completion_flags,
+    normalize_id,
+    qualify_regular_season_schedule,
+)
 
 
 _IDENTITY_COLUMNS = (
@@ -174,7 +178,7 @@ def build_remaining_schedule(
     cutoff_date = pd.Timestamp(cutoff).normalize()
     completed_at_cutoff = (
         schedule["game_date"].le(cutoff_date)
-        & schedule["status_type_completed"].fillna(False).astype(bool)
+        & normalize_completion_flags(schedule["status_type_completed"])
     )
     remaining = schedule.loc[~completed_at_cutoff].copy()
     columns = [

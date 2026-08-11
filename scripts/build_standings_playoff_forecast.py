@@ -52,6 +52,7 @@ from standings_playoff_forecast.standings import (
 from standings_playoff_forecast.team_game_layer import (
     LedgerValidationResult,
     build_team_game_layer,
+    normalize_completion_flags,
     qualify_regular_season_schedule,
     validate_completed_game_ledger,
 )
@@ -147,7 +148,7 @@ def _resolve_cutoff(
 ) -> tuple[pd.Timestamp, pd.Timestamp]:
     qualified = qualify_regular_season_schedule(schedule, cfg)
     completed = qualified.loc[
-        qualified["status_type_completed"].fillna(False).astype(bool)
+        normalize_completion_flags(qualified["status_type_completed"])
     ].copy()
     if completed.empty:
         raise ValueError("qualified schedule has no completed game for cutoff resolution")

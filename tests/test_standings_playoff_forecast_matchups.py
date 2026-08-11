@@ -283,6 +283,28 @@ class RemainingScheduleTest(unittest.TestCase):
 
         self.assertEqual(result["game_id"].tolist(), ["unresolved", "later-final"])
 
+    def test_false_string_completion_token_stays_in_remaining_schedule(self) -> None:
+        """Catches truthy string coercion silently dropping an unplayed game."""
+        from standings_playoff_forecast.remaining_schedule import (
+            build_remaining_schedule,
+        )
+
+        schedule = pd.DataFrame(
+            [
+                _schedule_row("played", "2026-06-01", completed=True),
+                {
+                    **_schedule_row("unplayed", "2026-06-03", completed=False),
+                    "status_type_completed": "False",
+                },
+            ]
+        )
+
+        result = build_remaining_schedule(
+            schedule, "2026-06-03", _season_cfg(games_per_team=2)
+        )
+
+        self.assertEqual(result["game_id"].tolist(), ["unplayed"])
+
     def test_rejects_duplicate_normalized_schedule_game_ids(self) -> None:
         from standings_playoff_forecast.remaining_schedule import (
             build_remaining_schedule,
