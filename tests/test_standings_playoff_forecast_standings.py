@@ -1,5 +1,6 @@
 import sys
 import unittest
+from dataclasses import replace
 from pathlib import Path
 
 import pandas as pd
@@ -43,6 +44,25 @@ def _long_form_standings(*, alpha_wins: int, alpha_losses: int) -> pd.DataFrame:
     )
 
 
+def _eleven_game_series() -> pd.DataFrame:
+    """A's ordered results are L-W-W-W-W-W-W-L-L-L-L."""
+
+    rows = []
+    alpha_results = [0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0]
+    for game_number, alpha_win in enumerate(alpha_results, start=1):
+        game_id = f"{game_number:02d}"
+        alpha_home = game_number % 2 == 1
+        alpha_points = 80 if alpha_win else 70
+        bravo_points = 70 if alpha_win else 80
+        rows.extend(
+            [
+                {"game_id": game_id, "game_date": "2026-06-10", "team_id": "A", "team_abbreviation": "AAA", "team_name": "Alpha", "franchise_id": "alpha", "opponent_id": "B", "opponent_franchise_id": "bravo", "home_away": "home" if alpha_home else "away", "win": alpha_win, "loss": 1 - alpha_win, "points_for": alpha_points, "points_against": bravo_points, "margin": alpha_points - bravo_points},
+                {"game_id": game_id, "game_date": "2026-06-10", "team_id": "B", "team_abbreviation": "BBB", "team_name": "Bravo", "franchise_id": "bravo", "opponent_id": "A", "opponent_franchise_id": "alpha", "home_away": "away" if alpha_home else "home", "win": 1 - alpha_win, "loss": alpha_win, "points_for": bravo_points, "points_against": alpha_points, "margin": bravo_points - alpha_points},
+            ]
+        )
+    return pd.DataFrame(rows).iloc[::-1].reset_index(drop=True)
+
+
 class StandingsAggregationTest(unittest.TestCase):
     def test_build_current_standings_aggregates_each_directional_team_game_once(self) -> None:
         from standings_playoff_forecast.config import load_season_config
@@ -61,6 +81,206 @@ class StandingsAggregationTest(unittest.TestCase):
                 "C": {"games_played": 2, "wins": 1, "losses": 1, "points_for": 162, "points_against": 160, "point_differential": 2},
             },
         )
+
+    def test_current_context_derives_records_games_back_streak_and_current_500_opponents(self) -> None:
+        from standings_playoff_forecast import standings as standings_module
+        from standings_playoff_forecast.config import load_season_config
+
+        add_context = getattr(standings_module, "add_current_standings_context", None)
+        self.assertIsNotNone(add_context)
+
+        cfg = load_season_config(2026)
+        team_games = _team_games()
+        home_teams = {"1": "A", "2": "B", "3": "C", "4": "A"}
+        team_games["home_away"] = team_games.apply(
+            lambda row: "home" if row["team_id"] == home_teams[row["game_id"]] else "away",
+            axis=1,
+        )
+        standings = standings_module.build_current_standings(team_games, cfg)
+        standings["current_rank"] = standings["team_id"].map({"B": 1, "C": 2, "A": 3})
+        actual = add_context(standings, team_games, cfg).set_index("team_id")
+
+        self.assertEqual(actual.loc["B", "games_back"], 0.0)
+        self.assertEqual(actual.loc["A", "games_back"], 1.0)
+        self.assertEqual(
+            actual.loc[
+                "A",
+                [
+                    "home_wins",
+                    "home_losses",
+                    "home_record",
+                    "road_wins",
+                    "road_losses",
+                    "road_record",
+                ],
+            ].to_dict(),
+            {
+                "home_wins": 1,
+                "home_losses": 1,
+                "home_record": "1-1",
+                "road_wins": 0,
+                "road_losses": 1,
+                "road_record": "0-1",
+            },
+        )
+        self.assertEqual(
+            actual.loc[
+                "A",
+                [
+                    "last10_wins",
+                    "last10_losses",
+                    "last10_record",
+                    "current_streak_type",
+                    "current_streak_length",
+                    "current_streak_label",
+                ],
+            ].to_dict(),
+            {
+                "last10_wins": 1,
+                "last10_losses": 2,
+                "last10_record": "1-2",
+                "current_streak_type": "L",
+                "current_streak_length": 2,
+                "current_streak_label": "L2",
+            },
+        )
+        self.assertEqual(
+            actual.loc[
+                "B",
+                [
+                    "record_vs_current_500_plus_wins",
+                    "record_vs_current_500_plus_losses",
+                    "record_vs_current_500_plus",
+                    "record_vs_current_500_plus_pct",
+                ],
+            ].to_dict(),
+            {
+                "record_vs_current_500_plus_wins": 1,
+                "record_vs_current_500_plus_losses": 0,
+                "record_vs_current_500_plus": "1-0",
+                "record_vs_current_500_plus_pct": 1.0,
+            },
+        )
+        self.assertTrue(pd.isna(actual.loc["A", "conference_wins"]))
+        self.assertTrue(pd.isna(actual.loc["A", "conference_losses"]))
+        self.assertTrue(pd.isna(actual.loc["A", "conference_record"]))
+        self.assertEqual(actual.loc["A", "playoff_cutline_flag"], "top4")
+
+    def test_current_context_assigns_all_2026_cutline_bands_independent_of_input_index(self) -> None:
+        from standings_playoff_forecast.config import load_season_config
+        from standings_playoff_forecast.standings import (
+            add_current_standings_context,
+            build_current_standings,
+        )
+
+        cfg = load_season_config(2026)
+        team_games = _team_games()
+        home_teams = {"1": "A", "2": "B", "3": "C", "4": "A"}
+        team_games["home_away"] = team_games.apply(
+            lambda row: "home" if row["team_id"] == home_teams[row["game_id"]] else "away",
+            axis=1,
+        )
+        extra_game = pd.DataFrame(
+            [
+                {"game_id": "5", "game_date": "2026-06-05", "team_id": "D", "team_abbreviation": "DDD", "team_name": "Delta", "franchise_id": "delta", "opponent_id": "E", "opponent_franchise_id": "echo", "home_away": "home", "win": 1, "loss": 0, "points_for": 77, "points_against": 70, "margin": 7},
+                {"game_id": "5", "game_date": "2026-06-05", "team_id": "E", "team_abbreviation": "EEE", "team_name": "Echo", "franchise_id": "echo", "opponent_id": "D", "opponent_franchise_id": "delta", "home_away": "away", "win": 0, "loss": 1, "points_for": 70, "points_against": 77, "margin": -7},
+            ]
+        )
+        team_games = pd.concat([team_games, extra_game], ignore_index=True)
+        standings = build_current_standings(team_games, cfg)
+        standings["current_rank"] = standings["team_id"].map(
+            {"A": 5, "B": 1, "C": 8, "D": 9, "E": 11}
+        )
+        standings.index = [13, 2, 17, 5, 11]
+
+        actual = add_current_standings_context(standings, team_games, cfg).set_index(
+            "team_id"
+        )
+
+        self.assertEqual(
+            actual["playoff_cutline_flag"].to_dict(),
+            {
+                "A": "playoff_field",
+                "B": "top4",
+                "C": "playoff_field",
+                "D": "cutline_chase",
+                "E": "outside",
+            },
+        )
+        generalized = add_current_standings_context(
+            standings,
+            team_games,
+            replace(cfg, playoff_qualifiers=6),
+        ).set_index("team_id")
+        self.assertEqual(
+            generalized["playoff_cutline_flag"].to_dict(),
+            {
+                "A": "playoff_field",
+                "B": "top4",
+                "C": "cutline_chase",
+                "D": "outside",
+                "E": "outside",
+            },
+        )
+
+    def test_current_context_uses_stable_game_order_for_last10_and_nullable_zero_game_pct(self) -> None:
+        from standings_playoff_forecast.config import load_season_config
+        from standings_playoff_forecast.standings import (
+            STANDINGS_COLUMNS,
+            add_current_standings_context,
+            build_current_standings,
+        )
+
+        cfg = load_season_config(2026)
+        team_games = _eleven_game_series()
+        standings = build_current_standings(team_games, cfg)
+        standings["current_rank"] = standings["team_id"].map({"A": 1, "B": 2})
+
+        context = add_current_standings_context(standings, team_games, cfg)
+        actual = context.set_index("team_id")
+
+        self.assertEqual(list(context.columns), STANDINGS_COLUMNS)
+        self.assertEqual(
+            actual.loc[
+                "A",
+                [
+                    "last10_wins",
+                    "last10_losses",
+                    "last10_record",
+                    "current_streak_type",
+                    "current_streak_length",
+                    "current_streak_label",
+                ],
+            ].to_dict(),
+            {
+                "last10_wins": 6,
+                "last10_losses": 4,
+                "last10_record": "6-4",
+                "current_streak_type": "L",
+                "current_streak_length": 4,
+                "current_streak_label": "L4",
+            },
+        )
+        self.assertEqual(actual.loc["A", "record_vs_current_500_plus"], "0-0")
+        self.assertEqual(actual.loc["A", "record_vs_current_500_plus_wins"], 0)
+        self.assertEqual(actual.loc["A", "record_vs_current_500_plus_losses"], 0)
+        self.assertTrue(pd.isna(actual.loc["A", "record_vs_current_500_plus_pct"]))
+
+    def test_current_context_requires_rank_before_cutline_assignment(self) -> None:
+        from standings_playoff_forecast.config import load_season_config
+        from standings_playoff_forecast.standings import (
+            add_current_standings_context,
+            build_current_standings,
+        )
+
+        cfg = load_season_config(2026)
+        team_games = _eleven_game_series()
+        unranked = build_current_standings(team_games, cfg).drop(columns="current_rank")
+
+        with self.assertRaisesRegex(
+            ValueError, "standings is missing required columns: current_rank"
+        ):
+            add_current_standings_context(unranked, team_games, cfg)
 
     def test_build_head_to_head_keeps_reciprocal_directional_records_separate(self) -> None:
         from standings_playoff_forecast.standings import build_head_to_head

@@ -18,6 +18,28 @@ STANDINGS_COLUMNS = [
     "points_for",
     "points_against",
     "point_differential",
+    "games_back",
+    "home_wins",
+    "home_losses",
+    "road_wins",
+    "road_losses",
+    "home_record",
+    "road_record",
+    "last10_wins",
+    "last10_losses",
+    "last10_record",
+    "current_streak_type",
+    "current_streak_length",
+    "current_streak_label",
+    "conference_wins",
+    "conference_losses",
+    "conference_record",
+    "record_vs_current_500_plus_wins",
+    "record_vs_current_500_plus_losses",
+    "record_vs_current_500_plus",
+    "record_vs_current_500_plus_pct",
+    "current_rank",
+    "playoff_cutline_flag",
 ]
 HEAD_TO_HEAD_COLUMNS = [
     "team_id",
@@ -134,6 +156,160 @@ def build_current_standings(
         on="team_id",
         how="left",
         validate="one_to_one",
+    )
+    return result.reindex(columns=STANDINGS_COLUMNS)
+
+
+def _record_context(
+    games: pd.DataFrame,
+    team_ids: pd.Index,
+    prefix: str,
+) -> pd.DataFrame:
+    records = (
+        games.groupby("team_id", sort=True)
+        .agg(wins=("win", "sum"), losses=("loss", "sum"))
+        .reindex(team_ids, fill_value=0)
+    )
+    records = records.rename(
+        columns={"wins": f"{prefix}_wins", "losses": f"{prefix}_losses"}
+    )
+    records[f"{prefix}_record"] = (
+        records[f"{prefix}_wins"].astype(str)
+        + "-"
+        + records[f"{prefix}_losses"].astype(str)
+    )
+    return records
+
+
+def add_current_standings_context(
+    standings: pd.DataFrame,
+    team_games: pd.DataFrame,
+    cfg: SeasonConfig,
+) -> pd.DataFrame:
+    """Add ledger-derived descriptive context to already-ranked standings.
+
+    Conference fields remain nullable because the validated team-history contract
+    does not currently provide conference membership.
+    """
+
+    _require_columns(
+        standings,
+        {"team_id", "wins", "losses", "win_pct", "current_rank"},
+        "standings",
+    )
+    _validate_directional_team_games(team_games)
+    _require_columns(team_games, {"game_date", "home_away"}, "team_games")
+    if standings.empty:
+        return standings.reindex(columns=STANDINGS_COLUMNS).copy()
+    if standings["team_id"].duplicated().any():
+        raise ValueError("standings contains duplicate team_id values")
+
+    ranks = pd.to_numeric(standings["current_rank"], errors="coerce")
+    if ranks.isna().any() or ranks.mod(1).ne(0).any() or ranks.duplicated().any():
+        raise ValueError("standings current_rank must contain unique integers")
+    leader_rows = standings.loc[ranks.eq(1)]
+    if len(leader_rows) != 1:
+        raise ValueError("standings current_rank must contain exactly one rank 1")
+
+    context_columns = [
+        column
+        for column in STANDINGS_COLUMNS
+        if column not in STANDINGS_COLUMNS[:11] and column != "current_rank"
+    ]
+    result = standings.drop(columns=context_columns, errors="ignore").copy()
+    team_ids = pd.Index(result["team_id"], name="team_id")
+    games = team_games.copy()
+    games["game_date"] = pd.to_datetime(games["game_date"], errors="coerce")
+    if games["game_date"].isna().any():
+        raise ValueError("team_games contains invalid game_date values")
+    games["home_away"] = games["home_away"].astype("string").str.strip().str.lower()
+    if not games["home_away"].isin({"home", "away"}).all():
+        raise ValueError("team_games home_away must be home or away")
+    games = games.sort_values(
+        ["team_id", "game_date", "game_id"], kind="stable"
+    ).reset_index(drop=True)
+
+    leader = leader_rows.iloc[0]
+    result["games_back"] = (
+        (float(leader["wins"]) - pd.to_numeric(result["wins"]))
+        + (pd.to_numeric(result["losses"]) - float(leader["losses"]))
+    ) / 2.0
+
+    home = _record_context(
+        games.loc[games["home_away"].eq("home")], team_ids, "home"
+    )
+    road = _record_context(
+        games.loc[games["home_away"].eq("away")], team_ids, "road"
+    )
+    result = result.merge(home, on="team_id", how="left", validate="one_to_one")
+    result = result.merge(road, on="team_id", how="left", validate="one_to_one")
+
+    last10_games = games.groupby("team_id", sort=False, group_keys=False).tail(10)
+    last10 = _record_context(last10_games, team_ids, "last10")
+    result = result.merge(last10, on="team_id", how="left", validate="one_to_one")
+
+    streak_rows: list[dict[str, object]] = []
+    for team_id, team_rows in games.groupby("team_id", sort=True):
+        results = team_rows["win"].astype(int).tolist()
+        streak_type = "W" if results[-1] == 1 else "L"
+        streak_value = 1 if streak_type == "W" else 0
+        streak_length = 0
+        for value in reversed(results):
+            if value != streak_value:
+                break
+            streak_length += 1
+        streak_rows.append(
+            {
+                "team_id": team_id,
+                "current_streak_type": streak_type,
+                "current_streak_length": streak_length,
+                "current_streak_label": f"{streak_type}{streak_length}",
+            }
+        )
+    result = result.merge(
+        pd.DataFrame(streak_rows), on="team_id", how="left", validate="one_to_one"
+    )
+
+    current_500_ids = set(
+        standings.loc[standings["win_pct"].ge(0.500), "team_id"]
+    )
+    current_500_games = games.loc[games["opponent_id"].isin(current_500_ids)]
+    current_500 = _record_context(
+        current_500_games, team_ids, "record_vs_current_500_plus"
+    ).rename(
+        columns={
+            "record_vs_current_500_plus_record": "record_vs_current_500_plus"
+        }
+    )
+    qualifying_games = (
+        current_500["record_vs_current_500_plus_wins"]
+        + current_500["record_vs_current_500_plus_losses"]
+    )
+    current_500["record_vs_current_500_plus_pct"] = (
+        current_500["record_vs_current_500_plus_wins"] / qualifying_games
+    ).where(qualifying_games.gt(0), pd.NA)
+    result = result.merge(
+        current_500, on="team_id", how="left", validate="one_to_one"
+    )
+
+    result["conference_wins"] = pd.Series(pd.NA, index=result.index, dtype="Int64")
+    result["conference_losses"] = pd.Series(pd.NA, index=result.index, dtype="Int64")
+    result["conference_record"] = pd.Series(pd.NA, index=result.index, dtype="string")
+
+    top4_limit = min(4, cfg.playoff_qualifiers)
+    chase_limit = min(cfg.team_count, cfg.playoff_qualifiers + 2)
+
+    def cutline_flag(rank: int) -> str:
+        if rank <= top4_limit:
+            return "top4"
+        if rank <= cfg.playoff_qualifiers:
+            return "playoff_field"
+        if rank <= chase_limit:
+            return "cutline_chase"
+        return "outside"
+
+    result["playoff_cutline_flag"] = (
+        pd.to_numeric(result["current_rank"]).astype(int).map(cutline_flag)
     )
     return result.reindex(columns=STANDINGS_COLUMNS)
 
