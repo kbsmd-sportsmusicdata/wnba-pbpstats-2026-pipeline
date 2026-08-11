@@ -694,16 +694,24 @@ class MatchupModelTest(unittest.TestCase):
             ]
         )
         box_rows: list[dict[str, object]] = []
-        for game_id, pace in (
-            ("std-1", 100.0),
-            ("std-2", 80.0),
-            ("extra-cup", 20.0),
+        for game_id, pace, home_score, away_score in (
+            ("std-1", 100.0, 91.5, 100.0),
+            ("std-2", 80.0, 111.5, 100.0),
+            ("extra-cup", 20.0, 200.0, 50.0),
         ):
             for team_id in ("A", "B"):
+                is_home = team_id == "A"
+                team_score = home_score if is_home else away_score
+                opponent_score = away_score if is_home else home_score
                 box_rows.append(
                     {
                         "game_id": game_id,
                         "team_id": team_id,
+                        "opponent_team_id": "B" if is_home else "A",
+                        "team_home_away": "home" if is_home else "away",
+                        "team_score": team_score,
+                        "opponent_team_score": opponent_score,
+                        "team_winner": team_score > opponent_score,
                         "field_goals_made": pace / 2,
                         "field_goals_attempted": pace,
                         "three_point_field_goals_made": 0,
@@ -724,7 +732,6 @@ class MatchupModelTest(unittest.TestCase):
             sources = ForecastSources(
                 schedule=schedule,
                 team_box=pd.DataFrame(box_rows),
-                standings=pd.DataFrame({"team_id": ["A", "B"]}),
                 team_history=pd.DataFrame(
                     {
                         "season": [2026, 2026],
@@ -733,11 +740,12 @@ class MatchupModelTest(unittest.TestCase):
                     }
                 ),
                 pbp_team_features=None,
+                external_standings=None,
                 schedule_path=temp_root / "schedule.parquet",
                 team_box_path=temp_root / "team_box.parquet",
-                standings_path=temp_root / "standings.parquet",
                 team_history_path=temp_root / "team_history.csv",
                 pbp_team_features_path=None,
+                external_standings_path=None,
             )
             team_games = build_team_game_layer(sources, cfg, cutoff="2026-06-04")
             remaining = build_remaining_schedule(schedule, "2026-06-04", cfg)

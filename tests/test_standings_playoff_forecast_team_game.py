@@ -2,7 +2,7 @@ import json
 import sys
 import tempfile
 import unittest
-from dataclasses import replace
+from dataclasses import FrozenInstanceError, replace
 from pathlib import Path
 
 import pandas as pd
@@ -31,6 +31,7 @@ def _write_source_fixture(source_root: Path) -> dict[str, Path]:
         "schedule_path": source_root / "schedule.parquet",
         "team_box_path": source_root / "team_box.parquet",
         "external_standings_path": source_root / "standings.parquet",
+        "team_history_path": source_root / "team_history.csv",
     }
     pd.DataFrame(
         [
@@ -60,6 +61,11 @@ def _write_source_fixture(source_root: Path) -> dict[str, Path]:
             {
                 "game_id": 501.0,
                 "team_id": 17.0,
+                "opponent_team_id": 19.0,
+                "team_home_away": "home",
+                "team_score": 80,
+                "opponent_team_score": 70,
+                "team_winner": True,
                 "field_goals_made": 30,
                 "field_goals_attempted": 60,
                 "three_point_field_goals_made": 8,
@@ -72,6 +78,11 @@ def _write_source_fixture(source_root: Path) -> dict[str, Path]:
             {
                 "game_id": 501.0,
                 "team_id": 19.0,
+                "opponent_team_id": 17.0,
+                "team_home_away": "away",
+                "team_score": 70,
+                "opponent_team_score": 80,
+                "team_winner": False,
                 "field_goals_made": 26,
                 "field_goals_attempted": 65,
                 "three_point_field_goals_made": 6,
@@ -90,6 +101,13 @@ def _write_source_fixture(source_root: Path) -> dict[str, Path]:
             "team_display_name": ["Las Vegas Aces", "Chicago Sky"],
         }
     ).to_parquet(paths["external_standings_path"])
+    pd.DataFrame(
+        {
+            "season": [2026, 2026],
+            "sportsdataverse_team_id": [17, 19],
+            "franchise_id": ["las_vegas_aces", "chicago_sky"],
+        }
+    ).to_csv(paths["team_history_path"], index=False)
     return paths
 
 
@@ -113,7 +131,69 @@ def _append_game(
     team_box = pd.read_parquet(paths["team_box_path"])
     later_box = team_box.loc[team_box["game_id"] == 501.0].copy()
     later_box["game_id"] = game_id
+    home_rows = later_box["team_home_away"].eq("home")
+    later_box.loc[home_rows, ["team_score", "opponent_team_score", "team_winner"]] = [
+        home_score,
+        away_score,
+        home_score > away_score,
+    ]
+    later_box.loc[~home_rows, ["team_score", "opponent_team_score", "team_winner"]] = [
+        away_score,
+        home_score,
+        away_score > home_score,
+    ]
     pd.concat([team_box, later_box], ignore_index=True).to_parquet(paths["team_box_path"])
+
+
+def _completed_schedule(*, completed: bool = True) -> pd.DataFrame:
+    return pd.DataFrame(
+        [
+            {
+                "game_id": "501",
+                "season": 2026,
+                "season_type": 2,
+                "game_date": "2026-06-01",
+                "status_type_completed": completed,
+                "status_type_name": "STATUS_FINAL" if completed else "STATUS_SCHEDULED",
+                "type_abbreviation": "STD",
+                "home_id": "17",
+                "away_id": "19",
+            }
+        ]
+    )
+
+
+def _reciprocal_team_games() -> pd.DataFrame:
+    return pd.DataFrame(
+        [
+            {
+                "game_id": "501",
+                "game_date": "2026-06-01",
+                "team_id": "17",
+                "opponent_id": "19",
+                "home_away": "home",
+                "is_home": True,
+                "win": 1,
+                "loss": 0,
+                "points_for": 80,
+                "points_against": 70,
+                "margin": 10,
+            },
+            {
+                "game_id": "501",
+                "game_date": "2026-06-01",
+                "team_id": "19",
+                "opponent_id": "17",
+                "home_away": "away",
+                "is_home": False,
+                "win": 0,
+                "loss": 1,
+                "points_for": 70,
+                "points_against": 80,
+                "margin": -10,
+            },
+        ]
+    )
 
 
 class ForecastSourceLoaderTest(unittest.TestCase):
@@ -297,6 +377,118 @@ class ForecastSourceLoaderTest(unittest.TestCase):
             )
 
 
+class CompletedGameLedgerValidationTest(unittest.TestCase):
+    def setUp(self) -> None:
+        self.temporary = tempfile.TemporaryDirectory()
+        self.addCleanup(self.temporary.cleanup)
+        self.cfg = _fixture_config(Path(self.temporary.name))
+
+    def validate(self, schedule: pd.DataFrame, team_games: pd.DataFrame):
+        from standings_playoff_forecast.team_game_layer import (
+            validate_completed_game_ledger,
+        )
+
+        return validate_completed_game_ledger(
+            schedule, team_games, self.cfg, cutoff="2026-06-01"
+        )
+
+    def test_valid_two_row_reciprocal_game_returns_frozen_result(self) -> None:
+        result = self.validate(_completed_schedule(), _reciprocal_team_games())
+
+        self.assertEqual(result.completed_game_count, 1)
+        self.assertEqual(result.directional_row_count, 2)
+        self.assertEqual(result.game_ids, ("501",))
+        with self.assertRaises(FrozenInstanceError):
+            result.completed_game_count = 2
+
+    def test_valid_reciprocal_rows_do_not_require_unique_caller_index(self) -> None:
+        rows = _reciprocal_team_games()
+        rows.index = [0, 0]
+
+        result = self.validate(_completed_schedule(), rows)
+
+        self.assertEqual(result.directional_row_count, 2)
+
+    def test_missing_reciprocal_row_fails_closed(self) -> None:
+        with self.assertRaisesRegex(
+            ValueError, "completed game must have exactly two directional rows: 501"
+        ):
+            self.validate(_completed_schedule(), _reciprocal_team_games().iloc[:1])
+
+    def test_mismatched_points_for_and_against_fails_closed(self) -> None:
+        malformed = _reciprocal_team_games()
+        malformed.loc[1, "points_against"] = 81
+
+        with self.assertRaisesRegex(ValueError, "reciprocal points_for/points_against"):
+            self.validate(_completed_schedule(), malformed)
+
+    def test_mismatched_margins_fail_closed(self) -> None:
+        malformed = _reciprocal_team_games()
+        malformed.loc[1, "margin"] = -9
+
+        with self.assertRaisesRegex(ValueError, "opposite nonzero margins"):
+            self.validate(_completed_schedule(), malformed)
+
+    def test_duplicate_directional_row_fails_closed(self) -> None:
+        rows = _reciprocal_team_games()
+        malformed = pd.concat([rows, rows.iloc[[0]]], ignore_index=True)
+
+        with self.assertRaisesRegex(
+            ValueError, "duplicate directional team-game rows: 501/17"
+        ):
+            self.validate(_completed_schedule(), malformed)
+
+    def test_uncompleted_schedule_game_is_excluded_from_expected_ledger(self) -> None:
+        empty = _reciprocal_team_games().iloc[:0]
+        result = self.validate(_completed_schedule(completed=False), empty)
+
+        self.assertEqual(result.completed_game_count, 0)
+        self.assertEqual(result.directional_row_count, 0)
+        self.assertEqual(result.game_ids, ())
+
+    def test_ledger_game_ids_must_exactly_match_completed_schedule_ids(self) -> None:
+        malformed = _reciprocal_team_games().assign(game_id="other")
+
+        with self.assertRaisesRegex(
+            ValueError, "completed game-id parity failed.*missing=501.*unexpected=other"
+        ):
+            self.validate(_completed_schedule(), malformed)
+
+    def test_directional_participants_must_match_schedule_home_and_away(self) -> None:
+        malformed = _reciprocal_team_games()
+        malformed.loc[0, ["team_id", "opponent_id"]] = ["19", "17"]
+        malformed.loc[1, ["team_id", "opponent_id"]] = ["17", "19"]
+
+        with self.assertRaisesRegex(
+            ValueError, "directional participants do not match schedule: 501"
+        ):
+            self.validate(_completed_schedule(), malformed)
+
+    def test_directional_home_away_must_match_schedule(self) -> None:
+        malformed = _reciprocal_team_games()
+        malformed[["home_away", "is_home"]] = [["away", False], ["home", True]]
+
+        with self.assertRaisesRegex(
+            ValueError, "directional participants do not match schedule: 501"
+        ):
+            self.validate(_completed_schedule(), malformed)
+
+    def test_reciprocal_rows_must_have_one_winner_and_one_loser(self) -> None:
+        malformed = _reciprocal_team_games()
+        malformed.loc[1, ["win", "loss"]] = [1, 0]
+
+        with self.assertRaisesRegex(ValueError, "one winner and one loser: 501"):
+            self.validate(_completed_schedule(), malformed)
+
+    def test_scores_must_be_numeric(self) -> None:
+        malformed = _reciprocal_team_games()
+        malformed["points_for"] = malformed["points_for"].astype(object)
+        malformed.loc[0, "points_for"] = "not-a-score"
+
+        with self.assertRaisesRegex(ValueError, "numeric scores: 501"):
+            self.validate(_completed_schedule(), malformed)
+
+
 class TeamGameLayerTest(unittest.TestCase):
     def test_normalize_id_unifies_numeric_and_string_source_ids(self) -> None:
         from standings_playoff_forecast.team_game_layer import normalize_id
@@ -332,6 +524,84 @@ class TeamGameLayerTest(unittest.TestCase):
         self.assertEqual(away["margin"], -10)
         self.assertEqual(home["game_date"], pd.Timestamp("2026-06-01"))
         self.assertEqual(away["game_date"], pd.Timestamp("2026-06-01"))
+
+    def test_completed_game_results_come_from_team_box_not_schedule_scores(self) -> None:
+        from standings_playoff_forecast.data_sources import load_forecast_sources
+        from standings_playoff_forecast.team_game_layer import build_team_game_layer
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            source_root = Path(temp_dir)
+            cfg = _fixture_config(source_root)
+            paths = _write_source_fixture(source_root)
+            schedule = pd.read_parquet(paths["schedule_path"])
+            schedule.loc[0, ["home_score", "away_score"]] = [10, 120]
+            schedule.to_parquet(paths["schedule_path"])
+            team_games = build_team_game_layer(
+                load_forecast_sources(
+                    cfg,
+                    **paths,
+                    pbp_team_features_path=source_root / "not-present.csv",
+                ),
+                cfg,
+            )
+
+        home = team_games.loc[team_games["is_home"]].iloc[0]
+        away = team_games.loc[~team_games["is_home"]].iloc[0]
+        self.assertEqual(
+            home[["win", "loss", "points_for", "points_against", "margin"]].tolist(),
+            [1, 0, 80, 70, 10],
+        )
+        self.assertEqual(
+            away[["win", "loss", "points_for", "points_against", "margin"]].tolist(),
+            [0, 1, 70, 80, -10],
+        )
+
+    def test_completed_game_build_does_not_depend_on_external_standings(self) -> None:
+        from standings_playoff_forecast.data_sources import load_forecast_sources
+        from standings_playoff_forecast.team_game_layer import build_team_game_layer
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            source_root = Path(temp_dir)
+            cfg = _fixture_config(source_root)
+            paths = _write_source_fixture(source_root)
+            paths["external_standings_path"].unlink()
+            with self.assertWarnsRegex(RuntimeWarning, "unavailable"):
+                sources = load_forecast_sources(
+                    cfg,
+                    **paths,
+                    pbp_team_features_path=source_root / "not-present.csv",
+                )
+            team_games = build_team_game_layer(sources, cfg)
+
+        self.assertEqual(len(team_games), 2)
+
+    def test_active_team_history_universe_must_match_qualified_schedule(self) -> None:
+        from standings_playoff_forecast.data_sources import load_forecast_sources
+        from standings_playoff_forecast.team_game_layer import build_team_game_layer
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            source_root = Path(temp_dir)
+            cfg = _fixture_config(source_root)
+            paths = _write_source_fixture(source_root)
+            history_path = source_root / "team_history.csv"
+            pd.DataFrame(
+                {
+                    "season": [2026, 2026],
+                    "sportsdataverse_team_id": [17, 20],
+                    "franchise_id": ["las_vegas_aces", "atlanta_dream"],
+                }
+            ).to_csv(history_path, index=False)
+            sources = load_forecast_sources(
+                cfg,
+                **paths,
+                pbp_team_features_path=source_root / "not-present.csv",
+            )
+
+            with self.assertRaisesRegex(
+                ValueError,
+                "active team-history universe does not match qualified schedule.*schedule_only=19.*history_only=20",
+            ):
+                build_team_game_layer(sources, cfg)
 
     def test_no_completed_games_writes_an_empty_contract_table(self) -> None:
         from standings_playoff_forecast.config import load_season_config
@@ -407,7 +677,6 @@ class TeamGameLayerTest(unittest.TestCase):
             sources = load_forecast_sources(
                 cfg,
                 **paths,
-                team_history_path=history_path,
                 pbp_team_features_path=source_root / "not-present.csv",
             )
 
@@ -595,9 +864,18 @@ class TeamGameLayerTest(unittest.TestCase):
             source_root = Path(temp_dir)
             cfg = _fixture_config(source_root)
             paths = _write_source_fixture(source_root)
-            pd.DataFrame(
-                {"game_id": [501.0, 501.0], "team_id": [17.0, 19.0]}
-            ).to_parquet(paths["team_box_path"])
+            team_box = pd.read_parquet(paths["team_box_path"])
+            team_box[
+                [
+                    "game_id",
+                    "team_id",
+                    "opponent_team_id",
+                    "team_home_away",
+                    "team_score",
+                    "opponent_team_score",
+                    "team_winner",
+                ]
+            ].to_parquet(paths["team_box_path"])
             team_games = build_team_game_layer(
                 load_forecast_sources(
                     cfg,
@@ -636,9 +914,14 @@ class TeamGameLayerTest(unittest.TestCase):
             paths = _write_source_fixture(source_root)
             team_box = pd.read_parquet(paths["team_box_path"])
             metric_columns = [
-                column
-                for column in team_box.columns
-                if column not in {"game_id", "team_id"}
+                "field_goals_made",
+                "field_goals_attempted",
+                "three_point_field_goals_made",
+                "free_throws_made",
+                "free_throws_attempted",
+                "offensive_rebounds",
+                "defensive_rebounds",
+                "turnovers",
             ]
             team_box[metric_columns] = 0
             team_box.to_parquet(paths["team_box_path"])
@@ -686,11 +969,11 @@ class TeamGameLayerTest(unittest.TestCase):
                     "franchise_id": ["las_vegas_aces", "chicago_sky"],
                 }
             ).to_csv(history_path, index=False)
+            paths["team_history_path"] = history_path
             build_team_game_layer(
                 load_forecast_sources(
                     cfg,
                     **paths,
-                    team_history_path=history_path,
                     pbp_team_features_path=source_root / "not-present.csv",
                 ),
                 cfg,
@@ -732,11 +1015,11 @@ class TeamGameLayerTest(unittest.TestCase):
                     "franchise_id": ["las_vegas_aces", "chicago_sky"],
                 }
             ).to_csv(history_path, index=False)
+            paths["team_history_path"] = history_path
             team_games = build_team_game_layer(
                 load_forecast_sources(
                     cfg,
                     **paths,
-                    team_history_path=history_path,
                     pbp_team_features_path=source_root / "not-present.csv",
                 ),
                 cfg,

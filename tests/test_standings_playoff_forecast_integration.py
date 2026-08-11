@@ -118,6 +118,11 @@ def literal_sources(root: Path) -> SimpleNamespace:
         {
             "game_id": ["g1", "g1"],
             "team_id": ["A", "B"],
+            "opponent_team_id": ["B", "A"],
+            "team_home_away": ["home", "away"],
+            "team_score": [80, 70],
+            "opponent_team_score": [70, 80],
+            "team_winner": [True, False],
             "field_goals_made": [30, 27],
             "field_goals_attempted": [70, 68],
             "three_point_field_goals_made": [8, 7],
