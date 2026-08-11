@@ -1,6 +1,8 @@
 import sys
 import unittest
+from copy import deepcopy
 from pathlib import Path
+from unittest.mock import patch
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -8,6 +10,14 @@ sys.path.insert(0, str(ROOT / "scripts"))
 
 
 class StandingsPlayoffForecastConfigTest(unittest.TestCase):
+    def _season_payloads(self):
+        import standings_playoff_forecast.config as config_module
+
+        return (
+            config_module._load_json(config_module.CONFIG_ROOT / "seasons" / "default.json"),
+            config_module._load_json(config_module.CONFIG_ROOT / "seasons" / "2026.json"),
+        )
+
     def test_forecast_package_imports_from_scripts_root(self) -> None:
         import standings_playoff_forecast
 
@@ -34,6 +44,47 @@ class StandingsPlayoffForecastConfigTest(unittest.TestCase):
             cfg.optional_validation_files["standings"],
             "standings_2026.parquet",
         )
+
+    def test_rejects_non_mapping_optional_validation_files(self) -> None:
+        import standings_playoff_forecast.config as config_module
+
+        default, season = self._season_payloads()
+        season = deepcopy(season)
+        season["optional_validation_files"] = ["standings_2026.parquet"]
+        with patch.object(config_module, "_load_json", side_effect=[default, season]):
+            with self.assertRaisesRegex(
+                ValueError, "optional_validation_files must be a mapping"
+            ):
+                config_module.load_season_config(2026)
+
+    def test_rejects_non_string_optional_validation_key_or_value(self) -> None:
+        import standings_playoff_forecast.config as config_module
+
+        default, base_season = self._season_payloads()
+        for optional_files in ({1: "standings.parquet"}, {"standings": 1}):
+            with self.subTest(optional_files=optional_files):
+                season = deepcopy(base_season)
+                season["optional_validation_files"] = optional_files
+                with patch.object(
+                    config_module, "_load_json", side_effect=[default, season]
+                ):
+                    with self.assertRaisesRegex(
+                        ValueError,
+                        "optional_validation_files must map strings to strings",
+                    ):
+                        config_module.load_season_config(2026)
+
+    def test_rejects_source_and_optional_validation_name_collision(self) -> None:
+        import standings_playoff_forecast.config as config_module
+
+        default, season = self._season_payloads()
+        season = deepcopy(season)
+        season["optional_validation_files"] = {"schedule": "other.parquet"}
+        with patch.object(config_module, "_load_json", side_effect=[default, season]):
+            with self.assertRaisesRegex(
+                ValueError, "optional_validation_files must not overlap source_files"
+            ):
+                config_module.load_season_config(2026)
 
     def test_rejects_unknown_season_without_a_verified_config(self) -> None:
         from standings_playoff_forecast.config import load_season_config
