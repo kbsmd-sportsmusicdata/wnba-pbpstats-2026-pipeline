@@ -368,6 +368,16 @@ class OrchestratorIntegrationTests(unittest.TestCase):
             remaining = pd.DataFrame(
                 {"game_id": ["future"], "home_id": ["A"], "away_id": ["B"]}
             )
+            schedule_counts = pd.DataFrame(
+                {
+                    "team_id": ["A", "B"],
+                    "completed_gp": [1, 1],
+                    "remaining_games": [1, 1],
+                    "configured_games": [2, 2],
+                    "total_games": [2, 2],
+                    "status": ["validated", "validated"],
+                }
+            )
             scored = pd.DataFrame({"game_id": ["future"]})
             simulation = SimpleNamespace(forecast_summary=pd.DataFrame())
             leverage = pd.DataFrame({"game_id": ["future"]})
@@ -406,8 +416,14 @@ class OrchestratorIntegrationTests(unittest.TestCase):
                 patch.object(builder, "add_current_standings_context", side_effect=stage("standings_context", contextual)),
                 patch.object(builder, "compare_external_standings", side_effect=stage("external_standings_qa", external_qa)),
                 patch.object(builder, "build_team_strength", side_effect=stage("strength", strength)),
-                patch.object(builder, "build_remaining_schedule", side_effect=stage("remaining", remaining)),
-                patch.object(builder, "score_matchups", side_effect=stage("matchups", scored)),
+                patch.multiple(
+                    builder,
+                    build_remaining_schedule=stage("remaining", remaining),
+                    validate_season_schedule_counts=stage(
+                        "schedule_counts", schedule_counts
+                    ),
+                    score_matchups=stage("matchups", scored),
+                ),
                 patch.object(builder, "simulate_season", side_effect=stage("simulation", simulation)) as simulate_mock,
                 patch.object(builder, "build_historical_context", side_effect=stage("history", history)),
                 patch.object(builder, "calculate_game_leverage", side_effect=stage("leverage", leverage)),
@@ -434,6 +450,7 @@ class OrchestratorIntegrationTests(unittest.TestCase):
                     "external_standings_qa",
                     "strength",
                     "remaining",
+                    "schedule_counts",
                     "matchups",
                     "simulation",
                     "history",
@@ -442,27 +459,7 @@ class OrchestratorIntegrationTests(unittest.TestCase):
                     "outputs",
                 ],
             )
-            self.assertEqual(
-                result.stage_artifacts["season_schedule_counts"].to_dict("records"),
-                [
-                    {
-                        "team_id": "A",
-                        "completed_gp": 1,
-                        "remaining_games": 1,
-                        "configured_games": 2,
-                        "total_games": 2,
-                        "status": "validated",
-                    },
-                    {
-                        "team_id": "B",
-                        "completed_gp": 1,
-                        "remaining_games": 1,
-                        "configured_games": 2,
-                        "total_games": 2,
-                        "status": "validated",
-                    },
-                ],
-            )
+            self.assertIs(result.stage_artifacts["season_schedule_counts"], schedule_counts)
             rank_mock.assert_called_once()
             self.assertIs(result.ledger_validation, ledger_validation)
             self.assertIs(result.external_standings_qa, external_qa)

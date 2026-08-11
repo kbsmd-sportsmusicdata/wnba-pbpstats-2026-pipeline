@@ -4,6 +4,7 @@ import unittest
 from dataclasses import replace
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
 
 
@@ -443,6 +444,100 @@ class SeasonScheduleCountValidationTest(unittest.TestCase):
                     valid_remaining,
                     _season_cfg(games_per_team=2),
                 )
+
+    def test_rejects_boolean_games_played_before_numeric_coercion(self) -> None:
+        from standings_playoff_forecast.remaining_schedule import (
+            validate_season_schedule_counts,
+        )
+
+        remaining = pd.DataFrame(
+            [{"game_id": "future-1", "home_id": "A", "away_id": "B"}]
+        )
+        for value in (True, np.bool_(True)):
+            with self.subTest(value_type=type(value).__name__):
+                with self.assertRaisesRegex(
+                    ValueError, "invalid completed games_played"
+                ):
+                    validate_season_schedule_counts(
+                        pd.DataFrame(
+                            {"team_id": ["A", "B"], "games_played": [value, 1]}
+                        ),
+                        remaining,
+                        _season_cfg(games_per_team=2),
+                    )
+
+    def test_rejects_nonfinite_negative_and_out_of_range_completed_games(self) -> None:
+        from standings_playoff_forecast.remaining_schedule import (
+            validate_season_schedule_counts,
+        )
+
+        remaining = pd.DataFrame(
+            [{"game_id": "future-1", "home_id": "A", "away_id": "B"}]
+        )
+        for value in (float("nan"), float("inf"), float("-inf"), -1, 3):
+            with self.subTest(value=value):
+                with self.assertRaisesRegex(
+                    ValueError, "invalid completed games_played"
+                ):
+                    validate_season_schedule_counts(
+                        pd.DataFrame(
+                            {"team_id": ["A", "B"], "games_played": [value, 1]}
+                        ),
+                        remaining,
+                        _season_cfg(games_per_team=2),
+                    )
+
+    def test_rejects_normalized_and_literal_duplicate_standings_team_ids(self) -> None:
+        from standings_playoff_forecast.remaining_schedule import (
+            validate_season_schedule_counts,
+        )
+
+        remaining = pd.DataFrame(
+            [{"game_id": "future-1", "home_id": "A", "away_id": "B"}]
+        )
+        for team_ids in (("1.0", "1"), ("A", "A")):
+            with self.subTest(team_ids=team_ids):
+                with self.assertRaisesRegex(ValueError, "invalid team universe"):
+                    validate_season_schedule_counts(
+                        pd.DataFrame(
+                            {"team_id": team_ids, "games_played": [1, 1]}
+                        ),
+                        remaining,
+                        _season_cfg(games_per_team=2),
+                    )
+
+    def test_accepts_empty_remaining_schedule_when_each_team_is_complete(self) -> None:
+        from standings_playoff_forecast.remaining_schedule import (
+            validate_season_schedule_counts,
+        )
+
+        result = validate_season_schedule_counts(
+            pd.DataFrame({"team_id": ["B", "A"], "games_played": [2, 2]}),
+            pd.DataFrame(columns=["game_id", "home_id", "away_id"]),
+            _season_cfg(games_per_team=2),
+        )
+
+        self.assertEqual(
+            result.to_dict("records"),
+            [
+                {
+                    "team_id": "A",
+                    "completed_gp": 2,
+                    "remaining_games": 0,
+                    "configured_games": 2,
+                    "total_games": 2,
+                    "status": "validated",
+                },
+                {
+                    "team_id": "B",
+                    "completed_gp": 2,
+                    "remaining_games": 0,
+                    "configured_games": 2,
+                    "total_games": 2,
+                    "status": "validated",
+                },
+            ],
+        )
 
     def test_rejects_same_team_remaining_game(self) -> None:
         from standings_playoff_forecast.remaining_schedule import (

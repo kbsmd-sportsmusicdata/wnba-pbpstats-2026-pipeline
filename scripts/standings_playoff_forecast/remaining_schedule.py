@@ -46,6 +46,8 @@ def validate_season_schedule_counts(
     invalid_team_ids = standings["team_id"].isna() | standings["team_id"].eq("")
     if invalid_team_ids.any() or standings["team_id"].duplicated().any():
         raise ValueError("current standings has an invalid team universe")
+    if standings["games_played"].map(pd.api.types.is_bool).any():
+        raise ValueError("current standings has invalid completed games_played")
     completed_games = pd.to_numeric(standings["games_played"], errors="coerce")
     invalid_completed_games = (
         completed_games.isna()
