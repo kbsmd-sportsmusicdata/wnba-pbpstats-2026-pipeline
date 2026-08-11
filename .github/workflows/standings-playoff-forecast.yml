@@ -22,7 +22,7 @@ name: WNBA Standings and Playoff Forecast
         description: "Refresh 2026 SportsDataverse sources"
         required: true
         type: boolean
-        default: false
+        default: true
       refresh_pbpstats:
         description: "Refresh 2026 PBPStats sources"
         required: true

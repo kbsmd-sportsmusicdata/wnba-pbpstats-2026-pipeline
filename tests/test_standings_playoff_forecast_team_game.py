@@ -1,3 +1,4 @@
+import json
 import sys
 import tempfile
 import unittest
@@ -170,6 +171,100 @@ class ForecastSourceLoaderTest(unittest.TestCase):
         self.assertEqual(sources.team_box["game_id"].tolist(), ["101"])
         self.assertEqual(sources.standings["team_id"].tolist(), ["1"])
         self.assertIsNone(sources.pbp_team_features)
+
+    def test_optional_pbpstats_csv_restores_snapshot_as_of_from_json_sidecar(self) -> None:
+        from standings_playoff_forecast.config import load_season_config
+        from standings_playoff_forecast.data_sources import load_forecast_sources
+
+        cfg = load_season_config(2026)
+        with tempfile.TemporaryDirectory() as temp_dir:
+            source_root = Path(temp_dir)
+            paths = {
+                "schedule_path": source_root / "schedule.parquet",
+                "team_box_path": source_root / "team_box.parquet",
+                "standings_path": source_root / "standings.parquet",
+            }
+            pd.DataFrame({"game_id": ["101"]}).to_parquet(paths["schedule_path"])
+            pd.DataFrame({"game_id": ["101"]}).to_parquet(paths["team_box_path"])
+            pd.DataFrame({"team_id": ["1"]}).to_parquet(paths["standings_path"])
+            features_path = source_root / "team_totals_features_latest.csv"
+            pd.DataFrame(
+                {
+                    "team_id": ["1"],
+                    "plus_minus": [5],
+                    "_feature_run_id": ["20260603T210500Z"],
+                }
+            ).to_csv(features_path, index=False)
+            features_path.with_suffix(".json").write_text(
+                '{"metadata":{"last_saved_at_utc":"2026-06-03T21:05:00+00:00",'
+                '"run_id":"20260603T210500Z","row_count":1},"rows":[]}',
+                encoding="utf-8",
+            )
+
+            sources = load_forecast_sources(
+                cfg,
+                **paths,
+                pbp_team_features_path=features_path,
+            )
+
+        assert sources.pbp_team_features is not None
+        self.assertEqual(
+            sources.pbp_team_features.attrs["pbpstats_snapshot_metadata"],
+            {
+                "as_of": "2026-06-03T21:05:00+00:00",
+                "run_id": "20260603T210500Z",
+                "sidecar": str(features_path.with_suffix(".json")),
+            },
+        )
+
+    def test_mismatched_pbpstats_sidecar_is_not_trusted_as_cutoff_evidence(self) -> None:
+        from standings_playoff_forecast.config import load_season_config
+        from standings_playoff_forecast.data_sources import load_forecast_sources
+
+        cfg = load_season_config(2026)
+        mismatch_metadata = (
+            {"row_count": 2, "run_id": "20260603T210500Z"},
+            {"row_count": 1, "run_id": "different-run"},
+        )
+        for metadata in mismatch_metadata:
+            with self.subTest(metadata=metadata), tempfile.TemporaryDirectory() as temp_dir:
+                source_root = Path(temp_dir)
+                paths = {
+                    "schedule_path": source_root / "schedule.parquet",
+                    "team_box_path": source_root / "team_box.parquet",
+                    "standings_path": source_root / "standings.parquet",
+                }
+                pd.DataFrame({"game_id": ["101"]}).to_parquet(paths["schedule_path"])
+                pd.DataFrame({"game_id": ["101"]}).to_parquet(paths["team_box_path"])
+                pd.DataFrame({"team_id": ["1"]}).to_parquet(paths["standings_path"])
+                features_path = source_root / "team_totals_features_latest.csv"
+                pd.DataFrame(
+                    {
+                        "team_id": ["1"],
+                        "_feature_run_id": ["20260603T210500Z"],
+                    }
+                ).to_csv(features_path, index=False)
+                sidecar = {
+                    "metadata": {
+                        "last_saved_at_utc": "2026-06-03T21:05:00+00:00",
+                        **metadata,
+                    },
+                    "rows": [],
+                }
+                features_path.with_suffix(".json").write_text(
+                    json.dumps(sidecar), encoding="utf-8"
+                )
+
+                sources = load_forecast_sources(
+                    cfg,
+                    **paths,
+                    pbp_team_features_path=features_path,
+                )
+
+            assert sources.pbp_team_features is not None
+            self.assertNotIn(
+                "pbpstats_snapshot_metadata", sources.pbp_team_features.attrs
+            )
 
 
 class TeamGameLayerTest(unittest.TestCase):

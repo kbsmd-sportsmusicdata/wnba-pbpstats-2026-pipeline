@@ -108,7 +108,7 @@ class WorkflowContractTests(unittest.TestCase):
             "season": ("string", True, "2026"),
             "cutoff": ("string", False, ""),
             "simulations": ("string", True, "100000"),
-            "refresh_sportsdataverse": ("boolean", True, False),
+            "refresh_sportsdataverse": ("boolean", True, True),
             "refresh_pbpstats": ("boolean", True, False),
             "run_tests": ("boolean", True, True),
             "commit_outputs": ("boolean", True, False),

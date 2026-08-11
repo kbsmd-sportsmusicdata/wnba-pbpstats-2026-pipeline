@@ -107,18 +107,18 @@ def _snapshot_as_of(
     metadata = pbp_team_features.attrs.get("pbpstats_snapshot_metadata")
     if isinstance(metadata, Mapping):
         value = metadata.get("as_of")
-        timestamp = pd.to_datetime(value, errors="coerce")
+        timestamp = pd.to_datetime(value, errors="coerce", utc=True)
         if not pd.isna(timestamp):
-            date = pd.Timestamp(timestamp).normalize()
-            return date.date().isoformat(), date
+            date = pd.Timestamp(timestamp).date()
+            return date.isoformat(), pd.Timestamp(date)
     for key in ("pbpstats_snapshot_as_of", "snapshot_as_of"):
         value = pbp_team_features.attrs.get(key)
         if value is None:
             continue
-        timestamp = pd.to_datetime(value, errors="coerce")
+        timestamp = pd.to_datetime(value, errors="coerce", utc=True)
         if not pd.isna(timestamp):
-            date = pd.Timestamp(timestamp).normalize()
-            return date.date().isoformat(), date
+            date = pd.Timestamp(timestamp).date()
+            return date.isoformat(), pd.Timestamp(date)
     return None, None
 
 

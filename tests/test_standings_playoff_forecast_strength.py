@@ -190,7 +190,7 @@ class TeamStrengthTest(unittest.TestCase):
                 "_featured_at_utc": ["2026-06-04T12:00:00Z"] * 2,
             }
         )
-        pbp.attrs["pbpstats_snapshot_as_of"] = "2026-06-03"
+        pbp.attrs["pbpstats_snapshot_as_of"] = "2026-06-03T21:05:00+00:00"
         result = build_team_strength(
             _team_games(),
             pbp,

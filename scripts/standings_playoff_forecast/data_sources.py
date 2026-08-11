@@ -1,5 +1,7 @@
 """Repository-relative source discovery for the standings forecast."""
 
+import json
+from collections.abc import Mapping
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -34,6 +36,41 @@ class ForecastSources:
 
 def _configured_path(root: str, filename: str) -> Path:
     return REPOSITORY_ROOT / root / filename
+
+
+def _load_pbp_team_features(path: Path) -> pd.DataFrame:
+    frame = pd.read_csv(path)
+    sidecar_path = path.with_suffix(".json")
+    if not sidecar_path.is_file():
+        return frame
+    try:
+        payload = json.loads(sidecar_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return frame
+    metadata = payload.get("metadata") if isinstance(payload, Mapping) else None
+    if not isinstance(metadata, Mapping):
+        return frame
+    as_of = metadata.get("snapshot_as_of") or metadata.get("last_saved_at_utc")
+    run_id = metadata.get("run_id")
+    row_count = metadata.get("row_count")
+    feature_run_ids = (
+        set(frame["_feature_run_id"].dropna().astype(str))
+        if "_feature_run_id" in frame.columns
+        else set()
+    )
+    if (
+        as_of is None
+        or pd.isna(pd.to_datetime(as_of, errors="coerce"))
+        or row_count != len(frame)
+        or (feature_run_ids and feature_run_ids != {str(run_id)})
+    ):
+        return frame
+    frame.attrs["pbpstats_snapshot_metadata"] = {
+        "as_of": as_of,
+        "run_id": run_id,
+        "sidecar": str(sidecar_path),
+    }
+    return frame
 
 
 def load_forecast_sources(
@@ -79,7 +116,9 @@ def load_forecast_sources(
         team_box=pd.read_parquet(mandatory_paths["team_box"]),
         standings=pd.read_parquet(mandatory_paths["standings"]),
         team_history=pd.read_csv(history_path),
-        pbp_team_features=pd.read_csv(optional_path) if optional_path.is_file() else None,
+        pbp_team_features=_load_pbp_team_features(optional_path)
+        if optional_path.is_file()
+        else None,
         schedule_path=mandatory_paths["schedule"],
         team_box_path=mandatory_paths["team_box"],
         standings_path=mandatory_paths["standings"],
