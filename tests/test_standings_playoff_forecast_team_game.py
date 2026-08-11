@@ -446,6 +446,47 @@ class CompletedGameLedgerValidationTest(unittest.TestCase):
         self.assertEqual(result.directional_row_count, 0)
         self.assertEqual(result.game_ids, ())
 
+    def test_false_completion_tokens_never_enter_the_ledger(self) -> None:
+        empty = _reciprocal_team_games().iloc[:0]
+        for token in (False, 0, 0.0, "0", "false", "False", " FALSE "):
+            with self.subTest(token=token):
+                schedule = _completed_schedule()
+                schedule["status_type_completed"] = schedule[
+                    "status_type_completed"
+                ].astype(object)
+                schedule.loc[0, "status_type_completed"] = token
+
+                result = self.validate(schedule, empty)
+
+                self.assertEqual(result.game_ids, ())
+
+    def test_true_completion_tokens_enter_the_ledger(self) -> None:
+        for token in (True, 1, 1.0, "1", "true", "TRUE", " true "):
+            with self.subTest(token=token):
+                schedule = _completed_schedule()
+                schedule["status_type_completed"] = schedule[
+                    "status_type_completed"
+                ].astype(object)
+                schedule.loc[0, "status_type_completed"] = token
+
+                result = self.validate(schedule, _reciprocal_team_games())
+
+                self.assertEqual(result.game_ids, ("501",))
+
+    def test_unknown_completion_tokens_fail_closed(self) -> None:
+        for token in (2, -1, "complete", "", None):
+            with self.subTest(token=token):
+                schedule = _completed_schedule()
+                schedule["status_type_completed"] = schedule[
+                    "status_type_completed"
+                ].astype(object)
+                schedule.loc[0, "status_type_completed"] = token
+
+                with self.assertRaisesRegex(
+                    ValueError, "invalid status_type_completed values"
+                ):
+                    self.validate(schedule, _reciprocal_team_games())
+
     def test_ledger_game_ids_must_exactly_match_completed_schedule_ids(self) -> None:
         malformed = _reciprocal_team_games().assign(game_id="other")
 
@@ -473,11 +514,38 @@ class CompletedGameLedgerValidationTest(unittest.TestCase):
         ):
             self.validate(_completed_schedule(), malformed)
 
+    def test_is_home_must_agree_with_home_away(self) -> None:
+        malformed = _reciprocal_team_games()
+        malformed.loc[0, "is_home"] = False
+
+        with self.assertRaisesRegex(
+            ValueError, "directional participants do not match schedule: 501"
+        ):
+            self.validate(_completed_schedule(), malformed)
+
+    def test_directional_game_date_must_match_schedule(self) -> None:
+        malformed = _reciprocal_team_games()
+        malformed.loc[1, "game_date"] = "2026-06-02"
+
+        with self.assertRaisesRegex(
+            ValueError, "directional game_date does not match schedule: 501"
+        ):
+            self.validate(_completed_schedule(), malformed)
+
     def test_reciprocal_rows_must_have_one_winner_and_one_loser(self) -> None:
         malformed = _reciprocal_team_games()
         malformed.loc[1, ["win", "loss"]] = [1, 0]
 
         with self.assertRaisesRegex(ValueError, "one winner and one loser: 501"):
+            self.validate(_completed_schedule(), malformed)
+
+    def test_swapped_wins_and_losses_must_match_score_sign(self) -> None:
+        malformed = _reciprocal_team_games()
+        malformed[["win", "loss"]] = [[0, 1], [1, 0]]
+
+        with self.assertRaisesRegex(
+            ValueError, "completed game result does not match score margin: 501"
+        ):
             self.validate(_completed_schedule(), malformed)
 
     def test_scores_must_be_numeric(self) -> None:
@@ -487,6 +555,16 @@ class CompletedGameLedgerValidationTest(unittest.TestCase):
 
         with self.assertRaisesRegex(ValueError, "numeric scores: 501"):
             self.validate(_completed_schedule(), malformed)
+
+    def test_margins_must_be_numeric_and_finite(self) -> None:
+        for value in ("not-a-margin", float("nan"), float("inf"), float("-inf")):
+            with self.subTest(value=value):
+                malformed = _reciprocal_team_games()
+                malformed["margin"] = malformed["margin"].astype(object)
+                malformed.loc[0, "margin"] = value
+
+                with self.assertRaisesRegex(ValueError, "numeric margins: 501"):
+                    self.validate(_completed_schedule(), malformed)
 
 
 class TeamGameLayerTest(unittest.TestCase):
@@ -574,6 +652,51 @@ class TeamGameLayerTest(unittest.TestCase):
             team_games = build_team_game_layer(sources, cfg)
 
         self.assertEqual(len(team_games), 2)
+
+    def test_false_string_completion_is_excluded_by_builder(self) -> None:
+        from standings_playoff_forecast.data_sources import load_forecast_sources
+        from standings_playoff_forecast.team_game_layer import build_team_game_layer
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            source_root = Path(temp_dir)
+            cfg = _fixture_config(source_root)
+            paths = _write_source_fixture(source_root)
+            schedule = pd.read_parquet(paths["schedule_path"])
+            schedule["status_type_completed"] = "False"
+            schedule.to_parquet(paths["schedule_path"])
+            team_games = build_team_game_layer(
+                load_forecast_sources(
+                    cfg,
+                    **paths,
+                    pbp_team_features_path=source_root / "not-present.csv",
+                ),
+                cfg,
+            )
+
+        self.assertTrue(team_games.empty)
+
+    def test_boolean_team_box_scores_fail_before_numeric_coercion(self) -> None:
+        from standings_playoff_forecast.data_sources import load_forecast_sources
+        from standings_playoff_forecast.team_game_layer import build_team_game_layer
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            source_root = Path(temp_dir)
+            cfg = _fixture_config(source_root)
+            paths = _write_source_fixture(source_root)
+            team_box = pd.read_parquet(paths["team_box_path"])
+            team_box["team_score"] = [True, False]
+            team_box["opponent_team_score"] = [False, True]
+            team_box.to_parquet(paths["team_box_path"])
+            sources = load_forecast_sources(
+                cfg,
+                **paths,
+                pbp_team_features_path=source_root / "not-present.csv",
+            )
+
+            with self.assertRaisesRegex(
+                ValueError, "team_box scores must not be boolean"
+            ):
+                build_team_game_layer(sources, cfg)
 
     def test_active_team_history_universe_must_match_qualified_schedule(self) -> None:
         from standings_playoff_forecast.data_sources import load_forecast_sources

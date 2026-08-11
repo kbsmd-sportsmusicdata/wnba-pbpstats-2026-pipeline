@@ -1,7 +1,7 @@
 """Canonical directional team-game normalization for completed WNBA games."""
 
-from dataclasses import dataclass
 import math
+from dataclasses import dataclass
 from pathlib import Path
 
 import pandas as pd
@@ -27,6 +27,36 @@ def normalize_id(value: object) -> str | None:
         return None
     text = str(value).strip()
     return text[:-2] if text.endswith(".0") else text
+
+
+def _normalize_completion_flags(values: pd.Series) -> pd.Series:
+    normalized: list[bool] = []
+    invalid: list[str] = []
+    for value in values:
+        if pd.api.types.is_bool(value):
+            normalized.append(bool(value))
+            continue
+        if pd.api.types.is_number(value) and not pd.isna(value):
+            numeric = float(value)
+            if math.isfinite(numeric) and numeric in (0.0, 1.0):
+                normalized.append(bool(numeric))
+                continue
+        if isinstance(value, str):
+            token = value.strip().lower()
+            if token in {"0", "false"}:
+                normalized.append(False)
+                continue
+            if token in {"1", "true"}:
+                normalized.append(True)
+                continue
+        invalid.append(repr(value))
+        normalized.append(False)
+    if invalid:
+        raise ValueError(
+            "schedule has invalid status_type_completed values: "
+            + ", ".join(sorted(set(invalid)))
+        )
+    return pd.Series(normalized, index=values.index, dtype=bool)
 
 
 def _qualifying_cup_games(
@@ -126,7 +156,7 @@ def validate_completed_game_ledger(
 
     qualified = qualify_regular_season_schedule(schedule, cfg)
     completed = qualified.loc[
-        qualified["status_type_completed"].fillna(False).astype(bool)
+        _normalize_completion_flags(qualified["status_type_completed"])
     ].copy()
     if cutoff is not None:
         completed = completed.loc[
@@ -428,7 +458,7 @@ def _completed_schedule_as_of(
     schedule: pd.DataFrame, cutoff: object | None
 ) -> pd.DataFrame:
     completed = schedule.loc[
-        schedule["status_type_completed"].fillna(False).astype(bool)
+        _normalize_completion_flags(schedule["status_type_completed"])
     ].copy()
     if cutoff is not None:
         completed = completed.loc[
@@ -521,6 +551,11 @@ def build_team_game_layer(
     team_box["team_id"] = team_box["team_id"].map(normalize_id)
     team_box["opponent_team_id"] = team_box["opponent_team_id"].map(normalize_id)
     team_box = team_box.loc[team_box["game_id"].isin(expected_game_ids)].copy()
+    boolean_scores = team_box[["team_score", "opponent_team_score"]].map(
+        pd.api.types.is_bool
+    )
+    if boolean_scores.any().any():
+        raise ValueError("team_box scores must not be boolean")
     for column in BOX_SCORE_COLUMNS:
         if column not in team_box.columns:
             team_box[column] = pd.NA
