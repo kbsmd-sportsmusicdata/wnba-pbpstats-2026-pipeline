@@ -352,13 +352,14 @@ def _run_pipeline(
     )
     if sources.pbp_team_features is None:
         warnings.warn(
-            "Optional PBPStats enrichment is unavailable; core forecast continues.",
+            "Optional PBPStats contextual data is unavailable; core forecast continues.",
             RuntimeWarning,
             stacklevel=2,
         )
     elif not team_strength["pbpstats_snapshot_safe_for_cutoff"].all():
         warnings.warn(
-            "PBPStats snapshot is not cutoff-safe; enrichment fields remain unavailable.",
+            "PBPStats context is not cutoff-safe under its provenance bound; "
+            "context fields remain unavailable.",
             RuntimeWarning,
             stacklevel=2,
         )

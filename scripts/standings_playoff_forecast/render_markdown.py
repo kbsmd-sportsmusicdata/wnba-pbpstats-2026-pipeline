@@ -739,7 +739,8 @@ def _build_markdown(
             f"**{history_state}**; seasons used: **{history_season_text}**."
         ),
         "",
-        f"- PBPStats enrichment: **{_clean_text(manifest['pbpstats_enrichment_status'])}**.",
+        f"- PBPStats contextual status: **{_clean_text(manifest['pbpstats_enrichment_status'])}** "
+        f"(provenance: {_clean_text(manifest.get('pbpstats_provenance_kind', 'unavailable'))}).",
         (
             "- External standings QA: **"
             f"{_clean_text(_external_standings_qa_summary(manifest))}**."

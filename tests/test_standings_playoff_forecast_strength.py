@@ -247,6 +247,36 @@ class TeamStrengthTest(unittest.TestCase):
         self.assertTrue(result.loc["A", "pbpstats_snapshot_safe_for_cutoff"])
         self.assertEqual(result.loc["A", "pbpstats_plus_minus"], 30)
 
+    def test_last_saved_metadata_is_labeled_as_conservative_safety_bound(self) -> None:
+        """Catches a save timestamp being presented as exact stats coverage."""
+        from standings_playoff_forecast.config import load_model_config, load_season_config
+        from standings_playoff_forecast.team_strength import build_team_strength
+
+        pbp = pd.DataFrame({"team_id": ["A", "B"], "plus_minus": [30, -30]})
+        pbp.attrs["pbpstats_snapshot_metadata"] = {
+            "cutoff_safety_upper_bound": "2026-06-03T21:05:00+00:00",
+            "provenance_kind": "last_saved_at_utc_upper_bound",
+        }
+        result = build_team_strength(
+            _team_games(),
+            pbp,
+            replace(load_season_config(2026), recent_window_games=1),
+            load_model_config(),
+            cutoff="2026-06-04",
+        ).set_index("team_id")
+
+        alpha = result.loc["A"]
+        self.assertTrue(pd.isna(alpha["pbpstats_snapshot_as_of"]))
+        self.assertEqual(
+            alpha["pbpstats_cutoff_safety_upper_bound"], "2026-06-03"
+        )
+        self.assertEqual(
+            alpha["pbpstats_provenance_kind"],
+            "last_saved_at_utc_upper_bound",
+        )
+        self.assertTrue(alpha["pbpstats_snapshot_safe_for_cutoff"])
+        self.assertEqual(alpha["pbpstats_plus_minus"], 30)
+
     def test_missing_pbpstats_snapshot_is_non_fatal_and_leaves_context_null(self) -> None:
         from standings_playoff_forecast.config import load_model_config, load_season_config
         from standings_playoff_forecast.team_strength import build_team_strength

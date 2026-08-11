@@ -248,8 +248,9 @@ def _build_stat_pack(
     method = (
         f"{int(manifest['simulation_count']):,} simulations · seed "
         f"{int(manifest['random_seed'])} · model {_text(manifest['model_version'])}. "
-        f"Sources: {source_names}. PBPStats enrichment: "
-        f"{_text(manifest['pbpstats_enrichment_status'])}. "
+        f"Sources: {source_names}. PBPStats contextual status: "
+        f"{_text(manifest['pbpstats_enrichment_status'])} "
+        f"({_text(manifest.get('pbpstats_provenance_kind'))}). "
         f"External standings QA: {_text(external_qa)}. "
         f"{CURRENT_STANDINGS_METHOD} {CURRENT_500_METHOD} Probabilities are estimates, "
         "not mathematical clinch or elimination proof."

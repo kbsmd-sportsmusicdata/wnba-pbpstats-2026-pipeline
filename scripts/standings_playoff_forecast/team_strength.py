@@ -41,6 +41,8 @@ _PBPSTATS_CONTEXT_COLUMNS = (
 _PBPSTATS_STATUS_COLUMNS = (
     "pbpstats_snapshot_available",
     "pbpstats_snapshot_as_of",
+    "pbpstats_cutoff_safety_upper_bound",
+    "pbpstats_provenance_kind",
     "pbpstats_snapshot_safe_for_cutoff",
 )
 
@@ -97,29 +99,62 @@ def _in_season_z_scores(
     return z_scores
 
 
-def _snapshot_as_of(
+def _normalized_provenance_date(value: object) -> tuple[str | None, pd.Timestamp | None]:
+    timestamp = pd.to_datetime(value, errors="coerce", utc=True)
+    if pd.isna(timestamp):
+        return None, None
+    date = pd.Timestamp(timestamp).date()
+    return date.isoformat(), pd.Timestamp(date)
+
+
+def _snapshot_provenance(
     pbp_team_features: pd.DataFrame | None,
-) -> tuple[str | None, pd.Timestamp | None]:
-    """Read caller-verified snapshot metadata without inferring a game cutoff."""
+) -> tuple[
+    str | None,
+    pd.Timestamp | None,
+    str | None,
+    pd.Timestamp | None,
+    str | None,
+]:
+    """Separate exact coverage dates from conservative cutoff-safety bounds."""
 
     if pbp_team_features is None:
-        return None, None
+        return None, None, None, None, None
     metadata = pbp_team_features.attrs.get("pbpstats_snapshot_metadata")
     if isinstance(metadata, Mapping):
-        value = metadata.get("as_of")
-        timestamp = pd.to_datetime(value, errors="coerce", utc=True)
-        if not pd.isna(timestamp):
-            date = pd.Timestamp(timestamp).date()
-            return date.isoformat(), pd.Timestamp(date)
+        snapshot_value = metadata.get("snapshot_as_of", metadata.get("as_of"))
+        snapshot_text, snapshot_date = _normalized_provenance_date(snapshot_value)
+        if snapshot_date is not None:
+            return snapshot_text, snapshot_date, None, None, "snapshot_as_of"
+        upper_value = metadata.get("cutoff_safety_upper_bound")
+        upper_text, upper_date = _normalized_provenance_date(upper_value)
+        if upper_date is not None:
+            return (
+                None,
+                None,
+                upper_text,
+                upper_date,
+                "last_saved_at_utc_upper_bound",
+            )
     for key in ("pbpstats_snapshot_as_of", "snapshot_as_of"):
         value = pbp_team_features.attrs.get(key)
         if value is None:
             continue
-        timestamp = pd.to_datetime(value, errors="coerce", utc=True)
-        if not pd.isna(timestamp):
-            date = pd.Timestamp(timestamp).date()
-            return date.isoformat(), pd.Timestamp(date)
-    return None, None
+        snapshot_text, snapshot_date = _normalized_provenance_date(value)
+        if snapshot_date is not None:
+            return snapshot_text, snapshot_date, None, None, "snapshot_as_of"
+    upper_text, upper_date = _normalized_provenance_date(
+        pbp_team_features.attrs.get("pbpstats_cutoff_safety_upper_bound")
+    )
+    if upper_date is not None:
+        return (
+            None,
+            None,
+            upper_text,
+            upper_date,
+            "last_saved_at_utc_upper_bound",
+        )
+    return None, None, None, None, None
 
 
 def _attach_pbpstats_context(
@@ -131,16 +166,35 @@ def _attach_pbpstats_context(
 ) -> pd.DataFrame:
     """Attach only a verified-safe current PBPStats snapshot to team rows."""
 
-    as_of_text, as_of_date = _snapshot_as_of(pbp_team_features)
+    (
+        snapshot_text,
+        snapshot_date,
+        upper_bound_text,
+        upper_bound_date,
+        provenance_kind,
+    ) = _snapshot_provenance(pbp_team_features)
     available = bool(
         pbp_team_features is not None
         and not pbp_team_features.empty
         and "team_id" in pbp_team_features.columns
     )
     cutoff_date = pd.Timestamp(cutoff).normalize()
-    safe_for_cutoff = bool(available and as_of_date is not None and as_of_date <= cutoff_date)
+    cutoff_evidence_date = snapshot_date or upper_bound_date
+    safe_for_cutoff = bool(
+        available
+        and cutoff_evidence_date is not None
+        and cutoff_evidence_date <= cutoff_date
+    )
     result["pbpstats_snapshot_available"] = available
-    result["pbpstats_snapshot_as_of"] = as_of_text if as_of_text is not None else pd.NA
+    result["pbpstats_snapshot_as_of"] = (
+        snapshot_text if snapshot_text is not None else pd.NA
+    )
+    result["pbpstats_cutoff_safety_upper_bound"] = (
+        upper_bound_text if upper_bound_text is not None else pd.NA
+    )
+    result["pbpstats_provenance_kind"] = (
+        provenance_kind if provenance_kind is not None else pd.NA
+    )
     result["pbpstats_snapshot_safe_for_cutoff"] = safe_for_cutoff
     for column in _PBPSTATS_CONTEXT_COLUMNS:
         result[f"pbpstats_{column}"] = pd.NA

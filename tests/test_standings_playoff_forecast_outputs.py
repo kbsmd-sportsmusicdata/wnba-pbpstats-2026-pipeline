@@ -173,6 +173,8 @@ def _inputs(root: Path):
                 "ftr_diff": 0.03,
                 "pbpstats_snapshot_available": np.bool_(True),
                 "pbpstats_snapshot_as_of": pd.Timestamp("2031-06-01"),
+                "pbpstats_cutoff_safety_upper_bound": pd.NaT,
+                "pbpstats_provenance_kind": "snapshot_as_of",
                 "pbpstats_snapshot_safe_for_cutoff": np.bool_(True),
             },
             {
@@ -190,6 +192,8 @@ def _inputs(root: Path):
                 "ftr_diff": -0.03,
                 "pbpstats_snapshot_available": True,
                 "pbpstats_snapshot_as_of": pd.Timestamp("2031-06-01"),
+                "pbpstats_cutoff_safety_upper_bound": pd.NaT,
+                "pbpstats_provenance_kind": "snapshot_as_of",
                 "pbpstats_snapshot_safe_for_cutoff": True,
             },
         ]
@@ -398,6 +402,34 @@ def _write_fixture_bundle(
 
 
 class OutputBundleTest(unittest.TestCase):
+    def test_manifest_status_names_last_saved_cutoff_safety_bound_honestly(self) -> None:
+        """Catches conservative save-time evidence being called exact coverage."""
+        from standings_playoff_forecast.metadata import (
+            _pbpstats_enrichment_status,
+            _pbpstats_provenance_kind,
+        )
+
+        cfg, model_cfg, _bundle = _inputs(Path("/tmp/pbp-provenance-test"))
+        strength = pd.DataFrame(
+            {
+                "pbpstats_snapshot_available": [True, True],
+                "pbpstats_snapshot_safe_for_cutoff": [True, True],
+                "pbpstats_provenance_kind": [
+                    "last_saved_at_utc_upper_bound",
+                    "last_saved_at_utc_upper_bound",
+                ],
+            }
+        )
+
+        self.assertEqual(
+            _pbpstats_enrichment_status(strength, model_cfg),
+            "safe_for_cutoff_via_last_saved_upper_bound",
+        )
+        self.assertEqual(
+            _pbpstats_provenance_kind(strength),
+            "last_saved_at_utc_upper_bound",
+        )
+
     def test_writes_complete_deterministic_bundle_with_joined_forecast_contract(self) -> None:
         """Catches missing files, hardcoded season paths, or recalculated probabilities."""
         from standings_playoff_forecast.outputs import write_output_bundle
@@ -499,6 +531,7 @@ class OutputBundleTest(unittest.TestCase):
             self.assertEqual(manifest["official_tiebreak_fallback_count"], 2)
             self.assertEqual(manifest["history_seasons_used"], [2029])
             self.assertEqual(manifest["pbpstats_enrichment_status"], "safe_for_cutoff")
+            self.assertEqual(manifest["pbpstats_provenance_kind"], "snapshot_as_of")
             self.assertIsNone(manifest["git_sha"])
             self.assertEqual(manifest["git_sha_status"], "unavailable")
             self.assertEqual(

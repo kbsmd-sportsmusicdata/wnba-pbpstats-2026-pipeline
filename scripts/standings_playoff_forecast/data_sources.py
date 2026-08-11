@@ -59,7 +59,16 @@ def _load_pbp_team_features(path: Path) -> pd.DataFrame:
     metadata = payload.get("metadata") if isinstance(payload, Mapping) else None
     if not isinstance(metadata, Mapping):
         return frame
-    as_of = metadata.get("snapshot_as_of") or metadata.get("last_saved_at_utc")
+    snapshot_as_of = metadata.get("snapshot_as_of")
+    last_saved_at_utc = metadata.get("last_saved_at_utc")
+    if snapshot_as_of is not None:
+        evidence_key = "snapshot_as_of"
+        evidence_value = snapshot_as_of
+        provenance_kind = "snapshot_as_of"
+    else:
+        evidence_key = "cutoff_safety_upper_bound"
+        evidence_value = last_saved_at_utc
+        provenance_kind = "last_saved_at_utc_upper_bound"
     run_id = metadata.get("run_id")
     row_count = metadata.get("row_count")
     feature_run_ids = (
@@ -68,14 +77,15 @@ def _load_pbp_team_features(path: Path) -> pd.DataFrame:
         else set()
     )
     if (
-        as_of is None
-        or pd.isna(pd.to_datetime(as_of, errors="coerce"))
+        evidence_value is None
+        or pd.isna(pd.to_datetime(evidence_value, errors="coerce"))
         or row_count != len(frame)
         or (feature_run_ids and feature_run_ids != {str(run_id)})
     ):
         return frame
     frame.attrs["pbpstats_snapshot_metadata"] = {
-        "as_of": as_of,
+        evidence_key: evidence_value,
+        "provenance_kind": provenance_kind,
         "run_id": run_id,
         "sidecar": str(sidecar_path),
     }

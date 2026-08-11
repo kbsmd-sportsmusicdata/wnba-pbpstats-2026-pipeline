@@ -12,10 +12,10 @@ The forecast has three mandatory inputs:
 
 Two sources are optional:
 
-- PBPStats latest-snapshot team features may enrich predictive ratings when available. Their absence does not stop the forecast.
+- PBPStats team features provide optional descriptive context only. They do not enter `predictive_net_rating`, matchup probabilities, or simulations, and their absence does not stop the forecast.
 - An external standings snapshot may be compared with the derived standings for QA. It is never used to initialize the forecast or repair the canonical ledger.
 
-The upstream refresh entry points remain `scripts/fetch_wnba_sportsdataverse_2026.py` and `.github/workflows/sportsdataverse-wnba-2026.yml` for SportsDataverse data, plus `scripts/pbpstats_2026_pull_clean.py`, `scripts/pbpstats_2026_features.py`, and `.github/workflows/pbpstats-wnba-2026.yml` for optional PBPStats enrichment.
+The upstream refresh entry points remain `scripts/fetch_wnba_sportsdataverse_2026.py` and `.github/workflows/sportsdataverse-wnba-2026.yml` for SportsDataverse data, plus `scripts/pbpstats_2026_pull_clean.py`, `scripts/pbpstats_2026_features.py`, and `.github/workflows/pbpstats-wnba-2026.yml` for optional PBPStats context. An explicit `snapshot_as_of` is treated as stats coverage. When only `last_saved_at_utc` exists, the forecast labels it as a conservative cutoff-safety upper bound rather than an exact coverage date.
 
 ## Canonical Current Standings
 

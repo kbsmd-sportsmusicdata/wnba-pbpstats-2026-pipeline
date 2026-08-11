@@ -363,10 +363,26 @@ def _pbpstats_enrichment_status(team_strength: pd.DataFrame, model_cfg: object) 
     if safe and not available:
         raise ValueError("a cutoff-safe PBPStats snapshot must also be available")
     if safe:
+        if _pbpstats_provenance_kind(team_strength) == "last_saved_at_utc_upper_bound":
+            return "safe_for_cutoff_via_last_saved_upper_bound"
         return "safe_for_cutoff"
     if available:
         return "available_not_safe_for_cutoff"
     return "unavailable"
+
+
+def _pbpstats_provenance_kind(team_strength: pd.DataFrame) -> str:
+    if team_strength.empty or "pbpstats_provenance_kind" not in team_strength.columns:
+        return "unavailable"
+    kinds = set(team_strength["pbpstats_provenance_kind"].dropna().astype(str))
+    if not kinds:
+        return "unavailable"
+    if len(kinds) != 1:
+        raise ValueError("PBPStats provenance kind must agree across team rows")
+    kind = next(iter(kinds))
+    if kind not in {"snapshot_as_of", "last_saved_at_utc_upper_bound"}:
+        raise ValueError(f"unsupported PBPStats provenance kind: {kind}")
+    return kind
 
 
 def _git_provenance(repository_root: str | Path) -> tuple[str | None, str]:
@@ -453,6 +469,7 @@ def build_run_manifest(
         "pbpstats_enrichment_status": _pbpstats_enrichment_status(
             team_strength, model_cfg
         ),
+        "pbpstats_provenance_kind": _pbpstats_provenance_kind(team_strength),
         "history_seasons_used": _history_seasons_used(
             historical_context, int(cfg.season)
         ),

@@ -292,7 +292,7 @@ class ForecastSourceLoaderTest(unittest.TestCase):
             getattr(sources, "external_standings_load_status", None), "unparseable"
         )
 
-    def test_optional_pbpstats_csv_restores_snapshot_as_of_from_json_sidecar(self) -> None:
+    def test_optional_pbpstats_sidecar_distinguishes_snapshot_from_save_upper_bound(self) -> None:
         from standings_playoff_forecast.config import load_season_config
         from standings_playoff_forecast.data_sources import load_forecast_sources
 
@@ -327,18 +327,41 @@ class ForecastSourceLoaderTest(unittest.TestCase):
                 pbp_team_features_path=features_path,
             )
 
-        assert sources.pbp_team_features is not None
-        self.assertEqual(
-            getattr(sources, "external_standings_load_status", None), "loaded"
-        )
-        self.assertEqual(
-            sources.pbp_team_features.attrs["pbpstats_snapshot_metadata"],
-            {
-                "as_of": "2026-06-03T21:05:00+00:00",
-                "run_id": "20260603T210500Z",
-                "sidecar": str(features_path.with_suffix(".json")),
-            },
-        )
+            assert sources.pbp_team_features is not None
+            self.assertEqual(
+                getattr(sources, "external_standings_load_status", None), "loaded"
+            )
+            self.assertEqual(
+                sources.pbp_team_features.attrs["pbpstats_snapshot_metadata"],
+                {
+                    "cutoff_safety_upper_bound": "2026-06-03T21:05:00+00:00",
+                    "provenance_kind": "last_saved_at_utc_upper_bound",
+                    "run_id": "20260603T210500Z",
+                    "sidecar": str(features_path.with_suffix(".json")),
+                },
+            )
+
+            features_path.with_suffix(".json").write_text(
+                '{"metadata":{"snapshot_as_of":"2026-06-02T23:00:00+00:00",'
+                '"last_saved_at_utc":"2026-06-03T21:05:00+00:00",'
+                '"run_id":"20260603T210500Z","row_count":1},"rows":[]}',
+                encoding="utf-8",
+            )
+            explicit = load_forecast_sources(
+                cfg,
+                **paths,
+                pbp_team_features_path=features_path,
+            )
+            assert explicit.pbp_team_features is not None
+            self.assertEqual(
+                explicit.pbp_team_features.attrs["pbpstats_snapshot_metadata"],
+                {
+                    "snapshot_as_of": "2026-06-02T23:00:00+00:00",
+                    "provenance_kind": "snapshot_as_of",
+                    "run_id": "20260603T210500Z",
+                    "sidecar": str(features_path.with_suffix(".json")),
+                },
+            )
 
     def test_mismatched_pbpstats_sidecar_is_not_trusted_as_cutoff_evidence(self) -> None:
         from standings_playoff_forecast.config import load_season_config
