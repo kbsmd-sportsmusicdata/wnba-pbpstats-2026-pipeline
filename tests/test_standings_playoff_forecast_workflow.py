@@ -31,6 +31,39 @@ REQUIRED_ARTIFACTS = (
 
 
 def _validated_manifest(*, external_status: str = "unavailable") -> dict[str, object]:
+    source_files = [
+        {
+            "name": "schedule",
+            "path": "/forecast-inputs/schedule_2026.parquet",
+            "size_bytes": 1,
+            "sha256": "a" * 64,
+        },
+        {
+            "name": "team_box",
+            "path": "/forecast-inputs/team_box_2026.parquet",
+            "size_bytes": 1,
+            "sha256": "b" * 64,
+        },
+    ]
+    if external_status in {"matched", "mismatch", "unparseable"}:
+        source_files.append(
+            {
+                "name": "external_standings",
+                "path": "/forecast-inputs/standings_2026.parquet",
+                "size_bytes": 1,
+                "sha256": "c" * 64,
+            }
+        )
+    qa = {
+        "status": external_status,
+        "compared_team_count": 0,
+        "mismatch_team_ids": [],
+    }
+    if external_status == "matched":
+        qa["compared_team_count"] = 15
+    elif external_status == "mismatch":
+        qa["compared_team_count"] = 15
+        qa["mismatch_team_ids"] = ["20"]
     return {
         "source_of_truth": {
             "current_standings": "derived_from_schedule_and_team_box",
@@ -43,11 +76,8 @@ def _validated_manifest(*, external_status: str = "unavailable") -> dict[str, ob
             "status": "validated",
             "configured_games_per_team": 44,
         },
-        "external_standings_qa": {
-            "status": external_status,
-            "compared_team_count": 0,
-            "mismatch_team_ids": [],
-        },
+        "external_standings_qa": qa,
+        "source_files": source_files,
     }
 
 
@@ -348,7 +378,7 @@ class WorkflowContractTests(unittest.TestCase):
                 destination.write_bytes(b"validated-artifact\n")
             manifest_path = root / REQUIRED_ARTIFACTS[-1]
 
-            for status in ("unavailable", "mismatch"):
+            for status in ("unavailable", "unparseable", "matched", "mismatch"):
                 with self.subTest(status=status):
                     manifest_path.write_text(
                         json.dumps(_validated_manifest(external_status=status)),
@@ -376,6 +406,68 @@ class WorkflowContractTests(unittest.TestCase):
                 check=False,
             )
             self.assertNotEqual(rejected.returncode, 0)
+
+            invalid_status = _validated_manifest(external_status="unknown")
+            manifest_path.write_text(json.dumps(invalid_status), encoding="utf-8")
+            rejected = _run(
+                ["bash", "-euo", "pipefail", "-c", validation],
+                cwd=root,
+                env=_workflow_env(),
+                check=False,
+            )
+            self.assertNotEqual(rejected.returncode, 0)
+
+    def test_manifest_requires_schedule_and_team_box_source_provenance(self) -> None:
+        workflow = _load_workflow()
+        validation = _named_step(workflow, "Validate forecast artifacts")["run"]
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            for relative in REQUIRED_ARTIFACTS:
+                destination = root / relative
+                destination.parent.mkdir(parents=True, exist_ok=True)
+                destination.write_bytes(b"validated-artifact\n")
+            manifest_path = root / REQUIRED_ARTIFACTS[-1]
+
+            def rejected(manifest: dict[str, object]) -> None:
+                manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+                result = _run(
+                    ["bash", "-euo", "pipefail", "-c", validation],
+                    cwd=root,
+                    env=_workflow_env(),
+                    check=False,
+                )
+                self.assertNotEqual(result.returncode, 0)
+
+            missing_sources = _validated_manifest()
+            del missing_sources["source_files"]
+            rejected(missing_sources)
+
+            non_list_sources = _validated_manifest()
+            non_list_sources["source_files"] = {"schedule": {}}
+            rejected(non_list_sources)
+
+            for missing_name in ("schedule", "team_box"):
+                with self.subTest(missing_name=missing_name):
+                    missing = _validated_manifest()
+                    missing["source_files"] = [
+                        entry
+                        for entry in missing["source_files"]  # type: ignore[union-attr]
+                        if entry["name"] != missing_name
+                    ]
+                    rejected(missing)
+
+            for field, value in (
+                ("path", ""),
+                ("path", "relative/schedule.parquet"),
+                ("sha256", "not-a-sha256"),
+                ("sha256", "g" * 64),
+            ):
+                with self.subTest(field=field, value=value):
+                    invalid = _validated_manifest()
+                    schedule = invalid["source_files"][0]  # type: ignore[index]
+                    schedule[field] = value
+                    rejected(invalid)
 
     def test_workflow_has_no_external_standings_existence_gate_or_wide_adapter(self) -> None:
         workflow_text = WORKFLOW_PATH.read_text(encoding="utf-8")
