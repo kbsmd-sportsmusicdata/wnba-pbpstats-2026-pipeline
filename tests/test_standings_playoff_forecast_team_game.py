@@ -160,17 +160,47 @@ class ForecastSourceLoaderTest(unittest.TestCase):
             pd.DataFrame({"game_id": ["101"]}).to_parquet(paths["schedule_path"])
             pd.DataFrame({"game_id": ["101"]}).to_parquet(paths["team_box_path"])
 
-            sources = load_forecast_sources(
-                cfg,
-                **paths,
-                pbp_team_features_path=source_root / "not-present.csv",
-            )
+            with self.assertWarnsRegex(
+                RuntimeWarning, "Optional external standings are unavailable"
+            ):
+                sources = load_forecast_sources(
+                    cfg,
+                    **paths,
+                    pbp_team_features_path=source_root / "not-present.csv",
+                )
 
         self.assertEqual(sources.schedule["game_id"].tolist(), ["101"])
         self.assertEqual(sources.team_box["game_id"].tolist(), ["101"])
         self.assertIsNone(sources.external_standings)
         self.assertIsNone(sources.external_standings_path)
         self.assertIsNone(sources.pbp_team_features)
+
+    def test_invalid_external_standings_warns_and_returns_none(self) -> None:
+        from standings_playoff_forecast.config import load_season_config
+        from standings_playoff_forecast.data_sources import load_forecast_sources
+
+        cfg = load_season_config(2026)
+        with tempfile.TemporaryDirectory() as temp_dir:
+            source_root = Path(temp_dir)
+            paths = {
+                "schedule_path": source_root / "schedule.parquet",
+                "team_box_path": source_root / "team_box.parquet",
+                "external_standings_path": source_root / "standings.parquet",
+            }
+            pd.DataFrame({"game_id": ["101"]}).to_parquet(paths["schedule_path"])
+            pd.DataFrame({"game_id": ["101"]}).to_parquet(paths["team_box_path"])
+            paths["external_standings_path"].write_text("not parquet", encoding="utf-8")
+
+            with self.assertWarnsRegex(
+                RuntimeWarning, "Optional external standings could not be read"
+            ):
+                sources = load_forecast_sources(
+                    cfg,
+                    **paths,
+                    pbp_team_features_path=source_root / "not-present.csv",
+                )
+
+        self.assertIsNone(sources.external_standings)
 
     def test_optional_pbpstats_csv_restores_snapshot_as_of_from_json_sidecar(self) -> None:
         from standings_playoff_forecast.config import load_season_config

@@ -76,6 +76,11 @@ def _load_pbp_team_features(path: Path) -> pd.DataFrame:
 
 def _load_optional_parquet(path: Path) -> pd.DataFrame | None:
     if not path.is_file():
+        warnings.warn(
+            f"Optional external standings are unavailable: {path}",
+            RuntimeWarning,
+            stacklevel=2,
+        )
         return None
     try:
         return pd.read_parquet(path)
