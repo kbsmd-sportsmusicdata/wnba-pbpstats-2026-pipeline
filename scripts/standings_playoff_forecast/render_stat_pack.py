@@ -13,6 +13,7 @@ import pandas as pd
 from .render_markdown import (
     CURRENT_500_METHOD,
     CURRENT_STANDINGS_METHOD,
+    _external_standings_qa_summary,
     _load_inputs,
     _nullable_boolean,
 )
@@ -238,12 +239,18 @@ def _build_stat_pack(
         for source in manifest["source_files"]
     )
     source_count = len(manifest["source_files"])
-    source_status = f"{source_count} validated {'file' if source_count == 1 else 'files'}"
+    external_qa = _external_standings_qa_summary(manifest)
+    external_status = str(manifest["external_standings_qa"]["status"])
+    source_status = (
+        f"{source_count} source {'file' if source_count == 1 else 'files'} · "
+        f"ext {external_status}"
+    )
     method = (
         f"{int(manifest['simulation_count']):,} simulations · seed "
         f"{int(manifest['random_seed'])} · model {_text(manifest['model_version'])}. "
         f"Sources: {source_names}. PBPStats enrichment: "
         f"{_text(manifest['pbpstats_enrichment_status'])}. "
+        f"External standings QA: {_text(external_qa)}. "
         f"{CURRENT_STANDINGS_METHOD} {CURRENT_500_METHOD} Probabilities are estimates, "
         "not mathematical clinch or elimination proof."
     )

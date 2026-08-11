@@ -55,8 +55,16 @@ REQUIRED_MANIFEST_FIELDS = {
     "pbpstats_enrichment_status",
     "history_seasons_used",
     "official_tiebreak_fallback_count",
+    "external_standings_qa",
     "git_sha",
     "git_sha_status",
+}
+
+EXTERNAL_STANDINGS_QA_STATUSES = {
+    "matched",
+    "mismatch",
+    "unavailable",
+    "unparseable",
 }
 
 REQUIRED_COLUMNS = {
@@ -438,6 +446,7 @@ def _load_inputs(
         raise ValueError("forecast_payload has unknown or missing top-level keys")
     if payload.get("metadata") != manifest:
         raise ValueError("forecast_payload metadata must match run_manifest")
+    _external_standings_qa_summary(manifest)
     if int(manifest["season"]) != int(cfg.season):
         raise ValueError("run_manifest season does not match configured season")
     if not isinstance(manifest["source_files"], list) or not manifest["source_files"]:
@@ -654,6 +663,38 @@ def _source_summary(source: Mapping[str, object]) -> str:
     )
 
 
+def _external_standings_qa_summary(manifest: Mapping[str, object]) -> str:
+    """Format only supplied external-standings QA evidence for renderers."""
+
+    qa = manifest.get("external_standings_qa")
+    if not isinstance(qa, Mapping):
+        raise ValueError("run_manifest external_standings_qa must be an object")
+    status = qa.get("status")
+    if status not in EXTERNAL_STANDINGS_QA_STATUSES:
+        raise ValueError("run_manifest external_standings_qa status is invalid")
+    compared = qa.get("compared_team_count")
+    mismatch_ids = qa.get("mismatch_team_ids")
+    if (
+        isinstance(compared, bool)
+        or not isinstance(compared, int)
+        or compared < 0
+        or not isinstance(mismatch_ids, list)
+    ):
+        raise ValueError("run_manifest external_standings_qa counts are invalid")
+    if status in {"unavailable", "unparseable"}:
+        if compared != 0 or mismatch_ids:
+            raise ValueError(
+                "unavailable or unparseable external standings QA cannot contain comparisons"
+            )
+        return f"{status} (non-blocking; no external team comparison)"
+    if status == "matched" and mismatch_ids:
+        raise ValueError("matched external standings QA cannot contain mismatches")
+    if status == "mismatch" and not mismatch_ids:
+        raise ValueError("mismatch external standings QA must name mismatched teams")
+    teams = "team" if compared == 1 else "teams"
+    return f"{status} ({compared} {teams} compared; {len(mismatch_ids)} mismatched)"
+
+
 def _build_markdown(
     frames: Mapping[str, pd.DataFrame], manifest: dict, cfg: object
 ) -> str:
@@ -699,6 +740,10 @@ def _build_markdown(
         ),
         "",
         f"- PBPStats enrichment: **{_clean_text(manifest['pbpstats_enrichment_status'])}**.",
+        (
+            "- External standings QA: **"
+            f"{_clean_text(_external_standings_qa_summary(manifest))}**."
+        ),
         f"- Model/config evidence: season `{manifest['season_config_sha256']}`; model `{manifest['model_config_sha256']}`.",
         f"- Git provenance: {_clean_text(manifest.get('git_sha') or manifest.get('git_sha_status'))}.",
         "- Source provenance:",

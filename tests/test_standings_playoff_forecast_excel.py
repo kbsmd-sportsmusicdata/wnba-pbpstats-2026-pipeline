@@ -425,6 +425,36 @@ class ExcelRendererTests(unittest.TestCase):
             self.assertEqual(note_rows["Random seed"], manifest["random_seed"])
             self.assertIn("machine-readable forecast bundle", note_rows["Probability source"])
 
+    def test_model_notes_disclose_supplied_external_standings_mismatch_counts(self):
+        from standings_playoff_forecast.render_excel import render_excel
+
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            cfg, processed_root = _literal_bundle(root)
+            manifest_path = processed_root / "run_manifest.json"
+            manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+            manifest["external_standings_qa"] = {
+                "status": "mismatch",
+                "compared_team_count": 2,
+                "mismatch_team_ids": ["A", "B"],
+            }
+            manifest_path.write_text(json.dumps(manifest) + "\n", encoding="utf-8")
+            payload_path = processed_root / "forecast_payload.json"
+            payload = json.loads(payload_path.read_text(encoding="utf-8"))
+            payload["metadata"] = manifest
+            payload_path.write_text(json.dumps(payload) + "\n", encoding="utf-8")
+
+            workbook_path = render_excel(processed_root, _team_games(), cfg=cfg)
+            notes = load_workbook(workbook_path, data_only=False)["Model Notes"]
+            note_rows = {
+                notes.cell(row, 1).value: notes.cell(row, 2).value
+                for row in range(3, notes.max_row + 1)
+            }
+            self.assertEqual(
+                note_rows["External standings QA"],
+                "mismatch (2 teams compared; 2 mismatched)",
+            )
+
 
 if __name__ == "__main__":
     unittest.main()

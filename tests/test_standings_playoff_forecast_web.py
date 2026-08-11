@@ -241,7 +241,10 @@ const assert = (condition, message) => { if (!condition) throw new Error(message
         thread.join(timeout=2)
 
 
-def _run_dashboard_file_contract(index_path: Path) -> str:
+def _run_dashboard_file_contract(
+    index_path: Path,
+    expected_external_qa: str = "unavailable (non-blocking; no external team comparison)",
+) -> str:
     """Open the published index directly and exercise real browser controls."""
 
     node_modules = _find_playwright_node_modules()
@@ -272,13 +275,16 @@ def _run_dashboard_file_contract(index_path: Path) -> str:
       selectedTeam: document.getElementById("team-select").value,
       rankChecked: document.querySelector('input[name="probability"][value="rank"]').checked,
       errorHidden: document.getElementById("error-state").hidden,
+      method: document.getElementById("method-cutoff").textContent,
     }));
     if (!result.status.includes("teams shown") ||
         !result.current.includes("ALP") ||
         !result.current.includes("Home") ||
         !result.current.includes("Current .500+") ||
         !result.projected.includes("Modal final rank") ||
-        result.selectedTeam !== "B" || !result.rankChecked || !result.errorHidden) {
+        result.selectedTeam !== "B" || !result.rankChecked || !result.errorHidden ||
+        !result.method.includes("External standings QA") ||
+        !result.method.includes(process.argv[3])) {
       throw new Error(`direct-file contract failed: ${JSON.stringify(result)}`);
     }
     console.error("STAGE assertions complete");
@@ -296,7 +302,7 @@ def _run_dashboard_file_contract(index_path: Path) -> str:
         encoding="utf-8",
     )
     completed = _run_node_browser(
-        ["node", str(runner), index_path.as_uri()],
+        ["node", str(runner), index_path.as_uri(), expected_external_qa],
         node_modules=node_modules,
         timeout=45,
     )
@@ -457,11 +463,46 @@ class WebRendererTests(unittest.TestCase):
             methodology = text[text.index('<section class="zone methodology"') :]
 
             self.assertIn("Source status", top_status)
-            self.assertIn("1 validated file", top_status)
+            self.assertIn("1 source file · ext unavailable", top_status)
             self.assertNotIn("source.bin", top_status)
             self.assertIn("source.bin", methodology)
             self.assertIn("PBPStats", top_status)
             self.assertIn("safe_for_cutoff", top_status)
+
+    def test_stat_pack_and_dashboard_disclose_external_standings_mismatch_counts(self):
+        from standings_playoff_forecast.render_dashboard import render_dashboard
+        from standings_playoff_forecast.render_stat_pack import render_stat_pack
+
+        with tempfile.TemporaryDirectory() as temporary:
+            cfg, processed_root = _literal_bundle(Path(temporary))
+            manifest_path = processed_root / "run_manifest.json"
+            manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+            manifest["external_standings_qa"] = {
+                "status": "mismatch",
+                "compared_team_count": 2,
+                "mismatch_team_ids": ["A", "B"],
+            }
+            manifest_path.write_text(json.dumps(manifest) + "\n", encoding="utf-8")
+            payload_path = processed_root / "forecast_payload.json"
+            payload = json.loads(payload_path.read_text(encoding="utf-8"))
+            payload["metadata"] = manifest
+            payload_path.write_text(json.dumps(payload) + "\n", encoding="utf-8")
+
+            expected = "mismatch (2 teams compared; 2 mismatched)"
+            stat_text = render_stat_pack(processed_root, cfg=cfg).read_text(encoding="utf-8")
+            top_status = stat_text[
+                stat_text.index('<header class="masthead">') : stat_text.index("</header>")
+            ]
+            methodology = stat_text[stat_text.index('<section class="zone methodology"') :]
+            self.assertIn("1 source file · ext mismatch", top_status)
+            self.assertNotIn("validated file", top_status)
+            self.assertIn(expected, methodology)
+
+            dashboard = render_dashboard(processed_root, cfg=cfg)
+            self.assertEqual(
+                _run_dashboard_file_contract(dashboard, expected).strip(),
+                "PASS",
+            )
 
     def test_stat_pack_six_source_manifest_has_compact_top_status_without_clipping(self):
         from standings_playoff_forecast.render_stat_pack import render_stat_pack
@@ -513,7 +554,7 @@ class WebRendererTests(unittest.TestCase):
                 self.assertLessEqual(child["scrollHeight"], child["clientHeight"])
                 self.assertLessEqual(child["scrollWidth"], child["clientWidth"])
 
-            self.assertIn("6 validated files", top_status)
+            self.assertIn("6 source files · ext unavailable", top_status)
             self.assertIn("safe_for_cutoff", top_status)
             for source_name in source_names:
                 self.assertNotIn(source_name, top_status)

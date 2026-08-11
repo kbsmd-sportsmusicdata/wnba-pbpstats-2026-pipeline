@@ -260,12 +260,17 @@
 
   function renderMethod() {
     const metadata = payload.metadata;
+    const externalQa = metadata.external_standings_qa;
+    const externalQaSummary = ["unavailable", "unparseable"].includes(externalQa.status)
+      ? `${externalQa.status} (non-blocking; no external team comparison)`
+      : `${externalQa.status} (${Number(externalQa.compared_team_count).toLocaleString()} teams compared; ${externalQa.mismatch_team_ids.length.toLocaleString()} mismatched)`;
     makeDefinitionList(byId("method-list"), [
       ["Cutoff", metadata.cutoff_date],
       ["Model", metadata.model_version],
       ["Runs", Number(metadata.simulation_count).toLocaleString()],
       ["Seed", String(metadata.random_seed)],
       ["PBPStats", metadata.pbpstats_enrichment_status],
+      ["External standings QA", externalQaSummary],
       ["History seasons", metadata.history_seasons_used.length ? metadata.history_seasons_used.join(", ") : "Unavailable"],
     ]);
   }

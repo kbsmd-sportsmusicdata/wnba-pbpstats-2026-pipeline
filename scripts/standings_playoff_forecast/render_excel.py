@@ -16,7 +16,11 @@ from openpyxl.utils import get_column_letter
 from openpyxl.worksheet.table import Table, TableStyleInfo
 
 from .outputs import CSV_FILENAMES, PAYLOAD_KEYS
-from .render_markdown import CURRENT_500_METHOD, CURRENT_STANDINGS_METHOD
+from .render_markdown import (
+    CURRENT_500_METHOD,
+    CURRENT_STANDINGS_METHOD,
+    _external_standings_qa_summary,
+)
 from .team_game_layer import normalize_id
 
 
@@ -969,6 +973,7 @@ def _model_notes_sheet(workbook: Workbook, frames: Mapping[str, pd.DataFrame], c
         ["Official tiebreak fallback count", manifest.get("official_tiebreak_fallback_count")],
         ["Tiebreak fallback", "Stable normalized team ID is used only after every official criterion remains tied; it is not an official WNBA tiebreak."],
         ["PBPStats status", manifest.get("pbpstats_enrichment_status")],
+        ["External standings QA", _external_standings_qa_summary(manifest)],
         ["History status", "available" if history_available else "unavailable"],
         ["History seasons used", ", ".join(map(str, manifest.get("history_seasons_used", []))) or "None"],
         ["Qualifier definition", f"Top {cfg.playoff_qualifiers} of {cfg.team_count} league-wide teams qualify."],
