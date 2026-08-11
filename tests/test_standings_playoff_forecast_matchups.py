@@ -332,6 +332,133 @@ class RemainingScheduleTest(unittest.TestCase):
             )
 
 
+class SeasonScheduleCountValidationTest(unittest.TestCase):
+    def test_returns_stable_per_team_full_season_reconciliation(self) -> None:
+        from standings_playoff_forecast.remaining_schedule import (
+            validate_season_schedule_counts,
+        )
+
+        current_standings = pd.DataFrame(
+            {
+                "team_id": ["B", "A"],
+                "games_played": [43, 43],
+            }
+        )
+        remaining_schedule = pd.DataFrame(
+            [
+                {"game_id": "future-1", "home_id": "A", "away_id": "B"},
+            ]
+        )
+
+        result = validate_season_schedule_counts(
+            current_standings,
+            remaining_schedule,
+            _season_cfg(games_per_team=44),
+        )
+
+        self.assertEqual(
+            result.to_dict("records"),
+            [
+                {
+                    "team_id": "A",
+                    "completed_gp": 43,
+                    "remaining_games": 1,
+                    "configured_games": 44,
+                    "total_games": 44,
+                    "status": "validated",
+                },
+                {
+                    "team_id": "B",
+                    "completed_gp": 43,
+                    "remaining_games": 1,
+                    "configured_games": 44,
+                    "total_games": 44,
+                    "status": "validated",
+                },
+            ],
+        )
+
+    def test_rejects_missing_or_duplicate_schedule_games(self) -> None:
+        from standings_playoff_forecast.remaining_schedule import (
+            validate_season_schedule_counts,
+        )
+
+        current_standings = pd.DataFrame(
+            {"team_id": ["A", "B"], "games_played": [1, 1]}
+        )
+        with self.subTest("missing"):
+            with self.assertRaisesRegex(ValueError, "season schedule count mismatch"):
+                validate_season_schedule_counts(
+                    current_standings,
+                    pd.DataFrame(
+                        [{"game_id": "future-1", "home_id": "A", "away_id": "B"}]
+                    ),
+                    _season_cfg(games_per_team=3),
+                )
+        with self.subTest("duplicate"):
+            with self.assertRaisesRegex(ValueError, "duplicate game_id"):
+                validate_season_schedule_counts(
+                    current_standings,
+                    pd.DataFrame(
+                        [
+                            {"game_id": "future-1", "home_id": "A", "away_id": "B"},
+                            {"game_id": "future-1", "home_id": "B", "away_id": "A"},
+                        ]
+                    ),
+                    _season_cfg(games_per_team=3),
+                )
+
+    def test_rejects_invalid_team_universe_and_completed_game_counts(self) -> None:
+        from standings_playoff_forecast.remaining_schedule import (
+            validate_season_schedule_counts,
+        )
+
+        valid_remaining = pd.DataFrame(
+            [{"game_id": "future-1", "home_id": "A", "away_id": "B"}]
+        )
+        with self.subTest("missing team"):
+            with self.assertRaisesRegex(ValueError, "team universe"):
+                validate_season_schedule_counts(
+                    pd.DataFrame({"team_id": ["A"], "games_played": [1]}),
+                    valid_remaining,
+                    _season_cfg(games_per_team=2),
+                )
+        with self.subTest("unknown remaining team"):
+            with self.assertRaisesRegex(ValueError, "unknown team IDs"):
+                validate_season_schedule_counts(
+                    pd.DataFrame(
+                        {"team_id": ["A", "B"], "games_played": [1, 1]}
+                    ),
+                    pd.DataFrame(
+                        [{"game_id": "future-1", "home_id": "A", "away_id": "C"}]
+                    ),
+                    _season_cfg(games_per_team=2),
+                )
+        with self.subTest("invalid completed games"):
+            with self.assertRaisesRegex(ValueError, "invalid completed games_played"):
+                validate_season_schedule_counts(
+                    pd.DataFrame(
+                        {"team_id": ["A", "B"], "games_played": [1.5, 1]}
+                    ),
+                    valid_remaining,
+                    _season_cfg(games_per_team=2),
+                )
+
+    def test_rejects_same_team_remaining_game(self) -> None:
+        from standings_playoff_forecast.remaining_schedule import (
+            validate_season_schedule_counts,
+        )
+
+        with self.assertRaisesRegex(ValueError, "same-team participants"):
+            validate_season_schedule_counts(
+                pd.DataFrame({"team_id": ["A", "B"], "games_played": [1, 1]}),
+                pd.DataFrame(
+                    [{"game_id": "future-1", "home_id": "A", "away_id": "A"}]
+                ),
+                _season_cfg(games_per_team=2),
+            )
+
+
 class MatchupModelTest(unittest.TestCase):
     def test_scores_exact_pace_scaled_strength_and_context_formula(self) -> None:
         from standings_playoff_forecast.config import load_model_config

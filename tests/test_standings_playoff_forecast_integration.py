@@ -365,7 +365,9 @@ class OrchestratorIntegrationTests(unittest.TestCase):
                     "pbpstats_snapshot_safe_for_cutoff": [False, False],
                 }
             )
-            remaining = pd.DataFrame({"game_id": ["future"]})
+            remaining = pd.DataFrame(
+                {"game_id": ["future"], "home_id": ["A"], "away_id": ["B"]}
+            )
             scored = pd.DataFrame({"game_id": ["future"]})
             simulation = SimpleNamespace(forecast_summary=pd.DataFrame())
             leverage = pd.DataFrame({"game_id": ["future"]})
@@ -438,6 +440,27 @@ class OrchestratorIntegrationTests(unittest.TestCase):
                     "leverage",
                     "insights",
                     "outputs",
+                ],
+            )
+            self.assertEqual(
+                result.stage_artifacts["season_schedule_counts"].to_dict("records"),
+                [
+                    {
+                        "team_id": "A",
+                        "completed_gp": 1,
+                        "remaining_games": 1,
+                        "configured_games": 2,
+                        "total_games": 2,
+                        "status": "validated",
+                    },
+                    {
+                        "team_id": "B",
+                        "completed_gp": 1,
+                        "remaining_games": 1,
+                        "configured_games": 2,
+                        "total_games": 2,
+                        "status": "validated",
+                    },
                 ],
             )
             rank_mock.assert_called_once()

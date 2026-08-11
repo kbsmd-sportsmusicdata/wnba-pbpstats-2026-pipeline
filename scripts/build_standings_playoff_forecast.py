@@ -32,7 +32,10 @@ from standings_playoff_forecast.historical_context import (
 from standings_playoff_forecast.leverage import calculate_game_leverage
 from standings_playoff_forecast.matchup_model import score_matchups
 from standings_playoff_forecast.outputs import ForecastOutputBundle, write_output_bundle
-from standings_playoff_forecast.remaining_schedule import build_remaining_schedule
+from standings_playoff_forecast.remaining_schedule import (
+    build_remaining_schedule,
+    validate_season_schedule_counts,
+)
 from standings_playoff_forecast.render_dashboard import render_dashboard
 from standings_playoff_forecast.render_excel import render_excel
 from standings_playoff_forecast.render_markdown import render_markdown
@@ -318,6 +321,11 @@ def _run_pipeline(
         )
 
     remaining_schedule = build_remaining_schedule(sources.schedule, cutoff, cfg)
+    season_schedule_counts = validate_season_schedule_counts(
+        current_standings,
+        remaining_schedule,
+        cfg,
+    )
     matchup_probabilities = score_matchups(
         remaining_schedule, team_strength, team_games, model_cfg
     )
@@ -384,6 +392,7 @@ def _run_pipeline(
         "head_to_head": head_to_head,
         "team_strength": team_strength,
         "remaining_schedule": remaining_schedule,
+        "season_schedule_counts": season_schedule_counts,
         "matchup_probabilities": matchup_probabilities,
         "simulation_result": simulation_result,
         "historical_context": historical_context,
