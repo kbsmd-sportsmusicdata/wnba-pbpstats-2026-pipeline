@@ -211,14 +211,20 @@ def add_current_standings_context(
     )
     _validate_directional_team_games(team_games)
     _require_columns(team_games, {"game_date", "home_away"}, "team_games")
-    if standings.empty:
-        return standings.reindex(columns=STANDINGS_COLUMNS).copy()
     if standings["team_id"].duplicated().any():
         raise ValueError("standings contains duplicate team_id values")
 
     ranks = pd.to_numeric(standings["current_rank"], errors="coerce")
-    if ranks.isna().any() or ranks.mod(1).ne(0).any() or ranks.duplicated().any():
-        raise ValueError("standings current_rank must contain unique integers")
+    expected_ranks = list(range(1, cfg.team_count + 1))
+    if (
+        ranks.isna().any()
+        or ranks.mod(1).ne(0).any()
+        or sorted(ranks.astype(int).tolist()) != expected_ranks
+    ):
+        raise ValueError(
+            "standings current_rank must be a complete permutation from "
+            f"1 through {cfg.team_count}"
+        )
     leader_rows = standings.loc[ranks.eq(1)]
     if len(leader_rows) != 1:
         raise ValueError("standings current_rank must contain exactly one rank 1")
@@ -229,6 +235,7 @@ def add_current_standings_context(
         if column not in STANDINGS_COLUMNS[:11] and column != "current_rank"
     ]
     result = standings.drop(columns=context_columns, errors="ignore").copy()
+    result["current_rank"] = ranks.astype(int)
     team_ids = pd.Index(result["team_id"], name="team_id")
     games = team_games.copy()
     games["game_date"] = pd.to_datetime(games["game_date"], errors="coerce")

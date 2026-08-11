@@ -63,6 +63,43 @@ def _eleven_game_series() -> pd.DataFrame:
     return pd.DataFrame(rows).iloc[::-1].reset_index(drop=True)
 
 
+def _fifteen_team_cycle() -> pd.DataFrame:
+    """One reciprocal cycle gives every configured team two completed games."""
+
+    rows = []
+    team_ids = [f"T{rank:02d}" for rank in range(1, 16)]
+    for game_number, home_id in enumerate(team_ids, start=1):
+        away_id = team_ids[game_number % len(team_ids)]
+        home_rank = int(home_id[1:])
+        away_rank = int(away_id[1:])
+        home_win = int(home_rank < away_rank)
+        home_points = 80 if home_win else 70
+        away_points = 70 if home_win else 80
+        for team_id, opponent_id, home_away, win, points_for, points_against in (
+            (home_id, away_id, "home", home_win, home_points, away_points),
+            (away_id, home_id, "away", 1 - home_win, away_points, home_points),
+        ):
+            rows.append(
+                {
+                    "game_id": f"cycle-{game_number:02d}",
+                    "game_date": f"2026-06-{game_number:02d}",
+                    "team_id": team_id,
+                    "team_abbreviation": team_id,
+                    "team_name": f"Team {team_id}",
+                    "franchise_id": team_id.lower(),
+                    "opponent_id": opponent_id,
+                    "opponent_franchise_id": opponent_id.lower(),
+                    "home_away": home_away,
+                    "win": win,
+                    "loss": 1 - win,
+                    "points_for": points_for,
+                    "points_against": points_against,
+                    "margin": points_for - points_against,
+                }
+            )
+    return pd.DataFrame(rows)
+
+
 class StandingsAggregationTest(unittest.TestCase):
     def test_build_current_standings_aggregates_each_directional_team_game_once(self) -> None:
         from standings_playoff_forecast.config import load_season_config
@@ -89,7 +126,7 @@ class StandingsAggregationTest(unittest.TestCase):
         add_context = getattr(standings_module, "add_current_standings_context", None)
         self.assertIsNotNone(add_context)
 
-        cfg = load_season_config(2026)
+        cfg = replace(load_season_config(2026), team_count=3, playoff_qualifiers=2)
         team_games = _team_games()
         home_teams = {"1": "A", "2": "B", "3": "C", "4": "A"}
         team_games["home_away"] = team_games.apply(
@@ -164,7 +201,7 @@ class StandingsAggregationTest(unittest.TestCase):
         self.assertTrue(pd.isna(actual.loc["A", "conference_wins"]))
         self.assertTrue(pd.isna(actual.loc["A", "conference_losses"]))
         self.assertTrue(pd.isna(actual.loc["A", "conference_record"]))
-        self.assertEqual(actual.loc["A", "playoff_cutline_flag"], "top4")
+        self.assertEqual(actual.loc["A", "playoff_cutline_flag"], "cutline_chase")
 
     def test_current_context_assigns_all_2026_cutline_bands_independent_of_input_index(self) -> None:
         from standings_playoff_forecast.config import load_season_config
@@ -174,24 +211,15 @@ class StandingsAggregationTest(unittest.TestCase):
         )
 
         cfg = load_season_config(2026)
-        team_games = _team_games()
-        home_teams = {"1": "A", "2": "B", "3": "C", "4": "A"}
-        team_games["home_away"] = team_games.apply(
-            lambda row: "home" if row["team_id"] == home_teams[row["game_id"]] else "away",
-            axis=1,
-        )
-        extra_game = pd.DataFrame(
-            [
-                {"game_id": "5", "game_date": "2026-06-05", "team_id": "D", "team_abbreviation": "DDD", "team_name": "Delta", "franchise_id": "delta", "opponent_id": "E", "opponent_franchise_id": "echo", "home_away": "home", "win": 1, "loss": 0, "points_for": 77, "points_against": 70, "margin": 7},
-                {"game_id": "5", "game_date": "2026-06-05", "team_id": "E", "team_abbreviation": "EEE", "team_name": "Echo", "franchise_id": "echo", "opponent_id": "D", "opponent_franchise_id": "delta", "home_away": "away", "win": 0, "loss": 1, "points_for": 70, "points_against": 77, "margin": -7},
-            ]
-        )
-        team_games = pd.concat([team_games, extra_game], ignore_index=True)
+        team_games = _fifteen_team_cycle()
         standings = build_current_standings(team_games, cfg)
-        standings["current_rank"] = standings["team_id"].map(
-            {"A": 5, "B": 1, "C": 8, "D": 9, "E": 11}
-        )
-        standings.index = [13, 2, 17, 5, 11]
+        standings["current_rank"] = standings["team_id"].str[1:].astype(int)
+        standings.loc[standings["team_id"].eq("T02"), ["games_played", "losses", "win_pct"]] = [
+            1,
+            0,
+            1.0,
+        ]
+        standings.index = list(reversed(range(15)))
 
         actual = add_current_standings_context(standings, team_games, cfg).set_index(
             "team_id"
@@ -199,29 +227,49 @@ class StandingsAggregationTest(unittest.TestCase):
 
         self.assertEqual(
             actual["playoff_cutline_flag"].to_dict(),
-            {
-                "A": "playoff_field",
-                "B": "top4",
-                "C": "playoff_field",
-                "D": "cutline_chase",
-                "E": "outside",
-            },
+            {**{f"T{rank:02d}": "top4" for rank in range(1, 5)},
+             **{f"T{rank:02d}": "playoff_field" for rank in range(5, 9)},
+             **{f"T{rank:02d}": "cutline_chase" for rank in range(9, 11)},
+             **{f"T{rank:02d}": "outside" for rank in range(11, 16)}},
         )
-        generalized = add_current_standings_context(
-            standings,
-            team_games,
-            replace(cfg, playoff_qualifiers=6),
-        ).set_index("team_id")
-        self.assertEqual(
-            generalized["playoff_cutline_flag"].to_dict(),
-            {
-                "A": "playoff_field",
-                "B": "top4",
-                "C": "cutline_chase",
-                "D": "outside",
-                "E": "outside",
-            },
+        self.assertEqual(actual.loc["T04", "playoff_cutline_flag"], "top4")
+        self.assertEqual(actual.loc["T10", "playoff_cutline_flag"], "cutline_chase")
+        self.assertEqual(actual.loc["T02", "games_back"], 0.5)
+        self.assertTrue(pd.api.types.is_float_dtype(actual["games_back"].dtype))
+        self.assertTrue(pd.api.types.is_integer_dtype(actual["home_wins"].dtype))
+        self.assertTrue(pd.api.types.is_integer_dtype(actual["current_rank"].dtype))
+        self.assertTrue(pd.api.types.is_string_dtype(actual["conference_record"].dtype))
+
+    def test_current_context_requires_exact_configured_rank_permutation(self) -> None:
+        """Catches zero, negative, gaps, and out-of-range ranks."""
+        from standings_playoff_forecast.config import load_season_config
+        from standings_playoff_forecast.standings import (
+            add_current_standings_context,
+            build_current_standings,
         )
+
+        cfg = replace(load_season_config(2026), team_count=3, playoff_qualifiers=2)
+        team_games = _team_games()
+        home_teams = {"1": "A", "2": "B", "3": "C", "4": "A"}
+        team_games["home_away"] = team_games.apply(
+            lambda row: "home" if row["team_id"] == home_teams[row["game_id"]] else "away",
+            axis=1,
+        )
+        for ranks in ([1, 2, 0], [1, 2, -1], [1, 2, 4], [1, 3, 4]):
+            with self.subTest(ranks=ranks):
+                standings = build_current_standings(team_games, cfg)
+                standings["current_rank"] = ranks
+                with self.assertRaisesRegex(
+                    ValueError, "complete permutation from 1 through 3"
+                ):
+                    add_current_standings_context(standings, team_games, cfg)
+
+        partial = build_current_standings(team_games, cfg).iloc[:2].copy()
+        partial["current_rank"] = [1, 2]
+        with self.assertRaisesRegex(
+            ValueError, "complete permutation from 1 through 3"
+        ):
+            add_current_standings_context(partial, team_games, cfg)
 
     def test_current_context_uses_stable_game_order_for_last10_and_nullable_zero_game_pct(self) -> None:
         from standings_playoff_forecast.config import load_season_config
@@ -231,7 +279,7 @@ class StandingsAggregationTest(unittest.TestCase):
             build_current_standings,
         )
 
-        cfg = load_season_config(2026)
+        cfg = replace(load_season_config(2026), team_count=2, playoff_qualifiers=1)
         team_games = _eleven_game_series()
         standings = build_current_standings(team_games, cfg)
         standings["current_rank"] = standings["team_id"].map({"A": 1, "B": 2})
