@@ -48,10 +48,10 @@ def season_config(root: Path) -> SeasonConfig:
             {
                 "schedule": "schedule.parquet",
                 "team_box": "team_box.parquet",
-                "standings": "standings.parquet",
                 "pbp_team_features": "features.csv",
             }
         ),
+        optional_validation_files=MappingProxyType({"standings": "standings.parquet"}),
         output_root=str(root / "output"),
         normalized_team_game_root=str(root / "normalized"),
     )
@@ -146,21 +146,21 @@ def literal_sources(root: Path) -> SimpleNamespace:
     source_root.mkdir(parents=True)
     schedule_path = source_root / "schedule.parquet"
     team_box_path = source_root / "team_box.parquet"
-    standings_path = source_root / "standings.parquet"
+    external_standings_path = source_root / "standings.parquet"
     team_history_path = source_root / "team_history.csv"
     schedule.to_parquet(schedule_path, index=False)
     team_box.to_parquet(team_box_path, index=False)
-    standings.to_parquet(standings_path, index=False)
+    standings.to_parquet(external_standings_path, index=False)
     team_history.to_csv(team_history_path, index=False)
     return SimpleNamespace(
         schedule=schedule,
         team_box=team_box,
-        standings=standings,
+        external_standings=standings,
         team_history=team_history,
         pbp_team_features=None,
         schedule_path=schedule_path,
         team_box_path=team_box_path,
-        standings_path=standings_path,
+        external_standings_path=external_standings_path,
         team_history_path=team_history_path,
         pbp_team_features_path=None,
     )
@@ -314,12 +314,12 @@ class OrchestratorIntegrationTests(unittest.TestCase):
             sources = SimpleNamespace(
                 schedule=schedule,
                 team_box=pd.DataFrame(),
-                standings=pd.DataFrame(),
+                external_standings=pd.DataFrame(),
                 team_history=pd.DataFrame(),
                 pbp_team_features=None,
                 schedule_path=source_paths["schedule"],
                 team_box_path=source_paths["team_box"],
-                standings_path=source_paths["standings"],
+                external_standings_path=source_paths["standings"],
                 team_history_path=source_paths["team_history"],
                 pbp_team_features_path=None,
             )
@@ -486,14 +486,14 @@ class OrchestratorIntegrationTests(unittest.TestCase):
             sources = SimpleNamespace(
                 schedule_path=root / "schedule",
                 team_box_path=root / "team_box",
-                standings_path=root / "standings",
+                external_standings_path=root / "standings",
                 team_history_path=root / "team_history",
                 pbp_team_features_path=None,
             )
             for path in (
                 sources.schedule_path,
                 sources.team_box_path,
-                sources.standings_path,
+                sources.external_standings_path,
                 sources.team_history_path,
             ):
                 path.write_text("fixture", encoding="utf-8")

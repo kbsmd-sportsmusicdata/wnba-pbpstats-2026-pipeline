@@ -30,7 +30,7 @@ def _write_source_fixture(source_root: Path) -> dict[str, Path]:
     paths = {
         "schedule_path": source_root / "schedule.parquet",
         "team_box_path": source_root / "team_box.parquet",
-        "standings_path": source_root / "standings.parquet",
+        "external_standings_path": source_root / "standings.parquet",
     }
     pd.DataFrame(
         [
@@ -89,7 +89,7 @@ def _write_source_fixture(source_root: Path) -> dict[str, Path]:
             "team_abbreviation": ["LV", "CHI"],
             "team_display_name": ["Las Vegas Aces", "Chicago Sky"],
         }
-    ).to_parquet(paths["standings_path"])
+    ).to_parquet(paths["external_standings_path"])
     return paths
 
 
@@ -117,21 +117,21 @@ def _append_game(
 
 
 class ForecastSourceLoaderTest(unittest.TestCase):
-    def test_missing_mandatory_sportsdataverse_file_raises(self) -> None:
+    def test_missing_schedule_or_team_box_raises(self) -> None:
         from standings_playoff_forecast.config import load_season_config
         from standings_playoff_forecast.data_sources import load_forecast_sources
 
         cfg = load_season_config(2026)
         with tempfile.TemporaryDirectory() as temp_dir:
             source_root = Path(temp_dir)
-            for missing_name in ("schedule", "team_box", "standings"):
+            for missing_name in ("schedule", "team_box"):
                 with self.subTest(missing_name=missing_name):
                     case_root = source_root / missing_name
                     case_root.mkdir()
                     paths = {
                         "schedule_path": case_root / "schedule.parquet",
                         "team_box_path": case_root / "team_box.parquet",
-                        "standings_path": case_root / "standings.parquet",
+                        "external_standings_path": case_root / "standings.parquet",
                     }
                     for source_name, path in paths.items():
                         if source_name.removesuffix("_path") != missing_name:
@@ -145,7 +145,7 @@ class ForecastSourceLoaderTest(unittest.TestCase):
                             pbp_team_features_path=case_root / "optional.csv",
                         )
 
-    def test_loads_mandatory_tables_and_allows_missing_optional_features(self) -> None:
+    def test_loads_mandatory_tables_when_external_standings_are_missing(self) -> None:
         from standings_playoff_forecast.config import load_season_config
         from standings_playoff_forecast.data_sources import load_forecast_sources
 
@@ -155,11 +155,10 @@ class ForecastSourceLoaderTest(unittest.TestCase):
             paths = {
                 "schedule_path": source_root / "schedule.parquet",
                 "team_box_path": source_root / "team_box.parquet",
-                "standings_path": source_root / "standings.parquet",
+                "external_standings_path": source_root / "standings.parquet",
             }
             pd.DataFrame({"game_id": ["101"]}).to_parquet(paths["schedule_path"])
             pd.DataFrame({"game_id": ["101"]}).to_parquet(paths["team_box_path"])
-            pd.DataFrame({"team_id": ["1"]}).to_parquet(paths["standings_path"])
 
             sources = load_forecast_sources(
                 cfg,
@@ -169,7 +168,8 @@ class ForecastSourceLoaderTest(unittest.TestCase):
 
         self.assertEqual(sources.schedule["game_id"].tolist(), ["101"])
         self.assertEqual(sources.team_box["game_id"].tolist(), ["101"])
-        self.assertEqual(sources.standings["team_id"].tolist(), ["1"])
+        self.assertIsNone(sources.external_standings)
+        self.assertIsNone(sources.external_standings_path)
         self.assertIsNone(sources.pbp_team_features)
 
     def test_optional_pbpstats_csv_restores_snapshot_as_of_from_json_sidecar(self) -> None:
@@ -182,11 +182,11 @@ class ForecastSourceLoaderTest(unittest.TestCase):
             paths = {
                 "schedule_path": source_root / "schedule.parquet",
                 "team_box_path": source_root / "team_box.parquet",
-                "standings_path": source_root / "standings.parquet",
+                "external_standings_path": source_root / "standings.parquet",
             }
             pd.DataFrame({"game_id": ["101"]}).to_parquet(paths["schedule_path"])
             pd.DataFrame({"game_id": ["101"]}).to_parquet(paths["team_box_path"])
-            pd.DataFrame({"team_id": ["1"]}).to_parquet(paths["standings_path"])
+            pd.DataFrame({"team_id": ["1"]}).to_parquet(paths["external_standings_path"])
             features_path = source_root / "team_totals_features_latest.csv"
             pd.DataFrame(
                 {
@@ -232,11 +232,11 @@ class ForecastSourceLoaderTest(unittest.TestCase):
                 paths = {
                     "schedule_path": source_root / "schedule.parquet",
                     "team_box_path": source_root / "team_box.parquet",
-                    "standings_path": source_root / "standings.parquet",
+                    "external_standings_path": source_root / "standings.parquet",
                 }
                 pd.DataFrame({"game_id": ["101"]}).to_parquet(paths["schedule_path"])
                 pd.DataFrame({"game_id": ["101"]}).to_parquet(paths["team_box_path"])
-                pd.DataFrame({"team_id": ["1"]}).to_parquet(paths["standings_path"])
+                pd.DataFrame({"team_id": ["1"]}).to_parquet(paths["external_standings_path"])
                 features_path = source_root / "team_totals_features_latest.csv"
                 pd.DataFrame(
                     {

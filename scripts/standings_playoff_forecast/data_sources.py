@@ -1,6 +1,7 @@
 """Repository-relative source discovery for the standings forecast."""
 
 import json
+import warnings
 from collections.abc import Mapping
 from dataclasses import dataclass
 from pathlib import Path
@@ -24,14 +25,14 @@ TEAM_HISTORY_PATH = (
 class ForecastSources:
     schedule: pd.DataFrame
     team_box: pd.DataFrame
-    standings: pd.DataFrame
     team_history: pd.DataFrame
     pbp_team_features: pd.DataFrame | None
+    external_standings: pd.DataFrame | None
     schedule_path: Path
     team_box_path: Path
-    standings_path: Path
     team_history_path: Path
     pbp_team_features_path: Path | None
+    external_standings_path: Path | None
 
 
 def _configured_path(root: str, filename: str) -> Path:
@@ -73,12 +74,26 @@ def _load_pbp_team_features(path: Path) -> pd.DataFrame:
     return frame
 
 
+def _load_optional_parquet(path: Path) -> pd.DataFrame | None:
+    if not path.is_file():
+        return None
+    try:
+        return pd.read_parquet(path)
+    except Exception as error:
+        warnings.warn(
+            f"Optional external standings could not be read: {path}: {error}",
+            RuntimeWarning,
+            stacklevel=2,
+        )
+        return None
+
+
 def load_forecast_sources(
     cfg: SeasonConfig,
     *,
     schedule_path: Path | str | None = None,
     team_box_path: Path | str | None = None,
-    standings_path: Path | str | None = None,
+    external_standings_path: Path | str | None = None,
     team_history_path: Path | str | None = None,
     pbp_team_features_path: Path | str | None = None,
 ) -> ForecastSources:
@@ -91,9 +106,6 @@ def load_forecast_sources(
         "team_box": Path(team_box_path)
         if team_box_path is not None
         else _configured_path(cfg.sportsdataverse_data_root, cfg.source_files["team_box"]),
-        "standings": Path(standings_path)
-        if standings_path is not None
-        else _configured_path(cfg.sportsdataverse_data_root, cfg.source_files["standings"]),
     }
     for source_name, path in mandatory_paths.items():
         if not path.is_file():
@@ -106,6 +118,14 @@ def load_forecast_sources(
             cfg.pbpstats_data_root, cfg.source_files["pbp_team_features"]
         )
     )
+    configured_external_standings = cfg.optional_validation_files.get("standings")
+    external_standings_candidate = (
+        Path(external_standings_path)
+        if external_standings_path is not None
+        else _configured_path(cfg.sportsdataverse_data_root, configured_external_standings)
+        if configured_external_standings is not None
+        else None
+    )
     history_path = (
         Path(team_history_path) if team_history_path is not None else TEAM_HISTORY_PATH
     )
@@ -114,14 +134,19 @@ def load_forecast_sources(
     return ForecastSources(
         schedule=pd.read_parquet(mandatory_paths["schedule"]),
         team_box=pd.read_parquet(mandatory_paths["team_box"]),
-        standings=pd.read_parquet(mandatory_paths["standings"]),
         team_history=pd.read_csv(history_path),
         pbp_team_features=_load_pbp_team_features(optional_path)
         if optional_path.is_file()
         else None,
+        external_standings=_load_optional_parquet(external_standings_candidate)
+        if external_standings_candidate is not None
+        else None,
         schedule_path=mandatory_paths["schedule"],
         team_box_path=mandatory_paths["team_box"],
-        standings_path=mandatory_paths["standings"],
         team_history_path=history_path,
         pbp_team_features_path=optional_path if optional_path.is_file() else None,
+        external_standings_path=external_standings_candidate
+        if external_standings_candidate is not None
+        and external_standings_candidate.is_file()
+        else None,
     )
