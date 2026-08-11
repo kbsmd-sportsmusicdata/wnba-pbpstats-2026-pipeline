@@ -57,6 +57,10 @@ SUBTLE_FONT = Font(name="Aptos", size=9, color=GRAY)
 THIN_GRAY = Side(style="thin", color="CBD2DA")
 
 
+class _TrustedFormula(str):
+    """Marker for formulas authored by this renderer, never source data."""
+
+
 REQUIRED_COLUMNS = {
     "current_standings": {
         "team_id",
@@ -287,6 +291,43 @@ def _clean(value: object) -> object:
     return value
 
 
+def _write_cell_value(cell, value: object) -> None:
+    """Write a value while keeping ordinary formula-like strings literal."""
+
+    cleaned = _clean(value)
+    if isinstance(cleaned, _TrustedFormula):
+        cell.value = str(cleaned)
+        trusted = getattr(cell.parent, "_trusted_formula_cells", set())
+        trusted.add(cell.coordinate)
+        cell.parent._trusted_formula_cells = trusted
+        return
+    cell.value = cleaned
+    if (
+        isinstance(cleaned, str)
+        and cleaned.lstrip()
+        and cleaned.lstrip()[0] in "=+-@"
+    ):
+        cell.data_type = "s"
+
+
+def _enforce_literal_source_strings(workbook: Workbook) -> None:
+    """Fail safe for narrative cells written outside the generic table helper."""
+
+    for sheet in workbook.worksheets:
+        trusted = getattr(sheet, "_trusted_formula_cells", set())
+        for row in sheet.iter_rows():
+            for cell in row:
+                value = cell.value
+                if cell.coordinate in trusted:
+                    continue
+                if (
+                    isinstance(value, str)
+                    and value.lstrip()
+                    and value.lstrip()[0] in "=+-@"
+                ):
+                    cell.data_type = "s"
+
+
 def _title(sheet, text: str, subtitle: str | None = None) -> None:
     sheet.merge_cells(start_row=1, start_column=1, end_row=1, end_column=max(4, sheet.max_column))
     cell = sheet.cell(1, 1, text)
@@ -352,7 +393,7 @@ def _write_table(
         sheet.cell(2, column, header)
     for row_number, row in enumerate(rows, start=3):
         for column, value in enumerate(row, start=1):
-            sheet.cell(row_number, column, _clean(value))
+            _write_cell_value(sheet.cell(row_number, column), value)
 
     _title(sheet, title)
     _style_sheet(sheet)
@@ -983,7 +1024,7 @@ def _model_notes_sheet(workbook: Workbook, frames: Mapping[str, pd.DataFrame], c
         ["Current standings source", CURRENT_STANDINGS_METHOD],
         ["Current vs simulated-final .500+", CURRENT_500_METHOD],
         ["Probability source", "All probabilities come from the validated machine-readable forecast bundle; this workbook does not resimulate or recalculate them."],
-        ["Linked standings leader", "='Current Standings'!B3"],
+        ["Linked standings leader", _TrustedFormula("='Current Standings'!B3")],
         ["Caveat", "Forecasts are probabilistic, source-snapshot dependent, and subject to official standings/tiebreak updates."],
         ["Season config SHA-256", manifest.get("season_config_sha256")],
         ["Model config SHA-256", manifest.get("model_config_sha256")],
@@ -1032,6 +1073,7 @@ def _build_workbook(
     _broadcast_insights_sheet(workbook, frames)
     _team_games_sheet(workbook, team_games)
     _model_notes_sheet(workbook, frames, cfg, manifest)
+    _enforce_literal_source_strings(workbook)
     if tuple(workbook.sheetnames) != SHEET_ORDER:
         raise RuntimeError("workbook sheet order drifted from the public contract")
     workbook.calculation.fullCalcOnLoad = True

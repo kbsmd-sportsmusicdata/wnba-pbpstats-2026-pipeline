@@ -159,6 +159,65 @@ def _header_map(sheet) -> dict[str, int]:
 
 
 class ExcelRendererTests(unittest.TestCase):
+    def test_source_strings_are_literal_text_and_only_authored_formula_is_active(self):
+        """Catches source-controlled strings being interpreted as Excel formulas."""
+        from standings_playoff_forecast.render_excel import render_excel
+
+        attacks = {
+            "Attack Equal": "=2+3",
+            "Attack Plus": "  +SUM(1,2)",
+            "Attack Minus": "-1+2",
+            "Attack At": "\t@SUM(1,2)",
+        }
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            cfg, processed_root = _literal_bundle(root)
+            team_games = _team_games()
+            for header, value in attacks.items():
+                team_games[header.lower().replace(" ", "_")] = value
+
+            # This value is written outside the generic table path on Dashboard.
+            forecast_path = processed_root / "forecast_summary.csv"
+            forecast = pd.read_csv(forecast_path)
+            forecast.loc[forecast["current_rank"].eq(1), "team_abbreviation"] = (
+                attacks["Attack Equal"]
+            )
+            forecast.to_csv(forecast_path, index=False)
+
+            workbook_path = render_excel(processed_root, team_games, cfg=cfg)
+            workbook = load_workbook(workbook_path, data_only=False)
+
+            source = workbook["Team Games Source"]
+            headers = _header_map(source)
+            for header, expected in attacks.items():
+                cell = source.cell(3, headers[header])
+                self.assertEqual(cell.value, expected)
+                self.assertEqual(cell.data_type, "s")
+
+            dashboard_value = workbook["Dashboard"]["A5"]
+            self.assertEqual(dashboard_value.value, attacks["Attack Equal"])
+            self.assertEqual(dashboard_value.data_type, "s")
+
+            margin = next(
+                source.cell(row, headers["Margin"])
+                for row in range(3, source.max_row + 1)
+                if source.cell(row, headers["Margin"]).value == -10
+            )
+            self.assertEqual(margin.value, -10)
+            self.assertEqual(margin.data_type, "n")
+
+            notes = workbook["Model Notes"]
+            note_headers = _header_map(notes)
+            linked_row = next(
+                row
+                for row in range(3, notes.max_row + 1)
+                if notes.cell(row, note_headers["Item"]).value
+                == "Linked standings leader"
+            )
+            trusted_formula = notes.cell(linked_row, note_headers["Value"])
+            self.assertEqual(trusted_formula.value, "='Current Standings'!B3")
+            self.assertEqual(trusted_formula.data_type, "f")
+
     def test_current_context_and_methodology_use_supplied_standings_fields(self):
         """Catches renderer-side GB/.500 recomputation and lost context fields."""
         from standings_playoff_forecast.render_excel import render_excel
