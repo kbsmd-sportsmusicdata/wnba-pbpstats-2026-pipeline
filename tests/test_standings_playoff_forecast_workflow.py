@@ -30,6 +30,27 @@ REQUIRED_ARTIFACTS = (
 )
 
 
+def _validated_manifest(*, external_status: str = "unavailable") -> dict[str, object]:
+    return {
+        "source_of_truth": {
+            "current_standings": "derived_from_schedule_and_team_box",
+            "schedule": "mandatory",
+            "team_box": "mandatory",
+            "external_standings": "optional_validation",
+        },
+        "ledger_validation": {"status": "validated"},
+        "season_schedule_validation": {
+            "status": "validated",
+            "configured_games_per_team": 44,
+        },
+        "external_standings_qa": {
+            "status": external_status,
+            "compared_team_count": 0,
+            "mismatch_team_ids": [],
+        },
+    }
+
+
 def _run(
     command: list[str],
     *,
@@ -273,7 +294,12 @@ class WorkflowContractTests(unittest.TestCase):
             for relative in REQUIRED_ARTIFACTS:
                 destination = root / relative
                 destination.parent.mkdir(parents=True, exist_ok=True)
-                destination.write_bytes(b"validated-artifact\n")
+                if destination.name == "run_manifest.json":
+                    destination.write_text(
+                        json.dumps(_validated_manifest()), encoding="utf-8"
+                    )
+                else:
+                    destination.write_bytes(b"validated-artifact\n")
 
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
@@ -297,7 +323,7 @@ class WorkflowContractTests(unittest.TestCase):
                         check=False,
                     )
                     self.assertNotEqual(missing.returncode, 0)
-                    target.write_bytes(b"validated-artifact\n")
+                    materialize(root)
 
                 with self.subTest(relative=relative, failure="empty"):
                     target.write_bytes(b"")
@@ -308,7 +334,57 @@ class WorkflowContractTests(unittest.TestCase):
                         check=False,
                     )
                     self.assertNotEqual(empty.returncode, 0)
-                    target.write_bytes(b"validated-artifact\n")
+                    materialize(root)
+
+    def test_optional_external_standings_qa_is_nonblocking_but_ledger_is_not(self) -> None:
+        workflow = _load_workflow()
+        validation = _named_step(workflow, "Validate forecast artifacts")["run"]
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            for relative in REQUIRED_ARTIFACTS:
+                destination = root / relative
+                destination.parent.mkdir(parents=True, exist_ok=True)
+                destination.write_bytes(b"validated-artifact\n")
+            manifest_path = root / REQUIRED_ARTIFACTS[-1]
+
+            for status in ("unavailable", "mismatch"):
+                with self.subTest(status=status):
+                    manifest_path.write_text(
+                        json.dumps(_validated_manifest(external_status=status)),
+                        encoding="utf-8",
+                    )
+                    result = _run(
+                        ["bash", "-euo", "pipefail", "-c", validation],
+                        cwd=root,
+                        env=_workflow_env(),
+                        check=False,
+                    )
+                    self.assertEqual(result.returncode, 0, result.stderr)
+                    self.assertIn(
+                        f"external standings QA: {status} (non-blocking)",
+                        result.stdout,
+                    )
+
+            invalid = _validated_manifest(external_status="unavailable")
+            invalid["ledger_validation"] = {"status": "invalid"}
+            manifest_path.write_text(json.dumps(invalid), encoding="utf-8")
+            rejected = _run(
+                ["bash", "-euo", "pipefail", "-c", validation],
+                cwd=root,
+                env=_workflow_env(),
+                check=False,
+            )
+            self.assertNotEqual(rejected.returncode, 0)
+
+    def test_workflow_has_no_external_standings_existence_gate_or_wide_adapter(self) -> None:
+        workflow_text = WORKFLOW_PATH.read_text(encoding="utf-8")
+        self.assertNotIn("standings_2026.parquet", workflow_text)
+        self.assertNotIn("wnba_stats_standings", workflow_text)
+        self.assertNotRegex(
+            workflow_text,
+            r"(?:-f|-e|-s|stat)\s+[^\n]*(?:external_)?standings[^\n]*\.parquet",
+        )
 
     def test_build_array_preserves_argument_boundaries_and_optional_cutoff(self) -> None:
         workflow = _load_workflow()

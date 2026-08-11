@@ -150,6 +150,43 @@ jobs:
               exit 1
             fi
           done
+          python - "$PROCESSED_ROOT/run_manifest.json" <<'PY'
+          import json
+          from pathlib import Path
+          import sys
+
+          manifest_path = Path(sys.argv[1])
+          manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+          expected_source = {
+              "current_standings": "derived_from_schedule_and_team_box",
+              "schedule": "mandatory",
+              "team_box": "mandatory",
+              "external_standings": "optional_validation",
+          }
+          if manifest.get("source_of_truth") != expected_source:
+              raise SystemExit("run manifest does not identify the canonical derived-standings source")
+          if manifest.get("ledger_validation") != {"status": "validated"}:
+              raise SystemExit("canonical completed-game ledger is not validated")
+          schedule_validation = manifest.get("season_schedule_validation")
+          if (
+              not isinstance(schedule_validation, dict)
+              or schedule_validation.get("status") != "validated"
+          ):
+              raise SystemExit("season schedule counts are not validated")
+          external_qa = manifest.get("external_standings_qa")
+          if not isinstance(external_qa, dict):
+              raise SystemExit("run manifest is missing external standings QA evidence")
+          external_status = external_qa.get("status")
+          allowed_external_statuses = {
+              "unavailable",
+              "unparseable",
+              "matched",
+              "mismatch",
+          }
+          if external_status not in allowed_external_statuses:
+              raise SystemExit(f"invalid external standings QA status: {external_status!r}")
+          print(f"external standings QA: {external_status} (non-blocking)")
+          PY
 
       - name: Upload forecast artifact
         uses: actions/upload-artifact@v7
