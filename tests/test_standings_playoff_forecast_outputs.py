@@ -67,6 +67,27 @@ def _inputs(root: Path):
                 "points_for": 80,
                 "points_against": 70,
                 "point_differential": 10,
+                "games_back": 0.0,
+                "home_wins": 1,
+                "home_losses": 0,
+                "road_wins": 0,
+                "road_losses": 0,
+                "home_record": "1-0",
+                "road_record": "0-0",
+                "last10_wins": 1,
+                "last10_losses": 0,
+                "last10_record": "1-0",
+                "current_streak_type": "W",
+                "current_streak_length": 1,
+                "current_streak_label": "W1",
+                "conference_wins": 1,
+                "conference_losses": 0,
+                "conference_record": "1-0",
+                "record_vs_current_500_plus_wins": 1,
+                "record_vs_current_500_plus_losses": 0,
+                "record_vs_current_500_plus": "1-0",
+                "record_vs_current_500_plus_pct": 1.0,
+                "playoff_cutline_flag": True,
             },
             {
                 "team_id": "B",
@@ -81,6 +102,27 @@ def _inputs(root: Path):
                 "points_for": 70,
                 "points_against": 80,
                 "point_differential": -10,
+                "games_back": 1.0,
+                "home_wins": 0,
+                "home_losses": 0,
+                "road_wins": 0,
+                "road_losses": 1,
+                "home_record": "0-0",
+                "road_record": "0-1",
+                "last10_wins": 0,
+                "last10_losses": 1,
+                "last10_record": "0-1",
+                "current_streak_type": "L",
+                "current_streak_length": 1,
+                "current_streak_label": "L1",
+                "conference_wins": 0,
+                "conference_losses": 1,
+                "conference_record": "0-1",
+                "record_vs_current_500_plus_wins": 0,
+                "record_vs_current_500_plus_losses": 1,
+                "record_vs_current_500_plus": "0-1",
+                "record_vs_current_500_plus_pct": 0.0,
+                "playoff_cutline_flag": False,
             },
         ]
     )
@@ -285,6 +327,37 @@ def _inputs(root: Path):
     return cfg, model_cfg, bundle
 
 
+def _validation_inputs(cfg, *, completed: bool = False):
+    from standings_playoff_forecast.standings import ExternalStandingsQA
+    from standings_playoff_forecast.team_game_layer import LedgerValidationResult
+
+    completed_gp = 2 if completed else 1
+    remaining_games = 0 if completed else 1
+    return {
+        "ledger_validation": LedgerValidationResult(
+            completed_game_count=completed_gp,
+            directional_row_count=completed_gp * 2,
+            game_ids=tuple(f"g{index}" for index in range(1, completed_gp + 1)),
+        ),
+        "season_schedule_validation": pd.DataFrame(
+            {
+                "team_id": ["A", "B"],
+                "completed_gp": [completed_gp, completed_gp],
+                "remaining_games": [remaining_games, remaining_games],
+                "configured_games": [cfg.regular_season_games_per_team] * 2,
+                "total_games": [cfg.regular_season_games_per_team] * 2,
+                "status": ["validated", "validated"],
+            }
+        ),
+        "external_standings_qa": ExternalStandingsQA(
+            status="matched",
+            compared_team_count=2,
+            mismatch_team_ids=(),
+            message="fixture records matched",
+        ),
+    }
+
+
 def _write_fixture_bundle(
     root: Path,
     cfg,
@@ -308,6 +381,7 @@ def _write_fixture_bundle(
         season_config_path=season_config,
         model_config_path=model_config,
         source_files={"schedule": source},
+        **_validation_inputs(cfg),
         repository_root=root,
     )
 
@@ -323,9 +397,11 @@ class OutputBundleTest(unittest.TestCase):
             season_config = root / "season.json"
             model_config = root / "model.json"
             schedule_source = root / "schedule.parquet"
+            external_source = root / "external-standings.parquet"
             season_config.write_bytes(b'{"season":2031}\n')
             model_config.write_bytes(b'{"model":"literal"}\n')
             schedule_source.write_bytes(b"literal-source-bytes\n")
+            external_source.write_bytes(b"external-validation-bytes\n")
 
             output = write_output_bundle(
                 bundle,
@@ -334,8 +410,12 @@ class OutputBundleTest(unittest.TestCase):
                 cutoff="2031-06-01T19:30:00Z",
                 season_config_path=season_config,
                 model_config_path=model_config,
-                source_files={"schedule": schedule_source},
+                source_files={
+                    "schedule": schedule_source,
+                    "external_standings": external_source,
+                },
                 conditional_simulation_count=0,
+                **_validation_inputs(cfg),
                 repository_root=root / "not-a-repository",
             )
             first_bytes = {path.name: path.read_bytes() for path in output.iterdir()}
@@ -346,8 +426,12 @@ class OutputBundleTest(unittest.TestCase):
                 cutoff="2031-06-01T19:30:00Z",
                 season_config_path=season_config,
                 model_config_path=model_config,
-                source_files={"schedule": schedule_source},
+                source_files={
+                    "schedule": schedule_source,
+                    "external_standings": external_source,
+                },
                 conditional_simulation_count=0,
+                **_validation_inputs(cfg),
                 repository_root=root / "not-a-repository",
             )
 
@@ -371,6 +455,13 @@ class OutputBundleTest(unittest.TestCase):
             rank_matrix = pd.read_csv(output / "rank_probability_matrix.csv")
             self.assertEqual(rank_matrix["cutoff_date"].unique().tolist(), ["2031-06-01"])
             self.assertEqual(rank_matrix["team_abbreviation"].tolist(), ["ALP", "ALP", "BRV", "BRV"])
+
+            from standings_playoff_forecast.standings import STANDINGS_COLUMNS
+
+            standings_csv = pd.read_csv(output / "current_standings.csv")
+            self.assertEqual(list(standings_csv.columns), STANDINGS_COLUMNS)
+            self.assertEqual(standings_csv["home_record"].tolist(), ["1-0", "0-0"])
+            self.assertEqual(standings_csv["current_streak_label"].tolist(), ["W1", "L1"])
 
             manifest = json.loads((output / "run_manifest.json").read_text())
             payload = json.loads((output / "forecast_payload.json").read_text())
@@ -399,13 +490,167 @@ class OutputBundleTest(unittest.TestCase):
             self.assertEqual(manifest["pbpstats_enrichment_status"], "safe_for_cutoff")
             self.assertIsNone(manifest["git_sha"])
             self.assertEqual(manifest["git_sha_status"], "unavailable")
+            self.assertEqual(
+                manifest["source_of_truth"],
+                {
+                    "current_standings": "derived_from_schedule_and_team_box",
+                    "schedule": "mandatory",
+                    "team_box": "mandatory",
+                    "external_standings": "optional_validation",
+                },
+            )
+            self.assertEqual(manifest["ledger_validation"], {"status": "validated"})
+            self.assertEqual(
+                manifest["season_schedule_validation"],
+                {"status": "validated", "configured_games_per_team": 2},
+            )
+            self.assertEqual(
+                manifest["external_standings_qa"],
+                {
+                    "status": "matched",
+                    "compared_team_count": 2,
+                    "mismatch_team_ids": [],
+                },
+            )
             self.assertEqual(manifest["season_config_sha256"], hashlib.sha256(season_config.read_bytes()).hexdigest())
             self.assertEqual(manifest["model_config_sha256"], hashlib.sha256(model_config.read_bytes()).hexdigest())
-            self.assertEqual(manifest["source_files"][0]["path"], str(schedule_source.resolve()))
-            self.assertEqual(manifest["source_files"][0]["size_bytes"], len(b"literal-source-bytes\n"))
-            self.assertEqual(manifest["source_files"][0]["sha256"], hashlib.sha256(b"literal-source-bytes\n").hexdigest())
+            sources_by_name = {entry["name"]: entry for entry in manifest["source_files"]}
+            self.assertEqual(set(sources_by_name), {"schedule", "external_standings"})
+            self.assertEqual(sources_by_name["schedule"]["path"], str(schedule_source.resolve()))
+            self.assertEqual(sources_by_name["schedule"]["size_bytes"], len(b"literal-source-bytes\n"))
+            self.assertEqual(sources_by_name["schedule"]["sha256"], hashlib.sha256(b"literal-source-bytes\n").hexdigest())
+            self.assertEqual(sources_by_name["external_standings"]["path"], str(external_source.resolve()))
+            self.assertEqual(
+                sources_by_name["external_standings"]["sha256"],
+                hashlib.sha256(b"external-validation-bytes\n").hexdigest(),
+            )
             self.assertEqual(payload["remaining_schedule"][0]["game_date"], "2031-06-03T00:00:00")
             self.assertIsNone(payload["historical_context"][0]["as_of_progress_pct"])
+            payload_standings = {row["team_id"]: row for row in payload["standings"]}
+            self.assertEqual(payload_standings["A"]["home_record"], "1-0")
+            self.assertEqual(payload_standings["B"]["current_streak_label"], "L1")
+
+    def test_rejects_untyped_or_internally_inconsistent_validation_evidence(self) -> None:
+        """Catches a manifest trusting caller-supplied status mappings or corrupt results."""
+        from standings_playoff_forecast.outputs import write_output_bundle
+        from standings_playoff_forecast.standings import ExternalStandingsQA
+        from standings_playoff_forecast.team_game_layer import LedgerValidationResult
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            cfg, model_cfg, bundle = _inputs(root)
+            season_config = root / "season.json"
+            model_config = root / "model.json"
+            source = root / "source.bin"
+            season_config.write_bytes(b"season")
+            model_config.write_bytes(b"model")
+            source.write_bytes(b"source")
+            common = {
+                "cfg": cfg,
+                "model_cfg": model_cfg,
+                "cutoff": "2031-06-01",
+                "season_config_path": season_config,
+                "model_config_path": model_config,
+                "source_files": {"schedule": source},
+                "repository_root": root,
+            }
+            valid = _validation_inputs(cfg)
+            bad_schedule = valid["season_schedule_validation"].copy()
+            bad_schedule.loc[1, "status"] = "unchecked"
+            cases = [
+                (
+                    "ledger_mapping",
+                    {**valid, "ledger_validation": {"status": "validated"}},
+                    TypeError,
+                    "LedgerValidationResult",
+                ),
+                (
+                    "ledger_counts",
+                    {
+                        **valid,
+                        "ledger_validation": LedgerValidationResult(1, 1, ("g1",)),
+                    },
+                    ValueError,
+                    "directional_row_count",
+                ),
+                (
+                    "schedule_mapping",
+                    {
+                        **valid,
+                        "season_schedule_validation": {"status": "validated"},
+                    },
+                    TypeError,
+                    "DataFrame",
+                ),
+                (
+                    "schedule_status",
+                    {**valid, "season_schedule_validation": bad_schedule},
+                    ValueError,
+                    "status.*validated",
+                ),
+                (
+                    "ledger_schedule_disagreement",
+                    {
+                        **valid,
+                        "ledger_validation": LedgerValidationResult(
+                            2, 4, ("g1", "g2")
+                        ),
+                    },
+                    ValueError,
+                    "completed games.*ledger",
+                ),
+                (
+                    "external_mapping",
+                    {
+                        **valid,
+                        "external_standings_qa": {"status": "matched"},
+                    },
+                    TypeError,
+                    "ExternalStandingsQA",
+                ),
+                (
+                    "external_status",
+                    {
+                        **valid,
+                        "external_standings_qa": ExternalStandingsQA(
+                            status="unchecked",
+                            compared_team_count=2,
+                            mismatch_team_ids=(),
+                            message="fixture",
+                        ),
+                    },
+                    ValueError,
+                    "external standings QA status",
+                ),
+                (
+                    "external_partial_match",
+                    {
+                        **valid,
+                        "external_standings_qa": ExternalStandingsQA(
+                            status="matched",
+                            compared_team_count=1,
+                            mismatch_team_ids=(),
+                            message="fixture",
+                        ),
+                    },
+                    ValueError,
+                    "matched external standings QA.*configured team",
+                ),
+            ]
+            for name, validation, error_type, message in cases:
+                with self.subTest(case=name):
+                    with self.assertRaisesRegex(error_type, message):
+                        write_output_bundle(bundle, **common, **validation)
+
+            output = (
+                root
+                / "forecast-root"
+                / "data"
+                / "processed"
+                / "season=2031"
+                / "latest"
+            )
+            self.assertFalse(output.exists())
 
     def test_preserves_supplied_mathematical_status_without_inferring_from_probability(self) -> None:
         """Catches discarding upstream proof or treating Monte Carlo 0/1 as proof."""
@@ -435,6 +680,7 @@ class OutputBundleTest(unittest.TestCase):
                 season_config_path=season_config,
                 model_config_path=model_config,
                 source_files={"schedule": source},
+                **_validation_inputs(cfg),
                 repository_root=root,
             )
 
@@ -475,6 +721,7 @@ class OutputBundleTest(unittest.TestCase):
                 "season_config_path": season_config,
                 "model_config_path": model_config,
                 "source_files": {"schedule": source},
+                **_validation_inputs(cfg),
                 "repository_root": root,
             }
             output = outputs.write_output_bundle(bundle, **kwargs)
@@ -513,6 +760,7 @@ class OutputBundleTest(unittest.TestCase):
                 "season_config_path": season_config,
                 "model_config_path": model_config,
                 "source_files": {"schedule": source},
+                **_validation_inputs(cfg),
                 "repository_root": root,
             }
             output = outputs.write_output_bundle(bundle, **kwargs)
@@ -563,6 +811,7 @@ class OutputBundleTest(unittest.TestCase):
                     season_config_path=season_config,
                     model_config_path=model_config,
                     source_files={"schedule": source},
+                    **_validation_inputs(cfg),
                     repository_root=root,
                 )
             output = root / "forecast-root" / "data" / "processed" / "season=2031" / "latest"
@@ -618,6 +867,7 @@ class OutputBundleTest(unittest.TestCase):
                     season_config_path=season_config,
                     model_config_path=model_config,
                     source_files={"schedule": source},
+                    **_validation_inputs(cfg),
                     repository_root=root,
                 )
 
@@ -661,6 +911,7 @@ class OutputBundleTest(unittest.TestCase):
                             season_config_path=season_config,
                             model_config_path=model_config,
                             source_files={"schedule": source},
+                            **_validation_inputs(cfg),
                             repository_root=root,
                         )
 
@@ -681,6 +932,7 @@ class OutputBundleTest(unittest.TestCase):
                 "cutoff": "2031-06-01",
                 "season_config_path": season_config,
                 "model_config_path": model_config,
+                **_validation_inputs(cfg),
                 "repository_root": root,
             }
 
@@ -730,6 +982,7 @@ class OutputBundleTest(unittest.TestCase):
                     season_config_path=season_config,
                     model_config_path=model_config,
                     source_files={"schedule": source},
+                    **_validation_inputs(cfg),
                     repository_root=root,
                 )
 
@@ -747,6 +1000,11 @@ class OutputBundleTest(unittest.TestCase):
             )
             bundle = replace(
                 bundle,
+                current_standings=bundle.current_standings.assign(
+                    games_played=2,
+                    wins=[2, 0],
+                    losses=[0, 2],
+                ),
                 remaining_schedule=bundle.remaining_schedule.iloc[0:0],
                 matchup_probabilities=bundle.matchup_probabilities.iloc[0:0],
                 simulation_result=simulation,
@@ -767,6 +1025,7 @@ class OutputBundleTest(unittest.TestCase):
                 season_config_path=season_config,
                 model_config_path=model_config,
                 source_files={"schedule": source},
+                **_validation_inputs(cfg, completed=True),
                 repository_root=root,
             )
 

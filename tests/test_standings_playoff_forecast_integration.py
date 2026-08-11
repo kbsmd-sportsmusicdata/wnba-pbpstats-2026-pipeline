@@ -25,7 +25,7 @@ import build_standings_playoff_forecast as builder
 from standings_playoff_forecast.contracts import ForecastModelConfig, SeasonConfig
 from standings_playoff_forecast.historical_context import HISTORICAL_CONTEXT_COLUMNS
 from standings_playoff_forecast.outputs import CSV_FILENAMES, PAYLOAD_KEYS
-from standings_playoff_forecast.standings import ExternalStandingsQA
+from standings_playoff_forecast.standings import ExternalStandingsQA, STANDINGS_COLUMNS
 from standings_playoff_forecast.team_game_layer import LedgerValidationResult
 
 
@@ -239,6 +239,28 @@ class OrchestratorIntegrationTests(unittest.TestCase):
             self.assertEqual(manifest["simulation_count"], 20)
             self.assertEqual(manifest["conditional_simulation_count"], 0)
             self.assertEqual(
+                manifest["source_of_truth"],
+                {
+                    "current_standings": "derived_from_schedule_and_team_box",
+                    "schedule": "mandatory",
+                    "team_box": "mandatory",
+                    "external_standings": "optional_validation",
+                },
+            )
+            self.assertEqual(manifest["ledger_validation"], {"status": "validated"})
+            self.assertEqual(
+                manifest["season_schedule_validation"],
+                {"status": "validated", "configured_games_per_team": 2},
+            )
+            self.assertEqual(
+                manifest["external_standings_qa"],
+                {
+                    "status": "matched",
+                    "compared_team_count": 2,
+                    "mismatch_team_ids": [],
+                },
+            )
+            self.assertEqual(
                 {entry["name"] for entry in manifest["source_files"]},
                 {
                     "schedule",
@@ -249,7 +271,10 @@ class OrchestratorIntegrationTests(unittest.TestCase):
                 },
             )
             forecast = pd.read_csv(expected / "forecast_summary.csv")
+            standings = pd.read_csv(expected / "current_standings.csv")
             ranks = pd.read_csv(expected / "rank_probability_matrix.csv")
+            self.assertEqual(list(standings.columns), STANDINGS_COLUMNS)
+            self.assertEqual(set(payload["standings"][0]), set(STANDINGS_COLUMNS))
             self.assertEqual(len(forecast), 2)
             self.assertAlmostEqual(forecast["playoff_probability"].sum(), 1.0)
             self.assertTrue(
@@ -349,8 +374,81 @@ class OrchestratorIntegrationTests(unittest.TestCase):
                 }
             )
             ranked = SimpleNamespace(ordered_team_ids=("B", "A"))
-            contextual = unranked.copy()
-            contextual["current_rank"] = [2, 1]
+            contextual = pd.DataFrame(
+                [
+                    {
+                        "team_id": "A",
+                        "franchise_id": "alpha",
+                        "team_abbreviation": "AAA",
+                        "team_name": "Alpha",
+                        "games_played": 1,
+                        "wins": 1,
+                        "losses": 0,
+                        "win_pct": 1.0,
+                        "points_for": 80,
+                        "points_against": 75,
+                        "point_differential": 5,
+                        "games_back": 1.0,
+                        "home_wins": 1,
+                        "home_losses": 0,
+                        "road_wins": 0,
+                        "road_losses": 0,
+                        "home_record": "1-0",
+                        "road_record": "0-0",
+                        "last10_wins": 1,
+                        "last10_losses": 0,
+                        "last10_record": "1-0",
+                        "current_streak_type": "W",
+                        "current_streak_length": 1,
+                        "current_streak_label": "W1",
+                        "conference_wins": 1,
+                        "conference_losses": 0,
+                        "conference_record": "1-0",
+                        "record_vs_current_500_plus_wins": 1,
+                        "record_vs_current_500_plus_losses": 0,
+                        "record_vs_current_500_plus": "1-0",
+                        "record_vs_current_500_plus_pct": 1.0,
+                        "current_rank": 2,
+                        "playoff_cutline_flag": False,
+                    },
+                    {
+                        "team_id": "B",
+                        "franchise_id": "beta",
+                        "team_abbreviation": "BBB",
+                        "team_name": "Beta",
+                        "games_played": 1,
+                        "wins": 0,
+                        "losses": 1,
+                        "win_pct": 0.0,
+                        "points_for": 75,
+                        "points_against": 80,
+                        "point_differential": -5,
+                        "games_back": 0.0,
+                        "home_wins": 0,
+                        "home_losses": 0,
+                        "road_wins": 0,
+                        "road_losses": 1,
+                        "home_record": "0-0",
+                        "road_record": "0-1",
+                        "last10_wins": 0,
+                        "last10_losses": 1,
+                        "last10_record": "0-1",
+                        "current_streak_type": "L",
+                        "current_streak_length": 1,
+                        "current_streak_label": "L1",
+                        "conference_wins": 0,
+                        "conference_losses": 1,
+                        "conference_record": "0-1",
+                        "record_vs_current_500_plus_wins": 0,
+                        "record_vs_current_500_plus_losses": 1,
+                        "record_vs_current_500_plus": "0-1",
+                        "record_vs_current_500_plus_pct": 0.0,
+                        "current_rank": 1,
+                        "playoff_cutline_flag": True,
+                    },
+                ],
+                columns=STANDINGS_COLUMNS,
+            )
             ledger_validation = LedgerValidationResult(2, 4, ("old", "latest"))
             external_qa = ExternalStandingsQA(
                 status="mismatch",
@@ -395,8 +493,16 @@ class OrchestratorIntegrationTests(unittest.TestCase):
                 output_root.mkdir(parents=True)
                 for filename in (*CSV_FILENAMES.values(), "forecast_payload.json", "run_manifest.json"):
                     (output_root / filename).write_text("fixture\n", encoding="utf-8")
+                self.assertEqual(
+                    list(bundle.current_standings.columns), STANDINGS_COLUMNS
+                )
                 self.assertEqual(bundle.current_standings["current_rank"].tolist(), [2, 1])
                 self.assertEqual(kwargs["conditional_simulation_count"], 0)
+                self.assertIs(kwargs["ledger_validation"], ledger_validation)
+                self.assertIs(
+                    kwargs["season_schedule_validation"], schedule_counts
+                )
+                self.assertIs(kwargs["external_standings_qa"], external_qa)
                 self.assertEqual(
                     set(kwargs["source_files"]),
                     {*source_paths, "season_config_default"},

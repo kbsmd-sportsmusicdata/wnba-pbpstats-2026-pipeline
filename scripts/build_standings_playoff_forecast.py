@@ -383,6 +383,9 @@ def _run_pipeline(
         season_config_path=CONFIG_ROOT / "seasons" / f"{cfg.season}.json",
         model_config_path=CONFIG_ROOT / "forecast_model.json",
         source_files=_source_files(sources, historical_context),
+        ledger_validation=ledger_validation,
+        season_schedule_validation=season_schedule_counts,
+        external_standings_qa=external_standings_qa,
         conditional_simulation_count=0,
         repository_root=REPOSITORY_ROOT,
     )

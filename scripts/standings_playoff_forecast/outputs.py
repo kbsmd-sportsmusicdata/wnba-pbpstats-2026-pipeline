@@ -20,8 +20,8 @@ from .broadcast_insights import INSIGHT_COLUMNS
 from .historical_context import HISTORICAL_CONTEXT_COLUMNS
 from .leverage import LEVERAGE_COLUMNS
 from .metadata import build_run_manifest
-from .standings import HEAD_TO_HEAD_COLUMNS, STANDINGS_COLUMNS
-from .team_game_layer import normalize_id
+from .standings import ExternalStandingsQA, HEAD_TO_HEAD_COLUMNS, STANDINGS_COLUMNS
+from .team_game_layer import LedgerValidationResult, normalize_id
 
 
 PAYLOAD_KEYS = {
@@ -684,8 +684,16 @@ def _atomic_write_text(path: Path, content: str) -> None:
 def _ordered_frames(
     frames: dict[str, pd.DataFrame], forecast_summary: pd.DataFrame, rank_matrix: pd.DataFrame
 ) -> dict[str, pd.DataFrame]:
+    standings_extra_columns = [
+        column
+        for column in frames["current_standings"].columns
+        if column not in STANDINGS_COLUMNS
+    ]
+    current_standings = frames["current_standings"].reindex(
+        columns=[*STANDINGS_COLUMNS, *standings_extra_columns]
+    )
     return {
-        "current_standings": frames["current_standings"].sort_values(["current_rank", "team_id"], kind="stable").reset_index(drop=True),
+        "current_standings": current_standings.sort_values(["current_rank", "team_id"], kind="stable").reset_index(drop=True),
         "head_to_head": frames["head_to_head"].sort_values(["team_id", "opponent_id"], kind="stable").reset_index(drop=True),
         "team_strength": frames["team_strength"].sort_values("team_id", kind="stable").reset_index(drop=True),
         "remaining_schedule": frames["remaining_schedule"].sort_values(["game_date", "game_id"], kind="stable").reset_index(drop=True),
@@ -713,6 +721,9 @@ def write_output_bundle(
     season_config_path: str | Path,
     model_config_path: str | Path,
     source_files: Mapping[str, str | Path | Mapping[str, Any]],
+    ledger_validation: LedgerValidationResult,
+    season_schedule_validation: pd.DataFrame,
+    external_standings_qa: ExternalStandingsQA,
     conditional_simulation_count: int = 0,
     repository_root: str | Path,
 ) -> Path:
@@ -741,6 +752,9 @@ def write_output_bundle(
         season_config_path=season_config_path,
         model_config_path=model_config_path,
         source_files=source_files,
+        ledger_validation=ledger_validation,
+        season_schedule_validation=season_schedule_validation,
+        external_standings_qa=external_standings_qa,
         team_strength=frames["team_strength"],
         historical_context=frames["historical_context"],
         conditional_simulation_count=conditional_simulation_count,

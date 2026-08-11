@@ -11,6 +11,28 @@ from typing import Any
 import numpy as np
 import pandas as pd
 
+from .standings import ExternalStandingsQA
+from .team_game_layer import LedgerValidationResult, normalize_id
+
+
+SOURCE_OF_TRUTH = {
+    "current_standings": "derived_from_schedule_and_team_box",
+    "schedule": "mandatory",
+    "team_box": "mandatory",
+    "external_standings": "optional_validation",
+}
+EXTERNAL_STANDINGS_QA_STATUSES = frozenset(
+    {"matched", "mismatch", "unavailable", "unparseable"}
+)
+SEASON_SCHEDULE_VALIDATION_COLUMNS = {
+    "team_id",
+    "completed_gp",
+    "remaining_games",
+    "configured_games",
+    "total_games",
+    "status",
+}
+
 
 def _sha256(path: Path) -> str:
     digest = hashlib.sha256()
@@ -34,6 +56,177 @@ def _normalized_nonnegative_int(value: object, name: str) -> int:
     if normalized < 0:
         raise ValueError(f"{name} must be a non-negative integer")
     return normalized
+
+
+def _ledger_validation_manifest(
+    validation: LedgerValidationResult,
+) -> dict[str, str]:
+    if not isinstance(validation, LedgerValidationResult):
+        raise TypeError("ledger_validation must be a LedgerValidationResult")
+    completed_game_count = _normalized_nonnegative_int(
+        validation.completed_game_count, "ledger_validation completed_game_count"
+    )
+    directional_row_count = _normalized_nonnegative_int(
+        validation.directional_row_count, "ledger_validation directional_row_count"
+    )
+    if directional_row_count != completed_game_count * 2:
+        raise ValueError(
+            "ledger_validation directional_row_count must equal twice "
+            "completed_game_count"
+        )
+    if not isinstance(validation.game_ids, tuple):
+        raise TypeError("ledger_validation game_ids must be a tuple")
+    normalized_game_ids = tuple(normalize_id(value) for value in validation.game_ids)
+    if (
+        any(value is None or value == "" for value in normalized_game_ids)
+        or len(normalized_game_ids) != completed_game_count
+        or len(set(normalized_game_ids)) != len(normalized_game_ids)
+        or normalized_game_ids != tuple(sorted(normalized_game_ids))
+    ):
+        raise ValueError(
+            "ledger_validation game_ids must be unique, normalized, sorted, and "
+            "match completed_game_count"
+        )
+    return {"status": "validated"}
+
+
+def _season_schedule_validation_manifest(
+    validation: pd.DataFrame,
+    cfg: object,
+    expected_completed_game_count: int,
+) -> dict[str, int | str]:
+    if not isinstance(validation, pd.DataFrame):
+        raise TypeError("season_schedule_validation must be a pandas DataFrame")
+    missing = sorted(SEASON_SCHEDULE_VALIDATION_COLUMNS.difference(validation.columns))
+    if missing:
+        raise ValueError(
+            "season_schedule_validation is missing required columns: "
+            + ", ".join(missing)
+        )
+    if len(validation) != int(cfg.team_count):
+        raise ValueError(
+            "season_schedule_validation team count must match configured team_count"
+        )
+    team_ids = validation["team_id"].map(normalize_id)
+    if team_ids.isna().any() or team_ids.eq("").any() or team_ids.duplicated().any():
+        raise ValueError("season_schedule_validation contains invalid team IDs")
+    if not validation["status"].map(
+        lambda value: isinstance(value, str) and value == "validated"
+    ).all():
+        raise ValueError(
+            "season_schedule_validation status must be validated for every team"
+        )
+
+    counts: dict[str, pd.Series] = {}
+    for column in (
+        "completed_gp",
+        "remaining_games",
+        "configured_games",
+        "total_games",
+    ):
+        raw = validation[column]
+        if raw.map(lambda value: isinstance(value, (bool, np.bool_))).any():
+            raise ValueError(
+                f"season_schedule_validation {column} must contain non-negative integers"
+            )
+        numeric = pd.to_numeric(raw, errors="coerce")
+        if (
+            numeric.isna().any()
+            or not np.isfinite(numeric.to_numpy(dtype=float)).all()
+            or numeric.lt(0).any()
+            or not np.equal(numeric, np.floor(numeric)).all()
+        ):
+            raise ValueError(
+                f"season_schedule_validation {column} must contain non-negative integers"
+            )
+        counts[column] = numeric.astype(int)
+
+    configured_games_per_team = _normalized_nonnegative_int(
+        cfg.regular_season_games_per_team,
+        "configured regular_season_games_per_team",
+    )
+    if configured_games_per_team == 0:
+        raise ValueError("configured regular_season_games_per_team must be positive")
+    if (
+        counts["configured_games"].ne(configured_games_per_team).any()
+        or counts["total_games"].ne(configured_games_per_team).any()
+        or (
+            counts["completed_gp"] + counts["remaining_games"]
+        ).ne(counts["total_games"]).any()
+    ):
+        raise ValueError(
+            "season_schedule_validation counts must reconcile to configured games"
+        )
+    completed_directional_count = int(counts["completed_gp"].sum())
+    if (
+        completed_directional_count % 2 != 0
+        or completed_directional_count // 2 != expected_completed_game_count
+    ):
+        raise ValueError(
+            "season_schedule_validation completed games must match ledger validation"
+        )
+    return {
+        "status": "validated",
+        "configured_games_per_team": configured_games_per_team,
+    }
+
+
+def _external_standings_qa_manifest(
+    validation: ExternalStandingsQA, cfg: object
+) -> dict[str, Any]:
+    if not isinstance(validation, ExternalStandingsQA):
+        raise TypeError("external_standings_qa must be an ExternalStandingsQA")
+    if validation.status not in EXTERNAL_STANDINGS_QA_STATUSES:
+        raise ValueError("external standings QA status is invalid")
+    compared_team_count = _normalized_nonnegative_int(
+        validation.compared_team_count,
+        "external standings QA compared_team_count",
+    )
+    configured_team_count = _normalized_nonnegative_int(
+        cfg.team_count, "configured team_count"
+    )
+    if configured_team_count == 0:
+        raise ValueError("configured team_count must be positive")
+    if compared_team_count > configured_team_count:
+        raise ValueError(
+            "external standings QA compared_team_count cannot exceed configured team_count"
+        )
+    if not isinstance(validation.mismatch_team_ids, tuple):
+        raise TypeError("external standings QA mismatch_team_ids must be a tuple")
+    mismatch_team_ids = tuple(
+        normalize_id(value) for value in validation.mismatch_team_ids
+    )
+    if (
+        any(value is None or value == "" for value in mismatch_team_ids)
+        or len(set(mismatch_team_ids)) != len(mismatch_team_ids)
+        or mismatch_team_ids != tuple(sorted(mismatch_team_ids))
+    ):
+        raise ValueError(
+            "external standings QA mismatch_team_ids must be unique, normalized, "
+            "and sorted"
+        )
+    if not isinstance(validation.message, str) or not validation.message.strip():
+        raise ValueError("external standings QA message must be non-blank")
+    if validation.status == "matched" and (
+        compared_team_count != configured_team_count or mismatch_team_ids
+    ):
+        raise ValueError(
+            "matched external standings QA must cover every configured team "
+            "without mismatches"
+        )
+    if validation.status == "mismatch" and not mismatch_team_ids:
+        raise ValueError("mismatch external standings QA must name mismatched teams")
+    if validation.status in {"unavailable", "unparseable"} and (
+        compared_team_count != 0 or mismatch_team_ids
+    ):
+        raise ValueError(
+            "unavailable or unparseable external standings QA cannot contain comparisons"
+        )
+    return {
+        "status": validation.status,
+        "compared_team_count": compared_team_count,
+        "mismatch_team_ids": list(mismatch_team_ids),
+    }
 
 
 def _source_provenance(
@@ -184,6 +377,9 @@ def build_run_manifest(
     season_config_path: str | Path,
     model_config_path: str | Path,
     source_files: Mapping[str, str | Path | Mapping[str, Any]],
+    ledger_validation: LedgerValidationResult,
+    season_schedule_validation: pd.DataFrame,
+    external_standings_qa: ExternalStandingsQA,
     team_strength: pd.DataFrame,
     historical_context: pd.DataFrame,
     conditional_simulation_count: int = 0,
@@ -220,6 +416,16 @@ def build_run_manifest(
         ),
         "model_config_sha256": _config_hash(model_config_path, "model config"),
         "source_files": _source_provenance(source_files),
+        "source_of_truth": dict(SOURCE_OF_TRUTH),
+        "ledger_validation": _ledger_validation_manifest(ledger_validation),
+        "season_schedule_validation": _season_schedule_validation_manifest(
+            season_schedule_validation,
+            cfg,
+            int(ledger_validation.completed_game_count),
+        ),
+        "external_standings_qa": _external_standings_qa_manifest(
+            external_standings_qa, cfg
+        ),
         "pbpstats_enrichment_status": _pbpstats_enrichment_status(
             team_strength, model_cfg
         ),
