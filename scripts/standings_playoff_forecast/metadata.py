@@ -229,6 +229,26 @@ def _external_standings_qa_manifest(
     }
 
 
+def _validate_external_source_coherence(
+    source_files: Mapping[str, str | Path | Mapping[str, Any]],
+    qa_status: str,
+) -> None:
+    if not isinstance(source_files, Mapping):
+        raise TypeError("source_files must be a name-to-source mapping")
+    has_external_source = "external_standings" in source_files
+    if qa_status in {"matched", "mismatch", "unparseable"}:
+        if not has_external_source:
+            raise ValueError(
+                f"external standings QA status {qa_status} requires "
+                "external_standings source provenance"
+            )
+    elif qa_status == "unavailable" and has_external_source:
+        raise ValueError(
+            "unavailable external standings QA must omit external_standings "
+            "source provenance"
+        )
+
+
 def _source_provenance(
     source_files: Mapping[str, str | Path | Mapping[str, Any]],
 ) -> list[dict[str, Any]]:
@@ -404,6 +424,12 @@ def build_run_manifest(
         simulation_result.fallback_count, "official_tiebreak_fallback_count"
     )
     git_sha, git_status = _git_provenance(repository_root)
+    external_qa_manifest = _external_standings_qa_manifest(
+        external_standings_qa, cfg
+    )
+    _validate_external_source_coherence(
+        source_files, external_qa_manifest["status"]
+    )
     return {
         "season": int(cfg.season),
         "cutoff_date": cutoff_date,
@@ -423,9 +449,7 @@ def build_run_manifest(
             cfg,
             int(ledger_validation.completed_game_count),
         ),
-        "external_standings_qa": _external_standings_qa_manifest(
-            external_standings_qa, cfg
-        ),
+        "external_standings_qa": external_qa_manifest,
         "pbpstats_enrichment_status": _pbpstats_enrichment_status(
             team_strength, model_cfg
         ),

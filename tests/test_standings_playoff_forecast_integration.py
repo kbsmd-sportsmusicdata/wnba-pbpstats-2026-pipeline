@@ -163,6 +163,7 @@ def literal_sources(root: Path) -> SimpleNamespace:
         schedule=schedule,
         team_box=team_box,
         external_standings=standings,
+        external_standings_load_status="loaded",
         team_history=team_history,
         pbp_team_features=None,
         schedule_path=schedule_path,
@@ -286,6 +287,98 @@ class OrchestratorIntegrationTests(unittest.TestCase):
             self.assertEqual(result.ledger_validation.completed_game_count, 1)
             self.assertEqual(result.external_standings_qa.status, "matched")
 
+    def test_external_load_outcomes_reach_manifest_with_coherent_provenance(self):
+        """Catches collapsing unreadable-present external data into unavailable."""
+        from standings_playoff_forecast.data_sources import load_forecast_sources
+
+        cases = (
+            ("unreadable_present", "unparseable", True),
+            ("missing", "unavailable", False),
+            ("malformed_loaded", "unparseable", True),
+        )
+        for case, expected_status, expect_source in cases:
+            with self.subTest(case=case), tempfile.TemporaryDirectory() as temporary:
+                root = Path(temporary)
+                repository_root = root / "repository"
+                config_root = (
+                    repository_root
+                    / "analysis"
+                    / "standings_playoff_forecast"
+                    / "config"
+                )
+                (config_root / "seasons").mkdir(parents=True)
+                (config_root / "seasons" / "default.json").write_text(
+                    '{"fixture": "default"}\n', encoding="utf-8"
+                )
+                (config_root / "seasons" / "2026.json").write_text(
+                    '{"fixture": "season"}\n', encoding="utf-8"
+                )
+                (config_root / "forecast_model.json").write_text(
+                    '{"fixture": "model"}\n', encoding="utf-8"
+                )
+                cfg = season_config(repository_root)
+                fixture = literal_sources(root)
+                if case == "unreadable_present":
+                    fixture.external_standings_path.write_text(
+                        "not parquet", encoding="utf-8"
+                    )
+                elif case == "missing":
+                    fixture.external_standings_path.unlink()
+                else:
+                    pd.DataFrame({"team_id": ["A"]}).to_parquet(
+                        fixture.external_standings_path, index=False
+                    )
+
+                with warnings.catch_warnings(record=True) as caught:
+                    warnings.simplefilter("always")
+                    sources = load_forecast_sources(
+                        cfg,
+                        schedule_path=fixture.schedule_path,
+                        team_box_path=fixture.team_box_path,
+                        external_standings_path=fixture.external_standings_path,
+                        team_history_path=fixture.team_history_path,
+                        pbp_team_features_path=root / "missing-features.csv",
+                    )
+
+                with (
+                    patch.object(builder, "REPOSITORY_ROOT", repository_root),
+                    patch.object(builder, "CONFIG_ROOT", config_root),
+                    patch.object(builder, "load_season_config", return_value=cfg),
+                    patch.object(
+                        builder, "load_model_config", return_value=model_config()
+                    ),
+                    patch.object(
+                        builder, "load_forecast_sources", return_value=sources
+                    ),
+                ):
+                    with warnings.catch_warnings(record=True):
+                        result = builder.run_forecast(
+                            options(simulations=4, skip_history=True)
+                        )
+
+                manifest = json.loads(
+                    (result.output_path / "run_manifest.json").read_text()
+                )
+                source_names = {
+                    source["name"] for source in manifest["source_files"]
+                }
+                self.assertEqual(result.external_standings_qa.status, expected_status)
+                self.assertEqual(
+                    manifest["external_standings_qa"]["status"], expected_status
+                )
+                self.assertEqual(
+                    "external_standings" in source_names, expect_source
+                )
+                if case == "unreadable_present":
+                    self.assertIsNone(sources.external_standings)
+                    self.assertEqual(
+                        getattr(sources, "external_standings_load_status", None),
+                        "unparseable",
+                    )
+                    self.assertTrue(
+                        any("could not be read" in str(item.message) for item in caught)
+                    )
+
     def test_parse_args_supports_runtime_overrides_and_rejects_invalid_numbers(self):
         args = builder.parse_args(
             [
@@ -349,6 +442,7 @@ class OrchestratorIntegrationTests(unittest.TestCase):
                 schedule=schedule,
                 team_box=pd.DataFrame(),
                 external_standings=pd.DataFrame(),
+                external_standings_load_status="loaded",
                 team_history=pd.DataFrame(),
                 pbp_team_features=None,
                 schedule_path=source_paths["schedule"],

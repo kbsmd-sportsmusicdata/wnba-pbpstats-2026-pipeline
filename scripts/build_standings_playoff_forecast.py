@@ -21,6 +21,7 @@ from standings_playoff_forecast.config import (
 )
 from standings_playoff_forecast.contracts import ForecastModelConfig, SeasonConfig
 from standings_playoff_forecast.data_sources import (
+    ExternalStandingsLoadStatus,
     ForecastSources,
     load_forecast_sources,
 )
@@ -225,6 +226,50 @@ def _source_files(
     return paths
 
 
+def _external_standings_qa(
+    current_standings: pd.DataFrame,
+    sources: ForecastSources,
+) -> ExternalStandingsQA:
+    status = sources.external_standings_load_status
+    if status == ExternalStandingsLoadStatus.UNPARSEABLE:
+        if (
+            sources.external_standings is not None
+            or sources.external_standings_path is None
+        ):
+            raise ValueError(
+                "unparseable external standings load evidence is inconsistent"
+            )
+        return ExternalStandingsQA(
+            status="unparseable",
+            compared_team_count=0,
+            mismatch_team_ids=(),
+            message=(
+                "External standings file is present but could not be loaded: "
+                f"{sources.external_standings_path}"
+            ),
+        )
+    if status == ExternalStandingsLoadStatus.UNAVAILABLE:
+        if (
+            sources.external_standings is not None
+            or sources.external_standings_path is not None
+        ):
+            raise ValueError(
+                "unavailable external standings load evidence is inconsistent"
+            )
+    elif status == ExternalStandingsLoadStatus.LOADED:
+        if (
+            not isinstance(sources.external_standings, pd.DataFrame)
+            or sources.external_standings_path is None
+        ):
+            raise ValueError("loaded external standings evidence is inconsistent")
+    else:
+        raise TypeError("external_standings_load_status is invalid")
+    return compare_external_standings(
+        current_standings,
+        sources.external_standings,
+    )
+
+
 def _empty_history() -> pd.DataFrame:
     return pd.DataFrame(columns=HISTORICAL_CONTEXT_COLUMNS)
 
@@ -296,10 +341,7 @@ def _run_pipeline(
         team_games,
         cfg,
     )
-    external_standings_qa = compare_external_standings(
-        current_standings,
-        sources.external_standings,
-    )
+    external_standings_qa = _external_standings_qa(current_standings, sources)
     team_strength = build_team_strength(
         team_games,
         sources.pbp_team_features,

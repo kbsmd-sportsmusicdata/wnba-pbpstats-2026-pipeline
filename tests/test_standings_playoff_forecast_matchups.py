@@ -871,7 +871,10 @@ class MatchupModelTest(unittest.TestCase):
 
     def test_canonical_team_games_exclude_extra_cup_before_pace_and_sigma(self) -> None:
         from standings_playoff_forecast.config import load_model_config
-        from standings_playoff_forecast.data_sources import ForecastSources
+        from standings_playoff_forecast.data_sources import (
+            ExternalStandingsLoadStatus,
+            ForecastSources,
+        )
         from standings_playoff_forecast.matchup_model import score_matchups
         from standings_playoff_forecast.remaining_schedule import (
             build_remaining_schedule,
@@ -963,6 +966,9 @@ class MatchupModelTest(unittest.TestCase):
                 ),
                 pbp_team_features=None,
                 external_standings=None,
+                external_standings_load_status=(
+                    ExternalStandingsLoadStatus.UNAVAILABLE
+                ),
                 schedule_path=temp_root / "schedule.parquet",
                 team_box_path=temp_root / "team_box.parquet",
                 team_history_path=temp_root / "team_history.csv",

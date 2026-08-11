@@ -238,6 +238,109 @@ def _same_game_dates(left: pd.Series, right: pd.Series) -> bool:
     return bool(left_dates.eq(right_dates).all())
 
 
+def _validated_count_series(
+    frame: pd.DataFrame, column: str, evidence_name: str
+) -> pd.Series:
+    raw = frame[column]
+    if raw.map(lambda value: isinstance(value, (bool, np.bool_))).any():
+        raise ValueError(f"{evidence_name} {column} must contain integers")
+    numeric = pd.to_numeric(raw, errors="coerce")
+    if (
+        numeric.isna().any()
+        or not np.isfinite(numeric.to_numpy(dtype=float)).all()
+        or numeric.lt(0).any()
+        or not np.equal(numeric, np.floor(numeric)).all()
+    ):
+        raise ValueError(f"{evidence_name} {column} must contain integers")
+    return numeric.astype(int)
+
+
+def _validate_season_schedule_evidence(
+    validation: pd.DataFrame,
+    current_standings: pd.DataFrame,
+    remaining_schedule: pd.DataFrame,
+    cfg: object,
+) -> None:
+    required = {
+        "team_id",
+        "completed_gp",
+        "remaining_games",
+        "configured_games",
+        "total_games",
+        "status",
+    }
+    if not isinstance(validation, pd.DataFrame):
+        raise TypeError("season_schedule_validation must be a pandas DataFrame")
+    missing = sorted(required.difference(validation.columns))
+    if missing:
+        raise ValueError(
+            "season_schedule_validation is missing required columns: "
+            + ", ".join(missing)
+        )
+    evidence = validation.loc[:, list(required)].copy()
+    evidence["team_id"] = evidence["team_id"].map(normalize_id)
+    if (
+        evidence["team_id"].isna().any()
+        or evidence["team_id"].eq("").any()
+        or evidence["team_id"].duplicated().any()
+    ):
+        raise ValueError("season schedule evidence contains invalid team IDs")
+    current_team_ids = set(current_standings["team_id"])
+    if set(evidence["team_id"]) != current_team_ids:
+        raise ValueError(
+            "season schedule evidence team universe must match current_standings"
+        )
+    evidence = evidence.set_index("team_id").reindex(sorted(current_team_ids))
+    completed_gp = _validated_count_series(
+        evidence, "completed_gp", "season schedule evidence"
+    )
+    remaining_games = _validated_count_series(
+        evidence, "remaining_games", "season schedule evidence"
+    )
+    configured_games = _validated_count_series(
+        evidence, "configured_games", "season schedule evidence"
+    )
+    total_games = _validated_count_series(
+        evidence, "total_games", "season schedule evidence"
+    )
+    current = current_standings.set_index("team_id").reindex(evidence.index)
+    current_games_played = _validated_count_series(
+        current, "games_played", "current_standings"
+    )
+    if not completed_gp.equals(current_games_played):
+        raise ValueError(
+            "season schedule evidence completed_gp must match "
+            "current_standings games_played"
+        )
+    participants = pd.concat(
+        [remaining_schedule["home_id"], remaining_schedule["away_id"]],
+        ignore_index=True,
+    )
+    expected_remaining = (
+        participants.value_counts().reindex(evidence.index, fill_value=0).astype(int)
+    )
+    if not remaining_games.equals(expected_remaining):
+        raise ValueError(
+            "season schedule evidence remaining_games must match remaining_schedule"
+        )
+    configured_games_per_team = int(cfg.regular_season_games_per_team)
+    if (
+        configured_games.ne(configured_games_per_team).any()
+        or total_games.ne(configured_games_per_team).any()
+        or not total_games.equals(completed_gp + remaining_games)
+    ):
+        raise ValueError(
+            "season schedule evidence configured and total games must match "
+            "the configured season"
+        )
+    if not evidence["status"].map(
+        lambda value: isinstance(value, str) and value == "validated"
+    ).all():
+        raise ValueError(
+            "season schedule evidence status must be validated for every team"
+        )
+
+
 def _validate_and_normalize(
     bundle: ForecastOutputBundle, cfg: object
 ) -> dict[str, pd.DataFrame]:
@@ -730,6 +833,12 @@ def write_output_bundle(
     """Validate and atomically replace the canonical forecast output files."""
 
     frames = _validate_and_normalize(bundle, cfg)
+    _validate_season_schedule_evidence(
+        season_schedule_validation,
+        frames["current_standings"],
+        frames["remaining_schedule"],
+        cfg,
+    )
     matchup_versions = set(
         frames["matchup_probabilities"]["model_version"].dropna().astype(str)
     )

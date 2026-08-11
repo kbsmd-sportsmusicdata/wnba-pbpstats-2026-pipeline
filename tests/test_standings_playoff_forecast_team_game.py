@@ -253,6 +253,9 @@ class ForecastSourceLoaderTest(unittest.TestCase):
         self.assertEqual(sources.team_box["game_id"].tolist(), ["101"])
         self.assertIsNone(sources.external_standings)
         self.assertIsNone(sources.external_standings_path)
+        self.assertEqual(
+            getattr(sources, "external_standings_load_status", None), "unavailable"
+        )
         self.assertIsNone(sources.pbp_team_features)
 
     def test_invalid_external_standings_warns_and_returns_none(self) -> None:
@@ -281,6 +284,13 @@ class ForecastSourceLoaderTest(unittest.TestCase):
                 )
 
         self.assertIsNone(sources.external_standings)
+        self.assertEqual(
+            sources.external_standings_path,
+            paths["external_standings_path"],
+        )
+        self.assertEqual(
+            getattr(sources, "external_standings_load_status", None), "unparseable"
+        )
 
     def test_optional_pbpstats_csv_restores_snapshot_as_of_from_json_sidecar(self) -> None:
         from standings_playoff_forecast.config import load_season_config
@@ -318,6 +328,9 @@ class ForecastSourceLoaderTest(unittest.TestCase):
             )
 
         assert sources.pbp_team_features is not None
+        self.assertEqual(
+            getattr(sources, "external_standings_load_status", None), "loaded"
+        )
         self.assertEqual(
             sources.pbp_team_features.attrs["pbpstats_snapshot_metadata"],
             {

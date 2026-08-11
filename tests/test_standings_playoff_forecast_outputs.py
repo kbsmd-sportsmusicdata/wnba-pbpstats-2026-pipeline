@@ -327,7 +327,9 @@ def _inputs(root: Path):
     return cfg, model_cfg, bundle
 
 
-def _validation_inputs(cfg, *, completed: bool = False):
+def _validation_inputs(
+    cfg, *, completed: bool = False, external_present: bool = False
+):
     from standings_playoff_forecast.standings import ExternalStandingsQA
     from standings_playoff_forecast.team_game_layer import LedgerValidationResult
 
@@ -349,11 +351,20 @@ def _validation_inputs(cfg, *, completed: bool = False):
                 "status": ["validated", "validated"],
             }
         ),
-        "external_standings_qa": ExternalStandingsQA(
-            status="matched",
-            compared_team_count=2,
-            mismatch_team_ids=(),
-            message="fixture records matched",
+        "external_standings_qa": (
+            ExternalStandingsQA(
+                status="matched",
+                compared_team_count=2,
+                mismatch_team_ids=(),
+                message="fixture records matched",
+            )
+            if external_present
+            else ExternalStandingsQA(
+                status="unavailable",
+                compared_team_count=0,
+                mismatch_team_ids=(),
+                message="fixture external standings unavailable",
+            )
         ),
     }
 
@@ -415,7 +426,7 @@ class OutputBundleTest(unittest.TestCase):
                     "external_standings": external_source,
                 },
                 conditional_simulation_count=0,
-                **_validation_inputs(cfg),
+                **_validation_inputs(cfg, external_present=True),
                 repository_root=root / "not-a-repository",
             )
             first_bytes = {path.name: path.read_bytes() for path in output.iterdir()}
@@ -431,7 +442,7 @@ class OutputBundleTest(unittest.TestCase):
                     "external_standings": external_source,
                 },
                 conditional_simulation_count=0,
-                **_validation_inputs(cfg),
+                **_validation_inputs(cfg, external_present=True),
                 repository_root=root / "not-a-repository",
             )
 
@@ -651,6 +662,156 @@ class OutputBundleTest(unittest.TestCase):
                 / "latest"
             )
             self.assertFalse(output.exists())
+
+    def test_rejects_schedule_evidence_that_disagrees_with_emitted_frames(self) -> None:
+        """Catches forged same-sized team universes or per-team game counts."""
+        from standings_playoff_forecast.outputs import write_output_bundle
+
+        with tempfile.TemporaryDirectory() as tmp:
+            base_root = Path(tmp)
+            cases = []
+
+            cfg, model_cfg, bundle = _inputs(base_root / "universe")
+            forged_universe = _validation_inputs(cfg)
+            forged_universe["season_schedule_validation"].loc[1, "team_id"] = "C"
+            cases.append(
+                (
+                    "team_universe",
+                    cfg,
+                    model_cfg,
+                    bundle,
+                    forged_universe,
+                    "team universe.*current_standings",
+                )
+            )
+
+            cfg, model_cfg, bundle = _inputs(base_root / "completed")
+            forged_completed = _validation_inputs(cfg)
+            bundle = replace(
+                bundle,
+                current_standings=bundle.current_standings.assign(
+                    games_played=[0, 2]
+                ),
+            )
+            cases.append(
+                (
+                    "completed_gp",
+                    cfg,
+                    model_cfg,
+                    bundle,
+                    forged_completed,
+                    "completed_gp.*current_standings games_played",
+                )
+            )
+
+            cfg, model_cfg, bundle = _inputs(base_root / "remaining")
+            forged_remaining = _validation_inputs(cfg)
+            counts = forged_remaining["season_schedule_validation"]
+            counts["completed_gp"] = [2, 0]
+            counts["remaining_games"] = [0, 2]
+            bundle = replace(
+                bundle,
+                current_standings=bundle.current_standings.assign(
+                    games_played=[2, 0]
+                ),
+            )
+            cases.append(
+                (
+                    "remaining_games",
+                    cfg,
+                    model_cfg,
+                    bundle,
+                    forged_remaining,
+                    "remaining_games.*remaining_schedule",
+                )
+            )
+
+            for name, cfg, model_cfg, bundle, validation, message in cases:
+                with self.subTest(case=name):
+                    root = base_root / name
+                    root.mkdir(parents=True, exist_ok=True)
+                    season_config = root / "season.json"
+                    model_config = root / "model.json"
+                    source = root / "source.bin"
+                    season_config.write_bytes(b"season")
+                    model_config.write_bytes(b"model")
+                    source.write_bytes(b"source")
+                    with self.assertRaisesRegex(ValueError, message):
+                        write_output_bundle(
+                            bundle,
+                            cfg=cfg,
+                            model_cfg=model_cfg,
+                            cutoff="2031-06-01",
+                            season_config_path=season_config,
+                            model_config_path=model_config,
+                            source_files={"schedule": source},
+                            **validation,
+                            repository_root=root,
+                        )
+                    self.assertFalse(
+                        (
+                            Path(cfg.output_root)
+                            / "data"
+                            / "processed"
+                            / "season=2031"
+                            / "latest"
+                        ).exists()
+                    )
+
+    def test_rejects_external_qa_and_source_provenance_contradictions(self) -> None:
+        """Catches manifests whose QA status cannot be supported by source evidence."""
+        from standings_playoff_forecast.outputs import write_output_bundle
+        from standings_playoff_forecast.standings import ExternalStandingsQA
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            cfg, model_cfg, bundle = _inputs(root)
+            season_config = root / "season.json"
+            model_config = root / "model.json"
+            schedule_source = root / "schedule.bin"
+            external_source = root / "external.bin"
+            season_config.write_bytes(b"season")
+            model_config.write_bytes(b"model")
+            schedule_source.write_bytes(b"schedule")
+            external_source.write_bytes(b"external")
+            common = {
+                "cfg": cfg,
+                "model_cfg": model_cfg,
+                "cutoff": "2031-06-01",
+                "season_config_path": season_config,
+                "model_config_path": model_config,
+                "repository_root": root,
+            }
+            validation = _validation_inputs(cfg)
+            present_statuses = [
+                ExternalStandingsQA("matched", 2, (), "matched fixture"),
+                ExternalStandingsQA("mismatch", 1, ("A",), "mismatch fixture"),
+                ExternalStandingsQA("unparseable", 0, (), "unparseable fixture"),
+            ]
+            for qa in present_statuses:
+                with self.subTest(status=qa.status, external_source="missing"):
+                    with self.assertRaisesRegex(
+                        ValueError, "external standings QA.*requires.*source provenance"
+                    ):
+                        write_output_bundle(
+                            bundle,
+                            source_files={"schedule": schedule_source},
+                            **common,
+                            **{**validation, "external_standings_qa": qa},
+                        )
+
+            with self.assertRaisesRegex(
+                ValueError, "unavailable external standings QA.*omit.*source provenance"
+            ):
+                write_output_bundle(
+                    bundle,
+                    source_files={
+                        "schedule": schedule_source,
+                        "external_standings": external_source,
+                    },
+                    **common,
+                    **validation,
+                )
 
     def test_preserves_supplied_mathematical_status_without_inferring_from_probability(self) -> None:
         """Catches discarding upstream proof or treating Monte Carlo 0/1 as proof."""

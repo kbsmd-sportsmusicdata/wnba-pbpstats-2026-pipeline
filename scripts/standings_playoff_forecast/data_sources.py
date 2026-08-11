@@ -4,6 +4,7 @@ import json
 import warnings
 from collections.abc import Mapping
 from dataclasses import dataclass
+from enum import Enum
 from pathlib import Path
 
 import pandas as pd
@@ -21,6 +22,12 @@ TEAM_HISTORY_PATH = (
 )
 
 
+class ExternalStandingsLoadStatus(str, Enum):
+    LOADED = "loaded"
+    UNAVAILABLE = "unavailable"
+    UNPARSEABLE = "unparseable"
+
+
 @dataclass(frozen=True)
 class ForecastSources:
     schedule: pd.DataFrame
@@ -28,6 +35,7 @@ class ForecastSources:
     team_history: pd.DataFrame
     pbp_team_features: pd.DataFrame | None
     external_standings: pd.DataFrame | None
+    external_standings_load_status: ExternalStandingsLoadStatus
     schedule_path: Path
     team_box_path: Path
     team_history_path: Path
@@ -74,23 +82,25 @@ def _load_pbp_team_features(path: Path) -> pd.DataFrame:
     return frame
 
 
-def _load_optional_parquet(path: Path) -> pd.DataFrame | None:
+def _load_optional_parquet(
+    path: Path,
+) -> tuple[pd.DataFrame | None, ExternalStandingsLoadStatus]:
     if not path.is_file():
         warnings.warn(
             f"Optional external standings are unavailable: {path}",
             RuntimeWarning,
             stacklevel=2,
         )
-        return None
+        return None, ExternalStandingsLoadStatus.UNAVAILABLE
     try:
-        return pd.read_parquet(path)
+        return pd.read_parquet(path), ExternalStandingsLoadStatus.LOADED
     except Exception as error:
         warnings.warn(
             f"Optional external standings could not be read: {path}: {error}",
             RuntimeWarning,
             stacklevel=2,
         )
-        return None
+        return None, ExternalStandingsLoadStatus.UNPARSEABLE
 
 
 def load_forecast_sources(
@@ -136,6 +146,14 @@ def load_forecast_sources(
     )
     if not history_path.is_file():
         raise FileNotFoundError(f"missing team-history source: {history_path}")
+    if external_standings_candidate is None:
+        external_standings = None
+        external_standings_load_status = ExternalStandingsLoadStatus.UNAVAILABLE
+    else:
+        (
+            external_standings,
+            external_standings_load_status,
+        ) = _load_optional_parquet(external_standings_candidate)
     return ForecastSources(
         schedule=pd.read_parquet(mandatory_paths["schedule"]),
         team_box=pd.read_parquet(mandatory_paths["team_box"]),
@@ -143,9 +161,8 @@ def load_forecast_sources(
         pbp_team_features=_load_pbp_team_features(optional_path)
         if optional_path.is_file()
         else None,
-        external_standings=_load_optional_parquet(external_standings_candidate)
-        if external_standings_candidate is not None
-        else None,
+        external_standings=external_standings,
+        external_standings_load_status=external_standings_load_status,
         schedule_path=mandatory_paths["schedule"],
         team_box_path=mandatory_paths["team_box"],
         team_history_path=history_path,
