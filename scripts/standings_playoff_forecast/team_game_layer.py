@@ -29,6 +29,12 @@ def normalize_id(value: object) -> str | None:
     return text[:-2] if text.endswith(".0") else text
 
 
+def _normalize_franchise_id(value: object) -> str | None:
+    if value is None or pd.isna(value):
+        return None
+    return str(value).strip()
+
+
 def normalize_completion_flags(values: pd.Series) -> pd.Series:
     """Normalize the schedule completion contract without truthiness coercion."""
     normalized: list[bool] = []
@@ -398,10 +404,12 @@ def _active_franchise_map(
         ["sportsdataverse_team_id", "franchise_id"],
     ].copy()
     active["team_id"] = active["sportsdataverse_team_id"].map(normalize_id)
+    active["franchise_id"] = active["franchise_id"].map(_normalize_franchise_id)
     if (
         active["team_id"].isna().any()
         or active["team_id"].eq("").any()
         or active["franchise_id"].isna().any()
+        or active["franchise_id"].eq("").any()
     ):
         raise ValueError(f"team_history has invalid active rows for season {cfg.season}")
     if active["team_id"].duplicated().any():
@@ -411,6 +419,18 @@ def _active_franchise_map(
         raise ValueError(
             f"team_history has duplicate active team mappings for season {cfg.season}: "
             f"{duplicate_ids}"
+        )
+    if active["franchise_id"].duplicated().any():
+        duplicate_ids = ", ".join(
+            sorted(
+                active.loc[
+                    active["franchise_id"].duplicated(False), "franchise_id"
+                ].unique()
+            )
+        )
+        raise ValueError(
+            f"team_history has duplicate active franchise mappings for season "
+            f"{cfg.season}: {duplicate_ids}"
         )
 
     schedule_ids = set(

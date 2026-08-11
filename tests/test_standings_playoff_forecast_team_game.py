@@ -793,6 +793,101 @@ class TeamGameLayerTest(unittest.TestCase):
         self.assertEqual(chicago["franchise_id"], "chicago_sky")
         self.assertEqual(chicago["opponent_franchise_id"], "las_vegas_aces")
 
+    def test_active_franchise_ids_are_trimmed_and_must_not_be_blank(self) -> None:
+        """Catches whitespace-only identities and unnormalized stable IDs."""
+        from standings_playoff_forecast.data_sources import load_forecast_sources
+        from standings_playoff_forecast.team_game_layer import build_team_game_layer
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            source_root = Path(temp_dir)
+            cfg = _fixture_config(source_root)
+            paths = _write_source_fixture(source_root)
+            history = pd.read_csv(paths["team_history_path"])
+            history.loc[0, "franchise_id"] = "  las_vegas_aces  "
+            history.to_csv(paths["team_history_path"], index=False)
+            result = build_team_game_layer(
+                load_forecast_sources(
+                    cfg,
+                    **paths,
+                    pbp_team_features_path=source_root / "not-present.csv",
+                ),
+                cfg,
+            )
+            self.assertEqual(
+                result.loc[result["team_id"].eq("17"), "franchise_id"].iloc[0],
+                "las_vegas_aces",
+            )
+
+            for invalid in ("   ", None):
+                with self.subTest(invalid=invalid):
+                    history.loc[0, "franchise_id"] = invalid
+                    history.to_csv(paths["team_history_path"], index=False)
+                    with self.assertRaisesRegex(
+                        ValueError, "invalid active rows for season 2026"
+                    ):
+                        build_team_game_layer(
+                            load_forecast_sources(
+                                cfg,
+                                **paths,
+                                pbp_team_features_path=source_root / "not-present.csv",
+                            ),
+                            cfg,
+                        )
+
+    def test_active_season_rejects_duplicate_franchise_id(self) -> None:
+        """Catches two active teams mapping to one canonical franchise."""
+        from standings_playoff_forecast.data_sources import load_forecast_sources
+        from standings_playoff_forecast.team_game_layer import build_team_game_layer
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            source_root = Path(temp_dir)
+            cfg = _fixture_config(source_root)
+            paths = _write_source_fixture(source_root)
+            history = pd.read_csv(paths["team_history_path"])
+            history["franchise_id"] = "same_franchise"
+            history.to_csv(paths["team_history_path"], index=False)
+
+            with self.assertRaisesRegex(
+                ValueError, "duplicate active franchise mappings.*same_franchise"
+            ):
+                build_team_game_layer(
+                    load_forecast_sources(
+                        cfg,
+                        **paths,
+                        pbp_team_features_path=source_root / "not-present.csv",
+                    ),
+                    cfg,
+                )
+
+    def test_franchise_id_may_be_reused_across_seasons(self) -> None:
+        """Protects historical continuity without weakening active-season uniqueness."""
+        from standings_playoff_forecast.data_sources import load_forecast_sources
+        from standings_playoff_forecast.team_game_layer import build_team_game_layer
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            source_root = Path(temp_dir)
+            cfg = _fixture_config(source_root)
+            paths = _write_source_fixture(source_root)
+            history = pd.read_csv(paths["team_history_path"])
+            prior = history.assign(
+                season=2025,
+                sportsdataverse_team_id=[117, 119],
+            )
+            pd.concat([prior, history], ignore_index=True).to_csv(
+                paths["team_history_path"], index=False
+            )
+
+            result = build_team_game_layer(
+                load_forecast_sources(
+                    cfg,
+                    **paths,
+                    pbp_team_features_path=source_root / "not-present.csv",
+                ),
+                cfg,
+            )
+
+        self.assertEqual(set(result["franchise_id"]), {"las_vegas_aces", "chicago_sky"})
+
     def test_missing_season_franchise_mapping_fails_with_team_ids(self) -> None:
         from standings_playoff_forecast.config import load_season_config
         from standings_playoff_forecast.data_sources import load_forecast_sources
