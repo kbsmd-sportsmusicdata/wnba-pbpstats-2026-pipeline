@@ -39,13 +39,17 @@ from standings_playoff_forecast.render_markdown import render_markdown
 from standings_playoff_forecast.render_stat_pack import render_stat_pack
 from standings_playoff_forecast.simulation import simulate_season
 from standings_playoff_forecast.standings import (
+    ExternalStandingsQA,
+    add_current_standings_context,
     build_current_standings,
     build_head_to_head,
-    reconcile_standings,
+    compare_external_standings,
 )
 from standings_playoff_forecast.team_game_layer import (
+    LedgerValidationResult,
     build_team_game_layer,
     qualify_regular_season_schedule,
+    validate_completed_game_ledger,
 )
 from standings_playoff_forecast.team_strength import build_team_strength
 from standings_playoff_forecast.tiebreaks import rank_teams
@@ -59,7 +63,8 @@ class OrchestrationResult:
     cutoff: pd.Timestamp
     random_seed: int
     output_path: Path
-    reconciliation_status: str
+    ledger_validation: LedgerValidationResult
+    external_standings_qa: ExternalStandingsQA
     stage_artifacts: Mapping[str, Any]
 
 
@@ -188,9 +193,10 @@ def _source_files(
         "schedule": sources.schedule_path,
         "season_config_default": CONFIG_ROOT / "seasons" / "default.json",
         "team_box": sources.team_box_path,
-        "standings": sources.standings_path,
         "team_history": sources.team_history_path,
     }
+    if sources.external_standings_path is not None:
+        paths["external_standings"] = sources.external_standings_path
     if sources.pbp_team_features_path is not None:
         paths["pbp_team_features"] = sources.pbp_team_features_path
     historical_paths = historical_context.attrs.get(
@@ -258,7 +264,7 @@ def _run_pipeline(
     historical_context_override: pd.DataFrame | None,
 ) -> OrchestrationResult:
     sources = load_forecast_sources(cfg)
-    cutoff, latest_completed = _resolve_cutoff(options.cutoff, sources.schedule, cfg)
+    cutoff, _ = _resolve_cutoff(options.cutoff, sources.schedule, cfg)
     random_seed = (
         int(f"{cfg.season}{cutoff.strftime('%m%d')}")
         if options.random_seed is None
@@ -271,16 +277,25 @@ def _run_pipeline(
     # Both builders receive the full raw schedule plus the same cutoff; future
     # rows remain available for rest and back-to-back context.
     team_games = build_team_game_layer(sources, cfg, cutoff=cutoff)
+    ledger_validation = validate_completed_game_ledger(
+        sources.schedule,
+        team_games,
+        cfg,
+        cutoff,
+    )
     current_standings = build_current_standings(team_games, cfg)
     head_to_head = build_head_to_head(team_games)
     current_standings = _rank_current_standings(
         current_standings, team_games, cfg
     )
-    reconciliation_status = reconcile_standings(
+    current_standings = add_current_standings_context(
         current_standings,
-        sources.standings,
-        cutoff=cutoff,
-        latest_completed_game_date=latest_completed,
+        team_games,
+        cfg,
+    )
+    external_standings_qa = compare_external_standings(
+        current_standings,
+        sources.external_standings,
     )
     team_strength = build_team_strength(
         team_games,
@@ -380,7 +395,8 @@ def _run_pipeline(
         cutoff=cutoff,
         random_seed=random_seed,
         output_path=output_path,
-        reconciliation_status=reconciliation_status,
+        ledger_validation=ledger_validation,
+        external_standings_qa=external_standings_qa,
         stage_artifacts=artifacts,
     )
 
@@ -434,7 +450,8 @@ def main(argv: Sequence[str] | None = None) -> None:
     result = run_forecast(parse_args(argv))
     print(f"cutoff resolved: {result.cutoff.date().isoformat()}")
     print(f"deterministic seed: {result.random_seed}")
-    print(f"standings reconciliation: {result.reconciliation_status}")
+    print("canonical ledger validation: validated")
+    print(f"external standings QA: {result.external_standings_qa.status}")
     print(f"machine-readable outputs: {result.output_path}")
 
 

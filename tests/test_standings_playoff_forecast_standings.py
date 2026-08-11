@@ -1,6 +1,6 @@
 import sys
 import unittest
-from dataclasses import replace
+from dataclasses import FrozenInstanceError, replace
 from pathlib import Path
 
 import pandas as pd
@@ -316,65 +316,91 @@ class StandingsAggregationTest(unittest.TestCase):
             build_head_to_head(team_games)
 
 
-class StandingsReconciliationTest(unittest.TestCase):
-    def test_latest_cutoff_reconciles_derived_record_against_long_form_source(self) -> None:
+class ExternalStandingsQATest(unittest.TestCase):
+    def _derived_standings(self) -> pd.DataFrame:
         from standings_playoff_forecast.config import load_season_config
-        from standings_playoff_forecast.standings import build_current_standings, reconcile_standings
+        from standings_playoff_forecast.standings import build_current_standings
 
-        derived = build_current_standings(_team_games(), load_season_config(2026))
-        result = reconcile_standings(
-            derived,
+        return build_current_standings(_team_games(), load_season_config(2026))
+
+    def test_missing_external_snapshot_is_unavailable_and_result_is_frozen(self) -> None:
+        from standings_playoff_forecast.standings import compare_external_standings
+
+        result = compare_external_standings(self._derived_standings(), None)
+
+        self.assertEqual(result.status, "unavailable")
+        self.assertEqual(result.compared_team_count, 0)
+        self.assertEqual(result.mismatch_team_ids, ())
+        self.assertIn("unavailable", result.message.lower())
+        with self.assertRaises(FrozenInstanceError):
+            result.status = "matched"
+
+    def test_exact_long_form_records_are_matched(self) -> None:
+        from standings_playoff_forecast.standings import compare_external_standings
+
+        result = compare_external_standings(
+            self._derived_standings(),
             _long_form_standings(alpha_wins=1, alpha_losses=2),
-            cutoff="2026-06-04",
-            latest_completed_game_date="2026-06-04",
         )
 
-        self.assertEqual(result, "source_snapshot_reconciled")
+        self.assertEqual(result.status, "matched")
+        self.assertEqual(result.compared_team_count, 3)
+        self.assertEqual(result.mismatch_team_ids, ())
 
-    def test_latest_cutoff_rejects_source_record_mismatch(self) -> None:
-        from standings_playoff_forecast.config import load_season_config
-        from standings_playoff_forecast.standings import build_current_standings, reconcile_standings
+    def test_stale_long_form_records_are_nonblocking_mismatch(self) -> None:
+        from standings_playoff_forecast.standings import compare_external_standings
 
-        derived = build_current_standings(_team_games(), load_season_config(2026))
-
-        with self.assertRaisesRegex(ValueError, "source standings mismatch.*team_id=A"):
-            reconcile_standings(
-                derived,
-                _long_form_standings(alpha_wins=2, alpha_losses=1),
-                cutoff="2026-06-04",
-                latest_completed_game_date="2026-06-04",
-            )
-
-    def test_later_than_latest_cutoff_rejects_stale_source_record(self) -> None:
-        from standings_playoff_forecast.config import load_season_config
-        from standings_playoff_forecast.standings import build_current_standings, reconcile_standings
-
-        derived = build_current_standings(_team_games(), load_season_config(2026))
-
-        with self.assertRaisesRegex(ValueError, "source standings mismatch.*team_id=A"):
-            reconcile_standings(
-                derived,
-                _long_form_standings(alpha_wins=2, alpha_losses=1),
-                cutoff="2026-06-05",
-                latest_completed_game_date="2026-06-04",
-            )
-
-    def test_historical_cutoff_validates_internal_invariants_without_future_source_comparison(self) -> None:
-        from standings_playoff_forecast.config import load_season_config
-        from standings_playoff_forecast.standings import build_current_standings, reconcile_standings
-
-        derived = build_current_standings(
-            _team_games().loc[lambda rows: rows["game_date"] <= "2026-06-02"],
-            load_season_config(2026),
-        )
-        result = reconcile_standings(
-            derived,
-            _long_form_standings(alpha_wins=1, alpha_losses=2),
-            cutoff="2026-06-02",
-            latest_completed_game_date="2026-06-04",
+        result = compare_external_standings(
+            self._derived_standings(),
+            _long_form_standings(alpha_wins=2, alpha_losses=1),
         )
 
-        self.assertEqual(result, "historical_cutoff_invariants_validated")
+        self.assertEqual(result.status, "mismatch")
+        self.assertEqual(result.compared_team_count, 3)
+        self.assertEqual(result.mismatch_team_ids, ("A",))
+        self.assertIn("team_id=A", result.message)
+
+    def test_wide_or_malformed_schema_is_unparseable_and_nonblocking(self) -> None:
+        from standings_playoff_forecast.standings import compare_external_standings
+
+        wide_external = pd.DataFrame(
+            {
+                "team_id": ["A", "B", "C"],
+                "wins": [1, 1, 1],
+                "losses": [2, 1, 1],
+            }
+        )
+        result = compare_external_standings(self._derived_standings(), wide_external)
+
+        self.assertEqual(result.status, "unparseable")
+        self.assertEqual(result.compared_team_count, 0)
+        self.assertEqual(result.mismatch_team_ids, ())
+        self.assertIn("missing required columns", result.message)
+
+    def test_missing_external_team_is_nonblocking_mismatch(self) -> None:
+        from standings_playoff_forecast.standings import compare_external_standings
+
+        external = _long_form_standings(
+            alpha_wins=1,
+            alpha_losses=2,
+        ).loc[lambda rows: rows["team_id"].ne("C")]
+        result = compare_external_standings(self._derived_standings(), external)
+
+        self.assertEqual(result.status, "mismatch")
+        self.assertEqual(result.compared_team_count, 2)
+        self.assertEqual(result.mismatch_team_ids, ("C",))
+
+    def test_derived_invariant_failure_still_raises_without_external_snapshot(self) -> None:
+        from standings_playoff_forecast.standings import compare_external_standings
+
+        invalid = self._derived_standings()
+        invalid.loc[invalid["team_id"].eq("A"), "games_played"] = 999
+
+        with self.assertRaisesRegex(
+            ValueError,
+            "derived standings violates games_played equals wins plus losses",
+        ):
+            compare_external_standings(invalid, None)
 
 
 if __name__ == "__main__":

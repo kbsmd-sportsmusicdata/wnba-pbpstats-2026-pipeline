@@ -11,7 +11,7 @@ import unittest
 import warnings
 from pathlib import Path
 from types import MappingProxyType, SimpleNamespace
-from unittest.mock import Mock, patch
+from unittest.mock import Mock, call, patch
 
 import pandas as pd
 
@@ -25,6 +25,8 @@ import build_standings_playoff_forecast as builder
 from standings_playoff_forecast.contracts import ForecastModelConfig, SeasonConfig
 from standings_playoff_forecast.historical_context import HISTORICAL_CONTEXT_COLUMNS
 from standings_playoff_forecast.outputs import CSV_FILENAMES, PAYLOAD_KEYS
+from standings_playoff_forecast.standings import ExternalStandingsQA
+from standings_playoff_forecast.team_game_layer import LedgerValidationResult
 
 
 def season_config(root: Path) -> SeasonConfig:
@@ -241,7 +243,7 @@ class OrchestratorIntegrationTests(unittest.TestCase):
                 {
                     "schedule",
                     "season_config_default",
-                    "standings",
+                    "external_standings",
                     "team_box",
                     "team_history",
                 },
@@ -256,6 +258,8 @@ class OrchestratorIntegrationTests(unittest.TestCase):
             self.assertTrue(
                 ranks.groupby("final_rank")["probability"].sum().sub(1.0).abs().lt(1e-12).all()
             )
+            self.assertEqual(result.ledger_validation.completed_game_count, 1)
+            self.assertEqual(result.external_standings_qa.status, "matched")
 
     def test_parse_args_supports_runtime_overrides_and_rejects_invalid_numbers(self):
         args = builder.parse_args(
@@ -303,7 +307,7 @@ class OrchestratorIntegrationTests(unittest.TestCase):
             root = Path(temporary)
             cfg = season_config(root)
             source_paths = {}
-            for name in ("schedule", "team_box", "standings", "team_history"):
+            for name in ("schedule", "team_box", "external_standings", "team_history"):
                 path = root / f"{name}.source"
                 path.write_text(name, encoding="utf-8")
                 source_paths[name] = path
@@ -324,7 +328,7 @@ class OrchestratorIntegrationTests(unittest.TestCase):
                 pbp_team_features=None,
                 schedule_path=source_paths["schedule"],
                 team_box_path=source_paths["team_box"],
-                external_standings_path=source_paths["standings"],
+                external_standings_path=source_paths["external_standings"],
                 team_history_path=source_paths["team_history"],
                 pbp_team_features_path=None,
             )
@@ -345,6 +349,15 @@ class OrchestratorIntegrationTests(unittest.TestCase):
                 }
             )
             ranked = SimpleNamespace(ordered_team_ids=("B", "A"))
+            contextual = unranked.copy()
+            contextual["current_rank"] = [2, 1]
+            ledger_validation = LedgerValidationResult(2, 4, ("old", "latest"))
+            external_qa = ExternalStandingsQA(
+                status="mismatch",
+                compared_team_count=2,
+                mismatch_team_ids=("A",),
+                message="fixture mismatch",
+            )
             strength = pd.DataFrame(
                 {
                     "team_id": ["A", "B"],
@@ -384,10 +397,12 @@ class OrchestratorIntegrationTests(unittest.TestCase):
                 patch.object(builder, "load_forecast_sources", side_effect=stage("sources", sources)),
                 patch.object(builder, "qualify_regular_season_schedule", return_value=schedule),
                 patch.object(builder, "build_team_game_layer", side_effect=stage("team_game", team_games)),
+                patch.object(builder, "validate_completed_game_ledger", side_effect=stage("ledger_validation", ledger_validation)),
                 patch.object(builder, "build_current_standings", side_effect=stage("standings", unranked)),
-                patch.object(builder, "build_head_to_head", return_value=pd.DataFrame()),
-                patch.object(builder, "rank_teams", return_value=ranked) as rank_mock,
-                patch.object(builder, "reconcile_standings", side_effect=stage("reconciliation", "source_snapshot_reconciled")),
+                patch.object(builder, "build_head_to_head", side_effect=stage("head_to_head", pd.DataFrame())),
+                patch.object(builder, "rank_teams", side_effect=stage("rank", ranked)) as rank_mock,
+                patch.object(builder, "add_current_standings_context", side_effect=stage("standings_context", contextual)),
+                patch.object(builder, "compare_external_standings", side_effect=stage("external_standings_qa", external_qa)),
                 patch.object(builder, "build_team_strength", side_effect=stage("strength", strength)),
                 patch.object(builder, "build_remaining_schedule", side_effect=stage("remaining", remaining)),
                 patch.object(builder, "score_matchups", side_effect=stage("matchups", scored)),
@@ -409,8 +424,12 @@ class OrchestratorIntegrationTests(unittest.TestCase):
                 [
                     "sources",
                     "team_game",
+                    "ledger_validation",
                     "standings",
-                    "reconciliation",
+                    "head_to_head",
+                    "rank",
+                    "standings_context",
+                    "external_standings_qa",
                     "strength",
                     "remaining",
                     "matchups",
@@ -422,6 +441,8 @@ class OrchestratorIntegrationTests(unittest.TestCase):
                 ],
             )
             rank_mock.assert_called_once()
+            self.assertIs(result.ledger_validation, ledger_validation)
+            self.assertIs(result.external_standings_qa, external_qa)
             simulate_mock.assert_called_once_with(
                 team_games, scored, cfg, simulation_count=25, seed=20260808
             )
@@ -508,6 +529,26 @@ class OrchestratorIntegrationTests(unittest.TestCase):
             self.assertEqual(provenance["season_config_default"], default_path)
             self.assertEqual(provenance["historical_season_config_2025"], season_path)
             self.assertEqual(provenance["historical_team_game_2025"], history_path)
+            self.assertEqual(
+                provenance["external_standings"],
+                sources.external_standings_path,
+            )
+
+    def test_provenance_omits_external_standings_when_unavailable(self):
+        sources = SimpleNamespace(
+            schedule_path=Path("/tmp/schedule"),
+            team_box_path=Path("/tmp/team_box"),
+            external_standings_path=None,
+            team_history_path=Path("/tmp/team_history"),
+            pbp_team_features_path=None,
+        )
+
+        provenance = builder._source_files(
+            sources,
+            pd.DataFrame(columns=HISTORICAL_CONTEXT_COLUMNS),
+        )
+
+        self.assertNotIn("external_standings", provenance)
 
     def test_mixed_history_warns_once_and_preserves_context(self):
         available = {column: pd.NA for column in HISTORICAL_CONTEXT_COLUMNS}
@@ -592,6 +633,37 @@ class OrchestratorIntegrationTests(unittest.TestCase):
         markdown.assert_not_called()
         stat_pack.assert_not_called()
         dashboard.assert_not_called()
+
+    def test_main_prints_canonical_ledger_and_nonblocking_external_qa_status(self):
+        result = SimpleNamespace(
+            cutoff=pd.Timestamp("2026-08-08"),
+            random_seed=17,
+            output_path=Path("/tmp/output"),
+            ledger_validation=LedgerValidationResult(1, 2, ("game",)),
+            external_standings_qa=ExternalStandingsQA(
+                status="unavailable",
+                compared_team_count=0,
+                mismatch_team_ids=(),
+                message="fixture unavailable",
+            ),
+        )
+        with (
+            patch.object(builder, "parse_args", return_value=options()),
+            patch.object(builder, "run_forecast", return_value=result),
+            patch("builtins.print") as print_mock,
+        ):
+            builder.main([])
+
+        self.assertEqual(
+            print_mock.call_args_list,
+            [
+                call("cutoff resolved: 2026-08-08"),
+                call("deterministic seed: 17"),
+                call("canonical ledger validation: validated"),
+                call("external standings QA: unavailable"),
+                call("machine-readable outputs: /tmp/output"),
+            ],
+        )
 
 
 if __name__ == "__main__":

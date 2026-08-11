@@ -1,4 +1,6 @@
-"""Current standings, directional head-to-head, and source reconciliation."""
+"""Current standings, directional head-to-head, and optional external QA."""
+
+from dataclasses import dataclass
 
 import pandas as pd
 
@@ -64,6 +66,16 @@ _TEAM_GAME_REQUIRED_COLUMNS = {
     "points_against",
     "margin",
 }
+
+
+@dataclass(frozen=True)
+class ExternalStandingsQA:
+    """Non-blocking comparison of ledger-derived and external W/L records."""
+
+    status: str
+    compared_team_count: int
+    mismatch_team_ids: tuple[str, ...]
+    message: str
 
 
 def _require_columns(frame: pd.DataFrame, required: set[str], name: str) -> None:
@@ -394,44 +406,61 @@ def _source_records(source_standings: pd.DataFrame) -> pd.DataFrame:
     return wide.reset_index()[["team_id", "games_played", "wins", "losses"]]
 
 
-def reconcile_standings(
+def compare_external_standings(
     derived_standings: pd.DataFrame,
-    source_standings: pd.DataFrame,
-    *,
-    cutoff: object,
-    latest_completed_game_date: object,
-) -> str:
-    """Validate derived standings at a cutoff without leaking a future snapshot.
-
-    The SportsDataverse standings extract is a latest snapshot rather than a
-    dated history. Therefore, cutoffs at or after the latest completed game
-    date compare GP/W/L to that source; only earlier cutoffs validate the
-    derived table's accounting invariants.
-    """
+    external_standings: pd.DataFrame | None,
+) -> ExternalStandingsQA:
+    """Validate derived invariants and compare optional ESPN long-form records."""
 
     _validate_derived_invariants(derived_standings)
-    cutoff_date = pd.Timestamp(cutoff).normalize()
-    latest_date = pd.Timestamp(latest_completed_game_date).normalize()
-    if cutoff_date < latest_date:
-        return "historical_cutoff_invariants_validated"
+    if external_standings is None:
+        return ExternalStandingsQA(
+            status="unavailable",
+            compared_team_count=0,
+            mismatch_team_ids=(),
+            message="External standings are unavailable; derived standings remain authoritative.",
+        )
 
-    source_records = _source_records(source_standings)
+    try:
+        source_records = _source_records(external_standings)
+    except Exception as error:
+        return ExternalStandingsQA(
+            status="unparseable",
+            compared_team_count=0,
+            mismatch_team_ids=(),
+            message=f"External standings are unparseable: {error}",
+        )
+
     derived_records = derived_standings[["team_id", "games_played", "wins", "losses"]].copy()
     derived_records["team_id"] = derived_records["team_id"].map(normalize_id)
-    reconciliation = derived_records.merge(
+    comparison = derived_records.merge(
         source_records,
         on="team_id",
         how="outer",
         suffixes=("_derived", "_source"),
         indicator=True,
     )
-    mismatches = reconciliation.loc[
-        reconciliation["_merge"].ne("both")
-        | reconciliation["games_played_derived"].ne(reconciliation["games_played_source"])
-        | reconciliation["wins_derived"].ne(reconciliation["wins_source"])
-        | reconciliation["losses_derived"].ne(reconciliation["losses_source"])
+    mismatches = comparison.loc[
+        comparison["_merge"].ne("both")
+        | comparison["games_played_derived"].ne(comparison["games_played_source"])
+        | comparison["wins_derived"].ne(comparison["wins_source"])
+        | comparison["losses_derived"].ne(comparison["losses_source"])
     ]
+    compared_team_count = int(comparison["_merge"].eq("both").sum())
     if not mismatches.empty:
-        team_ids = ", ".join(f"team_id={team_id}" for team_id in mismatches["team_id"])
-        raise ValueError(f"source standings mismatch: {team_ids}")
-    return "source_snapshot_reconciled"
+        mismatch_team_ids = tuple(sorted(mismatches["team_id"].astype(str)))
+        team_ids = ", ".join(
+            f"team_id={team_id}" for team_id in mismatch_team_ids
+        )
+        return ExternalStandingsQA(
+            status="mismatch",
+            compared_team_count=compared_team_count,
+            mismatch_team_ids=mismatch_team_ids,
+            message=f"External standings mismatch: {team_ids}",
+        )
+    return ExternalStandingsQA(
+        status="matched",
+        compared_team_count=compared_team_count,
+        mismatch_team_ids=(),
+        message="External standings match all derived team records.",
+    )
