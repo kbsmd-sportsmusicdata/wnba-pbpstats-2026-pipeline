@@ -7,18 +7,19 @@ This script is intended for local runs and GitHub Actions.
 
 from __future__ import annotations
 
+from datetime import datetime, timezone
 import hashlib
+import io
 import json
 import os
 from pathlib import Path
 from typing import Any, Dict
+import urllib.request
 
 import pandas as pd
 
-
 SEASON = "2026"
 BASE_RELEASE_URL = "https://github.com/sportsdataverse/sportsdataverse-data/releases/download"
-
 DATA_ROOT = Path(os.getenv("SPORTSDATAVERSE_WNBA_2026_DATA_ROOT", "data/raw/sportsdataverse/wnba_2026"))
 RUN_LOG_PATH = DATA_ROOT / "run_logs" / "download_manifest_2026.json"
 
@@ -59,10 +60,17 @@ def build_2026_file_list() -> Dict[str, Dict[str, str]]:
             "size_note": "~16-18 KB",
             "source": "ESPN",
         },
+        # ESPN WNBA Standings
         f"standings_{year}.parquet": {
             "url": espn("espn_wnba_standings", f"standings_{year}.parquet"),
             "size_note": "~15-16 KB",
             "source": "ESPN",
+        },
+        # WNBA.com Stats Standings
+        f"wnba_stats_standings_{year}.parquet": {
+            "url": wnba("wnba_stats_standings", f"standings_{year}.parquet"),
+            "size_note": "~35 KB",
+            "source": "WNBA.com",
         },
         f"shots_{year}.parquet": {
             "url": espn("espn_wnba_shots", f"shots_{year}.parquet"),
@@ -115,9 +123,24 @@ def save_json(path: Path, payload: Dict[str, Any]) -> None:
     tmp_path.replace(path)
 
 
+def download_parquet_nocache(url: str) -> pd.DataFrame:
+    """Fetches a parquet file directly using HTTP headers to bypass CDN/client caching."""
+    req = urllib.request.Request(
+        url,
+        headers={
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
+            "Cache-Control": "no-cache, no-store, must-revalidate",
+            "Pragma": "no-cache",
+        },
+    )
+    with urllib.request.urlopen(req) as response:
+        content = response.read()
+    return pd.read_parquet(io.BytesIO(content))
+
+
 def download_one(filename: str, file_info: Dict[str, str], data_root: Path) -> Dict[str, Any]:
     output_path = data_root / filename
-    df = pd.read_parquet(file_info["url"])
+    df = download_parquet_nocache(file_info["url"])
     df.to_parquet(output_path, index=False)
     return {
         "filename": filename,
@@ -140,13 +163,13 @@ def download_all(
     ensure_dirs(data_root, manifest_path)
     resolved_files = file_map or build_2026_file_list()
     results = []
-
     for filename in sorted(resolved_files):
         file_info = resolved_files[filename]
         results.append(download_one(filename, file_info, data_root))
 
     manifest = {
         "season": SEASON,
+        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
         "output_dir": str(data_root),
         "file_count": len(results),
         "files": results,
