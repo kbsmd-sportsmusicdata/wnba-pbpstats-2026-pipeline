@@ -22,7 +22,7 @@ name: WNBA Standings and Playoff Forecast
         description: "Refresh 2026 SportsDataverse sources"
         required: true
         type: boolean
-        default: false
+        default: true
       refresh_pbpstats:
         description: "Refresh 2026 PBPStats sources"
         required: true
@@ -150,6 +150,81 @@ jobs:
               exit 1
             fi
           done
+          python - "$PROCESSED_ROOT/run_manifest.json" <<'PY'
+          import json
+          from pathlib import Path
+          import sys
+
+          manifest_path = Path(sys.argv[1])
+          manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+          expected_source = {
+              "current_standings": "derived_from_schedule_and_team_box",
+              "schedule": "mandatory",
+              "team_box": "mandatory",
+              "external_standings": "optional_validation",
+          }
+          if manifest.get("source_of_truth") != expected_source:
+              raise SystemExit("run manifest does not identify the canonical derived-standings source")
+          source_files = manifest.get("source_files")
+          if not isinstance(source_files, list) or not source_files:
+              raise SystemExit("run manifest source_files must be a nonempty list")
+          sources_by_name = {}
+          for source in source_files:
+              if not isinstance(source, dict):
+                  raise SystemExit("run manifest source_files entries must be mappings")
+              name = source.get("name")
+              if not isinstance(name, str) or not name.strip():
+                  raise SystemExit("run manifest source provenance has an invalid name")
+              if name in sources_by_name:
+                  raise SystemExit(f"run manifest has duplicate source provenance: {name}")
+              path = source.get("path")
+              if (
+                  not isinstance(path, str)
+                  or not path.strip()
+                  or not Path(path).is_absolute()
+              ):
+                  raise SystemExit(f"run manifest source {name} has an invalid path")
+              size_bytes = source.get("size_bytes")
+              if (
+                  isinstance(size_bytes, bool)
+                  or not isinstance(size_bytes, int)
+                  or size_bytes < 0
+              ):
+                  raise SystemExit(f"run manifest source {name} has invalid size_bytes")
+              sha256 = source.get("sha256")
+              if (
+                  not isinstance(sha256, str)
+                  or len(sha256) != 64
+                  or any(character not in "0123456789abcdef" for character in sha256.lower())
+              ):
+                  raise SystemExit(f"run manifest source {name} has an invalid SHA-256")
+              sources_by_name[name] = source
+          missing_mandatory_sources = {"schedule", "team_box"}.difference(sources_by_name)
+          if missing_mandatory_sources:
+              missing = ", ".join(sorted(missing_mandatory_sources))
+              raise SystemExit(f"run manifest is missing mandatory source provenance: {missing}")
+          if manifest.get("ledger_validation") != {"status": "validated"}:
+              raise SystemExit("canonical completed-game ledger is not validated")
+          schedule_validation = manifest.get("season_schedule_validation")
+          if (
+              not isinstance(schedule_validation, dict)
+              or schedule_validation.get("status") != "validated"
+          ):
+              raise SystemExit("season schedule counts are not validated")
+          external_qa = manifest.get("external_standings_qa")
+          if not isinstance(external_qa, dict):
+              raise SystemExit("run manifest is missing external standings QA evidence")
+          external_status = external_qa.get("status")
+          allowed_external_statuses = {
+              "unavailable",
+              "unparseable",
+              "matched",
+              "mismatch",
+          }
+          if external_status not in allowed_external_statuses:
+              raise SystemExit(f"invalid external standings QA status: {external_status!r}")
+          print(f"external standings QA: {external_status} (non-blocking)")
+          PY
 
       - name: Upload forecast artifact
         uses: actions/upload-artifact@v7

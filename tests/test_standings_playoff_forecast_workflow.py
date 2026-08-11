@@ -15,7 +15,7 @@ import unittest
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
 WORKFLOW_PATH = (
-    REPOSITORY_ROOT / ".github/workflows/standings-playoff-forecast.yml"
+    REPOSITORY_ROOT / ".github/workflows/standings_playoff_forecast.yml"
 )
 REQUIRED_ARTIFACTS = (
     "analysis/standings_playoff_forecast/deliverables/season=2026/latest/wnba_standings_playoff_forecast.xlsx",
@@ -150,6 +150,16 @@ def _workflow_env(**overrides: str) -> dict[str, str]:
 
 
 class WorkflowContractTests(unittest.TestCase):
+    def test_repository_has_exactly_one_manual_forecast_workflow(self) -> None:
+        """Catches drift between underscore and hyphen workflow copies."""
+        candidates = sorted(
+            path.name
+            for path in (REPOSITORY_ROOT / ".github/workflows").glob(
+                "standings*playoff*forecast.yml"
+            )
+        )
+        self.assertEqual(candidates, ["standings_playoff_forecast.yml"])
+
     def test_dispatch_contract_and_runner_setup_are_exact(self) -> None:
         workflow = _load_workflow()
         dispatch = workflow["on"]["workflow_dispatch"]  # type: ignore[index]
