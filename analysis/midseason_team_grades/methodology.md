@@ -100,8 +100,11 @@ waiting on:
 `wnba_player_impact_2026.parquet` additionally supplies pre-computed RAPM, SPM, BPM, WAR
 and DARKO projections, joining on `player_id` to PBPStats `entity_id` with no key mapping.
 
-None of these are wired into the builders yet; the data is present and validated, the
-metrics still read as unavailable.
+These are now computed in [`analysis/possession_impact`](../possession_impact/), which
+owns every possession-derived metric. The team-grades builders still emit their own
+plus-minus-based bench figures and scoring-context clutch table; the possession-based
+versions live in that module and cover a shorter window, since the possession feed lags
+this one.
 
 Validation notes on the possession file: 221 of 221 on-court player ids match PBPStats
 `entity_id`; league points per possession is 1.088 against 1.095 from the PBPStats totals;
