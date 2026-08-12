@@ -73,3 +73,24 @@ Initial archetypes:
 - SportsDataverse files provide position, game-log, standings, and box-score context.
 - Numeric standings fields are coerced before use because some SportsDataverse standings snapshots store them as object/string columns.
 - SportsDataverse files are read from `data/raw/sportsdataverse/wnba_2026` first, then from `2026_scout_report` as a local fallback.
+
+
+## Artifact Integrity
+
+Four of this project's committed CSVs sat corrupted in the repository for three weeks: each
+held two different exports concatenated together, second header row and all. The board file
+carried 192 rows for 98 players, and every consumer read it happily -- band labels parsed as
+scores, players appearing twice under mismatched schemas.
+
+The builders did not cause it. They write with `to_csv`, which overwrites; the two blocks
+came from separate local runs (one of them without `player_box`, which is why it was three
+columns narrower) concatenated outside the pipeline and committed in the initial bulk
+upload.
+
+Two guards now exist, because nothing in the repo was going to notice:
+
+- `build_processed` checks every CSV it writes for a repeated header, inconsistent row
+  widths and duplicate `player_id`, records the result under `output_integrity` in the run
+  manifest, and raises if any output fails.
+- A test sweeps **every committed CSV under `analysis/`** for the same signature, so a
+  malformed artifact from any module fails CI regardless of how it arrived.

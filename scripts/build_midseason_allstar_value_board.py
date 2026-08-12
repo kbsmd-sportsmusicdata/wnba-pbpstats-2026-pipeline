@@ -21,6 +21,7 @@ from midseason_allstar_value_board.data_sources import (
     utc_now_iso,
     write_github_step_summary,
 )
+from midseason_allstar_value_board.integrity import check_outputs, failed_outputs
 from midseason_allstar_value_board.editorial import export_editorial_assets, export_viz_tables
 from midseason_allstar_value_board.scoring import build_metric_panel, build_value_board
 
@@ -66,6 +67,20 @@ def build_processed(config: Dict) -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFr
     value_board.to_csv(paths["value_board"], index=False)
     archetypes.to_csv(paths["archetypes"], index=False)
 
+    # Verify what was just written. The builders overwrite rather than append, so this
+    # mainly guards a truncated or externally clobbered artifact -- the failure mode that
+    # left the 2026 board corrupt and undetected for three weeks.
+    integrity = check_outputs(
+        {key: path for key, path in paths.items() if key != "manifest"},
+        key_columns={
+            "candidate_pool": ["player_id"],
+            "metric_panel": ["player_id"],
+            "value_board": ["player_id"],
+            "archetypes": ["player_id"],
+        },
+    )
+    failures = failed_outputs(integrity)
+
     manifest = {
         "run_id": utc_now_iso().replace(":", "").replace("-", ""),
         "generated_at_utc": utc_now_iso(),
@@ -80,8 +95,11 @@ def build_processed(config: Dict) -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFr
             "allstar_value_board_2026.csv": len(value_board),
             "player_archetypes_2026.csv": len(archetypes),
         },
+        "output_integrity": integrity,
     }
     paths["manifest"].write_text(stable_json_dumps(manifest) + "\n", encoding="utf-8")
+    if failures:
+        raise ValueError(f"generated outputs failed integrity checks: {failures}")
     return candidate_pool, metric_panel, value_board, archetypes, manifest
 
 
