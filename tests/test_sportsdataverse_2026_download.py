@@ -1,3 +1,4 @@
+import contextlib
 import importlib.util
 import json
 import tempfile
@@ -6,6 +7,18 @@ from pathlib import Path
 from unittest.mock import patch
 
 import pandas as pd
+
+
+@contextlib.contextmanager
+def fake_urlopen(*args, **kwargs):
+    """Stands in for urllib.request.urlopen so no test performs a real download."""
+
+    class _Response:
+        @staticmethod
+        def read():
+            return b"parquet-bytes"
+
+    yield _Response()
 
 
 def load_module(name: str, path: Path):
@@ -21,10 +34,10 @@ SPORTSDV = load_module("fetch_wnba_sportsdataverse_2026", ROOT / "scripts" / "fe
 
 
 class SportsDataverse2026DownloadTest(unittest.TestCase):
-    def test_build_file_list_2026_only_returns_11_expected_files(self):
+    def test_build_file_list_2026_only_returns_expected_files(self):
         file_map = SPORTSDV.build_2026_file_list()
 
-        self.assertEqual(len(file_map), 11)
+        self.assertEqual(len(file_map), 15)
         self.assertEqual(
             set(file_map.keys()),
             {
@@ -39,8 +52,32 @@ class SportsDataverse2026DownloadTest(unittest.TestCase):
                 "wnba_pbp_2026.parquet",
                 "espn_pbp_2026.parquet",
                 "schedule_2026.parquet",
+                "wnba_stats_standings_2026.parquet",
+                "wnba_possessions_2026.parquet",
+                "wnba_lineups_2026.parquet",
+                "wnba_player_impact_2026.parquet",
             },
         )
+
+    def test_possession_and_impact_sources_point_at_their_releases(self):
+        file_map = SPORTSDV.build_2026_file_list()
+
+        self.assertIn(
+            "wnba_stats_possessions/wnba_possessions_2026.parquet",
+            file_map["wnba_possessions_2026.parquet"]["url"],
+        )
+        self.assertIn(
+            "wnba_stats_game_lineups/wnba_lineups_2026.parquet",
+            file_map["wnba_lineups_2026.parquet"]["url"],
+        )
+        self.assertIn(
+            "wnba_player_impact/wnba_player_impact_2026.parquet",
+            file_map["wnba_player_impact_2026.parquet"]["url"],
+        )
+
+    def test_every_url_is_a_sportsdataverse_release_download(self):
+        for filename, info in SPORTSDV.build_2026_file_list().items():
+            self.assertTrue(info["url"].startswith(SPORTSDV.BASE_RELEASE_URL), filename)
 
     def test_both_pbp_sources_are_present(self):
         file_map = SPORTSDV.build_2026_file_list()
@@ -65,22 +102,25 @@ class SportsDataverse2026DownloadTest(unittest.TestCase):
             data_root = Path(tmpdir) / "downloads"
             sample_df = pd.DataFrame([{"id": 1, "value": "ok"}])
 
-            with patch.object(SPORTSDV.pd, "read_parquet", return_value=sample_df) as mock_read:
+            with patch.object(SPORTSDV.urllib.request, "urlopen", fake_urlopen), patch.object(
+                SPORTSDV.pd, "read_parquet", return_value=sample_df
+            ) as mock_read:
                 manifest = SPORTSDV.download_all(
                     file_map=SPORTSDV.build_2026_file_list(),
                     data_root=data_root,
                     manifest_path=data_root / "run_logs" / "download_manifest_2026.json",
                 )
 
-            self.assertEqual(mock_read.call_count, 11)
-            self.assertEqual(len(manifest["files"]), 11)
+            self.assertEqual(mock_read.call_count, 15)
+            self.assertEqual(len(manifest["files"]), 15)
             self.assertTrue((data_root / "player_box_2026.parquet").exists())
             self.assertTrue((data_root / "espn_pbp_2026.parquet").exists())
 
             manifest_path = data_root / "run_logs" / "download_manifest_2026.json"
             saved_manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
             self.assertEqual(saved_manifest["season"], "2026")
-            self.assertEqual(len(saved_manifest["files"]), 11)
+            self.assertEqual(len(saved_manifest["files"]), 15)
+            self.assertEqual(saved_manifest["failed_count"], 0)
             self.assertNotIn("run_id", saved_manifest)
             self.assertNotIn("generated_at_utc", saved_manifest)
 
@@ -90,7 +130,9 @@ class SportsDataverse2026DownloadTest(unittest.TestCase):
             manifest_path = data_root / "run_logs" / "download_manifest_2026.json"
             sample_df = pd.DataFrame([{"id": 1, "value": "ok"}])
 
-            with patch.object(SPORTSDV.pd, "read_parquet", return_value=sample_df):
+            with patch.object(SPORTSDV.urllib.request, "urlopen", fake_urlopen), patch.object(
+                SPORTSDV.pd, "read_parquet", return_value=sample_df
+            ):
                 manifest_a = SPORTSDV.download_all(
                     file_map=SPORTSDV.build_2026_file_list(),
                     data_root=data_root,
@@ -107,6 +149,64 @@ class SportsDataverse2026DownloadTest(unittest.TestCase):
                 json.loads(manifest_path.read_text(encoding="utf-8")),
                 manifest_a,
             )
+
+
+class DownloadResilienceTest(unittest.TestCase):
+    """A scheduled pull must survive a flaky release CDN without losing good files."""
+
+    def test_transient_failure_is_retried_then_succeeds(self):
+        sample_df = pd.DataFrame([{"id": 1}])
+        calls = {"n": 0}
+
+        def flaky(*args, **kwargs):
+            calls["n"] += 1
+            if calls["n"] < 3:
+                raise OSError("502 Bad Gateway")
+            return sample_df
+
+        with patch.object(SPORTSDV.pd, "read_parquet", side_effect=flaky), patch.object(
+            SPORTSDV.urllib.request, "urlopen", fake_urlopen
+        ), patch.object(SPORTSDV.time, "sleep"):
+            out = SPORTSDV.download_parquet_nocache("https://example.test/x.parquet")
+
+        self.assertEqual(calls["n"], 3)
+        self.assertEqual(len(out), 1)
+
+    def test_exhausted_retries_raise(self):
+        with patch.object(SPORTSDV.pd, "read_parquet", side_effect=OSError("502")), patch.object(
+            SPORTSDV.urllib.request, "urlopen", fake_urlopen
+        ), patch.object(SPORTSDV.time, "sleep"):
+            with self.assertRaises(RuntimeError):
+                SPORTSDV.download_parquet_nocache("https://example.test/x.parquet", attempts=2)
+
+    def test_one_bad_file_does_not_lose_the_others(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            data_root = Path(tmpdir) / "downloads"
+            sample_df = pd.DataFrame([{"id": 1}])
+
+            file_map = {
+                "good_2026.parquet": {"url": "https://example.test/good", "size_note": "-", "source": "T"},
+                "bad_2026.parquet": {"url": "https://example.test/bad", "size_note": "-", "source": "T"},
+            }
+
+            def fake_download(url, **kwargs):
+                if url.endswith("bad"):
+                    raise RuntimeError("release unavailable")
+                return sample_df
+
+            with patch.object(SPORTSDV, "download_parquet_nocache", side_effect=fake_download):
+                manifest = SPORTSDV.download_all(
+                    file_map=file_map,
+                    data_root=data_root,
+                    manifest_path=data_root / "run_logs" / "m.json",
+                )
+
+            self.assertEqual(manifest["failed_count"], 1)
+            self.assertEqual(manifest["failed_files"], ["bad_2026.parquet"])
+            self.assertTrue((data_root / "good_2026.parquet").exists())
+            self.assertFalse((data_root / "bad_2026.parquet").exists())
+            failed = [f for f in manifest["files"] if not f.get("success")][0]
+            self.assertIn("release unavailable", failed["error"])
 
 
 if __name__ == "__main__":
