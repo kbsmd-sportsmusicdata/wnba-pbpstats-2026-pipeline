@@ -122,7 +122,7 @@
       "url": "https://github.com/sportsdataverse/sportsdataverse-data/releases/download/wnba_stats_standings/standings_2026.parquet"
     }
   ],
-  "generated_at_utc": "2026-08-11T14:51:59.164683+00:00",
+  "generated_at_utc": "2026-08-12T03:47:56.789354+00:00",
   "output_dir": "data/raw/sportsdataverse/wnba_2026",
   "season": "2026"
 }
