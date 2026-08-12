@@ -1,0 +1,40 @@
+{
+  "season": 2026,
+  "window_panel_root": "analysis/snapshot_window_panel",
+  "sportsdataverse_data_root": "data/raw/sportsdataverse/wnba_2026",
+  "output_root": "analysis/team_identity_shift",
+  "source_files": {
+    "team_window_panel": "data/processed/team_window_panel_2026.csv",
+    "schedule": "schedule_2026.parquet"
+  },
+  "periods": {
+    "recent_games": 10,
+    "min_baseline_games": 8
+  },
+  "style_dimensions": [
+    "three_point_attempt_rate",
+    "rim_fga_share",
+    "midrange_fga_share",
+    "corner3_share_of_3pa",
+    "ft_attempt_rate",
+    "turnover_rate",
+    "live_ball_turnover_rate",
+    "off_reb_per_100_off_poss",
+    "assist_rate",
+    "assisted_points_share",
+    "second_chance_off_poss_share",
+    "penalty_off_poss_share",
+    "pace"
+  ],
+  "permutation_test": {
+    "iterations": 4000,
+    "random_seed": 20260812,
+    "significant_percentile": 0.95,
+    "moderate_percentile": 0.80
+  },
+  "labels": {
+    "helping_net_rating_delta": 2.0,
+    "hurting_net_rating_delta": -2.0,
+    "top_dimension_count": 3
+  }
+}
