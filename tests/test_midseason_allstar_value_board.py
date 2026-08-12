@@ -10,6 +10,9 @@ import pandas as pd
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
+sys.path.insert(0, str(ROOT / "scripts"))
+
+from midseason_allstar_value_board.integrity import check_csv_integrity  # noqa: E402
 
 
 class MidseasonAllStarValueBoardTest(unittest.TestCase):
@@ -362,3 +365,72 @@ class MidseasonAllStarValueBoardTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class CsvIntegrityTest(unittest.TestCase):
+    """Guards the failure that left the 2026 board corrupt and unnoticed for three weeks.
+
+    Four committed artifacts each held two different exports concatenated, second header
+    row and all. The builders cannot cause this -- they overwrite -- so the damage arrived
+    from outside the pipeline and no code path was going to notice it.
+    """
+
+    KEY_COLUMNS = {
+        "allstar_value_board_2026.csv": ["player_id"],
+        "candidate_pool_2026.csv": ["player_id"],
+        "player_metric_panel_2026.csv": ["player_id"],
+        "player_archetypes_2026.csv": ["player_id"],
+        "rapm_player_2026.csv": ["player_id"],
+        "team_identity_shift_2026.csv": ["team_abbreviation"],
+        "team_grade_panel_2026.csv": ["team_abbreviation"],
+        "bench_net_rating_2026.csv": ["team_id"],
+        "clutch_net_rating_2026.csv": ["team_id"],
+    }
+
+    def test_no_committed_analysis_csv_is_structurally_corrupt(self):
+        problems = {}
+        for path in sorted((ROOT / "analysis").rglob("*.csv")):
+            record = check_csv_integrity(path, key_columns=self.KEY_COLUMNS.get(path.name))
+            if not record["ok"]:
+                problems[str(path.relative_to(ROOT))] = record["problems"]
+        self.assertEqual(problems, {}, f"corrupt committed artifacts: {problems}")
+
+    def test_concatenated_exports_are_detected(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "doubled.csv"
+            path.write_text(
+                "player_id,score\n1,10\n2,20\nplayer_id,score\n3,30\n",
+                encoding="utf-8",
+            )
+            record = check_csv_integrity(path)
+            self.assertFalse(record["ok"])
+            self.assertEqual(record["repeated_header_lines"], [3])
+
+    def test_ragged_widths_are_detected(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "ragged.csv"
+            path.write_text("a,b,c\n1,2,3\n4,5\n", encoding="utf-8")
+            record = check_csv_integrity(path)
+            self.assertFalse(record["ok"])
+            self.assertIn("inconsistent row widths [2, 3]", record["problems"])
+
+    def test_duplicate_keys_are_detected(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "dupes.csv"
+            path.write_text("player_id,score\n1,10\n1,20\n", encoding="utf-8")
+            record = check_csv_integrity(path, key_columns=["player_id"])
+            self.assertFalse(record["ok"])
+            self.assertEqual(record["duplicate_keys"], [("1",)])
+
+    def test_a_clean_file_passes(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "clean.csv"
+            path.write_text("player_id,score\n1,10\n2,20\n", encoding="utf-8")
+            record = check_csv_integrity(path, key_columns=["player_id"])
+            self.assertTrue(record["ok"], record["problems"])
+            self.assertEqual(record["rows"], 2)
+
+    def test_missing_file_is_reported_not_raised(self):
+        record = check_csv_integrity(Path("/nonexistent/nope.csv"))
+        self.assertFalse(record["ok"])
+        self.assertEqual(record["problems"], ["missing"])

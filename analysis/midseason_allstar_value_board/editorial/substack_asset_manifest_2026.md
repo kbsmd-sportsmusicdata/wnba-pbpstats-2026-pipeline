@@ -1,6 +1,6 @@
 # WNBA Midseason All-Star Value Board Asset Manifest
 
-Data through: 2026-07-07
+Data through: 2026-08-01
 
 ## Recommended Assets
 
@@ -14,13 +14,13 @@ Data through: 2026-07-07
 
 | Rank | Player | Team | Score | Archetype |
 | ---: | --- | --- | ---: | --- |
-| 1 | Natasha Howard | MIN | 74.4 | Efficient Interior Anchor |
-| 2 | Olivia Miles | MIN | 74.0 | Primary Engine |
-| 3 | Nia Coffey | MIN | 72.4 | Shot-Making Wing |
-| 4 | A'ja Wilson | LVA | 71.1 | Defense/Glass Value |
-| 5 | Veronica Burton | GSV | 70.4 | High-Leverage Connector |
-| 6 | Jonquel Jones | NYL | 70.0 | Shot-Making Wing |
-| 7 | Rhyne Howard | ATL | 68.3 | Spacing Guard/Wing |
-| 8 | Breanna Stewart | NYL | 67.9 | Defense/Glass Value |
-| 9 | Aliyah Boston | IND | 67.8 | Defense/Glass Value |
-| 10 | Pauline Astier | NYL | 67.7 | High-Leverage Connector |
+| 1 | Natasha Howard | MIN | 78.0 | Rim-Pressure Finisher |
+| 2 | A'ja Wilson | LVA | 74.3 | Defense/Glass Value |
+| 3 | Olivia Miles | MIN | 73.5 | Primary Engine |
+| 4 | Veronica Burton | GSV | 73.3 | Spacing Guard/Wing |
+| 5 | Kayla McBride | MIN | 70.7 | Shot-Making Wing |
+| 6 | Aliyah Boston | IND | 70.1 | Defense/Glass Value |
+| 7 | Nia Coffey | MIN | 69.8 | Spacing Guard/Wing |
+| 8 | Jackie Young | LVA | 69.7 | Shot-Making Wing |
+| 9 | Breanna Stewart | NYL | 68.5 | Defense/Glass Value |
+| 10 | Rhyne Howard | ATL | 68.2 | Spacing Guard/Wing |
