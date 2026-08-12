@@ -1,0 +1,86 @@
+name: Team Identity Shift
+
+on:
+  workflow_dispatch:
+    inputs:
+      run_tests:
+        description: "Run team identity shift tests before building"
+        required: true
+        type: boolean
+        default: true
+      rebuild_window_panel:
+        description: "Rebuild the snapshot window panel first (recommended after a PBPStats refresh)"
+        required: true
+        type: boolean
+        default: true
+      commit_outputs:
+        description: "Commit generated analysis/team_identity_shift outputs"
+        required: true
+        type: boolean
+        default: false
+      window_panel_root:
+        description: "Snapshot window panel root"
+        required: true
+        type: string
+        default: "analysis/snapshot_window_panel"
+      sportsdataverse_data_root:
+        description: "SportsDataverse WNBA 2026 data root"
+        required: true
+        type: string
+        default: "data/raw/sportsdataverse/wnba_2026"
+
+jobs:
+  team-identity-shift:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      CONFIG_PATH: analysis/team_identity_shift/config/team_identity_shift_config.json
+      PANEL_CONFIG_PATH: analysis/snapshot_window_panel/config/snapshot_window_panel_config.json
+      WINDOW_PANEL_ROOT: ${{ inputs.window_panel_root }}
+      SPORTSDATAVERSE_ROOT: ${{ inputs.sportsdataverse_data_root }}
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run Team Identity Shift tests
+        if: ${{ inputs.run_tests }}
+        run: python -m unittest tests/test_team_identity_shift.py
+
+      - name: Rebuild snapshot window panel
+        if: ${{ inputs.rebuild_window_panel }}
+        run: |
+          python scripts/build_snapshot_window_panel.py \
+            --config "$PANEL_CONFIG_PATH" \
+            --stage team
+
+      - name: Build team identity shift
+        run: |
+          python scripts/build_team_identity_shift.py \
+            --config "$CONFIG_PATH" \
+            --window-panel-root "$WINDOW_PANEL_ROOT" \
+            --sportsdataverse-data-root "$SPORTSDATAVERSE_ROOT"
+
+      - name: Commit generated team identity shift outputs if requested
+        if: ${{ inputs.commit_outputs }}
+        run: |
+          git add analysis/team_identity_shift analysis/snapshot_window_panel
+          if git diff --cached --quiet; then
+            echo "No Team Identity Shift output changes to commit"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "chore: refresh team identity shift"
+          git push
