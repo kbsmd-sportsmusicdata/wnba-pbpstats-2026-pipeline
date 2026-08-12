@@ -11,7 +11,14 @@ import pandas as pd
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 
-from midseason_team_grades.metrics import build_rapm_player  # noqa: E402
+from midseason_team_grades.data_sources import load_config, load_sources  # noqa: E402
+from midseason_team_grades.metrics import (  # noqa: E402
+    build_player_fit_profiles,
+    build_rapm_player,
+    dedupe_allstar_board,
+    filter_pbp_to_league_teams,
+    filter_to_league_teams,
+)
 
 
 class MidseasonTeamGradesTest(unittest.TestCase):
@@ -449,6 +456,117 @@ class MidseasonTeamGradesTest(unittest.TestCase):
 
         self.assertEqual(status, "rapm_style_scoring_event_ridge")
         self.assertFalse(rapm.empty)
+
+
+class SourceResolutionTest(unittest.TestCase):
+    """Guards the failure mode where a mistyped filename silently yields empty outputs."""
+
+    CONFIG_PATH = ROOT / "analysis" / "midseason_team_grades" / "config" / "midseason_team_grades_config.json"
+
+    def test_every_configured_source_file_resolves(self):
+        config = load_config(self.CONFIG_PATH)
+        sources = load_sources(config)
+        unresolved = {
+            name: record.get("requested_filename")
+            for name, record in sources.source_manifest.items()
+            if record.get("status") == "unresolved"
+        }
+        self.assertEqual(unresolved, {}, f"configured sources did not resolve: {unresolved}")
+
+    def test_pbp_sources_carry_the_columns_their_builders_need(self):
+        config = load_config(self.CONFIG_PATH)
+        sources = load_sources(config)
+        # Clutch needs these; if the espn_pbp filename regresses, clutch goes empty again.
+        self.assertTrue(
+            {"game_id", "home_team_id", "away_team_id", "home_team_abbrev", "away_team_abbrev", "team_id", "score_value"}
+            .issubset(sources.espn_pbp.columns)
+        )
+        self.assertFalse(sources.wnba_stats_pbp.empty)
+
+    def test_unresolved_source_is_flagged_with_the_requested_name(self):
+        config = load_config(self.CONFIG_PATH)
+        config = dict(config)
+        config["source_files"] = dict(config["source_files"], espn_pbp="does_not_exist_2026.parquet")
+        sources = load_sources(config)
+        record = sources.source_manifest["espn_pbp"]
+        self.assertEqual(record["status"], "unresolved")
+        self.assertEqual(record["requested_filename"], "does_not_exist_2026.parquet")
+        self.assertEqual(record["rows"], 0)
+
+
+class ExhibitionFilterTest(unittest.TestCase):
+    STANDINGS = pd.DataFrame({"team_abbreviation": ["ATL", "MIN", "GS", "NY"]})
+
+    def test_all_star_sides_and_their_game_are_dropped(self):
+        box = pd.DataFrame(
+            [
+                {"game_id": "g1", "team_abbreviation": "ATL", "opponent_team_abbreviation": "MIN"},
+                {"game_id": "g1", "team_abbreviation": "MIN", "opponent_team_abbreviation": "ATL"},
+                {"game_id": "allstar", "team_abbreviation": "SPO", "opponent_team_abbreviation": "COOP"},
+                {"game_id": "allstar", "team_abbreviation": "COOP", "opponent_team_abbreviation": "SPO"},
+            ]
+        )
+        out = filter_to_league_teams(box, self.STANDINGS)
+        self.assertEqual(set(out["game_id"]), {"g1"})
+        self.assertEqual(len(out), 2)
+
+    def test_aliased_abbreviations_survive_the_filter(self):
+        # Standings say "GS", the box says "GSV"; both normalise to the same franchise.
+        box = pd.DataFrame(
+            [{"game_id": "g1", "team_abbreviation": "GSV", "opponent_team_abbreviation": "NY"}]
+        )
+        self.assertEqual(len(filter_to_league_teams(box, self.STANDINGS)), 1)
+
+    def test_filter_is_a_no_op_without_standings(self):
+        box = pd.DataFrame([{"game_id": "g1", "team_abbreviation": "SPO", "opponent_team_abbreviation": "COOP"}])
+        self.assertEqual(len(filter_to_league_teams(box, pd.DataFrame())), 1)
+
+    def test_pbp_exhibition_rows_are_dropped(self):
+        pbp = pd.DataFrame(
+            [
+                {"home_team_abbrev": "ATL", "away_team_abbrev": "MIN", "score_value": 2},
+                {"home_team_abbrev": "SPO", "away_team_abbrev": "COOP", "score_value": 3},
+            ]
+        )
+        out = filter_pbp_to_league_teams(pbp, self.STANDINGS)
+        self.assertEqual(len(out), 1)
+        self.assertEqual(out.iloc[0]["home_team_abbrev"], "ATL")
+
+
+class DamagedBoardTest(unittest.TestCase):
+    """The committed 2026 board carries an embedded header row and shifted duplicates."""
+
+    BOARD = pd.DataFrame(
+        [
+            {"player_id": 1627668, "allstar_value_score": "68.55"},
+            {"player_id": 1627668, "allstar_value_score": "All-Star Case"},
+            {"player_id": 1627673, "allstar_value_score": "70.63"},
+            {"player_id": "player_id", "allstar_value_score": "score_band"},
+        ]
+    )
+
+    def test_non_numeric_and_duplicate_rows_are_dropped(self):
+        out = dedupe_allstar_board(self.BOARD)
+        self.assertEqual(len(out), 2)
+        self.assertEqual(set(out["player_id"]), {"1627668", "1627673"})
+        self.assertAlmostEqual(out.iloc[0]["allstar_value_score"], 68.55)
+
+    def test_fit_profile_merge_does_not_multiply_rows(self):
+        features = pd.DataFrame(
+            [
+                {"entity_id_feature": "1627668", "entity_name_feature": "A", "usage": 25.0},
+                {"entity_id_feature": "1627673", "entity_name_feature": "B", "usage": 18.0},
+            ]
+        )
+        out = build_player_fit_profiles(features, self.BOARD)
+        self.assertEqual(len(out), 2)
+        self.assertEqual(out["allstar_value_score"].notna().sum(), 2)
+
+    def test_mixed_id_types_merge_instead_of_raising(self):
+        # Integer ids on the board, string ids on the features side.
+        features = pd.DataFrame([{"entity_id_feature": "1627668", "entity_name_feature": "A", "usage": 25.0}])
+        out = build_player_fit_profiles(features, self.BOARD)
+        self.assertAlmostEqual(out.iloc[0]["allstar_value_score"], 68.55)
 
 
 if __name__ == "__main__":

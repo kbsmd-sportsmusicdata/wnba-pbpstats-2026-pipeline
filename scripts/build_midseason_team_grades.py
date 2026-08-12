@@ -29,6 +29,8 @@ from midseason_team_grades.metrics import (
     build_rapm_player,
     build_team_game_four_factors,
     build_team_grade_panel,
+    filter_pbp_to_league_teams,
+    filter_to_league_teams,
 )
 
 
@@ -68,6 +70,11 @@ def build_outputs(config: Dict, stage: str) -> Dict:
     ensure_output_dirs(output_root)
     paths = output_paths(output_root)
     sources = load_sources(config)
+    # Exhibition sides (the All-Star Game is tagged as regular season upstream) must not be
+    # graded as league teams.
+    sources.team_box = filter_to_league_teams(sources.team_box, sources.standings)
+    sources.player_box = filter_to_league_teams(sources.player_box, sources.standings)
+    sources.espn_pbp = filter_pbp_to_league_teams(sources.espn_pbp, sources.standings)
     previous_manifest = {}
     if paths["manifest"].exists():
         previous_manifest = json.loads(paths["manifest"].read_text(encoding="utf-8"))
@@ -141,12 +148,23 @@ def build_summary(output_root: Path) -> str:
                 f"- VORP status: `{manifest.get('metric_status', {}).get('vorp_status')}`",
                 f"- RAPM status: `{manifest.get('metric_status', {}).get('rapm_status')}`",
                 "",
-                "### Output Row Counts",
-                "",
-                "| Output | Rows |",
-                "| --- | ---: |",
             ]
         )
+
+        # An unresolved source produces empty outputs that look exactly like a quiet run,
+        # so it is called out before the row counts rather than left in the manifest.
+        unresolved = {
+            name: record
+            for name, record in manifest.get("source_manifest", {}).items()
+            if record.get("status") == "unresolved"
+        }
+        if unresolved:
+            lines.extend(["### :warning: Unresolved Sources", "", "| Source | Requested filename |", "| --- | --- |"])
+            for name, record in unresolved.items():
+                lines.append(f"| {name} | `{record.get('requested_filename', 'unknown')}` |")
+            lines.extend(["", "Outputs depending on these sources are empty.", ""])
+
+        lines.extend(["### Output Row Counts", "", "| Output | Rows |", "| --- | ---: |"])
         for name, rows in manifest.get("outputs", {}).items():
             lines.append(f"| {name} | {rows} |")
         lines.append("")

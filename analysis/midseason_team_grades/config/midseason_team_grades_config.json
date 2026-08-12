@@ -1,6 +1,6 @@
 {
   "season": 2026,
-  "as_of_date": "2026-07-07",
+  "as_of_date": "2026-08-01",
   "sportsdataverse_data_root": "data/raw/sportsdataverse/wnba_2026",
   "sportsdataverse_fallback_root": "2026_scout_report",
   "pbpstats_data_root": "data/pbpstats_wnba_2026",
@@ -14,7 +14,7 @@
     "player_box": "player_box_2026.parquet",
     "team_box": "team_box_2026.parquet",
     "standings": "standings_2026.parquet",
-    "espn_pbp": "play_by_play_2026.parquet",
-    "wnba_stats_pbp": "wnbastats_play_by_play_20260602.parquet"
+    "espn_pbp": "espn_pbp_2026.parquet",
+    "wnba_stats_pbp": "wnba_pbp_2026.parquet"
   }
 }

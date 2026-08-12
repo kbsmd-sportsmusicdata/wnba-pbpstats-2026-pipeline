@@ -40,8 +40,52 @@ Current clutch output is scoring-context first. Possession-based clutch rating r
 
 Player impact reuses the Midseason All-Star Value Board where available. Fit profiles come from player feature signals such as usage, true shooting, rim share, three-point share, and shot-diet labels.
 
+## Source Files
+
+Sources are named in the config and resolved against `sportsdataverse_data_root`. The
+play-by-play entries point at `espn_pbp_2026.parquet` (clutch) and `wnba_pbp_2026.parquet`
+(RAPM).
+
+An unresolved source used to look exactly like a genuinely empty feed, which let clutch and
+RAPM return nothing without anything saying why. Each entry in the run manifest now carries
+a `status` of `resolved` or `unresolved`, an unresolved entry records the filename that was
+requested, and the run summary lists unresolved sources above the row counts. A test asserts
+that every configured source resolves and that the play-by-play feeds carry the columns
+their builders need.
+
+## Exhibition Games
+
+The 2026 All-Star Game (TEAM SPOON vs TEAM COOP) is tagged as regular season in the ESPN
+feed, so it cannot be excluded on `season_type`. Left in, it grades two pseudo-teams as
+league teams and inflates every team-count output from 15 to 17.
+
+Box and play-by-play rows are therefore filtered to franchises listed in the standings,
+which is used as the authoritative team list rather than a hard-coded set so the filter
+survives expansion. Both sides of an excluded game are dropped, not just the non-franchise
+side.
+
 ## VORP And RAPM Policy
 
-Actual VORP is not calculated from the current data because the repo does not contain an exact WNBA-compatible VORP formula or source field.
+Actual VORP is not calculated from the current data because the repo does not contain an
+exact WNBA-compatible VORP formula or source field.
 
-RAPM-style output is generated only when lineup data passes validation. The current implementation uses a reproducible ridge-regression approach with existing dependencies and labels the output as RAPM-style rather than official RAPM.
+RAPM-style output is generated only when lineup data passes validation. The current
+implementation uses a reproducible ridge-regression approach with existing dependencies and
+labels the output as RAPM-style rather than official RAPM.
+
+**RAPM currently produces no rows**, with status `skipped_missing_lineup_columns`. The
+ridge model needs to know who was on the floor for each scoring event -- columns
+`home_player1`-`home_player5`, `away_player1`-`away_player5` and
+`player1_team_abbreviation`. Neither play-by-play file in this repository carries them:
+`wnba_pbp_2026.parquet` identifies only the player involved in each event, not the ten on
+the court. Producing RAPM again requires a lineup-bearing source (for example, possession
+or stint data from the `pbpstats` library), not a configuration change.
+
+## Upstream Data Caveats
+
+`analysis/midseason_allstar_value_board/data/processed/allstar_value_board_2026.csv` is
+damaged: it holds 192 rows for 98 players, including an embedded header row and
+column-shifted duplicates where `allstar_value_score` contains band labels such as
+`All-Star Case` rather than a number. Consumers here coerce the score to numeric, drop
+non-numeric rows and keep one row per player, so the damage cannot multiply rows through a
+join -- but the board itself should be regenerated at source.

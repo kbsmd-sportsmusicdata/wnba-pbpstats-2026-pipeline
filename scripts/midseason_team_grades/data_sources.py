@@ -88,12 +88,22 @@ def ensure_output_dirs(output_root: Path) -> Dict[str, Path]:
     return paths
 
 
-def _file_record(path: Optional[Path], df: pd.DataFrame) -> Dict[str, Any]:
+def _file_record(
+    path: Optional[Path],
+    df: pd.DataFrame,
+    *,
+    requested: Optional[str] = None,
+) -> Dict[str, Any]:
     record: Dict[str, Any] = {
         "path": str(path) if path else None,
         "rows": int(len(df)),
         "columns": int(len(df.columns)),
+        # A misconfigured filename used to look identical to a genuinely empty feed, which
+        # let clutch and RAPM return nothing without anything saying why.
+        "status": "resolved" if path is not None else "unresolved",
     }
+    if path is None and requested:
+        record["requested_filename"] = requested
     if path and path.exists():
         stat = path.stat()
         record["modified_at_utc"] = datetime.fromtimestamp(stat.st_mtime, tz=timezone.utc).replace(microsecond=0).isoformat()
@@ -145,8 +155,8 @@ def load_sources(config: Dict[str, Any]) -> LoadedSources:
         "player_box": source_files.get("player_box", "player_box_2026.parquet"),
         "team_box": source_files.get("team_box", "team_box_2026.parquet"),
         "standings": source_files.get("standings", "standings_2026.parquet"),
-        "espn_pbp": source_files.get("espn_pbp", "play_by_play_2026.parquet"),
-        "wnba_stats_pbp": source_files.get("wnba_stats_pbp", "wnbastats_play_by_play_20260602.parquet"),
+        "espn_pbp": source_files.get("espn_pbp", "espn_pbp_2026.parquet"),
+        "wnba_stats_pbp": source_files.get("wnba_stats_pbp", "wnba_pbp_2026.parquet"),
     }
     resolved = {key: _resolve_sports_file(config, filename) for key, filename in sports_files.items()}
 
@@ -199,11 +209,13 @@ def load_sources(config: Dict[str, Any]) -> LoadedSources:
     allstar_board = _read_csv_optional(allstar_board_path)
 
     manifest = {
-        "player_box": _file_record(resolved["player_box"], player_box),
-        "team_box": _file_record(resolved["team_box"], team_box),
-        "standings": _file_record(resolved["standings"], standings),
-        "espn_pbp": _file_record(resolved["espn_pbp"], espn_pbp),
-        "wnba_stats_pbp": _file_record(resolved["wnba_stats_pbp"], wnba_stats_pbp),
+        "player_box": _file_record(resolved["player_box"], player_box, requested=sports_files["player_box"]),
+        "team_box": _file_record(resolved["team_box"], team_box, requested=sports_files["team_box"]),
+        "standings": _file_record(resolved["standings"], standings, requested=sports_files["standings"]),
+        "espn_pbp": _file_record(resolved["espn_pbp"], espn_pbp, requested=sports_files["espn_pbp"]),
+        "wnba_stats_pbp": _file_record(
+            resolved["wnba_stats_pbp"], wnba_stats_pbp, requested=sports_files["wnba_stats_pbp"]
+        ),
         "player_features": _file_record(player_features_path, player_features),
         "team_features": _file_record(team_features_path, team_features),
         "allstar_board": _file_record(allstar_board_path, allstar_board),
