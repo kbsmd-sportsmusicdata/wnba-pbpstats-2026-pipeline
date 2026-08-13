@@ -43,10 +43,10 @@
     "free_throw_prior_weight": 0.5
   },
   "weights": {
-    "role_residual": 0.35,
-    "trajectory": 0.25,
-    "regression_upside": 0.2,
-    "playoff_fit": 0.2,
+    "role_residual": 0.4,
+    "trajectory": 0.05,
+    "regression_upside": 0.3,
+    "playoff_fit": 0.25,
     "volatility_penalty": 0.1
   },
   "labels": {

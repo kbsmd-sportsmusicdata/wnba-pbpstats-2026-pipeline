@@ -2,13 +2,15 @@
 
 ## Purpose
 
-Two questions, deliberately kept apart because they are different bets:
+The board answers one question: **who is contributing more than their situation explains?**
 
-1. **Underrated now** — who is contributing more than their situation explains?
-2. **Trending up** — who is improving fast enough to matter in September?
+It was designed to answer a second — who is improving fast enough to matter in September —
+but held-out testing found no trend signal capable of supporting that claim on this
+season's data (see Trajectory below). Improvement is therefore sought through a *mechanism*
+(shot quality running ahead of results) rather than through extrapolating a trend.
 
-Blending them into one ranking hides which claim is being made about a player, so the board
-carries a `board_track` instead.
+`board_track` names whichever signal carries a player's case, so a reader can see at a
+glance whether the claim rests on the residual or on recent form.
 
 ## The Role-Adjusted Residual
 
@@ -54,13 +56,63 @@ Proxies named in config that are missing or constant are **reported** in the run
 under `proxies_dropped` rather than silently ignored: two of five vanished that way in the
 first build.
 
-## Trajectory
+## Trajectory, And Why It Carries Almost No Weight
 
 From the snapshot window panel, over the trailing windows: a possession-weighted
 least-squares slope for production, efficiency, usage, possession share and on-court net
 rating.
 
-Every slope is **shrunk toward zero in proportion to how little data supports it**
+**Held-out testing showed this signal does not forecast what comes next, so it carries a
+weight of 0.05 rather than the 0.25 it was first given.**
+
+The test: hold out each player's last four windows, fit the trend over the k windows
+before them, and ask whether the trend improves a prediction of held-out performance over
+simply knowing the player's current level. Matched sample, so every k is judged on the same
+players. Predicting the held-out *level* rather than a before/after difference, which
+avoids the mechanical regression-to-the-mean trap.
+
+| Window length k | Incremental R² over level | Slope coefficient |
+|---:|---:|---:|
+| 8 | +0.024 | −1.04 |
+| 10 | +0.030 | −1.39 |
+| 12 | +0.050 | −2.41 |
+| 15 | +0.074 | −3.80 |
+| 18 | +0.044 | −3.83 |
+
+The trend does carry information, but **the sign is inverted**: a rising production trend
+predicts *worse* subsequent production once level is controlled for. This is mean
+reversion, and lengthening the window measures it more sharply rather than fixing it —
+which is why the window stays at 10. Ranking players on a rising trend would be selecting
+players about to regress.
+
+The other trajectory inputs fare no better against future production:
+
+| Signal | Incremental R² | Sign |
+|---|---:|---|
+| Production slope | +0.023 | negative |
+| Possession-share slope | +0.004 | negative, negligible |
+| DARKO projection | +0.015 | negative |
+| TS% slope | ~0.000 | no signal |
+
+Trailing TS% is the starkest: over 15 windows it explains 0.003 of held-out efficiency. At
+window granularity, efficiency trend is noise.
+
+One claim did survive: **role expansion persists.** Possession-share slope predicts future
+possession share with a positive coefficient (+1.82), though the gain is small (+0.011 on
+an R² already at 0.772 from current share) and it predicts opportunity, not production.
+
+Caveats on the evidence: 81–118 players, one season, one holdout design. Mean reversion at
+this granularity is an expected effect rather than a surprise, so this confirms a known
+pattern rather than discovering one. It is enough to say the component should not be ranked
+on, not enough to invert it.
+
+The slopes remain in the outputs as **descriptive context**, and the track is named
+`Recent Form` rather than `Trending Up` for the same reason: the label must not imply a
+forecast the data does not support.
+
+### How the trend is computed
+
+Every slope is still **shrunk toward zero in proportion to how little data supports it**
 (`slope × n / (n + k)`, default k = 6). Ten windows of WNBA basketball is not enough to read
 a trend at face value, and un-shrunk trend-chasing is how watchlists like this go wrong.
 
@@ -68,13 +120,21 @@ Windows are weighted by possessions, so a 40-possession appearance does not move
 as much as a 90-possession one. The baseline block is excluded — it aggregates many games
 into one row and would dominate any slope it appeared in.
 
-`on_court_poss_share_slope` is called out separately as **role expansion**: a rising share
-of team possessions tends to precede rising production rather than follow it.
+`on_court_poss_share_slope` is called out separately as **role expansion**. It is the one
+trend that persists, but note what it does and does not do: it predicts a player's *future
+opportunity*, not their future production. A growing role is worth knowing about; it is not
+evidence that the player will produce more per possession.
 
-The DARKO projected rating is folded in where available as an independent forward-looking
-read.
+The DARKO projected rating is folded in where available as an independent read. It did not
+improve a forecast of held-out production in the testing above either, so it is weighted
+alongside the other trend inputs rather than treated as authoritative.
 
 ## Regression Upside
+
+This is where the board looks for improvement, and it carries 0.30 — up from 0.20 — because
+it is the *correctly signed* version of the idea the trajectory component was reaching for.
+Rather than extrapolating that a player who has been improving will keep improving, it
+identifies a **mechanism**: the shots are already good, the results have not caught up yet.
 
 The core signal is **shot making against shot quality**. A player generating good looks and
 missing them is a buy; one converting mediocre looks at a high rate is a sell. Only players
@@ -103,8 +163,12 @@ weights skills that survive that:
 ## Scoring And Conviction
 
 Components are converted to percentiles so signals on different scales can be combined,
-then weighted (config): role residual 0.35, trajectory 0.25, regression upside 0.20,
-playoff fit 0.20, minus a volatility penalty of 0.10.
+then weighted (config): role residual 0.40, regression upside 0.30, playoff fit 0.25,
+trajectory 0.05, minus a volatility penalty of 0.10.
+
+**0.95 of the weight sits on signals measured at a player's current level**, and only 0.05
+on the direction they have been moving. That split is the direct consequence of the
+held-out testing above.
 
 Conviction is `Strong` / `Moderate` / `Monitor` by score percentile, and **any player on a
 low sample is downgraded one step**. A thin sample can top the board on noise, and the
@@ -121,8 +185,8 @@ but flagged `Low sample`. 176 of 226 players clear the floor, 151 of those are `
   player features run to 2026-08-11. On-court net rating stands in where RAPM is missing,
   on a cruder scale.
 - Team strength in the baseline penalises genuine contributors on good teams, by design.
-- Trajectory over ten windows is a weak signal even after shrinkage; treat the `Trending
-  Up` track as a shortlist to watch, not a conclusion.
+- Trajectory does not forecast future performance on this season's data and is weighted
+  accordingly; treat `Recent Form` as description, never as a prediction.
 - Playoff-fit weights are a judgement about how playoff basketball differs, not an
   empirical fit to playoff outcomes.
 - Start rate comes from opening-possession lineups, so an unusual opening five counts as a

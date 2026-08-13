@@ -1,10 +1,15 @@
 """The role-adjusted residual and the composite watchlist.
 
 "Underrated" only means something relative to a baseline. Here the baseline is what a
-player's *role* predicts: minutes, usage, starts, share of team possessions, team quality.
-Fit impact against those, and the residual is the part of a player's contribution their
-role does not explain -- which is precisely the part a coaching staff or a reader has not
-priced in.
+player's *situation* predicts: minutes, usage, starts, share of team possessions, and team
+quality. Fit impact against those, and the residual is the part of a player's contribution
+their situation does not explain -- which is precisely the part a coaching staff or a
+reader has not priced in.
+
+The scoring weights lean on signals measured at a player's current *level* rather than on
+the direction they have been moving. Held-out testing showed a rising trend predicts
+slightly *worse* subsequent production once level is controlled for, so extrapolating it
+would rank players on mean reversion pointed the wrong way. See the methodology.
 """
 
 from __future__ import annotations
@@ -133,12 +138,14 @@ def build_board(
 
     board["hidden_value_score"] = weighted / total if total else np.nan
 
-    # Two tracks rather than one blended ranking: they are different bets, and a reader
-    # should know which one they are looking at.
+    # Two tracks rather than one blended ranking, naming whichever signal carries a
+    # player's case. "Recent Form" is deliberately descriptive: held-out testing on this
+    # season showed the trend does not forecast what comes next, so the label must not
+    # imply that it does.
     residual_rank = board["role_residual_score"].rank(ascending=False)
     trajectory_rank = board["trajectory_score"].rank(ascending=False)
     board["board_track"] = np.where(
-        residual_rank <= trajectory_rank, "Underrated Now", "Trending Up"
+        residual_rank <= trajectory_rank, "Underrated Now", "Recent Form"
     )
 
     strong = float(labels.get("strong_percentile", 0.85))
@@ -166,12 +173,13 @@ def _note(row: pd.Series) -> str:
     if pd.notna(row.get("role_residual_score")) and row["role_residual_score"] >= 75:
         reasons.append("out-produces their role")
     if pd.notna(row.get("trajectory_score")) and row["trajectory_score"] >= 75:
-        reasons.append("trending up")
+        reasons.append("recent form rising (descriptive, not a forecast)")
     if pd.notna(row.get("regression_upside_score")) and row["regression_upside_score"] >= 75:
         reasons.append("shot quality ahead of results")
     if pd.notna(row.get("playoff_fit_score")) and row["playoff_fit_score"] >= 75:
         reasons.append("skills scale to playoff basketball")
     if pd.notna(row.get("on_court_poss_share_slope")) and row["on_court_poss_share_slope"] > 0:
+        # The one trend that does persist, though it predicts opportunity, not production.
         reasons.append("role expanding")
     if not reasons:
         reasons.append("balanced profile, no single standout signal")

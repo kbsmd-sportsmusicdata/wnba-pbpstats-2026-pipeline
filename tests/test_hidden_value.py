@@ -244,11 +244,17 @@ class BoardTest(unittest.TestCase):
             }
         )
 
+    def test_track_label_does_not_promise_a_forecast(self):
+        # The trend is descriptive here; "Trending Up" would overclaim.
+        board = build_board(self._panel(), weights={"role_residual": 0.5, "trajectory": 0.5}, labels={})
+        self.assertNotIn("Trending Up", set(board["board_track"]))
+        self.assertIn("Recent Form", set(board["board_track"]))
+
     def test_board_ranks_and_labels(self):
         board = build_board(self._panel(), weights={"role_residual": 1.0}, labels={})
         self.assertEqual(board.iloc[0]["hidden_value_rank"], 1)
         self.assertTrue(board["hidden_value_score"].is_monotonic_decreasing)
-        self.assertEqual(set(board["board_track"]) - {"Underrated Now", "Trending Up"}, set())
+        self.assertEqual(set(board["board_track"]) - {"Underrated Now", "Recent Form"}, set())
 
     def test_every_player_lands_on_exactly_one_track(self):
         board = build_board(self._panel(), weights={"role_residual": 0.5, "trajectory": 0.5}, labels={})

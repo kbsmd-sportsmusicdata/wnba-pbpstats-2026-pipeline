@@ -2,8 +2,8 @@
   "analysis_stats": {
     "conviction_counts": {
       "Moderate": 25,
-      "Monitor": 125,
-      "Strong": 26
+      "Monitor": 124,
+      "Strong": 27
     },
     "impact_from_rapm": 176,
     "players_reliable": 151,
@@ -32,20 +32,20 @@
     },
     "status": "ok",
     "track_counts": {
-      "Trending Up": 94,
+      "Recent Form": 94,
       "Underrated Now": 82
     },
     "trajectory_players": 189
   },
-  "config_hash": "903002363ea48a758941c143b71c9ba46758327e05967895bbf7cd14bdf2d981",
+  "config_hash": "565a9a44e7639722644f1490d149d58140035f8e67828ce26c34080099236b10",
   "config_path": "analysis/hidden_value/config/hidden_value_config.json",
-  "generated_at_utc": "2026-08-13T00:10:20+00:00",
+  "generated_at_utc": "2026-08-13T00:26:46+00:00",
   "outputs": {
     "hidden_value_board_2026.csv": 176,
     "hidden_value_components_2026.csv": 880,
     "player_trajectory_2026.csv": 189
   },
-  "run_id": "20260813T001020+0000",
+  "run_id": "20260813T002646+0000",
   "season": 2026,
   "source_manifest": {
     "player_features": {
