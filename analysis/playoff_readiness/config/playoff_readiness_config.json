@@ -1,0 +1,43 @@
+{
+  "season": 2026,
+  "sportsdataverse_data_root": "data/raw/sportsdataverse/wnba_2026",
+  "possession_impact_root": "analysis/possession_impact",
+  "team_identity_shift_root": "analysis/team_identity_shift",
+  "output_root": "analysis/playoff_readiness",
+  "source_files": {
+    "schedule": "schedule_2026.parquet",
+    "possessions": "wnba_possessions_2026.parquet",
+    "game_logs": "player_game_logs_2026.parquet",
+    "player_box": "player_box_2026.parquet",
+    "standings": "wnba_stats_standings_2026.parquet",
+    "bench": "data/processed/bench_net_rating_2026.csv",
+    "clutch": "data/processed/clutch_net_rating_2026.csv",
+    "identity": "data/processed/team_identity_shift_2026.csv"
+  },
+  "ratings": {
+    "alpha_grid": [0.5, 1, 2, 4, 8, 16, 32, 64],
+    "cv_folds": 5,
+    "random_seed": 20260813,
+    "half_life_days": 0,
+    "margin_cap": 20,
+    "backtest_train_fraction": 0.7
+  },
+  "simulation": {
+    "simulations": 20000,
+    "random_seed": 20260813
+  },
+  "playoffs": {
+    "playoff_teams": 8,
+    "series_formats": {
+      "first_round": [true, true, false],
+      "semifinals": [true, true, false, false, true],
+      "finals": [true, true, false, false, true, false, true]
+    }
+  },
+  "readiness": {
+    "playoff_field_threshold": 0.5,
+    "top_seed_threshold": 0.25,
+    "contention_floor": 0.005,
+    "recent_games": 10
+  }
+}

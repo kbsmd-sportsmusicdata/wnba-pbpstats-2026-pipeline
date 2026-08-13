@@ -1,0 +1,141 @@
+name: Playoff Readiness
+
+on:
+  workflow_dispatch:
+    inputs:
+      run_tests:
+        description: "Run playoff readiness tests before building"
+        required: true
+        type: boolean
+        default: true
+      refresh_sources:
+        description: "Refresh the SportsDataverse feeds first"
+        required: true
+        type: boolean
+        default: false
+      rebuild_dependencies:
+        description: "Rebuild possession impact and team identity shift first"
+        required: true
+        type: boolean
+        default: false
+      simulations:
+        description: "Monte Carlo runs (overrides the config)"
+        required: false
+        type: string
+        default: ""
+      commit_outputs:
+        description: "Commit generated analysis/playoff_readiness outputs"
+        required: true
+        type: boolean
+        default: false
+      sportsdataverse_data_root:
+        description: "SportsDataverse WNBA 2026 data root"
+        required: true
+        type: string
+        default: "data/raw/sportsdataverse/wnba_2026"
+
+jobs:
+  playoff-readiness:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      CONFIG_PATH: analysis/playoff_readiness/config/playoff_readiness_config.json
+      IMPACT_CONFIG_PATH: analysis/possession_impact/config/possession_impact_config.json
+      IDENTITY_CONFIG_PATH: analysis/team_identity_shift/config/team_identity_shift_config.json
+      SPORTSDATAVERSE_ROOT: ${{ inputs.sportsdataverse_data_root }}
+      SIMULATIONS: ${{ inputs.simulations }}
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Validate inputs
+        run: |
+          set -euo pipefail
+          if [[ -n "$SIMULATIONS" ]]; then
+            if [[ ! "$SIMULATIONS" =~ ^[1-9][0-9]*$ ]]; then
+              echo "simulations must be a positive integer" >&2
+              exit 2
+            fi
+          fi
+
+      - name: Run Playoff Readiness tests
+        if: ${{ inputs.run_tests }}
+        run: python -m unittest tests/test_playoff_readiness.py
+
+      - name: Refresh SportsDataverse sources
+        if: ${{ inputs.refresh_sources }}
+        run: python scripts/fetch_wnba_sportsdataverse_2026.py
+
+      - name: Rebuild upstream analyses
+        if: ${{ inputs.rebuild_dependencies }}
+        run: |
+          python scripts/build_possession_impact.py --config "$IMPACT_CONFIG_PATH"
+          python scripts/build_team_identity_shift.py --config "$IDENTITY_CONFIG_PATH"
+
+      - name: Build playoff odds and readiness
+        run: |
+          set -euo pipefail
+          ARGS=(--config "$CONFIG_PATH" --sportsdataverse-data-root "$SPORTSDATAVERSE_ROOT")
+          if [[ -n "$SIMULATIONS" ]]; then
+            ARGS+=(--simulations "$SIMULATIONS")
+          fi
+          python scripts/build_playoff_readiness.py "${ARGS[@]}"
+
+      - name: Validate generated artifacts
+        run: |
+          set -euo pipefail
+          PROCESSED="analysis/playoff_readiness/data/processed"
+          for artifact in \
+            "$PROCESSED/playoff_odds_2026.csv" \
+            "$PROCESSED/playoff_seed_probabilities_2026.csv" \
+            "$PROCESSED/playoff_readiness_2026.csv" \
+            "$PROCESSED/remaining_game_leverage_2026.csv" \
+            "$PROCESSED/team_ratings_2026.csv" \
+            "$PROCESSED/run_manifest_2026.json"; do
+            if [[ ! -s "$artifact" ]]; then
+              echo "required artifact is missing or empty: $artifact" >&2
+              exit 1
+            fi
+          done
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          manifest = json.loads(
+              Path("analysis/playoff_readiness/data/processed/run_manifest_2026.json").read_text(encoding="utf-8")
+          )
+          stats = manifest["analysis_stats"]
+          if not stats["schedule"]["reconciled"]:
+              raise SystemExit(f"schedule did not reconcile: {stats['schedule']['teams_off_expected']}")
+          playoff_sum = stats["simulation"]["playoff_probability_sum"]
+          title_sum = stats["simulation"]["title_probability_sum"]
+          if abs(playoff_sum - 8.0) > 0.05:
+              raise SystemExit(f"playoff probabilities sum to {playoff_sum}, expected 8")
+          if abs(title_sum - 1.0) > 0.02:
+              raise SystemExit(f"title probabilities sum to {title_sum}, expected 1")
+          PY
+
+      - name: Commit generated playoff readiness outputs if requested
+        if: ${{ inputs.commit_outputs }}
+        run: |
+          git add analysis/playoff_readiness analysis/possession_impact analysis/team_identity_shift
+          if git diff --cached --quiet; then
+            echo "No Playoff Readiness output changes to commit"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "chore: refresh playoff odds and readiness"
+          git push

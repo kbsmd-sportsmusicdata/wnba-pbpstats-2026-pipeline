@@ -1,0 +1,238 @@
+{
+  "analysis_stats": {
+    "coverage": {
+      "possessions_through": "2026-07-22",
+      "results_through": "2026-08-01",
+      "season_ends": "2026-09-24"
+    },
+    "model_validation": {
+      "beats_home_field_baseline": true,
+      "beats_record_baseline": true,
+      "home_field_baseline_brier": 0.2509,
+      "home_field_baseline_log_loss": 0.6949,
+      "model_accuracy": 0.697,
+      "model_brier": 0.1966,
+      "model_log_loss": 0.5842,
+      "model_margin_rmse": 13.024,
+      "record_baseline_brier": 0.2042,
+      "record_baseline_log_loss": 0.5991,
+      "status": "scored",
+      "test_games": 66,
+      "train_games": 151,
+      "train_through": "2026-07-04"
+    },
+    "rating_model": {
+      "alpha": 2.0,
+      "alpha_grid_search": [
+        {
+          "alpha": 0.5,
+          "folds": 5,
+          "held_out_rmse": 13.0507
+        },
+        {
+          "alpha": 1.0,
+          "folds": 5,
+          "held_out_rmse": 13.0485
+        },
+        {
+          "alpha": 2.0,
+          "folds": 5,
+          "held_out_rmse": 13.0478
+        },
+        {
+          "alpha": 4.0,
+          "folds": 5,
+          "held_out_rmse": 13.0569
+        },
+        {
+          "alpha": 8.0,
+          "folds": 5,
+          "held_out_rmse": 13.0994
+        },
+        {
+          "alpha": 16.0,
+          "folds": 5,
+          "held_out_rmse": 13.2141
+        },
+        {
+          "alpha": 32.0,
+          "folds": 5,
+          "held_out_rmse": 13.4199
+        },
+        {
+          "alpha": 64.0,
+          "folds": 5,
+          "held_out_rmse": 13.6735
+        }
+      ],
+      "games_fitted": 217,
+      "half_life_days": 0.0,
+      "home_advantage_points": 1.293,
+      "margin_cap": 20.0,
+      "residual_sd_points": 10.587
+    },
+    "readiness": {
+      "clinched": [],
+      "eliminated": [],
+      "lens_counts": {
+        "Bubble": 6,
+        "Out of contention": 3,
+        "Top seed": 6
+      },
+      "status_counts": {
+        "Comfortable": 2,
+        "Effectively in": 6,
+        "Effectively out": 5,
+        "Long shot": 2
+      }
+    },
+    "schedule": {
+      "dropped_non_counting_games": [
+        [
+          "CC",
+          1
+        ]
+      ],
+      "dropped_non_league_rows": 1,
+      "expected_games_per_team": 44,
+      "games_per_team": {
+        "ATL": 44,
+        "CHI": 44,
+        "CON": 44,
+        "DAL": 44,
+        "GSV": 44,
+        "IND": 44,
+        "LAS": 44,
+        "LVA": 44,
+        "MIN": 44,
+        "NYL": 44,
+        "PDX": 44,
+        "PHX": 44,
+        "SEA": 44,
+        "TOR": 44,
+        "WAS": 44
+      },
+      "games_played": 217,
+      "games_remaining": 113,
+      "played_through": "2026-08-01",
+      "postponed_restored_as_unplayed": [],
+      "postponed_rows": 1,
+      "reconciled": true,
+      "schedule_rows": 333,
+      "season_ends": "2026-09-24",
+      "teams_off_expected": []
+    },
+    "simulation": {
+      "playoff_probability_sum": 8.0001,
+      "random_seed": 20260813,
+      "series_formats": {
+        "finals": [
+          true,
+          true,
+          false,
+          false,
+          true,
+          false,
+          true
+        ],
+        "first_round": [
+          true,
+          true,
+          false
+        ],
+        "semifinals": [
+          true,
+          true,
+          false,
+          false,
+          true
+        ]
+      },
+      "simulations": 20000,
+      "title_probability_sum": 1.0
+    },
+    "status": "ok"
+  },
+  "config_hash": "1309e31fb20d42c779d98e312c15f24c719531f37af6042f1b04aa409d469788",
+  "config_path": "analysis/playoff_readiness/config/playoff_readiness_config.json",
+  "generated_at_utc": "2026-08-13T05:54:02+00:00",
+  "outputs": {
+    "playoff_odds_2026.csv": 15,
+    "playoff_readiness_2026.csv": 15,
+    "playoff_seed_probabilities_2026.csv": 225,
+    "remaining_game_leverage_2026.csv": 226,
+    "team_ratings_2026.csv": 15
+  },
+  "run_id": "20260813T055402+0000",
+  "season": 2026,
+  "source_manifest": {
+    "bench": {
+      "columns": 19,
+      "modified_at_utc": "2026-08-12T20:32:47+00:00",
+      "path": "/home/user/wnba-pbpstats-2026-pipeline/analysis/possession_impact/data/processed/bench_net_rating_2026.csv",
+      "rows": 15,
+      "size_bytes": 3989,
+      "status": "resolved"
+    },
+    "clutch": {
+      "columns": 9,
+      "modified_at_utc": "2026-08-12T20:32:47+00:00",
+      "path": "/home/user/wnba-pbpstats-2026-pipeline/analysis/possession_impact/data/processed/clutch_net_rating_2026.csv",
+      "rows": 15,
+      "size_bytes": 1459,
+      "status": "resolved"
+    },
+    "game_logs": {
+      "columns": 35,
+      "games": 202,
+      "modified_at_utc": "2026-08-12T19:29:29+00:00",
+      "path": "/home/user/wnba-pbpstats-2026-pipeline/data/raw/sportsdataverse/wnba_2026/player_game_logs_2026.parquet",
+      "rows": 4415,
+      "size_bytes": 128597,
+      "status": "resolved"
+    },
+    "identity": {
+      "columns": 33,
+      "modified_at_utc": "2026-08-12T05:02:47+00:00",
+      "path": "/home/user/wnba-pbpstats-2026-pipeline/analysis/team_identity_shift/data/processed/team_identity_shift_2026.csv",
+      "rows": 15,
+      "size_bytes": 8809,
+      "status": "resolved"
+    },
+    "player_box": {
+      "columns": 57,
+      "games": 219,
+      "modified_at_utc": "2026-08-12T19:29:28+00:00",
+      "path": "/home/user/wnba-pbpstats-2026-pipeline/data/raw/sportsdataverse/wnba_2026/player_box_2026.parquet",
+      "rows": 5271,
+      "size_bytes": 150935,
+      "status": "resolved"
+    },
+    "possessions": {
+      "columns": 34,
+      "games": 202,
+      "modified_at_utc": "2026-08-12T19:29:34+00:00",
+      "path": "/home/user/wnba-pbpstats-2026-pipeline/data/raw/sportsdataverse/wnba_2026/wnba_possessions_2026.parquet",
+      "rows": 32265,
+      "size_bytes": 487723,
+      "status": "resolved"
+    },
+    "schedule": {
+      "columns": 77,
+      "games": 333,
+      "modified_at_utc": "2026-08-12T19:29:30+00:00",
+      "path": "/home/user/wnba-pbpstats-2026-pipeline/data/raw/sportsdataverse/wnba_2026/schedule_2026.parquet",
+      "rows": 333,
+      "size_bytes": 270331,
+      "status": "resolved"
+    },
+    "standings": {
+      "columns": 94,
+      "modified_at_utc": "2026-08-12T19:29:34+00:00",
+      "path": "/home/user/wnba-pbpstats-2026-pipeline/data/raw/sportsdataverse/wnba_2026/wnba_stats_standings_2026.parquet",
+      "rows": 15,
+      "size_bytes": 56445,
+      "status": "resolved"
+    }
+  }
+}
