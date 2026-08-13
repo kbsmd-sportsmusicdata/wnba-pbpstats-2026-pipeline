@@ -65,7 +65,7 @@ which one they are looking at:
 - Trajectory weight set from held-out testing, not judgement: the composite now correlates
   0.09 with the trend and 0.62 / 0.60 / 0.57 with the three level-based components.
 - Top 25 spans 13 teams rather than clustering on the league's best.
-- 30 unit tests: `python -m unittest tests/test_hidden_value.py`.
+- 31 unit tests: `python -m unittest tests/test_hidden_value.py`.
 
 Full method, the design decision behind the team term, and limitations:
 [`methodology.md`](methodology.md).
