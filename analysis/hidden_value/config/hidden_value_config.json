@@ -1,0 +1,57 @@
+{
+  "season": 2026,
+  "pbpstats_data_root": "data/pbpstats_wnba_2026",
+  "sportsdataverse_data_root": "data/raw/sportsdataverse/wnba_2026",
+  "window_panel_root": "analysis/snapshot_window_panel",
+  "possession_impact_root": "analysis/possession_impact",
+  "output_root": "analysis/hidden_value",
+  "source_files": {
+    "player_window_panel": "data/processed/player_window_panel_2026.csv",
+    "rapm": "data/processed/rapm_player_2026.csv",
+    "possessions": "wnba_possessions_2026.parquet",
+    "player_impact": "wnba_player_impact_2026.parquet"
+  },
+  "eligibility": {
+    "min_total_possessions": 300,
+    "min_games_played": 8,
+    "reliable_total_possessions": 800
+  },
+  "trajectory": {
+    "recent_windows": 10,
+    "min_windows": 4,
+    "shrinkage_constant": 6.0,
+    "metrics": [
+      "points_per_75",
+      "ts_pct",
+      "usage",
+      "on_court_poss_share",
+      "on_court_net_rating"
+    ]
+  },
+  "role_model": {
+    "proxies": [
+      "minutes",
+      "usage",
+      "start_rate",
+      "on_court_poss_share_recent",
+      "team_net_rating"
+    ],
+    "ridge_alpha": 1.0
+  },
+  "regression_upside": {
+    "min_fga": 120,
+    "free_throw_prior_weight": 0.5
+  },
+  "weights": {
+    "role_residual": 0.35,
+    "trajectory": 0.25,
+    "regression_upside": 0.2,
+    "playoff_fit": 0.2,
+    "volatility_penalty": 0.1
+  },
+  "labels": {
+    "watchlist_size": 25,
+    "strong_percentile": 0.85,
+    "moderate_percentile": 0.7
+  }
+}
