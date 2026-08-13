@@ -1,10 +1,10 @@
 season,entity_id_feature,entity_name_feature,sample_size_flag,detected_zone_fga_total,efg_pct_feature,ts_pct_feature,shotquality_pbp_feature,shot_making_over_shotquality_pbp,specialized_shooter_label,shot_diet_profile_label
 2026,203828,Stefanie Dolson,Low,88.0,0.5738636363636364,0.6116504854368932,0.5154607954545455,0.05840284090909087,Low-Volume Efficient Shooter,Modern Shot Diet
 2026,1642815,Makayla Timpson,Low,94.0,0.6063829787234043,0.6318181818181818,0.574958510638298,0.03142446808510635,Low-Volume Efficient Shooter,Unavailable Shot Diet
-2026,1643489,Antonia Delaere,Low,81.0,0.6111111111111112,0.6265060240963856,0.5135632911392405,0.09754781997187068,Low-Volume Efficient Shooter,Modern Shot Diet
+2026,1643489,Antonia Delaere,Low,83.0,0.608433734939759,0.6235294117647059,0.510824074074074,0.09760966086568501,Low-Volume Efficient Shooter,Modern Shot Diet
 2026,1629488,Brianna Turner,Low,44.0,0.6136363636363636,0.6222222222222222,0.5324318181818182,0.08120454545454547,Low-Volume Efficient Shooter,Unavailable Shot Diet
-2026,1643436,Serah Williams,Low,86.0,0.563953488372093,0.5817307692307693,0.5426563953488373,0.021297093023255775,Low-Volume Efficient Shooter,Paint-Oriented
-2026,1628317,Karlie Samuelson,Low,64.0,0.609375,0.6458333333333334,0.52400546875,0.08536953125000002,Low-Volume Efficient Shooter,Modern Shot Diet
+2026,1643436,Serah Williams,Low,89.0,0.5786516853932584,0.5934579439252337,0.5447196629213483,0.03393202247191007,Low-Volume Efficient Shooter,Paint-Oriented
+2026,1628317,Karlie Samuelson,Low,68.0,0.5955882352941176,0.6363636363636364,0.5214382352941176,0.07415000000000005,Low-Volume Efficient Shooter,Modern Shot Diet
 2026,1642307,Mackenzie Holmes,Low,41.0,0.6341463414634146,0.65625,0.5129914634146342,0.12115487804878045,Low-Volume Efficient Shooter,Modern Shot Diet
 2026,1630149,Satou Sabally,Low,98.0,0.5612244897959183,0.6136363636363636,0.5328664948453607,0.028357994950557575,Low-Volume Efficient Shooter,Modern Shot Diet
 2026,1642817,Hailey Van Lith,Low,67.0,0.5597014925373134,0.5942028985507246,0.4654734848484849,0.0942280076888285,Low-Volume Efficient Shooter,Midrange-Heavy
@@ -23,4 +23,3 @@ season,entity_id_feature,entity_name_feature,sample_size_flag,detected_zone_fga_
 2026,1642826,Aubrey Griffin,Low,1.0,1.0,1.0,0.2358,0.7642,Low-Volume Efficient Shooter,Unavailable Shot Diet
 2026,1643439,Tonie Morgan,Low,2.0,0.75,0.75,0.58035,0.16964999999999997,Low-Volume Efficient Shooter,Unavailable Shot Diet
 2026,1643424,Costanza Verona,Low,2.0,1.0,1.0,0.34265,0.65735,Low-Volume Efficient Shooter,Unavailable Shot Diet
-2026,1641695,Ashten Prechtel,Low,3.0,0.8333333333333334,0.8333333333333334,0.6037166666666667,0.2296166666666667,Low-Volume Efficient Shooter,Perimeter-Leaning
