@@ -81,6 +81,44 @@ def _write_partition(root: Path, season: int) -> None:
 
 
 class HistoricalContextTest(unittest.TestCase):
+    def test_zero_target_progress_returns_stable_unavailable_context_without_comparison_claims(self) -> None:
+        from standings_playoff_forecast.historical_context import (
+            HISTORICAL_CONTEXT_COLUMNS,
+            build_historical_context,
+        )
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            _write_partition(root, 2025)
+            context = build_historical_context(
+                root,
+                2026,
+                target_progress_pct=0.0,
+                season_config_loader=lambda _: self.fail(
+                    "zero progress must not read or compare prior seasons"
+                ),
+            )
+
+        self.assertEqual(context.columns.tolist(), HISTORICAL_CONTEXT_COLUMNS)
+        self.assertEqual(context["context_level"].tolist(), ["availability"])
+        self.assertEqual(context["metric"].tolist(), ["historical_progress_status"])
+        self.assertEqual(context["target_progress_pct"].tolist(), [0.0])
+        self.assertEqual(context["availability_status"].tolist(), ["no_completed_games"])
+        self.assertFalse(context["availability_status"].eq("available").any())
+        self.assertEqual(context.attrs["historical_team_game_paths"], [])
+
+    def test_invalid_target_progress_still_fails_closed(self) -> None:
+        from standings_playoff_forecast.historical_context import build_historical_context
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            for value in (-0.01, float("nan"), float("inf")):
+                with self.subTest(value=value), self.assertRaisesRegex(
+                    ValueError, "target_progress_pct must be finite and in"
+                ):
+                    build_historical_context(
+                        Path(temp_dir), 2026, target_progress_pct=value
+                    )
+
     def test_discovery_returns_only_prior_numeric_partitions_in_year_order(self) -> None:
         from standings_playoff_forecast.historical_context import discover_history
 

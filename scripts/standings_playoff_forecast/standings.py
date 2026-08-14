@@ -308,17 +308,26 @@ def build_current_standings(
         how="left",
         validate="one_to_one",
     )
-    count_columns = [
+    integer_count_columns = [
         "games_played",
         "wins",
         "losses",
+    ]
+    score_columns = [
         "points_for",
         "points_against",
         "point_differential",
     ]
-    result[count_columns] = result[count_columns].fillna(0)
+    for column in integer_count_columns:
+        result[column] = pd.to_numeric(
+            result[column].fillna(0), errors="raise"
+        ).astype("int64")
+    for column in score_columns:
+        result[column] = pd.to_numeric(
+            result[column].fillna(0), errors="raise"
+        ).astype("float64")
     result["win_pct"] = (
-        result["wins"] / result["games_played"]
+        result["wins"].astype("float64") / result["games_played"]
     ).where(result["games_played"].gt(0), pd.NA)
     return result.reindex(columns=STANDINGS_COLUMNS)
 
@@ -336,6 +345,10 @@ def _record_context(
     records = records.rename(
         columns={"wins": f"{prefix}_wins", "losses": f"{prefix}_losses"}
     )
+    for column in (f"{prefix}_wins", f"{prefix}_losses"):
+        records[column] = pd.to_numeric(
+            records[column].fillna(0), errors="raise"
+        ).astype("int64")
     records[f"{prefix}_record"] = (
         records[f"{prefix}_wins"].astype(str)
         + "-"

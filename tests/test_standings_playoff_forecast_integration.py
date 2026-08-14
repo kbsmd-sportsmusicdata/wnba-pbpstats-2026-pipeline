@@ -280,6 +280,55 @@ def early_cutoff_sources(root: Path) -> SimpleNamespace:
 
 
 class OrchestratorIntegrationTests(unittest.TestCase):
+    def test_fully_empty_explicit_cutoff_runs_history_matchups_and_simulation(self):
+        from standings_playoff_forecast.team_game_layer import TEAM_GAME_COLUMNS
+
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            cfg = replace(
+                season_config(root),
+                team_count=4,
+                regular_season_games_per_team=2,
+                playoff_qualifiers=2,
+            )
+            sources = early_cutoff_sources(root)
+            output_path = root / "output" / "latest"
+            with (
+                patch.object(builder, "load_forecast_sources", return_value=sources),
+                patch.object(
+                    builder, "write_output_bundle", return_value=output_path
+                ),
+                warnings.catch_warnings(record=True) as caught,
+            ):
+                warnings.simplefilter("always")
+                result = builder._run_pipeline(
+                    options(cutoff="2026-05-01", simulations=8),
+                    cfg=cfg,
+                    model_cfg=model_config(),
+                    historical_context_override=None,
+                )
+
+            team_games = result.stage_artifacts["team_games"]
+            standings = result.stage_artifacts["current_standings"]
+            history = result.stage_artifacts["historical_context"]
+            scored = result.stage_artifacts["matchup_probabilities"]
+            simulation = result.stage_artifacts["simulation_result"]
+            self.assertTrue(team_games.empty)
+            self.assertEqual(team_games.columns.tolist(), TEAM_GAME_COLUMNS)
+            self.assertEqual(result.ledger_validation.completed_game_count, 0)
+            self.assertTrue(standings["games_played"].eq(0).all())
+            self.assertTrue(standings["win_pct"].isna().all())
+            self.assertEqual(
+                history["availability_status"].tolist(), ["no_completed_games"]
+            )
+            self.assertFalse(history["availability_status"].eq("available").any())
+            self.assertEqual(len(scored), 4)
+            self.assertTrue(scored["home_win_probability"].between(0, 1).all())
+            self.assertTrue((simulation.final_wins + simulation.final_losses == 2).all())
+            self.assertTrue(
+                any("Historical context is unavailable" in str(item.message) for item in caught)
+            )
+
     def test_required_pbpstats_accepts_complete_joined_context_and_optional_stays_nonblocking(self):
         context_columns = (
             "games_played",

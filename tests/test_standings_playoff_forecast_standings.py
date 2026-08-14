@@ -107,10 +107,10 @@ class StandingsAggregationTest(unittest.TestCase):
             add_current_standings_context,
             build_current_standings,
         )
+        from standings_playoff_forecast.team_game_layer import TEAM_GAME_COLUMNS
 
         cfg = replace(load_season_config(2026), team_count=2, playoff_qualifiers=1)
-        empty_games = _team_games().iloc[0:0].copy()
-        empty_games["home_away"] = pd.Series(dtype="string")
+        empty_games = pd.DataFrame(columns=TEAM_GAME_COLUMNS)
         universe = pd.DataFrame(
             {
                 "team_id": ["A", "B"],
@@ -127,6 +127,30 @@ class StandingsAggregationTest(unittest.TestCase):
         result = add_current_standings_context(standings, empty_games, cfg)
 
         self.assertEqual(result["team_id"].tolist(), ["A", "B"])
+        for column in (
+            "games_played",
+            "wins",
+            "losses",
+            "home_wins",
+            "home_losses",
+            "road_wins",
+            "road_losses",
+            "last10_wins",
+            "last10_losses",
+            "record_vs_current_500_plus_wins",
+            "record_vs_current_500_plus_losses",
+            "current_streak_length",
+        ):
+            self.assertTrue(pd.api.types.is_integer_dtype(result[column]))
+        for column in (
+            "points_for",
+            "points_against",
+            "point_differential",
+            "win_pct",
+            "games_back",
+        ):
+            self.assertTrue(pd.api.types.is_float_dtype(result[column]))
+        self.assertTrue(result["win_pct"].isna().all())
         self.assertEqual(result["current_streak_length"].tolist(), [0, 0])
         self.assertTrue(result["current_streak_label"].isna().all())
 

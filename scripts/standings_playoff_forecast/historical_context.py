@@ -76,6 +76,23 @@ def _insufficient_context(
     return result
 
 
+def _zero_progress_context() -> pd.DataFrame:
+    row = {column: pd.NA for column in HISTORICAL_CONTEXT_COLUMNS}
+    row.update(
+        {
+            "context_level": "availability",
+            "metric": "historical_progress_status",
+            "season_count": 0,
+            "target_progress_pct": 0.0,
+            "sample_size": 0,
+            "availability_status": "no_completed_games",
+        }
+    )
+    result = pd.DataFrame([row], columns=HISTORICAL_CONTEXT_COLUMNS)
+    result.attrs["historical_team_game_paths"] = []
+    return result
+
+
 def discover_history(
     normalized_root: str | Path,
     forecast_season: int,
@@ -420,13 +437,19 @@ def build_historical_context(
     """Build optional historical benchmarks using only verified prior seasons.
 
     Nearest/as-of matching chooses each team's maximum observed progress that is
-    less than or equal to ``target_progress_pct``.  It never looks ahead.  A
-    prior partition without a verified season config or complete outcome is
-    represented by an availability row and excluded from aggregates.
+    less than or equal to ``target_progress_pct``.  It never looks ahead.  Zero
+    progress returns an explicit unavailable status without reading or comparing
+    prior seasons.  A prior partition without a verified season config or
+    complete outcome is represented by an availability row and excluded from
+    aggregates.
     """
 
-    if not np.isfinite(target_progress_pct) or not 0 < target_progress_pct <= 1:
-        raise ValueError("target_progress_pct must be finite and in (0, 1]")
+    if (
+        isinstance(target_progress_pct, (bool, np.bool_))
+        or not np.isfinite(target_progress_pct)
+        or not 0 <= target_progress_pct <= 1
+    ):
+        raise ValueError("target_progress_pct must be finite and in [0, 1]")
     if (
         isinstance(min_prior_seasons, bool)
         or not isinstance(min_prior_seasons, (int, np.integer))
@@ -437,6 +460,8 @@ def build_historical_context(
     read_team_game_paths: list[Path] = []
     if history_start is not None and history_start >= forecast_season:
         raise ValueError("history_start must be earlier than forecast_season")
+    if target_progress_pct == 0:
+        return _zero_progress_context()
     for partition in discover_history(
         normalized_root, forecast_season, history_start=history_start
     ):
