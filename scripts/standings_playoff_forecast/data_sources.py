@@ -40,10 +40,10 @@ class ForecastSources:
     team_box_path: Path
     team_history_path: Path
     pbp_team_features_path: Path | None
-    pbp_team_features_sidecar_path: Path | None
-    pbp_team_features_sidecar_evidence_kind: str | None
-    pbp_team_features_sidecar_evidence_date: str | None
     external_standings_path: Path | None
+    pbp_team_features_sidecar_path: Path | None = None
+    pbp_team_features_sidecar_evidence_kind: str | None = None
+    pbp_team_features_sidecar_evidence_date: str | None = None
 
 
 def _configured_path(root: str, filename: str) -> Path:
