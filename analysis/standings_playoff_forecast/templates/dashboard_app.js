@@ -43,6 +43,11 @@
       : String(Math.trunc(Number(value)));
   }
 
+  function normalizedTeamId(value) {
+    const text = String(value ?? "").trim();
+    return text.endsWith(".0") ? text.slice(0, -2) : text;
+  }
+
   function formatDate(value) {
     if (!value) return "Unavailable";
     const parsed = new Date(`${String(value).slice(0, 10)}T00:00:00`);
@@ -151,7 +156,7 @@
   }
 
   function renderProjected(rows) {
-    const ordered = rows.slice().sort((a, b) => Number(b.projected_wins_mean) - Number(a.projected_wins_mean) || String(a.team_id).localeCompare(String(b.team_id)));
+    const ordered = rows.slice().sort((a, b) => Number(a.expected_final_rank) - Number(b.expected_final_rank) || normalizedTeamId(a.team_id).localeCompare(normalizedTeamId(b.team_id)));
     let evidence;
     let note;
     if (state.probability === "rank") {

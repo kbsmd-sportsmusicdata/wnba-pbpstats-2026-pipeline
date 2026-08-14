@@ -17,6 +17,7 @@ from .render_markdown import (
     _load_inputs,
     _nullable_boolean,
 )
+from .team_game_layer import normalize_id
 
 
 STAT_PACK_FILENAME = "wnba_playoff_stat_pack_insert.html"
@@ -138,6 +139,13 @@ def _build_stat_pack(
     else:
         cutline_markup = '<p class="empty-state">No distinct cutline pair.</p>'
 
+    projected_order = forecast.assign(
+        _normalized_team_id=forecast["team_id"].map(normalize_id)
+    ).sort_values(
+        ["expected_final_rank", "_normalized_team_id"],
+        ascending=[True, True],
+        kind="stable",
+    )
     projected_rows = [
         (
             _integer(index),
@@ -146,12 +154,7 @@ def _build_stat_pack(
             _number(row.expected_final_rank, 2),
             f"{_number(row.wins_p10)}–{_number(row.wins_p50)}–{_number(row.wins_p90)}",
         )
-        for index, row in enumerate(
-            forecast.sort_values(
-                ["projected_wins_mean", "team_id"], ascending=[False, True], kind="stable"
-            ).itertuples(),
-            start=1,
-        )
+        for index, row in enumerate(projected_order.itertuples(), start=1)
     ]
     projected_table = _table(
         ("", "Team", "Playoff", "Exp rank", "P10 · P50 · P90"), projected_rows

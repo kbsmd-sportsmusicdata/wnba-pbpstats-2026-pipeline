@@ -244,6 +244,7 @@ const assert = (condition, message) => { if (!condition) throw new Error(message
 def _run_dashboard_file_contract(
     index_path: Path,
     expected_external_qa: str = "unavailable (non-blocking; no external team comparison)",
+    expected_projected_order: str = "",
 ) -> str:
     """Open the published index directly and exercise real browser controls."""
 
@@ -272,6 +273,8 @@ def _run_dashboard_file_contract(
       status: document.getElementById("app-status").textContent,
       current: document.getElementById("current-table").textContent,
       projected: document.getElementById("projected-table").textContent,
+      projectedOrder: [...document.querySelectorAll("#projected-table tbody tr")]
+        .map((row) => row.cells[0].textContent.trim()).join(","),
       selectedTeam: document.getElementById("team-select").value,
       rankChecked: document.querySelector('input[name="probability"][value="rank"]').checked,
       errorHidden: document.getElementById("error-state").hidden,
@@ -282,6 +285,7 @@ def _run_dashboard_file_contract(
         !result.current.includes("Home") ||
         !result.current.includes("Current .500+") ||
         !result.projected.includes("Modal final rank") ||
+        (process.argv[4] && result.projectedOrder !== process.argv[4]) ||
         result.selectedTeam !== "B" || !result.rankChecked || !result.errorHidden ||
         !result.method.includes("External standings QA") ||
         !result.method.includes(process.argv[3])) {
@@ -302,7 +306,13 @@ def _run_dashboard_file_contract(
         encoding="utf-8",
     )
     completed = _run_node_browser(
-        ["node", str(runner), index_path.as_uri(), expected_external_qa],
+        [
+            "node",
+            str(runner),
+            index_path.as_uri(),
+            expected_external_qa,
+            expected_projected_order,
+        ],
         node_modules=node_modules,
         timeout=45,
     )
@@ -360,6 +370,54 @@ def _measure_stat_pack_top_band(root: Path, filename: str) -> dict:
 
 
 class WebRendererTests(unittest.TestCase):
+    def test_projected_standings_order_uses_expected_rank_not_projected_wins(self):
+        """Catches renderers substituting projected wins for supplied expected rank."""
+        from standings_playoff_forecast.render_dashboard import render_dashboard
+        from standings_playoff_forecast.render_stat_pack import render_stat_pack
+
+        with tempfile.TemporaryDirectory() as temporary:
+            cfg, processed_root = _literal_bundle(Path(temporary))
+            forecast_path = processed_root / "forecast_summary.csv"
+            forecast = pd.read_csv(forecast_path)
+            forecast.loc[forecast["team_id"].eq("A"), [
+                "expected_final_rank", "projected_wins_mean"
+            ]] = [2.0, 30.0]
+            forecast.loc[forecast["team_id"].eq("B"), [
+                "expected_final_rank", "projected_wins_mean"
+            ]] = [1.0, 20.0]
+            forecast.to_csv(forecast_path, index=False)
+
+            payload_path = processed_root / "forecast_payload.json"
+            payload = json.loads(payload_path.read_text(encoding="utf-8"))
+            for row in payload["forecast_summary"]:
+                if row["team_id"] == "A":
+                    row["expected_final_rank"] = 2.0
+                    row["projected_wins_mean"] = 30.0
+                elif row["team_id"] == "B":
+                    row["expected_final_rank"] = 1.0
+                    row["projected_wins_mean"] = 20.0
+            payload_path.write_text(
+                json.dumps(payload, sort_keys=True, separators=(",", ":")) + "\n",
+                encoding="utf-8",
+            )
+
+            stat_pack = render_stat_pack(processed_root, cfg=cfg).read_text(
+                encoding="utf-8"
+            )
+            projected = stat_pack[
+                stat_pack.index('<section class="zone projected"') :
+                stat_pack.index('<section class="zone heat"')
+            ]
+            self.assertLess(projected.index("<td>BRV</td>"), projected.index("<td>ALP</td>"))
+
+            dashboard = render_dashboard(processed_root, cfg=cfg)
+            self.assertEqual(
+                _run_dashboard_file_contract(
+                    dashboard, expected_projected_order="BRV,ALP"
+                ).strip(),
+                "PASS",
+            )
+
     def test_browser_runtime_discovery_honors_portable_node_path_fallback(self):
         with tempfile.TemporaryDirectory() as temporary:
             node_modules = Path(temporary) / "node_modules"
