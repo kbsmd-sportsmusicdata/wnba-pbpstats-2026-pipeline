@@ -402,6 +402,73 @@ def _write_fixture_bundle(
 
 
 class OutputBundleTest(unittest.TestCase):
+    def test_rejects_safe_pbpstats_rows_without_supported_provenance_evidence(self) -> None:
+        """Catches a safe PBPStats status crossing the output boundary without evidence."""
+        from standings_playoff_forecast.outputs import write_output_bundle
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            cfg, model_cfg, bundle = _inputs(root)
+            invalid_strength = bundle.team_strength.drop(
+                columns=[
+                    "pbpstats_provenance_kind",
+                    "pbpstats_cutoff_safety_upper_bound",
+                ]
+            )
+            invalid_bundle = replace(bundle, team_strength=invalid_strength)
+            season_config = root / "season.json"
+            model_config = root / "model.json"
+            source = root / "source.bin"
+            season_config.write_bytes(b"season")
+            model_config.write_bytes(b"model")
+            source.write_bytes(b"source")
+
+            with self.assertRaisesRegex(ValueError, "missing required columns"):
+                write_output_bundle(
+                    invalid_bundle,
+                    cfg=cfg,
+                    model_cfg=model_cfg,
+                    cutoff="2031-06-01",
+                    season_config_path=season_config,
+                    model_config_path=model_config,
+                    source_files={"schedule": source},
+                    **_validation_inputs(cfg),
+                    repository_root=root,
+                )
+
+    def test_rejects_available_pbpstats_rows_without_kind_or_evidence(self) -> None:
+        """Catches context availability claiming a source state that cannot be described."""
+        from standings_playoff_forecast.outputs import write_output_bundle
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            cfg, model_cfg, bundle = _inputs(root)
+            invalid_strength = bundle.team_strength.copy()
+            invalid_strength["pbpstats_snapshot_safe_for_cutoff"] = False
+            invalid_strength["pbpstats_provenance_kind"] = pd.NA
+            invalid_strength["pbpstats_snapshot_as_of"] = pd.NaT
+            invalid_strength["pbpstats_cutoff_safety_upper_bound"] = pd.NaT
+            invalid_bundle = replace(bundle, team_strength=invalid_strength)
+            season_config = root / "season.json"
+            model_config = root / "model.json"
+            source = root / "source.bin"
+            season_config.write_bytes(b"season")
+            model_config.write_bytes(b"model")
+            source.write_bytes(b"source")
+
+            with self.assertRaisesRegex(ValueError, "PBPStats provenance"):
+                write_output_bundle(
+                    invalid_bundle,
+                    cfg=cfg,
+                    model_cfg=model_cfg,
+                    cutoff="2031-06-01",
+                    season_config_path=season_config,
+                    model_config_path=model_config,
+                    source_files={"schedule": source},
+                    **_validation_inputs(cfg),
+                    repository_root=root,
+                )
+
     def test_manifest_status_names_last_saved_cutoff_safety_bound_honestly(self) -> None:
         """Catches conservative save-time evidence being called exact coverage."""
         from standings_playoff_forecast.metadata import (

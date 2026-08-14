@@ -40,6 +40,9 @@ class ForecastSources:
     team_box_path: Path
     team_history_path: Path
     pbp_team_features_path: Path | None
+    pbp_team_features_sidecar_path: Path | None
+    pbp_team_features_sidecar_evidence_kind: str | None
+    pbp_team_features_sidecar_evidence_date: str | None
     external_standings_path: Path | None
 
 
@@ -90,6 +93,36 @@ def _load_pbp_team_features(path: Path) -> pd.DataFrame:
         "sidecar": str(sidecar_path),
     }
     return frame
+
+
+def _validated_pbp_sidecar_contract(
+    frame: pd.DataFrame | None,
+) -> tuple[Path | None, str | None, str | None]:
+    """Return provenance only when the loader accepted the sidecar evidence."""
+
+    if frame is None:
+        return None, None, None
+    metadata = frame.attrs.get("pbpstats_snapshot_metadata")
+    if not isinstance(metadata, Mapping):
+        return None, None, None
+    kind = metadata.get("provenance_kind")
+    if kind == "snapshot_as_of":
+        evidence_date = metadata.get("snapshot_as_of")
+    elif kind == "last_saved_at_utc_upper_bound":
+        evidence_date = metadata.get("cutoff_safety_upper_bound")
+    else:
+        return None, None, None
+    sidecar = metadata.get("sidecar")
+    if (
+        not isinstance(sidecar, str)
+        or not isinstance(evidence_date, str)
+        or pd.isna(pd.to_datetime(evidence_date, errors="coerce"))
+    ):
+        return None, None, None
+    sidecar_path = Path(sidecar).expanduser().resolve()
+    if not sidecar_path.is_file():
+        return None, None, None
+    return sidecar_path, kind, evidence_date
 
 
 def _load_optional_parquet(
@@ -164,19 +197,32 @@ def load_forecast_sources(
             external_standings,
             external_standings_load_status,
         ) = _load_optional_parquet(external_standings_candidate)
+    pbp_team_features = (
+        _load_pbp_team_features(optional_path) if optional_path.is_file() else None
+    )
+    (
+        pbp_team_features_sidecar_path,
+        pbp_team_features_sidecar_evidence_kind,
+        pbp_team_features_sidecar_evidence_date,
+    ) = _validated_pbp_sidecar_contract(pbp_team_features)
     return ForecastSources(
         schedule=pd.read_parquet(mandatory_paths["schedule"]),
         team_box=pd.read_parquet(mandatory_paths["team_box"]),
         team_history=pd.read_csv(history_path),
-        pbp_team_features=_load_pbp_team_features(optional_path)
-        if optional_path.is_file()
-        else None,
+        pbp_team_features=pbp_team_features,
         external_standings=external_standings,
         external_standings_load_status=external_standings_load_status,
         schedule_path=mandatory_paths["schedule"],
         team_box_path=mandatory_paths["team_box"],
         team_history_path=history_path,
         pbp_team_features_path=optional_path if optional_path.is_file() else None,
+        pbp_team_features_sidecar_path=pbp_team_features_sidecar_path,
+        pbp_team_features_sidecar_evidence_kind=(
+            pbp_team_features_sidecar_evidence_kind
+        ),
+        pbp_team_features_sidecar_evidence_date=(
+            pbp_team_features_sidecar_evidence_date
+        ),
         external_standings_path=external_standings_candidate
         if external_standings_candidate is not None
         and external_standings_candidate.is_file()

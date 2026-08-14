@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
 import sys
@@ -175,6 +176,34 @@ def literal_sources(root: Path) -> SimpleNamespace:
 
 
 class OrchestratorIntegrationTests(unittest.TestCase):
+    def test_validated_pbp_sidecar_is_separate_hashed_manifest_provenance(self):
+        """Catches cutoff evidence affecting a run without a separately hashed source."""
+        from standings_playoff_forecast.metadata import _source_provenance
+
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            sources = literal_sources(root)
+            sidecar = root / "sources" / "team_totals_features_latest.json"
+            sidecar_bytes = b'{"metadata":{"snapshot_as_of":"2026-06-01"}}\n'
+            sidecar.write_bytes(sidecar_bytes)
+            sources.pbp_team_features_sidecar_path = sidecar
+            sources.pbp_team_features_sidecar_evidence_kind = "snapshot_as_of"
+            sources.pbp_team_features_sidecar_evidence_date = "2026-06-01"
+
+            provenance = _source_provenance(
+                builder._source_files(sources, pd.DataFrame())
+            )
+
+            sidecar_entry = {
+                entry["name"]: entry for entry in provenance
+            }["pbp_team_features_sidecar"]
+            self.assertEqual(sidecar_entry["path"], str(sidecar.resolve()))
+            self.assertEqual(
+                sidecar_entry["sha256"], hashlib.sha256(sidecar_bytes).hexdigest()
+            )
+            self.assertEqual(sidecar_entry["evidence_kind"], "snapshot_as_of")
+            self.assertEqual(sidecar_entry["evidence_date"], "2026-06-01")
+
     def test_false_string_completion_token_cannot_advance_default_cutoff(self):
         """Catches truthy string coercion selecting an unplayed game's date."""
         with tempfile.TemporaryDirectory() as temporary:

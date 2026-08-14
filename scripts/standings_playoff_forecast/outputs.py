@@ -72,6 +72,9 @@ FORECAST_SUMMARY_COLUMNS = [
 ]
 
 AGGREGATE_ABSOLUTE_TOLERANCE = 1e-12
+_PBPSTATS_SUPPORTED_PROVENANCE_KINDS = frozenset(
+    {"snapshot_as_of", "last_saved_at_utc_upper_bound"}
+)
 
 
 @dataclass(frozen=True)
@@ -341,6 +344,59 @@ def _validate_season_schedule_evidence(
         )
 
 
+def _validate_pbpstats_output_evidence(team_strength: pd.DataFrame) -> None:
+    """Reject PBPStats status rows that cannot be explained by one source state."""
+
+    def _coherent_boolean(column: str) -> bool:
+        values = team_strength[column]
+        if not values.map(lambda value: isinstance(value, (bool, np.bool_))).all():
+            raise ValueError(f"PBPStats provenance {column} must be boolean")
+        unique = set(values.tolist())
+        if len(unique) != 1:
+            raise ValueError("PBPStats provenance must agree across team rows")
+        return bool(next(iter(unique)))
+
+    def _coherent_date(column: str) -> pd.Timestamp | None:
+        values = team_strength[column]
+        missing = values.isna()
+        if missing.any() and not missing.all():
+            raise ValueError("PBPStats provenance evidence must agree across team rows")
+        if missing.all():
+            return None
+        parsed = pd.to_datetime(values, errors="coerce", utc=True)
+        if parsed.isna().any() or parsed.nunique() != 1:
+            raise ValueError("PBPStats provenance evidence date must be parseable and coherent")
+        return pd.Timestamp(parsed.iloc[0])
+
+    available = _coherent_boolean("pbpstats_snapshot_available")
+    safe = _coherent_boolean("pbpstats_snapshot_safe_for_cutoff")
+    kinds = team_strength["pbpstats_provenance_kind"]
+    kind_missing = kinds.isna()
+    if kind_missing.any() and not kind_missing.all():
+        raise ValueError("PBPStats provenance kind must agree across team rows")
+    kind = None if kind_missing.all() else str(kinds.iloc[0])
+    if kind is not None and not kinds.astype(str).eq(kind).all():
+        raise ValueError("PBPStats provenance kind must agree across team rows")
+    snapshot_as_of = _coherent_date("pbpstats_snapshot_as_of")
+    upper_bound = _coherent_date("pbpstats_cutoff_safety_upper_bound")
+
+    if kind is None or kind == "unavailable":
+        if available or safe or snapshot_as_of is not None or upper_bound is not None:
+            raise ValueError("PBPStats provenance is missing for available or safe context")
+        return
+    if kind not in _PBPSTATS_SUPPORTED_PROVENANCE_KINDS:
+        raise ValueError(f"unsupported PBPStats provenance kind: {kind}")
+    if not available:
+        raise ValueError("PBPStats provenance cannot support unavailable context")
+    if kind == "snapshot_as_of":
+        if snapshot_as_of is None or upper_bound is not None:
+            raise ValueError("PBPStats provenance snapshot_as_of requires exact evidence only")
+    elif upper_bound is None or snapshot_as_of is not None:
+        raise ValueError(
+            "PBPStats provenance last_saved_at_utc_upper_bound requires conservative evidence only"
+        )
+
+
 def _validate_and_normalize(
     bundle: ForecastOutputBundle, cfg: object
 ) -> dict[str, pd.DataFrame]:
@@ -388,6 +444,8 @@ def _validate_and_normalize(
             "composite_strength",
             "pbpstats_snapshot_available",
             "pbpstats_snapshot_as_of",
+            "pbpstats_cutoff_safety_upper_bound",
+            "pbpstats_provenance_kind",
             "pbpstats_snapshot_safe_for_cutoff",
         },
         "team_strength",
@@ -470,6 +528,7 @@ def _validate_and_normalize(
         frame = normalized[name]
         if frame["team_id"].duplicated().any() or set(frame["team_id"]) != set(team_ids):
             raise ValueError(f"{name} must contain one row per configured team")
+    _validate_pbpstats_output_evidence(normalized["team_strength"])
     head_to_head = normalized["head_to_head"]
     if not (set(head_to_head["team_id"]) | set(head_to_head["opponent_id"])).issubset(team_ids):
         raise ValueError("head_to_head contains a team outside current_standings")

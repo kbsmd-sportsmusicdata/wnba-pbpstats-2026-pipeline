@@ -193,7 +193,7 @@ def _normalized_root(cfg: SeasonConfig) -> Path:
 
 def _source_files(
     sources: ForecastSources, historical_context: pd.DataFrame
-) -> dict[str, Path]:
+) -> dict[str, Path | Mapping[str, str | Path]]:
     paths = {
         "schedule": sources.schedule_path,
         "season_config_default": CONFIG_ROOT / "seasons" / "default.json",
@@ -204,6 +204,25 @@ def _source_files(
         paths["external_standings"] = sources.external_standings_path
     if sources.pbp_team_features_path is not None:
         paths["pbp_team_features"] = sources.pbp_team_features_path
+    sidecar_fields = (
+        getattr(sources, "pbp_team_features_sidecar_path", None),
+        getattr(sources, "pbp_team_features_sidecar_evidence_kind", None),
+        getattr(sources, "pbp_team_features_sidecar_evidence_date", None),
+    )
+    if any(value is not None for value in sidecar_fields):
+        sidecar_path, evidence_kind, evidence_date = sidecar_fields
+        if (
+            not isinstance(sidecar_path, Path)
+            or evidence_kind
+            not in {"snapshot_as_of", "last_saved_at_utc_upper_bound"}
+            or not isinstance(evidence_date, str)
+        ):
+            raise ValueError("validated PBPStats sidecar provenance is incomplete")
+        paths["pbp_team_features_sidecar"] = {
+            "path": sidecar_path,
+            "evidence_kind": evidence_kind,
+            "evidence_date": evidence_date,
+        }
     historical_paths = historical_context.attrs.get(
         "historical_team_game_paths", []
     )

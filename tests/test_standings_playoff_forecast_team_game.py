@@ -340,6 +340,18 @@ class ForecastSourceLoaderTest(unittest.TestCase):
                     "sidecar": str(features_path.with_suffix(".json")),
                 },
             )
+            self.assertEqual(
+                sources.pbp_team_features_sidecar_path,
+                features_path.with_suffix(".json").resolve(),
+            )
+            self.assertEqual(
+                sources.pbp_team_features_sidecar_evidence_kind,
+                "last_saved_at_utc_upper_bound",
+            )
+            self.assertEqual(
+                sources.pbp_team_features_sidecar_evidence_date,
+                "2026-06-03T21:05:00+00:00",
+            )
 
             features_path.with_suffix(".json").write_text(
                 '{"metadata":{"snapshot_as_of":"2026-06-02T23:00:00+00:00",'
@@ -361,6 +373,17 @@ class ForecastSourceLoaderTest(unittest.TestCase):
                     "run_id": "20260603T210500Z",
                     "sidecar": str(features_path.with_suffix(".json")),
                 },
+            )
+            self.assertEqual(
+                explicit.pbp_team_features_sidecar_path,
+                features_path.with_suffix(".json").resolve(),
+            )
+            self.assertEqual(
+                explicit.pbp_team_features_sidecar_evidence_kind, "snapshot_as_of"
+            )
+            self.assertEqual(
+                explicit.pbp_team_features_sidecar_evidence_date,
+                "2026-06-02T23:00:00+00:00",
             )
 
     def test_mismatched_pbpstats_sidecar_is_not_trusted_as_cutoff_evidence(self) -> None:
@@ -411,6 +434,9 @@ class ForecastSourceLoaderTest(unittest.TestCase):
             self.assertNotIn(
                 "pbpstats_snapshot_metadata", sources.pbp_team_features.attrs
             )
+            self.assertIsNone(sources.pbp_team_features_sidecar_path)
+            self.assertIsNone(sources.pbp_team_features_sidecar_evidence_kind)
+            self.assertIsNone(sources.pbp_team_features_sidecar_evidence_date)
 
 
 class CompletedGameLedgerValidationTest(unittest.TestCase):
