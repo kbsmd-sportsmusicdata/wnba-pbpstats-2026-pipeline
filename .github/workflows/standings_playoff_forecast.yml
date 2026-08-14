@@ -122,7 +122,12 @@ jobs:
       - name: Build forecast and deliverables
         run: |
           set -euo pipefail
-          ARGS=(--season "$FORECAST_SEASON" --simulations "$FORECAST_SIMULATIONS" --render all)
+          ARGS=(
+            --season "$FORECAST_SEASON"
+            --simulations "$FORECAST_SIMULATIONS"
+            --render all
+            --team-game-output-path-file .git/standings_forecast_team_game_output_path
+          )
           if [[ -n "$FORECAST_CUTOFF" ]]; then
             ARGS+=(--cutoff "$FORECAST_CUTOFF")
           fi
@@ -243,28 +248,41 @@ jobs:
             echo "commit_outputs requires a branch ref" >&2
             exit 2
           fi
-          SHARED_TEAM_GAME_OUTPUT="data/processed/wnba_team_game/season=$FORECAST_SEASON/team_game.parquet"
-          TEAM_GAME_OUTPUT="$SHARED_TEAM_GAME_OUTPUT"
-          if [[ -n "$FORECAST_CUTOFF" ]]; then
-            CUTOFF_TEAM_GAME_OUTPUT="data/processed/wnba_team_game/season=$FORECAST_SEASON/cutoff=$FORECAST_CUTOFF/team_game.parquet"
-            SHARED_TEAM_GAME_STATE="$(git status --porcelain -- "$SHARED_TEAM_GAME_OUTPUT")"
-            CUTOFF_TEAM_GAME_STATE="$(git status --porcelain -- "$CUTOFF_TEAM_GAME_OUTPUT")"
-            if [[ -n "$SHARED_TEAM_GAME_STATE" && -n "$CUTOFF_TEAM_GAME_STATE" ]]; then
-              echo "ambiguous team-game outputs: shared and cutoff partitions both changed" >&2
-              exit 2
-            elif [[ -n "$CUTOFF_TEAM_GAME_STATE" ]]; then
-              TEAM_GAME_OUTPUT="$CUTOFF_TEAM_GAME_OUTPUT"
-            elif [[ -n "$SHARED_TEAM_GAME_STATE" ]]; then
-              TEAM_GAME_OUTPUT="$SHARED_TEAM_GAME_OUTPUT"
-            else
-              echo "could not identify the team-game output produced for cutoff $FORECAST_CUTOFF" >&2
-              exit 2
-            fi
-          fi
-          if [[ ! -f "$TEAM_GAME_OUTPUT" ]]; then
-            echo "team-game output is missing or is not a regular file: $TEAM_GAME_OUTPUT" >&2
-            exit 2
-          fi
+          TEAM_GAME_OUTPUT="$(python - "$FORECAST_SEASON" "$FORECAST_CUTOFF" <<'PY'
+          import os
+          from pathlib import Path
+          import sys
+
+          season, cutoff = sys.argv[1:]
+          workspace = Path.cwd().resolve()
+          evidence_path = workspace / ".git/standings_forecast_team_game_output_path"
+          try:
+              lines = evidence_path.read_text(encoding="utf-8").splitlines()
+          except OSError as error:
+              raise SystemExit(f"team-game output path evidence is unavailable: {error}")
+          if len(lines) != 1 or not lines[0].strip():
+              raise SystemExit("team-game output path evidence must contain exactly one path")
+          raw_path = Path(lines[0])
+          if not raw_path.is_absolute():
+              raise SystemExit("team-game output path evidence must be absolute")
+          candidate = Path(os.path.abspath(raw_path))
+          season_root = (
+              workspace / f"data/processed/wnba_team_game/season={season}"
+          )
+          allowed = {season_root / "team_game.parquet"}
+          if cutoff:
+              allowed.add(season_root / f"cutoff={cutoff}" / "team_game.parquet")
+          if candidate not in allowed:
+              raise SystemExit(
+                  "team-game output path evidence is outside the exact forecast allowlist"
+              )
+          if candidate.is_symlink() or not candidate.is_file():
+              raise SystemExit(
+                  f"team-game output is missing or is not a regular file: {candidate}"
+              )
+          print(candidate.relative_to(workspace).as_posix())
+          PY
+          )"
           git add -- \
             "analysis/standings_playoff_forecast/data/processed/season=$FORECAST_SEASON/latest" \
             "analysis/standings_playoff_forecast/deliverables/season=$FORECAST_SEASON/latest" \

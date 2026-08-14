@@ -17,6 +17,9 @@ REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
 WORKFLOW_PATH = (
     REPOSITORY_ROOT / ".github/workflows/standings_playoff_forecast.yml"
 )
+TEAM_GAME_PATH_EVIDENCE = Path(
+    ".git/standings_forecast_team_game_output_path"
+)
 REQUIRED_ARTIFACTS = (
     "analysis/standings_playoff_forecast/deliverables/season=2026/latest/wnba_standings_playoff_forecast.xlsx",
     "analysis/standings_playoff_forecast/deliverables/season=2026/latest/wnba_broadcast_forecast_brief.md",
@@ -149,6 +152,14 @@ def _workflow_env(**overrides: str) -> dict[str, str]:
     return env
 
 
+def _write_team_game_path_evidence(checkout: Path, output_path: Path) -> None:
+    evidence = checkout / TEAM_GAME_PATH_EVIDENCE
+    evidence.write_text(
+        f"{(checkout / output_path).resolve()}\n",
+        encoding="utf-8",
+    )
+
+
 class WorkflowContractTests(unittest.TestCase):
     def test_repository_has_exactly_one_manual_forecast_workflow(self) -> None:
         """Catches drift between underscore and hyphen workflow copies."""
@@ -262,7 +273,7 @@ class WorkflowContractTests(unittest.TestCase):
                 continue
             for input_name in ("season", "cutoff", "simulations"):
                 self.assertNotIn(f"${{{{ inputs.{input_name} }}}}", step["run"])
-        self.assertIn('ARGS=(--season "$FORECAST_SEASON"', workflow_text)
+        self.assertIn('--season "$FORECAST_SEASON"', workflow_text)
 
     def test_refresh_test_build_and_upload_gates_are_ordered(self) -> None:
         workflow = _load_workflow()
@@ -522,6 +533,8 @@ class WorkflowContractTests(unittest.TestCase):
                     "100000",
                     "--render",
                     "all",
+                    "--team-game-output-path-file",
+                    str(TEAM_GAME_PATH_EVIDENCE),
                 ],
             )
 
@@ -567,6 +580,7 @@ class WorkflowContractTests(unittest.TestCase):
 
             for path in [*allowed, raw, unrelated]:
                 (checkout / path).write_text("after\n", encoding="utf-8")
+            _write_team_game_path_evidence(checkout, allowed[-1])
             env = _workflow_env()
             env.update(
                 {"GITHUB_REF_TYPE": "branch", "GITHUB_REF_NAME": "forecast-branch"}
@@ -646,6 +660,7 @@ class WorkflowContractTests(unittest.TestCase):
                 expected = [machine, deliverable, produced]
                 for path in [*expected, unrelated]:
                     (checkout / path).write_text("after\n", encoding="utf-8")
+                _write_team_game_path_evidence(checkout, produced)
                 env = _workflow_env(FORECAST_CUTOFF=cutoff)
                 env.update(
                     {"GITHUB_REF_TYPE": "branch", "GITHUB_REF_NAME": "forecast-branch"}
@@ -666,45 +681,77 @@ class WorkflowContractTests(unittest.TestCase):
                 status = _run(["git", "status", "--short"], cwd=checkout).stdout
                 self.assertIn(str(unrelated), status)
 
-    def test_commit_step_rejects_ambiguous_dual_partition_changes(self) -> None:
+    def test_commit_step_rejects_ambiguous_or_injected_path_evidence(self) -> None:
         workflow = _load_workflow()
         commit = _named_step(workflow, "Commit forecast outputs if requested")["run"]
-        with tempfile.TemporaryDirectory() as directory:
-            checkout = Path(directory)
-            _run(["git", "init", "-b", "forecast-branch"], cwd=checkout)
-            _run(["git", "config", "user.name", "Test User"], cwd=checkout)
-            _run(["git", "config", "user.email", "test@example.com"], cwd=checkout)
-            shared = Path(
-                "data/processed/wnba_team_game/season=2026/team_game.parquet"
-            )
-            cutoff_partition = Path(
-                "data/processed/wnba_team_game/season=2026/cutoff=2026-05-01/team_game.parquet"
-            )
-            for path in (shared, cutoff_partition):
-                destination = checkout / path
-                destination.parent.mkdir(parents=True, exist_ok=True)
-                destination.write_text("before\n", encoding="utf-8")
-            _run(["git", "add", "."], cwd=checkout)
-            _run(["git", "commit", "-m", "initial"], cwd=checkout)
-            before = _run(["git", "rev-parse", "HEAD"], cwd=checkout).stdout.strip()
-            for path in (shared, cutoff_partition):
-                (checkout / path).write_text("after\n", encoding="utf-8")
+        for case in (
+            "missing_evidence",
+            "ambiguous",
+            "relative_injection",
+            "absolute_injection",
+            "symlink_injection",
+        ):
+            with self.subTest(case=case), tempfile.TemporaryDirectory() as directory:
+                checkout = Path(directory)
+                _run(["git", "init", "-b", "forecast-branch"], cwd=checkout)
+                _run(["git", "config", "user.name", "Test User"], cwd=checkout)
+                _run(["git", "config", "user.email", "test@example.com"], cwd=checkout)
+                shared = Path(
+                    "data/processed/wnba_team_game/season=2026/team_game.parquet"
+                )
+                cutoff_partition = Path(
+                    "data/processed/wnba_team_game/season=2026/cutoff=2026-05-01/team_game.parquet"
+                )
+                unrelated = Path("notes.txt")
+                for path in (shared, cutoff_partition, unrelated):
+                    destination = checkout / path
+                    destination.parent.mkdir(parents=True, exist_ok=True)
+                    destination.write_text("before\n", encoding="utf-8")
+                _run(["git", "add", "."], cwd=checkout)
+                _run(["git", "commit", "-m", "initial"], cwd=checkout)
+                before = _run(["git", "rev-parse", "HEAD"], cwd=checkout).stdout.strip()
+                evidence = checkout / TEAM_GAME_PATH_EVIDENCE
+                if case == "missing_evidence":
+                    pass
+                elif case == "ambiguous":
+                    evidence.write_text(
+                        f"{(checkout / shared).resolve()}\n"
+                        f"{(checkout / cutoff_partition).resolve()}\n",
+                        encoding="utf-8",
+                    )
+                elif case == "relative_injection":
+                    evidence.write_text("notes.txt\n", encoding="utf-8")
+                elif case == "symlink_injection":
+                    (checkout / shared).unlink()
+                    (checkout / shared).symlink_to((checkout / unrelated).resolve())
+                    evidence.write_text(
+                        f"{(checkout / shared).absolute()}\n", encoding="utf-8"
+                    )
+                else:
+                    evidence.write_text(
+                        f"{(checkout / unrelated).resolve()}\n", encoding="utf-8"
+                    )
 
-            env = _workflow_env(FORECAST_CUTOFF="2026-05-01")
-            env.update(
-                {"GITHUB_REF_TYPE": "branch", "GITHUB_REF_NAME": "forecast-branch"}
-            )
-            result = _run(
-                ["bash", "-euo", "pipefail", "-c", commit],
-                cwd=checkout,
-                env=env,
-                check=False,
-            )
+                env = _workflow_env(FORECAST_CUTOFF="2026-05-01")
+                env.update(
+                    {"GITHUB_REF_TYPE": "branch", "GITHUB_REF_NAME": "forecast-branch"}
+                )
+                result = _run(
+                    ["bash", "-euo", "pipefail", "-c", commit],
+                    cwd=checkout,
+                    env=env,
+                    check=False,
+                )
 
-            self.assertNotEqual(result.returncode, 0)
-            self.assertIn("ambiguous team-game outputs", result.stderr)
-            after = _run(["git", "rev-parse", "HEAD"], cwd=checkout).stdout.strip()
-            self.assertEqual(after, before)
+                self.assertNotEqual(result.returncode, 0)
+                after = _run(["git", "rev-parse", "HEAD"], cwd=checkout).stdout.strip()
+                self.assertEqual(after, before)
+                cached = _run(
+                    ["git", "diff", "--cached", "--quiet"],
+                    cwd=checkout,
+                    check=False,
+                )
+                self.assertEqual(cached.returncode, 0)
 
     def test_commit_step_rejects_missing_or_deleted_team_game_output_before_staging(self) -> None:
         workflow = _load_workflow()
@@ -752,6 +799,8 @@ class WorkflowContractTests(unittest.TestCase):
                     (checkout / shared).unlink()
                 elif deleted == "cutoff":
                     (checkout / cutoff_partition).unlink()
+                evidence_target = shared if cutoff == "" else cutoff_partition
+                _write_team_game_path_evidence(checkout, evidence_target)
                 env = _workflow_env(FORECAST_CUTOFF=cutoff)
                 env.update(
                     {"GITHUB_REF_TYPE": "branch", "GITHUB_REF_NAME": "forecast-branch"}
@@ -772,6 +821,58 @@ class WorkflowContractTests(unittest.TestCase):
                     check=False,
                 )
                 self.assertEqual(cached.returncode, 0)
+
+    def test_commit_step_accepts_clean_idempotent_explicit_cutoff_reruns(self) -> None:
+        workflow = _load_workflow()
+        commit = _named_step(workflow, "Commit forecast outputs if requested")["run"]
+        scenarios = (
+            ("early", "2026-05-01", True),
+            ("equal_latest", "2026-06-01", False),
+            ("future", "2026-07-01", False),
+        )
+        for name, cutoff, producer_uses_cutoff in scenarios:
+            with self.subTest(name=name), tempfile.TemporaryDirectory() as directory:
+                checkout = Path(directory)
+                _run(["git", "init", "-b", "forecast-branch"], cwd=checkout)
+                _run(["git", "config", "user.name", "Test User"], cwd=checkout)
+                _run(["git", "config", "user.email", "test@example.com"], cwd=checkout)
+                shared = Path(
+                    "data/processed/wnba_team_game/season=2026/team_game.parquet"
+                )
+                cutoff_partition = Path(
+                    f"data/processed/wnba_team_game/season=2026/cutoff={cutoff}/team_game.parquet"
+                )
+                machine = Path(
+                    "analysis/standings_playoff_forecast/data/processed/season=2026/latest/payload.json"
+                )
+                deliverable = Path(
+                    "analysis/standings_playoff_forecast/deliverables/season=2026/latest/brief.md"
+                )
+                for path in (shared, cutoff_partition, machine, deliverable):
+                    destination = checkout / path
+                    destination.parent.mkdir(parents=True, exist_ok=True)
+                    destination.write_text("unchanged\n", encoding="utf-8")
+                _run(["git", "add", "."], cwd=checkout)
+                _run(["git", "commit", "-m", "initial"], cwd=checkout)
+                before = _run(["git", "rev-parse", "HEAD"], cwd=checkout).stdout.strip()
+                produced = cutoff_partition if producer_uses_cutoff else shared
+                _write_team_game_path_evidence(checkout, produced)
+                env = _workflow_env(FORECAST_CUTOFF=cutoff)
+                env.update(
+                    {"GITHUB_REF_TYPE": "branch", "GITHUB_REF_NAME": "forecast-branch"}
+                )
+
+                result = _run(
+                    ["bash", "-euo", "pipefail", "-c", commit],
+                    cwd=checkout,
+                    env=env,
+                    check=False,
+                )
+
+                self.assertEqual(result.returncode, 0, result.stderr)
+                self.assertIn("No standings forecast output changes", result.stdout)
+                after = _run(["git", "rev-parse", "HEAD"], cwd=checkout).stdout.strip()
+                self.assertEqual(after, before)
 
 
 if __name__ == "__main__":
