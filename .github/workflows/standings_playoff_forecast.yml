@@ -243,9 +243,25 @@ jobs:
             echo "commit_outputs requires a branch ref" >&2
             exit 2
           fi
-          TEAM_GAME_OUTPUT="data/processed/wnba_team_game/season=$FORECAST_SEASON/team_game.parquet"
+          SHARED_TEAM_GAME_OUTPUT="data/processed/wnba_team_game/season=$FORECAST_SEASON/team_game.parquet"
+          TEAM_GAME_OUTPUT="$SHARED_TEAM_GAME_OUTPUT"
           if [[ -n "$FORECAST_CUTOFF" ]]; then
-            TEAM_GAME_OUTPUT="data/processed/wnba_team_game/season=$FORECAST_SEASON/cutoff=$FORECAST_CUTOFF/team_game.parquet"
+            CUTOFF_TEAM_GAME_OUTPUT="data/processed/wnba_team_game/season=$FORECAST_SEASON/cutoff=$FORECAST_CUTOFF/team_game.parquet"
+            SHARED_TEAM_GAME_STATE="$(git status --porcelain -- "$SHARED_TEAM_GAME_OUTPUT")"
+            CUTOFF_TEAM_GAME_STATE="$(git status --porcelain -- "$CUTOFF_TEAM_GAME_OUTPUT")"
+            if [[ -n "$SHARED_TEAM_GAME_STATE" && -n "$CUTOFF_TEAM_GAME_STATE" ]]; then
+              echo "ambiguous team-game outputs: shared and cutoff partitions both changed" >&2
+              exit 2
+            elif [[ -n "$CUTOFF_TEAM_GAME_STATE" ]]; then
+              TEAM_GAME_OUTPUT="$CUTOFF_TEAM_GAME_OUTPUT"
+            elif [[ -n "$SHARED_TEAM_GAME_STATE" ]]; then
+              TEAM_GAME_OUTPUT="$SHARED_TEAM_GAME_OUTPUT"
+            elif [[ -f "$CUTOFF_TEAM_GAME_OUTPUT" && ! -f "$SHARED_TEAM_GAME_OUTPUT" ]]; then
+              TEAM_GAME_OUTPUT="$CUTOFF_TEAM_GAME_OUTPUT"
+            elif [[ ! -f "$SHARED_TEAM_GAME_OUTPUT" ]]; then
+              echo "team-game output is missing for cutoff $FORECAST_CUTOFF" >&2
+              exit 2
+            fi
           fi
           git add -- \
             "analysis/standings_playoff_forecast/data/processed/season=$FORECAST_SEASON/latest" \

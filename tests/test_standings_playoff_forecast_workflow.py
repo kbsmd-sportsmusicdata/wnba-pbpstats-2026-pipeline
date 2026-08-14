@@ -601,39 +601,95 @@ class WorkflowContractTests(unittest.TestCase):
             )
             self.assertNotEqual(rejected.returncode, 0)
 
-    def test_commit_step_stages_the_cutoff_team_game_partition_only(self) -> None:
+    def test_commit_step_matches_explicit_cutoff_producer_partition(self) -> None:
+        workflow = _load_workflow()
+        commit = _named_step(workflow, "Commit forecast outputs if requested")["run"]
+        scenarios = (
+            ("early", "2026-05-01", True),
+            ("equal_latest", "2026-06-01", False),
+            ("future", "2026-07-01", False),
+        )
+        for name, cutoff, producer_uses_cutoff in scenarios:
+            with self.subTest(name=name), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                remote = root / "remote.git"
+                checkout = root / "checkout"
+                _run(["git", "init", "--bare", str(remote)])
+                checkout.mkdir()
+                _run(["git", "init", "-b", "forecast-branch"], cwd=checkout)
+                _run(["git", "config", "user.name", "Test User"], cwd=checkout)
+                _run(["git", "config", "user.email", "test@example.com"], cwd=checkout)
+                _run(["git", "remote", "add", "origin", str(remote)], cwd=checkout)
+
+                machine = Path(
+                    "analysis/standings_playoff_forecast/data/processed/season=2026/latest/payload.json"
+                )
+                deliverable = Path(
+                    "analysis/standings_playoff_forecast/deliverables/season=2026/latest/brief.md"
+                )
+                shared = Path(
+                    "data/processed/wnba_team_game/season=2026/team_game.parquet"
+                )
+                cutoff_partition = Path(
+                    f"data/processed/wnba_team_game/season=2026/cutoff={cutoff}/team_game.parquet"
+                )
+                unrelated = Path("notes.txt")
+                for path in (machine, deliverable, shared, cutoff_partition, unrelated):
+                    destination = checkout / path
+                    destination.parent.mkdir(parents=True, exist_ok=True)
+                    destination.write_text("before\n", encoding="utf-8")
+                _run(["git", "add", "."], cwd=checkout)
+                _run(["git", "commit", "-m", "initial"], cwd=checkout)
+                _run(["git", "push", "-u", "origin", "forecast-branch"], cwd=checkout)
+
+                produced = cutoff_partition if producer_uses_cutoff else shared
+                expected = [machine, deliverable, produced]
+                for path in [*expected, unrelated]:
+                    (checkout / path).write_text("after\n", encoding="utf-8")
+                env = _workflow_env(FORECAST_CUTOFF=cutoff)
+                env.update(
+                    {"GITHUB_REF_TYPE": "branch", "GITHUB_REF_NAME": "forecast-branch"}
+                )
+                result = _run(
+                    ["bash", "-euo", "pipefail", "-c", commit],
+                    cwd=checkout,
+                    env=env,
+                    check=False,
+                )
+
+                self.assertEqual(result.returncode, 0, result.stderr)
+                changed = _run(
+                    ["git", "diff-tree", "--no-commit-id", "--name-only", "-r", "HEAD"],
+                    cwd=checkout,
+                ).stdout.splitlines()
+                self.assertEqual(changed, sorted(str(path) for path in expected))
+                status = _run(["git", "status", "--short"], cwd=checkout).stdout
+                self.assertIn(str(unrelated), status)
+
+    def test_commit_step_rejects_ambiguous_dual_partition_changes(self) -> None:
         workflow = _load_workflow()
         commit = _named_step(workflow, "Commit forecast outputs if requested")["run"]
         with tempfile.TemporaryDirectory() as directory:
-            root = Path(directory)
-            remote = root / "remote.git"
-            checkout = root / "checkout"
-            _run(["git", "init", "--bare", str(remote)])
-            checkout.mkdir()
+            checkout = Path(directory)
             _run(["git", "init", "-b", "forecast-branch"], cwd=checkout)
             _run(["git", "config", "user.name", "Test User"], cwd=checkout)
             _run(["git", "config", "user.email", "test@example.com"], cwd=checkout)
-            _run(["git", "remote", "add", "origin", str(remote)], cwd=checkout)
-
-            expected = [
-                Path("analysis/standings_playoff_forecast/data/processed/season=2026/latest/payload.json"),
-                Path("analysis/standings_playoff_forecast/deliverables/season=2026/latest/brief.md"),
-                Path("data/processed/wnba_team_game/season=2026/cutoff=2026-05-01/team_game.parquet"),
-            ]
-            shared_partition = Path(
+            shared = Path(
                 "data/processed/wnba_team_game/season=2026/team_game.parquet"
             )
-            unrelated = Path("notes.txt")
-            for path in [*expected, shared_partition, unrelated]:
+            cutoff_partition = Path(
+                "data/processed/wnba_team_game/season=2026/cutoff=2026-05-01/team_game.parquet"
+            )
+            for path in (shared, cutoff_partition):
                 destination = checkout / path
                 destination.parent.mkdir(parents=True, exist_ok=True)
                 destination.write_text("before\n", encoding="utf-8")
             _run(["git", "add", "."], cwd=checkout)
             _run(["git", "commit", "-m", "initial"], cwd=checkout)
-            _run(["git", "push", "-u", "origin", "forecast-branch"], cwd=checkout)
-
-            for path in [*expected, shared_partition, unrelated]:
+            before = _run(["git", "rev-parse", "HEAD"], cwd=checkout).stdout.strip()
+            for path in (shared, cutoff_partition):
                 (checkout / path).write_text("after\n", encoding="utf-8")
+
             env = _workflow_env(FORECAST_CUTOFF="2026-05-01")
             env.update(
                 {"GITHUB_REF_TYPE": "branch", "GITHUB_REF_NAME": "forecast-branch"}
@@ -645,15 +701,10 @@ class WorkflowContractTests(unittest.TestCase):
                 check=False,
             )
 
-            self.assertEqual(result.returncode, 0, result.stderr)
-            changed = _run(
-                ["git", "diff-tree", "--no-commit-id", "--name-only", "-r", "HEAD"],
-                cwd=checkout,
-            ).stdout.splitlines()
-            self.assertEqual(changed, sorted(str(path) for path in expected))
-            status = _run(["git", "status", "--short"], cwd=checkout).stdout
-            self.assertIn(str(shared_partition), status)
-            self.assertIn(str(unrelated), status)
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn("ambiguous team-game outputs", result.stderr)
+            after = _run(["git", "rev-parse", "HEAD"], cwd=checkout).stdout.strip()
+            self.assertEqual(after, before)
 
 
 if __name__ == "__main__":
