@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import datetime as dt
+import math
 import warnings
 from dataclasses import dataclass, replace
 from pathlib import Path
@@ -53,10 +54,14 @@ from standings_playoff_forecast.team_game_layer import (
     LedgerValidationResult,
     build_team_game_layer,
     normalize_completion_flags,
+    normalize_id,
     qualify_regular_season_schedule,
     validate_completed_game_ledger,
 )
-from standings_playoff_forecast.team_strength import build_team_strength
+from standings_playoff_forecast.team_strength import (
+    PBPSTATS_CONTEXT_COLUMNS,
+    build_team_strength,
+)
 from standings_playoff_forecast.tiebreaks import rank_teams
 
 
@@ -328,6 +333,7 @@ def _enforce_required_pbpstats(
     sources: ForecastSources,
     team_strength: pd.DataFrame,
     model_cfg: ForecastModelConfig,
+    cfg: SeasonConfig,
 ) -> None:
     """Fail closed when the configured required enrichment lacks safe evidence."""
 
@@ -347,6 +353,36 @@ def _enforce_required_pbpstats(
     ):
         raise ValueError(
             "required PBPStats enrichment is not cutoff-safe for every team"
+        )
+    normalized_team_ids = team_strength["team_id"].map(normalize_id)
+    if (
+        len(team_strength) != cfg.team_count
+        or normalized_team_ids.isna().any()
+        or normalized_team_ids.duplicated().any()
+    ):
+        raise ValueError(
+            "required PBPStats enrichment lacks complete configured-team coverage"
+        )
+    required_context = [
+        f"pbpstats_{column}" for column in PBPSTATS_CONTEXT_COLUMNS
+    ]
+    missing_columns = sorted(set(required_context).difference(team_strength.columns))
+    if missing_columns:
+        raise ValueError(
+            "required PBPStats enrichment lacks complete non-null context: "
+            + ", ".join(missing_columns)
+        )
+    numeric_context = team_strength[required_context].apply(
+        pd.to_numeric, errors="coerce"
+    )
+    complete_context = numeric_context.map(math.isfinite).all(axis=1)
+    if not complete_context.all():
+        incomplete_team_ids = ", ".join(
+            normalized_team_ids.loc[~complete_context].astype(str)
+        )
+        raise ValueError(
+            "required PBPStats enrichment lacks complete non-null context for: "
+            + incomplete_team_ids
         )
 
 
@@ -403,7 +439,7 @@ def _run_pipeline(
             ["team_id", "franchise_id", "team_abbreviation", "team_name"]
         ],
     )
-    _enforce_required_pbpstats(sources, team_strength, model_cfg)
+    _enforce_required_pbpstats(sources, team_strength, model_cfg, cfg)
     if sources.pbp_team_features is None:
         warnings.warn(
             "Optional PBPStats contextual data is unavailable; core forecast continues.",

@@ -26,7 +26,7 @@ _REQUIRED_GAME_COLUMNS = {
 }
 _IDENTITY_COLUMNS = ("team_id", "franchise_id", "team_abbreviation", "team_name")
 _FACTOR_COLUMNS = ("efg_diff", "tov_diff", "oreb_diff", "ftr_diff")
-_PBPSTATS_CONTEXT_COLUMNS = (
+PBPSTATS_CONTEXT_COLUMNS = (
     "games_played",
     "plus_minus",
     "off_poss",
@@ -219,7 +219,7 @@ def _attach_pbpstats_context(
         provenance_kind if provenance_kind is not None else pd.NA
     )
     result["pbpstats_snapshot_safe_for_cutoff"] = safe_for_cutoff
-    for column in _PBPSTATS_CONTEXT_COLUMNS:
+    for column in PBPSTATS_CONTEXT_COLUMNS:
         result[f"pbpstats_{column}"] = pd.NA
 
     if not (model_cfg.pbpstats_enrichment_enabled and safe_for_cutoff):
@@ -253,7 +253,7 @@ def _attach_pbpstats_context(
         join_key = result["franchise_id"].where(
             result["franchise_id"].isin(features.index), join_key
         )
-    for column in _PBPSTATS_CONTEXT_COLUMNS:
+    for column in PBPSTATS_CONTEXT_COLUMNS:
         if column in features.columns:
             result[f"pbpstats_{column}"] = join_key.map(features[column])
     return result
@@ -298,7 +298,7 @@ def build_team_strength(
         ],
         "composite_strength",
         *_PBPSTATS_STATUS_COLUMNS,
-        *[f"pbpstats_{column}" for column in _PBPSTATS_CONTEXT_COLUMNS],
+        *[f"pbpstats_{column}" for column in PBPSTATS_CONTEXT_COLUMNS],
     ]
     if games.empty and universe is None:
         return pd.DataFrame(columns=output_columns)

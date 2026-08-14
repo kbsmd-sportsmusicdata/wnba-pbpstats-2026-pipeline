@@ -280,6 +280,126 @@ def early_cutoff_sources(root: Path) -> SimpleNamespace:
 
 
 class OrchestratorIntegrationTests(unittest.TestCase):
+    def test_required_pbpstats_accepts_complete_joined_context_and_optional_stays_nonblocking(self):
+        context_columns = (
+            "games_played",
+            "plus_minus",
+            "off_poss",
+            "def_poss",
+            "total_poss",
+            "efg_pct",
+            "ts_pct",
+            "pace",
+            "shotquality_pbp_feature",
+            "shot_making_over_shotquality_pbp",
+        )
+        team_ids = ["A", "B", "C", "D"]
+        complete_strength = pd.DataFrame(
+            {
+                "team_id": team_ids,
+                "pbpstats_snapshot_safe_for_cutoff": [True] * 4,
+                **{
+                    f"pbpstats_{column}": [float(index + 1) for index in range(4)]
+                    for column in context_columns
+                },
+            }
+        )
+        sources = SimpleNamespace(
+            pbp_team_features=pd.DataFrame({"team_id": team_ids})
+        )
+        cfg = replace(
+            season_config(Path("/tmp/required-pbp-test")), team_count=4
+        )
+
+        builder._enforce_required_pbpstats(
+            sources,
+            complete_strength,
+            replace(model_config(), pbpstats_enrichment_required=True),
+            cfg,
+        )
+
+        partial_strength = complete_strength.iloc[:3].copy()
+        partial_strength.loc[0, "pbpstats_pace"] = pd.NA
+        builder._enforce_required_pbpstats(
+            sources,
+            partial_strength,
+            model_config(),
+            cfg,
+        )
+
+    def test_required_pbpstats_rejects_partial_team_or_context_coverage_before_matchups(self):
+        context_columns = (
+            "games_played",
+            "plus_minus",
+            "off_poss",
+            "def_poss",
+            "total_poss",
+            "efg_pct",
+            "ts_pct",
+            "pace",
+            "shotquality_pbp_feature",
+            "shot_making_over_shotquality_pbp",
+        )
+        required_model = replace(
+            model_config(), pbpstats_enrichment_required=True
+        )
+        cases = ("missing_team", "null_context")
+        for case in cases:
+            with self.subTest(case=case), tempfile.TemporaryDirectory() as temporary:
+                root = Path(temporary)
+                cfg = replace(
+                    season_config(root),
+                    team_count=4,
+                    regular_season_games_per_team=2,
+                    playoff_qualifiers=2,
+                )
+                sources = early_cutoff_sources(root)
+                team_ids = ["A", "B", "C", "D"]
+                pbp = pd.DataFrame(
+                    {
+                        "team_id": team_ids,
+                        **{
+                            column: [float(index + 1) for index in range(4)]
+                            for column in context_columns
+                        },
+                    }
+                )
+                if case == "missing_team":
+                    pbp = pbp.loc[~pbp["team_id"].eq("D")].copy()
+                else:
+                    pbp.loc[pbp["team_id"].eq("C"), "pace"] = pd.NA
+                pbp.attrs["snapshot_as_of"] = "2026-06-01"
+                pbp_path = root / "sources" / "features.csv"
+                pbp.to_csv(pbp_path, index=False)
+                sources.pbp_team_features = pbp
+                sources.pbp_team_features_path = pbp_path
+
+                with (
+                    patch.object(
+                        builder, "load_forecast_sources", return_value=sources
+                    ),
+                    patch.object(
+                        builder,
+                        "score_matchups",
+                        side_effect=AssertionError(
+                            "matchup scoring must not run with incomplete required PBPStats"
+                        ),
+                    ) as matchup_mock,
+                    self.assertRaisesRegex(
+                        ValueError,
+                        "required PBPStats enrichment lacks complete non-null context",
+                    ),
+                ):
+                    builder._run_pipeline(
+                        options(simulations=4, skip_history=True),
+                        cfg=cfg,
+                        model_cfg=required_model,
+                        historical_context_override=pd.DataFrame(
+                            columns=HISTORICAL_CONTEXT_COLUMNS
+                        ),
+                    )
+                matchup_mock.assert_not_called()
+
     def test_partial_early_cutoff_simulates_remaining_games_for_zero_game_teams(self):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
