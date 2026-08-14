@@ -256,12 +256,14 @@ jobs:
               TEAM_GAME_OUTPUT="$CUTOFF_TEAM_GAME_OUTPUT"
             elif [[ -n "$SHARED_TEAM_GAME_STATE" ]]; then
               TEAM_GAME_OUTPUT="$SHARED_TEAM_GAME_OUTPUT"
-            elif [[ -f "$CUTOFF_TEAM_GAME_OUTPUT" && ! -f "$SHARED_TEAM_GAME_OUTPUT" ]]; then
-              TEAM_GAME_OUTPUT="$CUTOFF_TEAM_GAME_OUTPUT"
-            elif [[ ! -f "$SHARED_TEAM_GAME_OUTPUT" ]]; then
-              echo "team-game output is missing for cutoff $FORECAST_CUTOFF" >&2
+            else
+              echo "could not identify the team-game output produced for cutoff $FORECAST_CUTOFF" >&2
               exit 2
             fi
+          fi
+          if [[ ! -f "$TEAM_GAME_OUTPUT" ]]; then
+            echo "team-game output is missing or is not a regular file: $TEAM_GAME_OUTPUT" >&2
+            exit 2
           fi
           git add -- \
             "analysis/standings_playoff_forecast/data/processed/season=$FORECAST_SEASON/latest" \

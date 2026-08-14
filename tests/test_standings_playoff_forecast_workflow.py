@@ -706,6 +706,73 @@ class WorkflowContractTests(unittest.TestCase):
             after = _run(["git", "rev-parse", "HEAD"], cwd=checkout).stdout.strip()
             self.assertEqual(after, before)
 
+    def test_commit_step_rejects_missing_or_deleted_team_game_output_before_staging(self) -> None:
+        workflow = _load_workflow()
+        commit = _named_step(workflow, "Commit forecast outputs if requested")["run"]
+        scenarios = (
+            ("tracked_shared_deletion", "", True, False, "shared"),
+            ("tracked_cutoff_deletion", "2026-05-01", True, True, "cutoff"),
+            ("early_cutoff_absent_with_clean_shared", "2026-05-01", True, False, None),
+            ("neither_candidate_exists", "2026-05-01", False, False, None),
+        )
+        for name, cutoff, has_shared, has_cutoff, deleted in scenarios:
+            with self.subTest(name=name), tempfile.TemporaryDirectory() as directory:
+                checkout = Path(directory)
+                _run(["git", "init", "-b", "forecast-branch"], cwd=checkout)
+                _run(["git", "config", "user.name", "Test User"], cwd=checkout)
+                _run(["git", "config", "user.email", "test@example.com"], cwd=checkout)
+                machine = Path(
+                    "analysis/standings_playoff_forecast/data/processed/season=2026/latest/payload.json"
+                )
+                deliverable = Path(
+                    "analysis/standings_playoff_forecast/deliverables/season=2026/latest/brief.md"
+                )
+                shared = Path(
+                    "data/processed/wnba_team_game/season=2026/team_game.parquet"
+                )
+                cutoff_partition = Path(
+                    "data/processed/wnba_team_game/season=2026/cutoff=2026-05-01/team_game.parquet"
+                )
+                initial_paths = [machine, deliverable]
+                if has_shared:
+                    initial_paths.append(shared)
+                if has_cutoff:
+                    initial_paths.append(cutoff_partition)
+                for path in initial_paths:
+                    destination = checkout / path
+                    destination.parent.mkdir(parents=True, exist_ok=True)
+                    destination.write_text("before\n", encoding="utf-8")
+                _run(["git", "add", "."], cwd=checkout)
+                _run(["git", "commit", "-m", "initial"], cwd=checkout)
+                before = _run(["git", "rev-parse", "HEAD"], cwd=checkout).stdout.strip()
+
+                (checkout / machine).write_text("after\n", encoding="utf-8")
+                (checkout / deliverable).write_text("after\n", encoding="utf-8")
+                if deleted == "shared":
+                    (checkout / shared).unlink()
+                elif deleted == "cutoff":
+                    (checkout / cutoff_partition).unlink()
+                env = _workflow_env(FORECAST_CUTOFF=cutoff)
+                env.update(
+                    {"GITHUB_REF_TYPE": "branch", "GITHUB_REF_NAME": "forecast-branch"}
+                )
+                result = _run(
+                    ["bash", "-euo", "pipefail", "-c", commit],
+                    cwd=checkout,
+                    env=env,
+                    check=False,
+                )
+
+                self.assertNotEqual(result.returncode, 0)
+                after = _run(["git", "rev-parse", "HEAD"], cwd=checkout).stdout.strip()
+                self.assertEqual(after, before)
+                cached = _run(
+                    ["git", "diff", "--cached", "--quiet"],
+                    cwd=checkout,
+                    check=False,
+                )
+                self.assertEqual(cached.returncode, 0)
+
 
 if __name__ == "__main__":
     unittest.main()
