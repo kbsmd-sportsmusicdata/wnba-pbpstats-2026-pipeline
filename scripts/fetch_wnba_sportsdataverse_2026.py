@@ -7,11 +7,12 @@ This script is intended for local runs and GitHub Actions.
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
 import hashlib
 import io
 import json
 import os
+import sys
+import time
 from pathlib import Path
 from typing import Any, Dict
 import urllib.request
@@ -22,6 +23,8 @@ SEASON = "2026"
 BASE_RELEASE_URL = "https://github.com/sportsdataverse/sportsdataverse-data/releases/download"
 DATA_ROOT = Path(os.getenv("SPORTSDATAVERSE_WNBA_2026_DATA_ROOT", "data/raw/sportsdataverse/wnba_2026"))
 RUN_LOG_PATH = DATA_ROOT / "run_logs" / "download_manifest_2026.json"
+MAX_ATTEMPTS = 4
+RETRY_BACKOFF_SECONDS = 2.0
 
 
 def espn(tag: str, filename: str) -> str:
@@ -97,6 +100,24 @@ def build_2026_file_list() -> Dict[str, Dict[str, str]]:
             "size_note": "~91-97 KB",
             "source": "ESPN",
         },
+        # Possession-level lineups: the validated stint data that real RAPM, bench net
+        # rating and possession-based clutch ratings all require.
+        f"wnba_possessions_{year}.parquet": {
+            "url": wnba("wnba_stats_possessions", f"wnba_possessions_{year}.parquet"),
+            "size_note": "~384 KB",
+            "source": "WNBA.com",
+        },
+        f"wnba_lineups_{year}.parquet": {
+            "url": wnba("wnba_stats_game_lineups", f"wnba_lineups_{year}.parquet"),
+            "size_note": "~129 KB",
+            "source": "WNBA.com",
+        },
+        # Pre-computed impact metrics (RAPM, SPM, BPM, WAR, DARKO projections).
+        f"wnba_player_impact_{year}.parquet": {
+            "url": wnba("wnba_player_impact", f"wnba_player_impact_{year}.parquet"),
+            "size_note": "~42 KB",
+            "source": "SportsDataverse",
+        },
     }
 
 
@@ -123,8 +144,12 @@ def save_json(path: Path, payload: Dict[str, Any]) -> None:
     tmp_path.replace(path)
 
 
-def download_parquet_nocache(url: str) -> pd.DataFrame:
-    """Fetches a parquet file directly using HTTP headers to bypass CDN/client caching."""
+def download_parquet_nocache(url: str, *, attempts: int = MAX_ATTEMPTS) -> pd.DataFrame:
+    """Fetches a parquet file directly using HTTP headers to bypass CDN/client caching.
+
+    The release CDN returns transient 5xx responses often enough to break an unattended
+    run, so failures are retried with exponential backoff before giving up.
+    """
     req = urllib.request.Request(
         url,
         headers={
@@ -133,25 +158,49 @@ def download_parquet_nocache(url: str) -> pd.DataFrame:
             "Pragma": "no-cache",
         },
     )
-    with urllib.request.urlopen(req) as response:
-        content = response.read()
-    return pd.read_parquet(io.BytesIO(content))
+    last_error: Exception | None = None
+    for attempt in range(attempts):
+        try:
+            with urllib.request.urlopen(req) as response:
+                content = response.read()
+            return pd.read_parquet(io.BytesIO(content))
+        except Exception as error:  # noqa: BLE001 - retried below, re-raised when exhausted
+            last_error = error
+            if attempt < attempts - 1:
+                time.sleep(RETRY_BACKOFF_SECONDS * (2**attempt))
+    raise RuntimeError(f"failed to download {url} after {attempts} attempts: {last_error}")
 
 
 def download_one(filename: str, file_info: Dict[str, str], data_root: Path) -> Dict[str, Any]:
-    output_path = data_root / filename
-    df = download_parquet_nocache(file_info["url"])
-    df.to_parquet(output_path, index=False)
-    return {
+    """Downloads one file, recording failure rather than aborting the whole run.
+
+    A scheduled pull of fifteen files should not lose the fourteen that succeeded because
+    one release was briefly unavailable. The run still fails loudly: `main` exits non-zero
+    when any file is missing.
+    """
+    record: Dict[str, Any] = {
         "filename": filename,
         "source": file_info["source"],
         "url": file_info["url"],
         "size_note": file_info["size_note"],
-        "success": True,
-        "row_count": int(len(df)),
-        "column_count": int(df.shape[1]),
-        "sha256": sha256_file(output_path),
     }
+    output_path = data_root / filename
+    try:
+        df = download_parquet_nocache(file_info["url"])
+    except Exception as error:  # noqa: BLE001 - surfaced through the manifest and exit code
+        record.update({"success": False, "error": str(error)})
+        return record
+
+    df.to_parquet(output_path, index=False)
+    record.update(
+        {
+            "success": True,
+            "row_count": int(len(df)),
+            "column_count": int(df.shape[1]),
+            "sha256": sha256_file(output_path),
+        }
+    )
+    return record
 
 
 def download_all(
@@ -167,20 +216,29 @@ def download_all(
         file_info = resolved_files[filename]
         results.append(download_one(filename, file_info, data_root))
 
+    failures = [record["filename"] for record in results if not record.get("success")]
     manifest = {
         "season": SEASON,
-        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
         "output_dir": str(data_root),
         "file_count": len(results),
+        "failed_count": len(failures),
+        "failed_files": sorted(failures),
         "files": results,
     }
+    # No run timestamp: the manifest must be byte-identical when nothing changed, so the
+    # scheduled workflow commits only on real data changes instead of on every run.
     save_json(manifest_path, manifest)
     return manifest
 
 
 def main() -> None:
     manifest = download_all()
-    print(f"Downloaded {manifest['file_count']} SportsDataverse WNBA {SEASON} parquet files to {DATA_ROOT}")
+    downloaded = manifest["file_count"] - manifest["failed_count"]
+    print(f"Downloaded {downloaded}/{manifest['file_count']} SportsDataverse WNBA {SEASON} parquet files to {DATA_ROOT}")
+    if manifest["failed_count"]:
+        for filename in manifest["failed_files"]:
+            print(f"  FAILED: {filename}", file=sys.stderr)
+        sys.exit(1)
 
 
 if __name__ == "__main__":

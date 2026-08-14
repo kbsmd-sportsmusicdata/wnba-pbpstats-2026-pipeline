@@ -1,0 +1,38 @@
+{
+  "season": 2026,
+  "sportsdataverse_data_root": "data/raw/sportsdataverse/wnba_2026",
+  "pbpstats_data_root": "data/pbpstats_wnba_2026",
+  "output_root": "analysis/possession_impact",
+  "source_files": {
+    "possessions": "wnba_possessions_2026.parquet",
+    "wnba_pbp": "wnba_pbp_2026.parquet",
+    "player_impact": "wnba_player_impact_2026.parquet",
+    "game_logs": "player_game_logs_2026.parquet"
+  },
+  "rapm": {
+    "alpha_grid": [
+      100,
+      250,
+      500,
+      1000,
+      2000,
+      4000,
+      8000,
+      16000,
+      32000,
+      64000
+    ],
+    "cv_folds": 5,
+    "random_seed": 20260812,
+    "min_possessions_reliable": 500,
+    "min_possessions_reported": 100
+  },
+  "bench": {
+    "bench_heavy_threshold": 3
+  },
+  "clutch": {
+    "max_seconds_remaining": 300,
+    "min_period": 4,
+    "max_score_margin": 5
+  }
+}

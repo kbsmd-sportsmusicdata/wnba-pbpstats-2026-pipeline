@@ -57,6 +57,65 @@ def _empty(columns: list[str]) -> pd.DataFrame:
     return pd.DataFrame(columns=columns)
 
 
+def league_team_keys(standings: pd.DataFrame) -> set[str]:
+    """The franchise abbreviations that count as league teams, taken from the standings."""
+    if standings.empty or "team_abbreviation" not in standings.columns:
+        return set()
+    return {team_key(value) for value in standings["team_abbreviation"].dropna().unique()}
+
+
+def filter_to_league_teams(box: pd.DataFrame, standings: pd.DataFrame) -> pd.DataFrame:
+    """Drop exhibition games played by non-franchise sides.
+
+    The 2026 All-Star Game is tagged as regular season in the ESPN feed, so it cannot be
+    filtered on ``season_type``; TEAM SPOON and TEAM COOP would otherwise be graded as
+    league teams. The standings are used as the authoritative franchise list rather than a
+    hard-coded set, so this keeps working as the league expands.
+    """
+    valid = league_team_keys(standings)
+    if box.empty or not valid or "team_abbreviation" not in box.columns:
+        return box
+
+    df = box.copy()
+    team_keys = df["team_abbreviation"].map(team_key)
+    keep = team_keys.isin(valid)
+    if "opponent_team_abbreviation" in df.columns:
+        keep &= df["opponent_team_abbreviation"].map(team_key).isin(valid)
+    if "game_id" in df.columns:
+        # Both sides of an exhibition go, not just the non-franchise one.
+        excluded_games = set(df.loc[~keep, "game_id"])
+        keep &= ~df["game_id"].isin(excluded_games)
+    return df[keep].copy()
+
+
+def filter_pbp_to_league_teams(pbp: pd.DataFrame, standings: pd.DataFrame) -> pd.DataFrame:
+    """Drop exhibition games from a play-by-play feed, which names its teams per game."""
+    valid = league_team_keys(standings)
+    required = {"home_team_abbrev", "away_team_abbrev"}
+    if pbp.empty or not valid or not required.issubset(pbp.columns):
+        return pbp
+    keep = pbp["home_team_abbrev"].map(team_key).isin(valid) & pbp["away_team_abbrev"].map(team_key).isin(valid)
+    return pbp[keep].copy()
+
+
+def dedupe_allstar_board(allstar_board: pd.DataFrame) -> pd.DataFrame:
+    """One numeric-scored row per player.
+
+    Guards the join against a damaged board file: the committed 2026 artifact carries an
+    embedded header row and column-shifted duplicates, which would otherwise multiply rows
+    through the left merge.
+    """
+    if allstar_board.empty or "player_id" not in allstar_board.columns:
+        return allstar_board
+
+    df = allstar_board.copy()
+    if "allstar_value_score" in df.columns:
+        df["allstar_value_score"] = pd.to_numeric(df["allstar_value_score"], errors="coerce")
+        df = df[df["allstar_value_score"].notna()]
+    df["player_id"] = df["player_id"].map(id_key)
+    return df[df["player_id"].astype(bool)].drop_duplicates(subset=["player_id"], keep="first")
+
+
 def build_team_game_four_factors(team_box: pd.DataFrame) -> pd.DataFrame:
     columns = [
         "game_id",
@@ -342,7 +401,7 @@ def build_player_midseason_impact(allstar_board: pd.DataFrame, player_features: 
     if allstar_board.empty:
         impact = player_features.copy().rename(columns={"entity_id_feature": "player_id", "entity_name_feature": "player_name"})
     else:
-        impact = allstar_board.copy()
+        impact = dedupe_allstar_board(allstar_board)
     keep = [
         "player_id",
         "player_name",
@@ -377,7 +436,11 @@ def build_player_fit_profiles(player_features: pd.DataFrame, allstar_board: pd.D
         return _empty(columns)
     df = player_features.copy().rename(columns={"entity_id_feature": "player_id", "entity_name_feature": "player_name"})
     if not allstar_board.empty and {"player_id", "allstar_value_score"}.issubset(allstar_board.columns):
-        df = df.merge(allstar_board[["player_id", "allstar_value_score"]], on="player_id", how="left")
+        # The two sources type player_id differently (integer ids on the board, string ids
+        # on the features side), which makes the merge raise rather than silently miss.
+        board = dedupe_allstar_board(allstar_board)[["player_id", "allstar_value_score"]]
+        df["player_id"] = df["player_id"].map(id_key)
+        df = df.merge(board, on="player_id", how="left")
 
     def tags(row) -> str:
         out = []

@@ -1,0 +1,86 @@
+name: Hidden Value
+
+on:
+  workflow_dispatch:
+    inputs:
+      run_tests:
+        description: "Run hidden value tests before building"
+        required: true
+        type: boolean
+        default: true
+      rebuild_dependencies:
+        description: "Rebuild the window panel and possession impact first"
+        required: true
+        type: boolean
+        default: false
+      commit_outputs:
+        description: "Commit generated analysis/hidden_value outputs"
+        required: true
+        type: boolean
+        default: false
+      pbpstats_data_root:
+        description: "PBPStats WNBA 2026 data root"
+        required: true
+        type: string
+        default: "data/pbpstats_wnba_2026"
+      sportsdataverse_data_root:
+        description: "SportsDataverse WNBA 2026 data root"
+        required: true
+        type: string
+        default: "data/raw/sportsdataverse/wnba_2026"
+
+jobs:
+  hidden-value:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      CONFIG_PATH: analysis/hidden_value/config/hidden_value_config.json
+      PANEL_CONFIG_PATH: analysis/snapshot_window_panel/config/snapshot_window_panel_config.json
+      IMPACT_CONFIG_PATH: analysis/possession_impact/config/possession_impact_config.json
+      PBPSTATS_ROOT: ${{ inputs.pbpstats_data_root }}
+      SPORTSDATAVERSE_ROOT: ${{ inputs.sportsdataverse_data_root }}
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run Hidden Value tests
+        if: ${{ inputs.run_tests }}
+        run: python -m unittest tests/test_hidden_value.py
+
+      - name: Rebuild upstream analyses
+        if: ${{ inputs.rebuild_dependencies }}
+        run: |
+          python scripts/build_snapshot_window_panel.py --config "$PANEL_CONFIG_PATH" --stage player
+          python scripts/build_possession_impact.py --config "$IMPACT_CONFIG_PATH"
+
+      - name: Build hidden value watchlist
+        run: |
+          python scripts/build_hidden_value.py \
+            --config "$CONFIG_PATH" \
+            --pbpstats-data-root "$PBPSTATS_ROOT" \
+            --sportsdataverse-data-root "$SPORTSDATAVERSE_ROOT"
+
+      - name: Commit generated hidden value outputs if requested
+        if: ${{ inputs.commit_outputs }}
+        run: |
+          git add analysis/hidden_value analysis/snapshot_window_panel analysis/possession_impact
+          if git diff --cached --quiet; then
+            echo "No Hidden Value output changes to commit"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "chore: refresh hidden value watchlist"
+          git push

@@ -91,16 +91,16 @@
   },
   "purpose": "EDA-ready dataset manifest for WNBA midseason team grades.",
   "row_counts": {
-    "bench_player_game_2026.csv": 1476,
-    "bench_team_game_2026.csv": 300,
+    "bench_player_game_2026.csv": 2136,
+    "bench_team_game_2026.csv": 436,
     "bench_team_summary_2026.csv": 15,
-    "clutch_team_game_2026.csv": 138,
+    "clutch_team_game_2026.csv": 436,
     "eda_manifest_2026.json": 1,
     "eda_prompt_2026.md": 5,
-    "player_fit_profiles_2026.csv": 210,
-    "player_midseason_impact_2026.csv": 94,
-    "rapm_player_2026.csv": 192,
-    "team_game_four_factors_2026.csv": 300,
+    "player_fit_profiles_2026.csv": 226,
+    "player_midseason_impact_2026.csv": 120,
+    "rapm_player_2026.csv": 0,
+    "team_game_four_factors_2026.csv": 436,
     "team_grade_panel_2026.csv": 15
   }
 }

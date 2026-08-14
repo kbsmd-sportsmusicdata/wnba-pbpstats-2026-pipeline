@@ -1,5 +1,7 @@
 {
-  "file_count": 12,
+  "failed_count": 0,
+  "failed_files": [],
+  "file_count": 15,
   "files": [
     {
       "column_count": 67,
@@ -102,6 +104,16 @@
       "url": "https://github.com/sportsdataverse/sportsdataverse-data/releases/download/espn_wnba_team_season_stats/team_season_stats_2026.parquet"
     },
     {
+      "column_count": 14,
+      "filename": "wnba_lineups_2026.parquet",
+      "row_count": 83720,
+      "sha256": "d4438149d7f9643ce6f8f5efc22f2346bc5d772f980fb1cfcb90d85bca11ac15",
+      "size_note": "~129 KB",
+      "source": "WNBA.com",
+      "success": true,
+      "url": "https://github.com/sportsdataverse/sportsdataverse-data/releases/download/wnba_stats_game_lineups/wnba_lineups_2026.parquet"
+    },
+    {
       "column_count": 25,
       "filename": "wnba_pbp_2026.parquet",
       "row_count": 86784,
@@ -110,6 +122,26 @@
       "source": "WNBA.com",
       "success": true,
       "url": "https://github.com/sportsdataverse/sportsdataverse-data/releases/download/wnba_stats_pbp/play_by_play_2026.parquet"
+    },
+    {
+      "column_count": 28,
+      "filename": "wnba_player_impact_2026.parquet",
+      "row_count": 221,
+      "sha256": "7cc5f0205c2b52bffd041ff08ad8fd906d037595a3d63df5e42046d9a4123498",
+      "size_note": "~42 KB",
+      "source": "SportsDataverse",
+      "success": true,
+      "url": "https://github.com/sportsdataverse/sportsdataverse-data/releases/download/wnba_player_impact/wnba_player_impact_2026.parquet"
+    },
+    {
+      "column_count": 34,
+      "filename": "wnba_possessions_2026.parquet",
+      "row_count": 32265,
+      "sha256": "96bb9a9ad662b6ee74991d0607cb098fd0d211879fcb602bf41bd9613c6103cd",
+      "size_note": "~384 KB",
+      "source": "WNBA.com",
+      "success": true,
+      "url": "https://github.com/sportsdataverse/sportsdataverse-data/releases/download/wnba_stats_possessions/wnba_possessions_2026.parquet"
     },
     {
       "column_count": 94,
@@ -122,7 +154,6 @@
       "url": "https://github.com/sportsdataverse/sportsdataverse-data/releases/download/wnba_stats_standings/standings_2026.parquet"
     }
   ],
-  "generated_at_utc": "2026-08-10T14:51:57.273855+00:00",
   "output_dir": "data/raw/sportsdataverse/wnba_2026",
   "season": "2026"
 }

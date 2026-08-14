@@ -1,0 +1,83 @@
+name: Possession Impact
+
+on:
+  workflow_dispatch:
+    inputs:
+      run_tests:
+        description: "Run possession impact tests before building"
+        required: true
+        type: boolean
+        default: true
+      refresh_downloads:
+        description: "Refresh the SportsDataverse downloads first"
+        required: true
+        type: boolean
+        default: false
+      commit_outputs:
+        description: "Commit generated analysis/possession_impact outputs"
+        required: true
+        type: boolean
+        default: false
+      sportsdataverse_data_root:
+        description: "SportsDataverse WNBA 2026 data root"
+        required: true
+        type: string
+        default: "data/raw/sportsdataverse/wnba_2026"
+      pbpstats_data_root:
+        description: "PBPStats WNBA 2026 data root"
+        required: true
+        type: string
+        default: "data/pbpstats_wnba_2026"
+
+jobs:
+  possession-impact:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      CONFIG_PATH: analysis/possession_impact/config/possession_impact_config.json
+      SPORTSDATAVERSE_ROOT: ${{ inputs.sportsdataverse_data_root }}
+      PBPSTATS_ROOT: ${{ inputs.pbpstats_data_root }}
+      SPORTSDATAVERSE_WNBA_2026_DATA_ROOT: ${{ inputs.sportsdataverse_data_root }}
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run Possession Impact tests
+        if: ${{ inputs.run_tests }}
+        run: python -m unittest tests/test_possession_impact.py
+
+      - name: Refresh SportsDataverse downloads
+        if: ${{ inputs.refresh_downloads }}
+        run: python scripts/fetch_wnba_sportsdataverse_2026.py
+
+      - name: Build possession impact metrics
+        run: |
+          python scripts/build_possession_impact.py \
+            --config "$CONFIG_PATH" \
+            --sportsdataverse-data-root "$SPORTSDATAVERSE_ROOT" \
+            --pbpstats-data-root "$PBPSTATS_ROOT"
+
+      - name: Commit generated possession impact outputs if requested
+        if: ${{ inputs.commit_outputs }}
+        run: |
+          git add analysis/possession_impact data/raw/sportsdataverse/wnba_2026
+          if git diff --cached --quiet; then
+            echo "No Possession Impact output changes to commit"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "chore: refresh possession impact metrics"
+          git push
