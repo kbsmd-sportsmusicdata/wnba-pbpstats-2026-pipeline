@@ -377,7 +377,12 @@ def _run_pipeline(
         cfg,
         cutoff,
     )
-    current_standings = build_current_standings(team_games, cfg)
+    current_standings = build_current_standings(
+        team_games,
+        cfg,
+        schedule=sources.schedule,
+        team_history=sources.team_history,
+    )
     head_to_head = build_head_to_head(team_games)
     current_standings = _rank_current_standings(
         current_standings, team_games, cfg

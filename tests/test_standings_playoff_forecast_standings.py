@@ -119,6 +119,62 @@ class StandingsAggregationTest(unittest.TestCase):
             },
         )
 
+    def test_current_standings_seed_zero_game_teams_from_configured_universe(self) -> None:
+        """Catches early-cutoff standings dropping teams without a completed game."""
+        from standings_playoff_forecast.config import load_season_config
+        from standings_playoff_forecast.standings import build_current_standings
+
+        cfg = replace(load_season_config(2026), team_count=4)
+        universe = pd.DataFrame(
+            [
+                {
+                    "team_id": team_id,
+                    "franchise_id": franchise_id,
+                    "team_abbreviation": abbreviation,
+                    "team_name": name,
+                }
+                for team_id, franchise_id, abbreviation, name in (
+                    ("A", "alpha", "AAA", "Alpha"),
+                    ("B", "bravo", "BBB", "Bravo"),
+                    ("C", "charlie", "CCC", "Charlie"),
+                    ("D", "delta", "DDD", "Delta"),
+                )
+            ]
+        )
+
+        standings = build_current_standings(
+            _team_games(), cfg, team_universe=universe
+        ).set_index("team_id")
+
+        self.assertEqual(set(standings.index), {"A", "B", "C", "D"})
+        self.assertEqual(
+            standings.loc[
+                "D",
+                [
+                    "games_played",
+                    "wins",
+                    "losses",
+                    "points_for",
+                    "points_against",
+                    "point_differential",
+                ],
+            ].tolist(),
+            [0, 0, 0, 0, 0, 0],
+        )
+        self.assertTrue(pd.isna(standings.loc["D", "win_pct"]))
+        self.assertEqual(standings.loc["D", "franchise_id"], "delta")
+
+        conflicting = universe.copy()
+        conflicting.loc[conflicting["team_id"].eq("A"), "team_name"] = (
+            "Configured Alpha"
+        )
+        with self.assertRaisesRegex(
+            ValueError, "team_games presentation metadata conflicts with team_universe"
+        ):
+            build_current_standings(
+                _team_games(), cfg, team_universe=conflicting
+            )
+
     def test_current_context_derives_records_games_back_streak_and_current_500_opponents(self) -> None:
         from standings_playoff_forecast import standings as standings_module
         from standings_playoff_forecast.config import load_season_config

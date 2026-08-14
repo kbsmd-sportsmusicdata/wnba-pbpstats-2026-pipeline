@@ -5,7 +5,7 @@ from dataclasses import dataclass
 import pandas as pd
 
 from .contracts import SeasonConfig
-from .team_game_layer import normalize_id
+from .team_game_layer import normalize_id, qualify_regular_season_schedule
 
 
 STANDINGS_COLUMNS = [
@@ -151,24 +151,175 @@ def _aggregate_records(
     return result
 
 
+def _validated_team_universe(
+    team_universe: pd.DataFrame, cfg: SeasonConfig
+) -> pd.DataFrame:
+    required = {
+        "team_id",
+        "franchise_id",
+        "team_abbreviation",
+        "team_name",
+    }
+    _require_columns(team_universe, required, "team_universe")
+    result = team_universe[list(required)].copy()
+    result["team_id"] = result["team_id"].map(normalize_id)
+    for column in ("franchise_id", "team_abbreviation", "team_name"):
+        result[column] = result[column].astype("string").str.strip()
+    if result.isna().any().any() or result.astype("string").eq("").any().any():
+        raise ValueError("team_universe contains missing or blank identities")
+    if result["team_id"].duplicated().any():
+        raise ValueError("team_universe contains duplicate normalized team_id values")
+    if result["franchise_id"].duplicated().any():
+        raise ValueError("team_universe contains duplicate franchise_id values")
+    if len(result) != cfg.team_count:
+        raise ValueError(
+            "team_universe must contain exactly "
+            f"{cfg.team_count} configured teams"
+        )
+    return result[
+        ["team_id", "franchise_id", "team_abbreviation", "team_name"]
+    ].sort_values("team_id", kind="stable").reset_index(drop=True)
+
+
+def _team_universe_from_sources(
+    schedule: pd.DataFrame,
+    team_history: pd.DataFrame,
+    cfg: SeasonConfig,
+) -> pd.DataFrame:
+    qualified = qualify_regular_season_schedule(schedule, cfg)
+    required_history = {
+        "season",
+        "sportsdataverse_team_id",
+        "franchise_id",
+    }
+    _require_columns(team_history, required_history, "team_history")
+    active = team_history.loc[
+        pd.to_numeric(team_history["season"], errors="coerce").eq(cfg.season),
+        ["sportsdataverse_team_id", "franchise_id"],
+    ].rename(columns={"sportsdataverse_team_id": "team_id"})
+    active["team_id"] = active["team_id"].map(normalize_id)
+
+    home = qualified[
+        ["home_id", "home_abbreviation", "home_display_name"]
+    ].rename(
+        columns={
+            "home_id": "team_id",
+            "home_abbreviation": "team_abbreviation",
+            "home_display_name": "team_name",
+        }
+    )
+    away = qualified[
+        ["away_id", "away_abbreviation", "away_display_name"]
+    ].rename(
+        columns={
+            "away_id": "team_id",
+            "away_abbreviation": "team_abbreviation",
+            "away_display_name": "team_name",
+        }
+    )
+    presentation = pd.concat([home, away], ignore_index=True)
+    presentation["team_id"] = presentation["team_id"].map(normalize_id)
+    presentation = _presentation_metadata(
+        presentation,
+        ["team_id"],
+        ["team_abbreviation", "team_name"],
+    )
+    universe = active.merge(
+        presentation,
+        on="team_id",
+        how="outer",
+        validate="one_to_one",
+    )
+    return _validated_team_universe(universe, cfg)
+
+
 def build_current_standings(
-    team_games: pd.DataFrame, cfg: SeasonConfig
+    team_games: pd.DataFrame,
+    cfg: SeasonConfig,
+    *,
+    team_universe: pd.DataFrame | None = None,
+    schedule: pd.DataFrame | None = None,
+    team_history: pd.DataFrame | None = None,
 ) -> pd.DataFrame:
     """Aggregate the normalized directional rows into unranked current standings."""
 
-    del cfg  # Competition rules govern upstream normalization; ordering is Task 5.
     _validate_directional_team_games(team_games)
-    if team_games.empty:
-        return pd.DataFrame(columns=STANDINGS_COLUMNS)
+    if team_universe is None and schedule is not None and team_history is not None:
+        team_universe = _team_universe_from_sources(schedule, team_history, cfg)
+    elif (schedule is None) != (team_history is None):
+        raise ValueError("schedule and team_history must be supplied together")
 
+    if team_universe is None:
+        if team_games.empty:
+            return pd.DataFrame(columns=STANDINGS_COLUMNS)
+        metadata_columns = _identity_columns(team_games)
+        result = _aggregate_records(team_games, ["team_id"])
+        result = result.merge(
+            _presentation_metadata(team_games, ["team_id"], metadata_columns),
+            on="team_id",
+            how="left",
+            validate="one_to_one",
+        )
+        return result.reindex(columns=STANDINGS_COLUMNS)
+
+    universe = _validated_team_universe(team_universe, cfg)
     metadata_columns = _identity_columns(team_games)
-    result = _aggregate_records(team_games, ["team_id"])
-    result = result.merge(
-        _presentation_metadata(team_games, ["team_id"], metadata_columns),
+    game_metadata = _presentation_metadata(
+        team_games, ["team_id"], metadata_columns
+    )
+    unexpected = set(game_metadata["team_id"].map(normalize_id)) - set(
+        universe["team_id"]
+    )
+    if unexpected:
+        raise ValueError(
+            "team_games contains teams outside team_universe: "
+            + ", ".join(sorted(unexpected))
+        )
+    shared_metadata = [
+        column
+        for column in ("franchise_id", "team_abbreviation", "team_name")
+        if column in game_metadata.columns
+    ]
+    if shared_metadata:
+        comparison = game_metadata.merge(
+            universe,
+            on="team_id",
+            how="left",
+            suffixes=("_game", "_universe"),
+            validate="one_to_one",
+        )
+        conflicts = pd.Series(False, index=comparison.index)
+        for column in shared_metadata:
+            game_values = comparison[f"{column}_game"].astype("string").str.strip()
+            universe_values = comparison[f"{column}_universe"].astype("string").str.strip()
+            conflicts |= game_values.ne(universe_values).fillna(True)
+        if conflicts.any():
+            team_ids = ", ".join(
+                sorted(comparison.loc[conflicts, "team_id"].astype(str))
+            )
+            raise ValueError(
+                "team_games presentation metadata conflicts with team_universe: "
+                + team_ids
+            )
+    aggregates = _aggregate_records(team_games, ["team_id"])
+    result = universe.merge(
+        aggregates,
         on="team_id",
         how="left",
         validate="one_to_one",
     )
+    count_columns = [
+        "games_played",
+        "wins",
+        "losses",
+        "points_for",
+        "points_against",
+        "point_differential",
+    ]
+    result[count_columns] = result[count_columns].fillna(0)
+    result["win_pct"] = (
+        result["wins"] / result["games_played"]
+    ).where(result["games_played"].gt(0), pd.NA)
     return result.reindex(columns=STANDINGS_COLUMNS)
 
 
