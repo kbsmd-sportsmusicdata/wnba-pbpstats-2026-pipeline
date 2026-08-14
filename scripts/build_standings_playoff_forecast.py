@@ -439,6 +439,7 @@ def _run_pipeline(
             cfg.season,
             target_progress_pct=progress,
             history_start=options.history_start,
+            min_prior_seasons=cfg.historical_context_min_prior_seasons,
         )
         _warn_for_history(historical_context)
 
@@ -527,6 +528,13 @@ def run_forecast(options: argparse.Namespace) -> OrchestrationResult:
         historical_context_override = _empty_history()
         warnings.warn(
             "Historical context was explicitly skipped.",
+            RuntimeWarning,
+            stacklevel=2,
+        )
+    elif not cfg.historical_context_enabled:
+        historical_context_override = _empty_history()
+        warnings.warn(
+            "Historical context is disabled by season config.",
             RuntimeWarning,
             stacklevel=2,
         )

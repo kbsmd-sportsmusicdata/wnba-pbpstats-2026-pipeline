@@ -770,6 +770,25 @@ class OrchestratorIntegrationTests(unittest.TestCase):
             self.assertEqual(list(history.columns), HISTORICAL_CONTEXT_COLUMNS)
             self.assertTrue(history.empty)
 
+    def test_disabled_history_config_skips_historical_aggregation(self):
+        """Catches enabled=false being ignored unless --skip-history is supplied."""
+        with tempfile.TemporaryDirectory() as temporary:
+            cfg = replace(
+                season_config(Path(temporary)), historical_context_enabled=False
+            )
+            with (
+                patch.object(builder, "load_season_config", return_value=cfg),
+                patch.object(builder, "load_model_config", return_value=model_config()),
+                patch.object(builder, "_run_pipeline") as pipeline,
+            ):
+                pipeline.return_value = SimpleNamespace()
+                with self.assertWarnsRegex(RuntimeWarning, "disabled"):
+                    builder.run_forecast(options())
+
+            history = pipeline.call_args.kwargs["historical_context_override"]
+            self.assertIsNotNone(history)
+            self.assertTrue(history.empty)
+
     def test_history_start_excludes_earlier_seasons_from_aggregates(self):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)

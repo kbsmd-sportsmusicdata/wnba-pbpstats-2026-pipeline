@@ -58,6 +58,24 @@ def _empty_context() -> pd.DataFrame:
     return pd.DataFrame(columns=HISTORICAL_CONTEXT_COLUMNS)
 
 
+def _insufficient_context(
+    *, available_seasons: int, historical_team_game_paths: list[Path]
+) -> pd.DataFrame:
+    row = {column: pd.NA for column in HISTORICAL_CONTEXT_COLUMNS}
+    row.update(
+        {
+            "context_level": "availability",
+            "metric": "historical_minimum_status",
+            "season_count": available_seasons,
+            "sample_size": available_seasons,
+            "availability_status": "insufficient_prior_seasons",
+        }
+    )
+    result = pd.DataFrame([row], columns=HISTORICAL_CONTEXT_COLUMNS)
+    result.attrs["historical_team_game_paths"] = historical_team_game_paths
+    return result
+
+
 def discover_history(
     normalized_root: str | Path,
     forecast_season: int,
@@ -397,6 +415,7 @@ def build_historical_context(
     target_progress_pct: float = 1.0,
     season_config_loader: Callable[[int], Any] = load_season_config,
     history_start: int | None = None,
+    min_prior_seasons: int = 0,
 ) -> pd.DataFrame:
     """Build optional historical benchmarks using only verified prior seasons.
 
@@ -408,6 +427,12 @@ def build_historical_context(
 
     if not np.isfinite(target_progress_pct) or not 0 < target_progress_pct <= 1:
         raise ValueError("target_progress_pct must be finite and in (0, 1]")
+    if (
+        isinstance(min_prior_seasons, bool)
+        or not isinstance(min_prior_seasons, (int, np.integer))
+        or min_prior_seasons < 0
+    ):
+        raise ValueError("min_prior_seasons must be a non-negative integer")
     rows: list[dict[str, Any]] = []
     read_team_game_paths: list[Path] = []
     if history_start is not None and history_start >= forecast_season:
@@ -449,6 +474,19 @@ def build_historical_context(
             _season_rows(
                 validated, season, cfg, float(target_progress_pct)
             )
+        )
+    available_seasons = len(
+        {
+            int(row["season"])
+            for row in rows
+            if row.get("availability_status") == "available"
+            and row.get("context_level") == "season"
+        }
+    )
+    if available_seasons < int(min_prior_seasons):
+        return _insufficient_context(
+            available_seasons=available_seasons,
+            historical_team_game_paths=read_team_game_paths,
         )
     if not rows:
         empty = _empty_context()

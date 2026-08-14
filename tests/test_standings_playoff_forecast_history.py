@@ -128,6 +128,28 @@ class HistoricalContextTest(unittest.TestCase):
         self.assertEqual(set(season_rows["season"]), {2025})
         self.assertEqual(set(aggregate["season_count"]), {1})
 
+    def test_insufficient_prior_seasons_publish_unavailable_not_claims(self) -> None:
+        """Catches aggregates being published below the configured sample minimum."""
+        from standings_playoff_forecast.historical_context import build_historical_context
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            _write_partition(root, 2025)
+            context = build_historical_context(
+                root,
+                2026,
+                target_progress_pct=0.5,
+                season_config_loader=_season_config,
+                min_prior_seasons=2,
+            )
+
+        self.assertEqual(
+            context["availability_status"].tolist(),
+            ["insufficient_prior_seasons"],
+        )
+        self.assertEqual(context["season_count"].tolist(), [1])
+        self.assertFalse(context["availability_status"].eq("available").any())
+
     def test_records_each_historical_partition_actually_read(self) -> None:
         from standings_playoff_forecast.historical_context import build_historical_context
 
