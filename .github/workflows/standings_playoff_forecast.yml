@@ -243,10 +243,14 @@ jobs:
             echo "commit_outputs requires a branch ref" >&2
             exit 2
           fi
+          TEAM_GAME_OUTPUT="data/processed/wnba_team_game/season=$FORECAST_SEASON/team_game.parquet"
+          if [[ -n "$FORECAST_CUTOFF" ]]; then
+            TEAM_GAME_OUTPUT="data/processed/wnba_team_game/season=$FORECAST_SEASON/cutoff=$FORECAST_CUTOFF/team_game.parquet"
+          fi
           git add -- \
             "analysis/standings_playoff_forecast/data/processed/season=$FORECAST_SEASON/latest" \
             "analysis/standings_playoff_forecast/deliverables/season=$FORECAST_SEASON/latest" \
-            "data/processed/wnba_team_game/season=$FORECAST_SEASON/team_game.parquet"
+            "$TEAM_GAME_OUTPUT"
           if git diff --cached --quiet; then
             echo "No standings forecast output changes to commit"
             exit 0

@@ -601,6 +601,60 @@ class WorkflowContractTests(unittest.TestCase):
             )
             self.assertNotEqual(rejected.returncode, 0)
 
+    def test_commit_step_stages_the_cutoff_team_game_partition_only(self) -> None:
+        workflow = _load_workflow()
+        commit = _named_step(workflow, "Commit forecast outputs if requested")["run"]
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            remote = root / "remote.git"
+            checkout = root / "checkout"
+            _run(["git", "init", "--bare", str(remote)])
+            checkout.mkdir()
+            _run(["git", "init", "-b", "forecast-branch"], cwd=checkout)
+            _run(["git", "config", "user.name", "Test User"], cwd=checkout)
+            _run(["git", "config", "user.email", "test@example.com"], cwd=checkout)
+            _run(["git", "remote", "add", "origin", str(remote)], cwd=checkout)
+
+            expected = [
+                Path("analysis/standings_playoff_forecast/data/processed/season=2026/latest/payload.json"),
+                Path("analysis/standings_playoff_forecast/deliverables/season=2026/latest/brief.md"),
+                Path("data/processed/wnba_team_game/season=2026/cutoff=2026-05-01/team_game.parquet"),
+            ]
+            shared_partition = Path(
+                "data/processed/wnba_team_game/season=2026/team_game.parquet"
+            )
+            unrelated = Path("notes.txt")
+            for path in [*expected, shared_partition, unrelated]:
+                destination = checkout / path
+                destination.parent.mkdir(parents=True, exist_ok=True)
+                destination.write_text("before\n", encoding="utf-8")
+            _run(["git", "add", "."], cwd=checkout)
+            _run(["git", "commit", "-m", "initial"], cwd=checkout)
+            _run(["git", "push", "-u", "origin", "forecast-branch"], cwd=checkout)
+
+            for path in [*expected, shared_partition, unrelated]:
+                (checkout / path).write_text("after\n", encoding="utf-8")
+            env = _workflow_env(FORECAST_CUTOFF="2026-05-01")
+            env.update(
+                {"GITHUB_REF_TYPE": "branch", "GITHUB_REF_NAME": "forecast-branch"}
+            )
+            result = _run(
+                ["bash", "-euo", "pipefail", "-c", commit],
+                cwd=checkout,
+                env=env,
+                check=False,
+            )
+
+            self.assertEqual(result.returncode, 0, result.stderr)
+            changed = _run(
+                ["git", "diff-tree", "--no-commit-id", "--name-only", "-r", "HEAD"],
+                cwd=checkout,
+            ).stdout.splitlines()
+            self.assertEqual(changed, sorted(str(path) for path in expected))
+            status = _run(["git", "status", "--short"], cwd=checkout).stdout
+            self.assertIn(str(shared_partition), status)
+            self.assertIn(str(unrelated), status)
+
 
 if __name__ == "__main__":
     unittest.main()
