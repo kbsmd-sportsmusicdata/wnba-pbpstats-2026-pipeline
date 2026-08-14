@@ -1014,6 +1014,50 @@ class TeamGameLayerTest(unittest.TestCase):
         self.assertEqual(len(before), 2)
         pd.testing.assert_frame_equal(before, after)
 
+    def test_earlier_cutoff_cannot_replace_shared_full_season_partition(self) -> None:
+        """Catches an as-of rebuild overwriting the reusable full-season ledger."""
+        from standings_playoff_forecast.data_sources import load_forecast_sources
+        from standings_playoff_forecast.team_game_layer import build_team_game_layer
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            source_root = Path(temp_dir)
+            cfg = _fixture_config(source_root, games_per_team=2)
+            paths = _write_source_fixture(source_root)
+            _append_game(
+                paths,
+                game_id=502.0,
+                game_date="2026-06-10",
+                home_score=75,
+                away_score=76,
+            )
+            sources = load_forecast_sources(
+                cfg,
+                **paths,
+                pbp_team_features_path=source_root / "not-present.csv",
+            )
+
+            full = build_team_game_layer(sources, cfg)
+            shared_path = (
+                source_root / "processed" / "season=2026" / "team_game.parquet"
+            )
+            shared_before = shared_path.read_bytes()
+            as_of = build_team_game_layer(sources, cfg, cutoff="2026-06-05")
+            cutoff_path = (
+                source_root
+                / "processed"
+                / "season=2026"
+                / "cutoff=2026-06-05"
+                / "team_game.parquet"
+            )
+
+            self.assertEqual(len(full), 4)
+            self.assertEqual(len(as_of), 2)
+            self.assertEqual(shared_path.read_bytes(), shared_before)
+            self.assertTrue(cutoff_path.is_file())
+            pd.testing.assert_frame_equal(
+                pd.read_parquet(cutoff_path), as_of, check_dtype=False
+            )
+
     def test_cumulative_record_uses_team_games_in_chronological_order(self) -> None:
         from standings_playoff_forecast.config import load_season_config
         from standings_playoff_forecast.data_sources import load_forecast_sources

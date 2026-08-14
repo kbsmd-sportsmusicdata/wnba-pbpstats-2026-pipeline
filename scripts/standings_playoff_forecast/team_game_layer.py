@@ -381,11 +381,33 @@ def _safe_divide(numerator: pd.Series, denominator: pd.Series) -> pd.Series:
     return numerator / denominator
 
 
-def _write_team_game_partition(result: pd.DataFrame, cfg: SeasonConfig) -> None:
+def _write_team_game_partition(
+    result: pd.DataFrame,
+    cfg: SeasonConfig,
+    *,
+    cutoff: object | None,
+    qualified_schedule: pd.DataFrame,
+) -> None:
     normalized_root = Path(cfg.normalized_team_game_root)
     if not normalized_root.is_absolute():
         normalized_root = REPOSITORY_ROOT / normalized_root
-    output_path = normalized_root / f"season={cfg.season}" / "team_game.parquet"
+    season_root = normalized_root / f"season={cfg.season}"
+    all_completed = qualified_schedule.loc[
+        normalize_completion_flags(qualified_schedule["status_type_completed"])
+    ]
+    latest_completed = (
+        pd.Timestamp(all_completed["game_date"].max()).normalize()
+        if not all_completed.empty
+        else None
+    )
+    requested_cutoff = (
+        pd.Timestamp(cutoff).normalize() if cutoff is not None else None
+    )
+    if requested_cutoff is not None and (
+        latest_completed is None or requested_cutoff < latest_completed
+    ):
+        season_root = season_root / f"cutoff={requested_cutoff.date().isoformat()}"
+    output_path = season_root / "team_game.parquet"
     output_path.parent.mkdir(parents=True, exist_ok=True)
     result.to_parquet(output_path, index=False)
 
@@ -547,7 +569,12 @@ def build_team_game_layer(
     if not expected_game_ids:
         result = pd.DataFrame(columns=TEAM_GAME_COLUMNS)
         validate_completed_game_ledger(sources.schedule, result, cfg, cutoff)
-        _write_team_game_partition(result, cfg)
+        _write_team_game_partition(
+            result,
+            cfg,
+            cutoff=cutoff,
+            qualified_schedule=schedule,
+        )
         return result
 
     team_box = sources.team_box.copy()
@@ -739,5 +766,10 @@ def build_team_game_layer(
     team_rows["rest_days"] = (days_between_games - 1).astype("Int64")
     team_rows["back_to_back"] = team_rows["rest_days"].eq(0).fillna(False)
     result = team_rows.reset_index(drop=True)[TEAM_GAME_COLUMNS]
-    _write_team_game_partition(result, cfg)
+    _write_team_game_partition(
+        result,
+        cfg,
+        cutoff=cutoff,
+        qualified_schedule=schedule,
+    )
     return result
