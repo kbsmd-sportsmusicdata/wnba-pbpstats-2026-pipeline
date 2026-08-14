@@ -436,9 +436,21 @@ def add_current_standings_context(
                 "current_streak_label": f"{streak_type}{streak_length}",
             }
         )
-    result = result.merge(
-        pd.DataFrame(streak_rows), on="team_id", how="left", validate="one_to_one"
+    streaks = pd.DataFrame(
+        streak_rows,
+        columns=[
+            "team_id",
+            "current_streak_type",
+            "current_streak_length",
+            "current_streak_label",
+        ],
     )
+    result = result.merge(
+        streaks, on="team_id", how="left", validate="one_to_one"
+    )
+    result["current_streak_length"] = result["current_streak_length"].fillna(
+        0
+    ).astype("int64")
 
     current_500_ids = set(
         standings.loc[standings["win_pct"].ge(0.500), "team_id"]

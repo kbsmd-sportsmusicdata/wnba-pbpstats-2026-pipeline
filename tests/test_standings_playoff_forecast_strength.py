@@ -126,6 +126,78 @@ def _team_games() -> pd.DataFrame:
 
 
 class TeamStrengthTest(unittest.TestCase):
+    def test_seeds_configured_zero_game_teams_with_neutral_strength_without_rebasing_observed_teams(self) -> None:
+        from standings_playoff_forecast.config import load_model_config, load_season_config
+        from standings_playoff_forecast.team_strength import build_team_strength
+
+        cfg = replace(load_season_config(2026), team_count=3, recent_window_games=1)
+        universe = pd.DataFrame(
+            {
+                "team_id": ["A", "B", "C"],
+                "franchise_id": ["alpha", "bravo", "charlie"],
+                "team_abbreviation": ["ALP", "BRV", "CHR"],
+                "team_name": ["Alpha", "Bravo", "Charlie"],
+            }
+        )
+        observed = build_team_strength(
+            _team_games(), None, cfg, load_model_config(), cutoff="2026-06-03"
+        ).set_index("team_id")
+
+        result = build_team_strength(
+            _team_games(),
+            None,
+            cfg,
+            load_model_config(),
+            cutoff="2026-06-03",
+            team_universe=universe,
+        ).set_index("team_id")
+
+        self.assertEqual(set(result.index), {"A", "B", "C"})
+        for team_id in ("A", "B"):
+            self.assertAlmostEqual(
+                result.loc[team_id, "predictive_net_rating"],
+                observed.loc[team_id, "predictive_net_rating"],
+            )
+            self.assertAlmostEqual(
+                result.loc[team_id, "composite_strength"],
+                observed.loc[team_id, "composite_strength"],
+            )
+        neutral = result.loc["C"]
+        self.assertEqual(neutral["season_games_played"], 0)
+        self.assertEqual(neutral["recent_games_played"], 0)
+        self.assertTrue(pd.isna(neutral["season_win_pct"]))
+        self.assertEqual(neutral["predictive_net_rating"], 0.0)
+        self.assertEqual(neutral["composite_strength"], 0.0)
+
+    def test_fully_empty_ledger_returns_typed_neutral_strength_for_the_configured_universe(self) -> None:
+        from standings_playoff_forecast.config import load_model_config, load_season_config
+        from standings_playoff_forecast.team_strength import build_team_strength
+
+        empty_games = _team_games().iloc[0:0].copy()
+        universe = pd.DataFrame(
+            {
+                "team_id": ["A", "B"],
+                "franchise_id": ["alpha", "bravo"],
+                "team_abbreviation": ["ALP", "BRV"],
+                "team_name": ["Alpha", "Bravo"],
+            }
+        )
+        result = build_team_strength(
+            empty_games,
+            None,
+            replace(load_season_config(2026), team_count=2),
+            load_model_config(),
+            cutoff="2026-05-01",
+            team_universe=universe,
+        )
+
+        self.assertEqual(result["team_id"].tolist(), ["A", "B"])
+        self.assertTrue(result["season_games_played"].eq(0).all())
+        self.assertTrue(result["predictive_net_rating"].eq(0.0).all())
+        self.assertTrue(result["composite_strength"].eq(0.0).all())
+        self.assertTrue(pd.api.types.is_integer_dtype(result["season_games_played"]))
+        self.assertTrue(pd.api.types.is_float_dtype(result["predictive_net_rating"]))
+
     def test_aggregates_only_games_at_or_before_cutoff_with_positive_is_good_factors(self) -> None:
         from standings_playoff_forecast.config import load_model_config, load_season_config
         from standings_playoff_forecast.team_strength import build_team_strength

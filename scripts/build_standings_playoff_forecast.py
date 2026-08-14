@@ -399,6 +399,9 @@ def _run_pipeline(
         cfg,
         model_cfg,
         cutoff,
+        team_universe=current_standings[
+            ["team_id", "franchise_id", "team_abbreviation", "team_name"]
+        ],
     )
     _enforce_required_pbpstats(sources, team_strength, model_cfg)
     if sources.pbp_team_features is None:

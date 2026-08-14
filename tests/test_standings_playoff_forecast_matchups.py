@@ -577,6 +577,55 @@ class SeasonScheduleCountValidationTest(unittest.TestCase):
 
 
 class MatchupModelTest(unittest.TestCase):
+    def test_zero_game_teams_use_neutral_pace_and_can_score_an_empty_league_schedule(self) -> None:
+        from standings_playoff_forecast.config import load_model_config
+        from standings_playoff_forecast.matchup_model import score_matchups
+
+        remaining = pd.DataFrame(
+            [
+                {
+                    "game_id": "opening-night",
+                    "game_date": "2026-05-01",
+                    "home_id": "A",
+                    "away_id": "B",
+                    "home_rest_days": pd.NA,
+                    "away_rest_days": pd.NA,
+                    "home_b2b": False,
+                    "away_b2b": False,
+                }
+            ]
+        )
+        strength = pd.DataFrame(
+            {
+                "team_id": ["A", "B"],
+                "season_games_played": [0, 0],
+                "predictive_net_rating": [0.0, 0.0],
+            }
+        )
+        empty_games = pd.DataFrame(
+            columns=[
+                "game_id",
+                "team_id",
+                "opponent_id",
+                "is_home",
+                "margin",
+                "pace_est",
+                "rest_days",
+                "back_to_back",
+            ]
+        )
+
+        result = score_matchups(
+            remaining, strength, empty_games, load_model_config()
+        ).iloc[0]
+
+        self.assertEqual(result["home_pace"], 100.0)
+        self.assertEqual(result["away_pace"], 100.0)
+        self.assertTrue(0.0 < result["home_win_probability"] < 1.0)
+        self.assertAlmostEqual(
+            result["home_win_probability"] + result["away_win_probability"], 1.0
+        )
+
     def test_scores_exact_pace_scaled_strength_and_context_formula(self) -> None:
         from standings_playoff_forecast.config import load_model_config
         from standings_playoff_forecast.matchup_model import score_matchups

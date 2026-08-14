@@ -176,7 +176,162 @@ def literal_sources(root: Path) -> SimpleNamespace:
     )
 
 
+def early_cutoff_sources(root: Path) -> SimpleNamespace:
+    teams = {
+        "A": ("AAA", "Alpha", "alpha"),
+        "B": ("BBB", "Beta", "beta"),
+        "C": ("CCC", "Charlie", "charlie"),
+        "D": ("DDD", "Delta", "delta"),
+    }
+    games = (
+        ("g1", "2026-06-01", "A", "B", True),
+        ("g2", "2026-06-08", "A", "C", False),
+        ("g3", "2026-06-09", "B", "D", False),
+        ("g4", "2026-06-10", "C", "D", False),
+    )
+    schedule_rows = []
+    for game_id, game_date, home_id, away_id, completed in games:
+        schedule_rows.append(
+            {
+                "season": 2026,
+                "season_type": 2,
+                "type_abbreviation": "STD",
+                "game_id": game_id,
+                "game_date": pd.Timestamp(game_date),
+                "home_id": home_id,
+                "away_id": away_id,
+                "home_abbreviation": teams[home_id][0],
+                "away_abbreviation": teams[away_id][0],
+                "home_display_name": teams[home_id][1],
+                "away_display_name": teams[away_id][1],
+                "home_score": 80.0 if completed else pd.NA,
+                "away_score": 70.0 if completed else pd.NA,
+                "status_type_completed": completed,
+                "status_type_name": (
+                    "STATUS_FINAL" if completed else "STATUS_SCHEDULED"
+                ),
+                "format_regulation_periods": 4,
+                "status_period": 4 if completed else 0,
+            }
+        )
+    schedule = pd.DataFrame(schedule_rows)
+    team_box = pd.DataFrame(
+        [
+            {
+                "game_id": "g1",
+                "team_id": team_id,
+                "opponent_team_id": opponent_id,
+                "team_home_away": home_away,
+                "team_score": team_score,
+                "opponent_team_score": opponent_score,
+                "team_winner": team_score > opponent_score,
+                "field_goals_made": field_goals_made,
+                "field_goals_attempted": 70,
+                "three_point_field_goals_made": 8,
+                "free_throws_made": free_throws_made,
+                "free_throws_attempted": 14,
+                "offensive_rebounds": 10,
+                "defensive_rebounds": 25,
+                "turnovers": turnovers,
+            }
+            for (
+                team_id,
+                opponent_id,
+                home_away,
+                team_score,
+                opponent_score,
+                field_goals_made,
+                free_throws_made,
+                turnovers,
+            ) in (
+                ("A", "B", "home", 80, 70, 30, 12, 12),
+                ("B", "A", "away", 70, 80, 27, 9, 13),
+            )
+        ]
+    )
+    team_history = pd.DataFrame(
+        {
+            "season": [2026] * 4,
+            "sportsdataverse_team_id": list(teams),
+            "franchise_id": [value[2] for value in teams.values()],
+        }
+    )
+    source_root = root / "sources"
+    source_root.mkdir(parents=True)
+    schedule_path = source_root / "schedule.parquet"
+    team_box_path = source_root / "team_box.parquet"
+    team_history_path = source_root / "team_history.csv"
+    schedule.to_parquet(schedule_path, index=False)
+    team_box.to_parquet(team_box_path, index=False)
+    team_history.to_csv(team_history_path, index=False)
+    return SimpleNamespace(
+        schedule=schedule,
+        team_box=team_box,
+        external_standings=None,
+        external_standings_load_status="unavailable",
+        team_history=team_history,
+        pbp_team_features=None,
+        schedule_path=schedule_path,
+        team_box_path=team_box_path,
+        external_standings_path=None,
+        team_history_path=team_history_path,
+        pbp_team_features_path=None,
+    )
+
+
 class OrchestratorIntegrationTests(unittest.TestCase):
+    def test_partial_early_cutoff_simulates_remaining_games_for_zero_game_teams(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            repository_root = root / "repository"
+            config_root = (
+                repository_root / "analysis" / "standings_playoff_forecast" / "config"
+            )
+            (config_root / "seasons").mkdir(parents=True)
+            (config_root / "seasons" / "default.json").write_text(
+                '{"fixture": "default"}\n', encoding="utf-8"
+            )
+            (config_root / "seasons" / "2026.json").write_text(
+                '{"fixture": "season"}\n', encoding="utf-8"
+            )
+            (config_root / "forecast_model.json").write_text(
+                '{"fixture": "model"}\n', encoding="utf-8"
+            )
+            cfg = replace(
+                season_config(repository_root),
+                team_count=4,
+                regular_season_games_per_team=2,
+                playoff_qualifiers=2,
+                output_root="analysis/early_forecast",
+            )
+            sources = early_cutoff_sources(root)
+            with (
+                patch.object(builder, "REPOSITORY_ROOT", repository_root),
+                patch.object(builder, "CONFIG_ROOT", config_root),
+                patch.object(builder, "load_season_config", return_value=cfg),
+                patch.object(builder, "load_model_config", return_value=model_config()),
+                patch.object(builder, "load_forecast_sources", return_value=sources),
+                warnings.catch_warnings(record=True),
+            ):
+                result = builder.run_forecast(
+                    options(simulations=8, skip_history=True)
+                )
+
+            strength = result.stage_artifacts["team_strength"].set_index("team_id")
+            scored = result.stage_artifacts["matchup_probabilities"]
+            simulation = result.stage_artifacts["simulation_result"]
+            self.assertEqual(set(strength.index), {"A", "B", "C", "D"})
+            self.assertTrue(
+                strength.loc[["C", "D"], "season_games_played"].eq(0).all()
+            )
+            self.assertTrue(
+                strength.loc[["C", "D"], "predictive_net_rating"].eq(0.0).all()
+            )
+            self.assertEqual(len(scored), 3)
+            self.assertTrue(scored["home_win_probability"].between(0, 1).all())
+            self.assertTrue(scored["away_win_probability"].between(0, 1).all())
+            self.assertTrue((simulation.final_wins + simulation.final_losses == 2).all())
+
     def test_validated_pbp_sidecar_is_separate_hashed_manifest_provenance(self):
         """Catches cutoff evidence affecting a run without a separately hashed source."""
         from standings_playoff_forecast.metadata import _source_provenance

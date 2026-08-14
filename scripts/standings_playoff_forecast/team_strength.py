@@ -74,6 +74,29 @@ def _identity_metadata(games: pd.DataFrame) -> pd.DataFrame:
     return games[columns].drop_duplicates("team_id")
 
 
+def _validated_team_universe(
+    team_universe: pd.DataFrame, cfg: SeasonConfig
+) -> pd.DataFrame:
+    required = set(_IDENTITY_COLUMNS)
+    _require_columns(team_universe, required, "team_universe")
+    result = team_universe[list(_IDENTITY_COLUMNS)].copy()
+    result["team_id"] = result["team_id"].map(normalize_id)
+    for column in _IDENTITY_COLUMNS[1:]:
+        result[column] = result[column].astype("string").str.strip()
+    if result.isna().any().any() or result.astype("string").eq("").any().any():
+        raise ValueError("team_universe contains missing or blank identities")
+    if result["team_id"].duplicated().any():
+        raise ValueError("team_universe contains duplicate normalized team_id values")
+    if result["franchise_id"].duplicated().any():
+        raise ValueError("team_universe contains duplicate franchise_id values")
+    if len(result) != cfg.team_count:
+        raise ValueError(
+            "team_universe must contain exactly "
+            f"{cfg.team_count} configured teams"
+        )
+    return result.sort_values("team_id", kind="stable").reset_index(drop=True)
+
+
 def _in_season_z_scores(
     result: pd.DataFrame, weights: Mapping[str, float]
 ) -> pd.DataFrame:
@@ -242,6 +265,8 @@ def build_team_strength(
     cfg: SeasonConfig,
     model_cfg: ForecastModelConfig,
     cutoff: object,
+    *,
+    team_universe: pd.DataFrame | None = None,
 ) -> pd.DataFrame:
     """Aggregate cutoff-safe season and recent team strength.
 
@@ -250,7 +275,14 @@ def build_team_strength(
     """
 
     games = _cutoff_games(team_games, cutoff)
-    identity_columns = [column for column in _IDENTITY_COLUMNS if column in games]
+    universe = (
+        None if team_universe is None else _validated_team_universe(team_universe, cfg)
+    )
+    identity_columns = (
+        list(_IDENTITY_COLUMNS)
+        if universe is not None
+        else [column for column in _IDENTITY_COLUMNS if column in games]
+    )
     output_columns = [
         *identity_columns,
         "season_games_played",
@@ -268,41 +300,107 @@ def build_team_strength(
         *_PBPSTATS_STATUS_COLUMNS,
         *[f"pbpstats_{column}" for column in _PBPSTATS_CONTEXT_COLUMNS],
     ]
-    if games.empty:
+    if games.empty and universe is None:
         return pd.DataFrame(columns=output_columns)
 
-    season = (
-        games.groupby("team_id", sort=True)
-        .agg(
-            season_games_played=("game_id", "size"),
-            season_win_pct=("win", "mean"),
-            season_net_rating=("net_rating_est", "mean"),
-            **{column: (column, "mean") for column in _FACTOR_COLUMNS},
+    if games.empty:
+        result = pd.DataFrame(
+            columns=[
+                *_IDENTITY_COLUMNS,
+                "season_games_played",
+                "season_win_pct",
+                "season_net_rating",
+                "recent_games_played",
+                "recent_net_rating",
+                *_FACTOR_COLUMNS,
+                "predictive_net_rating",
+                *[f"z_{column}" for column in model_cfg.explanatory_strength],
+                "composite_strength",
+            ]
         )
-        .reset_index()
-    )
-    recent = games.groupby("team_id", sort=False).tail(cfg.recent_window_games)
-    recent = (
-        recent.groupby("team_id", sort=True)
-        .agg(
-            recent_games_played=("game_id", "size"),
-            recent_net_rating=("net_rating_est", "mean"),
+    else:
+        season = (
+            games.groupby("team_id", sort=True)
+            .agg(
+                season_games_played=("game_id", "size"),
+                season_win_pct=("win", "mean"),
+                season_net_rating=("net_rating_est", "mean"),
+                **{column: (column, "mean") for column in _FACTOR_COLUMNS},
+            )
+            .reset_index()
         )
-        .reset_index()
-    )
-    result = _identity_metadata(games).merge(
-        season, on="team_id", how="inner", validate="one_to_one"
-    ).merge(recent, on="team_id", how="inner", validate="one_to_one")
-    result["predictive_net_rating"] = (
-        model_cfg.season_net_rating_weight * result["season_net_rating"]
-        + model_cfg.recent_net_rating_weight * result["recent_net_rating"]
-    )
-    z_scores = _in_season_z_scores(result, model_cfg.explanatory_strength)
-    for column in z_scores:
-        result[f"z_{column}"] = z_scores[column]
-    result["composite_strength"] = sum(
-        weight * z_scores[column]
-        for column, weight in model_cfg.explanatory_strength.items()
-    )
+        recent = games.groupby("team_id", sort=False).tail(cfg.recent_window_games)
+        recent = (
+            recent.groupby("team_id", sort=True)
+            .agg(
+                recent_games_played=("game_id", "size"),
+                recent_net_rating=("net_rating_est", "mean"),
+            )
+            .reset_index()
+        )
+        result = _identity_metadata(games).merge(
+            season, on="team_id", how="inner", validate="one_to_one"
+        ).merge(recent, on="team_id", how="inner", validate="one_to_one")
+        result["predictive_net_rating"] = (
+            model_cfg.season_net_rating_weight * result["season_net_rating"]
+            + model_cfg.recent_net_rating_weight * result["recent_net_rating"]
+        )
+        z_scores = _in_season_z_scores(result, model_cfg.explanatory_strength)
+        for column in z_scores:
+            result[f"z_{column}"] = z_scores[column]
+        composite = pd.Series(0.0, index=result.index, dtype="float64")
+        for column, weight in model_cfg.explanatory_strength.items():
+            composite = composite + weight * z_scores[column]
+        result["composite_strength"] = composite
+
+    if universe is not None:
+        unexpected = sorted(set(result["team_id"]) - set(universe["team_id"]))
+        if unexpected:
+            raise ValueError(
+                "team_games contains teams outside team_universe: "
+                + ", ".join(unexpected)
+            )
+        observed_identity = result[list(_IDENTITY_COLUMNS)].copy()
+        if not observed_identity.empty:
+            identity_check = observed_identity.merge(
+                universe,
+                on="team_id",
+                how="left",
+                suffixes=("_game", "_universe"),
+                validate="one_to_one",
+            )
+            conflicts = pd.Series(False, index=identity_check.index)
+            for column in _IDENTITY_COLUMNS[1:]:
+                conflicts |= identity_check[f"{column}_game"].astype("string").ne(
+                    identity_check[f"{column}_universe"].astype("string")
+                ).fillna(True)
+            if conflicts.any():
+                raise ValueError(
+                    "team_games presentation metadata conflicts with team_universe: "
+                    + ", ".join(sorted(identity_check.loc[conflicts, "team_id"]))
+                )
+        result = universe.merge(
+            result.drop(columns=list(_IDENTITY_COLUMNS[1:]), errors="ignore"),
+            on="team_id",
+            how="left",
+            validate="one_to_one",
+        )
+        neutral_columns = [
+            "season_net_rating",
+            "recent_net_rating",
+            *_FACTOR_COLUMNS,
+            "predictive_net_rating",
+            *[f"z_{column}" for column in model_cfg.explanatory_strength],
+            "composite_strength",
+        ]
+        result[["season_games_played", "recent_games_played"]] = result[
+            ["season_games_played", "recent_games_played"]
+        ].fillna(0).astype("int64")
+        result[neutral_columns] = result[neutral_columns].fillna(0.0).astype(
+            "float64"
+        )
+        result["season_win_pct"] = pd.to_numeric(
+            result["season_win_pct"], errors="coerce"
+        )
     result = _attach_pbpstats_context(result, pbp_team_features, cfg, model_cfg, cutoff)
     return result.reindex(columns=output_columns)

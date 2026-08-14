@@ -101,6 +101,35 @@ def _fifteen_team_cycle() -> pd.DataFrame:
 
 
 class StandingsAggregationTest(unittest.TestCase):
+    def test_current_context_supports_a_fully_empty_configured_league(self) -> None:
+        from standings_playoff_forecast.config import load_season_config
+        from standings_playoff_forecast.standings import (
+            add_current_standings_context,
+            build_current_standings,
+        )
+
+        cfg = replace(load_season_config(2026), team_count=2, playoff_qualifiers=1)
+        empty_games = _team_games().iloc[0:0].copy()
+        empty_games["home_away"] = pd.Series(dtype="string")
+        universe = pd.DataFrame(
+            {
+                "team_id": ["A", "B"],
+                "franchise_id": ["alpha", "bravo"],
+                "team_abbreviation": ["ALP", "BRV"],
+                "team_name": ["Alpha", "Bravo"],
+            }
+        )
+        standings = build_current_standings(
+            empty_games, cfg, team_universe=universe
+        )
+        standings["current_rank"] = [1, 2]
+
+        result = add_current_standings_context(standings, empty_games, cfg)
+
+        self.assertEqual(result["team_id"].tolist(), ["A", "B"])
+        self.assertEqual(result["current_streak_length"].tolist(), [0, 0])
+        self.assertTrue(result["current_streak_label"].isna().all())
+
     def test_build_current_standings_aggregates_each_directional_team_game_once(self) -> None:
         from standings_playoff_forecast.config import load_season_config
         from standings_playoff_forecast.standings import build_current_standings

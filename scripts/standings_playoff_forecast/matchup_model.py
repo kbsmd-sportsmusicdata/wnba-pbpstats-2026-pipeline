@@ -8,6 +8,9 @@ import pandas as pd
 from .contracts import ForecastModelConfig
 
 
+_EMPTY_LEAGUE_NEUTRAL_PACE = 100.0
+
+
 def _fallback_sigma(model_cfg: ForecastModelConfig) -> float:
     return (model_cfg.minimum_sigma + model_cfg.maximum_sigma) / 2
 
@@ -153,7 +156,10 @@ def score_matchups(
     """Score remaining games using current strength and completed-game pace."""
 
     _validate_reciprocal_team_games(team_games)
-    ratings = strength[["team_id", "predictive_net_rating"]].copy()
+    rating_columns = ["team_id", "predictive_net_rating"]
+    if "season_games_played" in strength.columns:
+        rating_columns.append("season_games_played")
+    ratings = strength[rating_columns].copy()
     pace = (
         team_games.assign(
             pace_est=pd.to_numeric(team_games["pace_est"], errors="coerce")
@@ -162,6 +168,20 @@ def score_matchups(
         .mean()
     )
     context = ratings.merge(pace, on="team_id", how="left", validate="one_to_one")
+    if "season_games_played" in context.columns:
+        zero_game_team = pd.to_numeric(
+            context["season_games_played"], errors="coerce"
+        ).eq(0)
+        observed_pace = pd.to_numeric(pace["pace_est"], errors="coerce")
+        observed_pace = observed_pace.loc[observed_pace.map(math.isfinite)]
+        neutral_pace = (
+            float(observed_pace.mean())
+            if not observed_pace.empty
+            else _EMPTY_LEAGUE_NEUTRAL_PACE
+        )
+        context.loc[zero_game_team & context["pace_est"].isna(), "pace_est"] = (
+            neutral_pace
+        )
     result = remaining.copy().merge(
         _side_context(context, "home"),
         on="home_id",
