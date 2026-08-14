@@ -10,6 +10,7 @@ import sys
 import tempfile
 import unittest
 import warnings
+from dataclasses import replace
 from pathlib import Path
 from types import MappingProxyType, SimpleNamespace
 from unittest.mock import Mock, call, patch
@@ -333,6 +334,34 @@ class OrchestratorIntegrationTests(unittest.TestCase):
             )
             self.assertEqual(result.ledger_validation.completed_game_count, 1)
             self.assertEqual(result.external_standings_qa.status, "matched")
+
+    def test_required_pbpstats_fails_closed_when_missing_or_cutoff_unsafe(self):
+        """Catches a required enrichment silently degrading to optional warnings."""
+        required_model = replace(
+            model_config(), pbpstats_enrichment_required=True
+        )
+        for evidence in (None, pd.DataFrame({"team_id": ["A", "B"]})):
+            with self.subTest(evidence="missing" if evidence is None else "unsafe"):
+                with tempfile.TemporaryDirectory() as temporary:
+                    root = Path(temporary)
+                    cfg = season_config(root)
+                    sources = literal_sources(root)
+                    sources.pbp_team_features = evidence
+                    with (
+                        patch.object(builder, "load_season_config", return_value=cfg),
+                        patch.object(
+                            builder, "load_model_config", return_value=required_model
+                        ),
+                        patch.object(
+                            builder, "load_forecast_sources", return_value=sources
+                        ),
+                    ):
+                        with self.assertRaisesRegex(
+                            ValueError, "required PBPStats enrichment"
+                        ):
+                            builder.run_forecast(
+                                options(simulations=4, skip_history=True)
+                            )
 
     def test_external_load_outcomes_reach_manifest_with_coherent_provenance(self):
         """Catches collapsing unreadable-present external data into unavailable."""

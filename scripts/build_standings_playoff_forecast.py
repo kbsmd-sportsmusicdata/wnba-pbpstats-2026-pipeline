@@ -324,6 +324,32 @@ def _warn_for_history(historical_context: pd.DataFrame) -> None:
         )
 
 
+def _enforce_required_pbpstats(
+    sources: ForecastSources,
+    team_strength: pd.DataFrame,
+    model_cfg: ForecastModelConfig,
+) -> None:
+    """Fail closed when the configured required enrichment lacks safe evidence."""
+
+    if not model_cfg.pbpstats_enrichment_required:
+        return
+    if not model_cfg.pbpstats_enrichment_enabled:
+        raise ValueError(
+            "required PBPStats enrichment cannot be disabled by model config"
+        )
+    if sources.pbp_team_features is None or sources.pbp_team_features.empty:
+        raise ValueError("required PBPStats enrichment source is unavailable")
+    safe_column = "pbpstats_snapshot_safe_for_cutoff"
+    if (
+        safe_column not in team_strength.columns
+        or team_strength.empty
+        or not team_strength[safe_column].eq(True).all()
+    ):
+        raise ValueError(
+            "required PBPStats enrichment is not cutoff-safe for every team"
+        )
+
+
 def _run_pipeline(
     options: argparse.Namespace,
     *,
@@ -369,6 +395,7 @@ def _run_pipeline(
         model_cfg,
         cutoff,
     )
+    _enforce_required_pbpstats(sources, team_strength, model_cfg)
     if sources.pbp_team_features is None:
         warnings.warn(
             "Optional PBPStats contextual data is unavailable; core forecast continues.",
