@@ -6,6 +6,7 @@ import datetime as dt
 import json
 import math
 import os
+import shutil
 import tempfile
 import warnings
 from collections.abc import Mapping
@@ -827,20 +828,58 @@ def _csv_text(frame: pd.DataFrame) -> str:
         return frame.to_csv(index=False, lineterminator="\n", float_format="%.17g")
 
 
-def _atomic_write_text(path: Path, content: str) -> None:
+def _write_staged_text(path: Path, content: str) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    descriptor, temporary_name = tempfile.mkstemp(
-        dir=path.parent, prefix=f".{path.name}.", suffix=".tmp"
+    with path.open("w", encoding="utf-8", newline="") as target:
+        target.write(content)
+        target.flush()
+        os.fsync(target.fileno())
+
+
+def _publish_output_directory(
+    output_root: Path, contents: Mapping[str, str]
+) -> None:
+    """Stage every file, then replace the published bundle as one directory."""
+
+    output_root.parent.mkdir(parents=True, exist_ok=True)
+    staging_root = Path(
+        tempfile.mkdtemp(
+            dir=output_root.parent,
+            prefix=f".{output_root.name}.",
+            suffix=".tmp",
+        )
     )
-    temporary_path = Path(temporary_name)
+    backup_root: Path | None = None
     try:
-        with os.fdopen(descriptor, "w", encoding="utf-8", newline="") as target:
-            target.write(content)
-            target.flush()
-            os.fsync(target.fileno())
-        os.replace(temporary_path, path)
+        for filename, content in contents.items():
+            _write_staged_text(staging_root / filename, content)
+
+        if output_root.exists():
+            backup_root = Path(
+                tempfile.mkdtemp(
+                    dir=output_root.parent,
+                    prefix=f".{output_root.name}.",
+                    suffix=".backup",
+                )
+            )
+            backup_root.rmdir()
+            os.replace(output_root, backup_root)
+        try:
+            os.replace(staging_root, output_root)
+        except BaseException:
+            if backup_root is not None and backup_root.exists():
+                os.replace(backup_root, output_root)
+            raise
+        if backup_root is not None:
+            shutil.rmtree(backup_root, ignore_errors=True)
     finally:
-        temporary_path.unlink(missing_ok=True)
+        if staging_root.exists():
+            shutil.rmtree(staging_root, ignore_errors=True)
+        if backup_root is not None and backup_root.exists():
+            if not output_root.exists():
+                os.replace(backup_root, output_root)
+            else:
+                shutil.rmtree(backup_root, ignore_errors=True)
 
 
 def _ordered_frames(
@@ -950,8 +989,10 @@ def write_output_bundle(
         / f"season={int(cfg.season)}"
         / "latest"
     )
-    for name, filename in CSV_FILENAMES.items():
-        _atomic_write_text(output_root / filename, csv_text[name])
-    _atomic_write_text(output_root / "forecast_payload.json", payload_text)
-    _atomic_write_text(output_root / "run_manifest.json", manifest_text)
+    contents = {
+        **{filename: csv_text[name] for name, filename in CSV_FILENAMES.items()},
+        "forecast_payload.json": payload_text,
+        "run_manifest.json": manifest_text,
+    }
+    _publish_output_directory(output_root, contents)
     return output_root

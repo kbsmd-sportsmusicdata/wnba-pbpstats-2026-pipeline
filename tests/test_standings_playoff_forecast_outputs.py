@@ -1001,8 +1001,8 @@ class OutputBundleTest(unittest.TestCase):
             self.assertEqual(original, {path.name: path.read_bytes() for path in output.iterdir()})
             self.assertEqual(list(output.glob(".*.tmp")), [])
 
-    def test_atomic_replace_failure_keeps_previous_target_and_cleans_temporary_file(self) -> None:
-        """Catches truncating a final file or leaking its temporary sibling."""
+    def test_directory_publish_failure_keeps_previous_bundle_and_cleans_staging(self) -> None:
+        """Catches exposing a mixed generation when the bundle swap fails."""
         from standings_playoff_forecast import outputs
 
         with tempfile.TemporaryDirectory() as tmp:
@@ -1025,21 +1025,32 @@ class OutputBundleTest(unittest.TestCase):
                 "repository_root": root,
             }
             output = outputs.write_output_bundle(bundle, **kwargs)
-            target = output / "forecast_summary.csv"
-            before = target.read_bytes()
+            before = {path.name: path.read_bytes() for path in output.iterdir()}
             real_replace = os.replace
 
-            def fail_target(source_path, target_path):
-                if Path(target_path).name == "forecast_summary.csv":
-                    raise OSError("injected atomic replacement failure")
+            def fail_bundle_publish(source_path, target_path):
+                source = Path(source_path)
+                target = Path(target_path)
+                if (
+                    target == output
+                    and source.name.startswith(".latest.")
+                    and source.name.endswith(".tmp")
+                ):
+                    raise OSError("injected directory publication failure")
                 return real_replace(source_path, target_path)
 
-            with mock.patch.object(outputs.os, "replace", side_effect=fail_target):
-                with self.assertRaisesRegex(OSError, "injected atomic replacement failure"):
+            with mock.patch.object(
+                outputs.os, "replace", side_effect=fail_bundle_publish
+            ):
+                with self.assertRaisesRegex(
+                    OSError, "injected directory publication failure"
+                ):
                     outputs.write_output_bundle(bundle, **kwargs)
 
-            self.assertEqual(target.read_bytes(), before)
-            self.assertEqual(list(output.glob(".forecast_summary.csv.*.tmp")), [])
+            self.assertEqual(
+                {path.name: path.read_bytes() for path in output.iterdir()}, before
+            )
+            self.assertEqual(list(output.parent.glob(".latest.*")), [])
 
     def test_rejects_inconsistent_game_keys_and_infinite_json_values_before_writing(self) -> None:
         """Catches cross-table drift and non-standard Infinity JSON tokens."""
