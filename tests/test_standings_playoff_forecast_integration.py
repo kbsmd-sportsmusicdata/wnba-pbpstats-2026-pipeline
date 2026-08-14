@@ -803,6 +803,8 @@ class OrchestratorIntegrationTests(unittest.TestCase):
                 "/tmp/pbp",
                 "--output-root",
                 "/tmp/output",
+                "--team-game-output-path-file",
+                "/tmp/team-game-output-path.txt",
             ]
         )
         self.assertEqual(args.cutoff, "2026-08-08")
@@ -810,6 +812,9 @@ class OrchestratorIntegrationTests(unittest.TestCase):
         self.assertEqual(args.random_seed, 17)
         self.assertTrue(args.skip_history)
         self.assertEqual(args.output_root, "/tmp/output")
+        self.assertEqual(
+            args.team_game_output_path_file, "/tmp/team-game-output-path.txt"
+        )
         for invalid in (
             ["--season", "2026", "--simulations", "0"],
             ["--season", "2026", "--random-seed", "-1"],
@@ -819,6 +824,36 @@ class OrchestratorIntegrationTests(unittest.TestCase):
         ):
             with self.subTest(invalid=invalid), self.assertRaises(SystemExit):
                 builder.parse_args(invalid)
+
+    def test_main_writes_producer_owned_team_game_path_evidence(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            team_game_path = root / "data" / "team_game.parquet"
+            team_game_path.parent.mkdir(parents=True)
+            team_game_path.write_bytes(b"parquet-evidence")
+            evidence_path = root / "evidence" / "team-game-path.txt"
+            result = SimpleNamespace(
+                cutoff=pd.Timestamp("2026-06-01"),
+                random_seed=20260601,
+                external_standings_qa=SimpleNamespace(status="unavailable"),
+                output_path=root / "outputs",
+                stage_artifacts={"team_game_output_path": team_game_path},
+            )
+
+            with patch.object(builder, "run_forecast", return_value=result):
+                builder.main(
+                    [
+                        "--season",
+                        "2026",
+                        "--team-game-output-path-file",
+                        str(evidence_path),
+                    ]
+                )
+
+            self.assertEqual(
+                evidence_path.read_text(encoding="utf-8"),
+                f"{team_game_path.resolve()}\n",
+            )
 
     def test_pipeline_resolves_cutoff_seed_ranks_and_writes_exact_bundle(self):
         with tempfile.TemporaryDirectory() as temporary:

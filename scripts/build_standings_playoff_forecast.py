@@ -56,6 +56,7 @@ from standings_playoff_forecast.team_game_layer import (
     normalize_completion_flags,
     normalize_id,
     qualify_regular_season_schedule,
+    resolve_team_game_output_path,
     validate_completed_game_ledger,
 )
 from standings_playoff_forecast.team_strength import (
@@ -117,6 +118,7 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--sportsdataverse-data-root", default=None)
     parser.add_argument("--pbpstats-data-root", default=None)
     parser.add_argument("--output-root", default=None)
+    parser.add_argument("--team-game-output-path-file", default=None)
     return parser.parse_args(argv)
 
 
@@ -407,6 +409,11 @@ def _run_pipeline(
     # Both builders receive the full raw schedule plus the same cutoff; future
     # rows remain available for rest and back-to-back context.
     team_games = build_team_game_layer(sources, cfg, cutoff=cutoff)
+    team_game_output_path = resolve_team_game_output_path(
+        cfg,
+        qualify_regular_season_schedule(sources.schedule, cfg),
+        cutoff=cutoff,
+    )
     ledger_validation = validate_completed_game_ledger(
         sources.schedule,
         team_games,
@@ -526,6 +533,7 @@ def _run_pipeline(
     )
     artifacts = {
         "team_games": team_games,
+        "team_game_output_path": team_game_output_path,
         "current_standings": current_standings,
         "head_to_head": head_to_head,
         "team_strength": team_strength,
@@ -601,7 +609,23 @@ def run_forecast(options: argparse.Namespace) -> OrchestrationResult:
 
 
 def main(argv: Sequence[str] | None = None) -> None:
-    result = run_forecast(parse_args(argv))
+    options = parse_args(argv)
+    result = run_forecast(options)
+    team_game_output_path_file = getattr(
+        options, "team_game_output_path_file", None
+    )
+    if team_game_output_path_file is not None:
+        output_path = result.stage_artifacts.get("team_game_output_path")
+        if not isinstance(output_path, Path) or not output_path.is_file():
+            raise ValueError(
+                "canonical team-game output path evidence must identify an existing file"
+            )
+        evidence_path = Path(team_game_output_path_file)
+        evidence_path.parent.mkdir(parents=True, exist_ok=True)
+        evidence_path.write_text(
+            f"{output_path.resolve()}\n",
+            encoding="utf-8",
+        )
     print(f"cutoff resolved: {result.cutoff.date().isoformat()}")
     print(f"deterministic seed: {result.random_seed}")
     print("canonical ledger validation: validated")

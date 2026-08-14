@@ -381,13 +381,14 @@ def _safe_divide(numerator: pd.Series, denominator: pd.Series) -> pd.Series:
     return numerator / denominator
 
 
-def _write_team_game_partition(
-    result: pd.DataFrame,
+def resolve_team_game_output_path(
     cfg: SeasonConfig,
+    qualified_schedule: pd.DataFrame,
     *,
     cutoff: object | None,
-    qualified_schedule: pd.DataFrame,
-) -> None:
+) -> Path:
+    """Return the exact partition path used by the canonical ledger writer."""
+
     normalized_root = Path(cfg.normalized_team_game_root)
     if not normalized_root.is_absolute():
         normalized_root = REPOSITORY_ROOT / normalized_root
@@ -407,7 +408,21 @@ def _write_team_game_partition(
         latest_completed is None or requested_cutoff < latest_completed
     ):
         season_root = season_root / f"cutoff={requested_cutoff.date().isoformat()}"
-    output_path = season_root / "team_game.parquet"
+    return season_root / "team_game.parquet"
+
+
+def _write_team_game_partition(
+    result: pd.DataFrame,
+    cfg: SeasonConfig,
+    *,
+    cutoff: object | None,
+    qualified_schedule: pd.DataFrame,
+) -> None:
+    output_path = resolve_team_game_output_path(
+        cfg,
+        qualified_schedule,
+        cutoff=cutoff,
+    )
     output_path.parent.mkdir(parents=True, exist_ok=True)
     result.to_parquet(output_path, index=False)
 

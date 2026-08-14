@@ -1017,7 +1017,11 @@ class TeamGameLayerTest(unittest.TestCase):
     def test_earlier_cutoff_cannot_replace_shared_full_season_partition(self) -> None:
         """Catches an as-of rebuild overwriting the reusable full-season ledger."""
         from standings_playoff_forecast.data_sources import load_forecast_sources
-        from standings_playoff_forecast.team_game_layer import build_team_game_layer
+        from standings_playoff_forecast.team_game_layer import (
+            build_team_game_layer,
+            qualify_regular_season_schedule,
+            resolve_team_game_output_path,
+        )
 
         with tempfile.TemporaryDirectory() as temp_dir:
             source_root = Path(temp_dir)
@@ -1054,6 +1058,29 @@ class TeamGameLayerTest(unittest.TestCase):
             self.assertEqual(len(as_of), 2)
             self.assertEqual(shared_path.read_bytes(), shared_before)
             self.assertTrue(cutoff_path.is_file())
+            qualified = qualify_regular_season_schedule(sources.schedule, cfg)
+            self.assertEqual(
+                resolve_team_game_output_path(cfg, qualified, cutoff=None),
+                shared_path,
+            )
+            self.assertEqual(
+                resolve_team_game_output_path(
+                    cfg, qualified, cutoff="2026-06-05"
+                ),
+                cutoff_path,
+            )
+            self.assertEqual(
+                resolve_team_game_output_path(
+                    cfg, qualified, cutoff="2026-06-10"
+                ),
+                shared_path,
+            )
+            self.assertEqual(
+                resolve_team_game_output_path(
+                    cfg, qualified, cutoff="2026-06-20"
+                ),
+                shared_path,
+            )
             pd.testing.assert_frame_equal(
                 pd.read_parquet(cutoff_path), as_of, check_dtype=False
             )
