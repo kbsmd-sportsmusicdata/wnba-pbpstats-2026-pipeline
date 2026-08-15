@@ -1,39 +1,39 @@
 {
   "config_hash": "3083742f5a68e7c2490367106b4f131c0170b554ceaf161d9c582947c49cf197",
   "config_path": "analysis/snapshot_window_panel/config/snapshot_window_panel_config.json",
-  "generated_at_utc": "2026-08-11T21:42:11+00:00",
+  "generated_at_utc": "2026-08-15T13:00:47+00:00",
   "outputs": {
-    "player_window_panel_2026.csv": 3699,
-    "team_window_panel_2026.csv": 370,
+    "player_window_panel_2026.csv": 3817,
+    "team_window_panel_2026.csv": 382,
     "window_panel_qa_2026.csv": 12
   },
   "panel_stats": {
     "player": {
       "additive_columns_differenced": 139,
-      "entities": 224,
+      "entities": 226,
       "first_window_end_utc": "2026-06-02 22:58:54",
-      "games_covered": 4827.0,
-      "last_window_end_utc": "2026-08-11 14:48:21",
+      "games_covered": 4945.0,
+      "last_window_end_utc": "2026-08-13 14:49:10",
       "quarantined_snapshots": [
         "2026-06-03 18:58:03+00:00"
       ],
       "snapshots_quarantined": 1,
       "status": "ok",
-      "team_possession_share_match_rate": 0.8456,
+      "team_possession_share_match_rate": 0.8452,
       "weighted_averages_reconstructed": [
         "shotquality_pbp_avg",
         "usage",
         "on_off_rtg",
         "on_def_rtg"
       ],
-      "windows": 3699
+      "windows": 3817
     },
     "team": {
       "additive_columns_differenced": 126,
       "entities": 15,
       "first_window_end_utc": "2026-06-02 22:58:54",
-      "games_covered": 488.0,
-      "last_window_end_utc": "2026-08-11 14:48:21",
+      "games_covered": 500.0,
+      "last_window_end_utc": "2026-08-13 14:49:10",
       "quarantined_snapshots": [
         "2026-06-03 18:58:03+00:00"
       ],
@@ -43,31 +43,31 @@
         "shotquality_pbp_avg",
         "off_fgrebound_pct"
       ],
-      "windows": 370
+      "windows": 382
     }
   },
-  "run_id": "20260811T214211+0000",
+  "run_id": "20260815T130047+0000",
   "season": 2026,
   "source_manifest": {
     "player_master": {
       "columns": 315,
       "first_snapshot_utc": "2026-06-02T22:58:54+00:00",
-      "latest_snapshot_utc": "2026-08-11T14:48:21+00:00",
-      "modified_at_utc": "2026-08-11T21:03:22+00:00",
-      "path": "/home/user/wnba-pbpstats-2026-pipeline/data/pbpstats_wnba_2026/features_master/2026/player_totals_features_master.csv",
-      "rows": 12463,
-      "size_bytes": 33879011,
-      "snapshots": 60
+      "latest_snapshot_utc": "2026-08-13T14:49:10+00:00",
+      "modified_at_utc": "2026-08-15T13:00:00+00:00",
+      "path": "/home/runner/work/wnba-pbpstats-2026-pipeline/wnba-pbpstats-2026-pipeline/data/pbpstats_wnba_2026/features_master/2026/player_totals_features_master.csv",
+      "rows": 12910,
+      "size_bytes": 35161265,
+      "snapshots": 62
     },
     "team_master": {
       "columns": 300,
       "first_snapshot_utc": "2026-06-02T22:58:54+00:00",
-      "latest_snapshot_utc": "2026-08-11T14:48:21+00:00",
-      "modified_at_utc": "2026-08-11T21:03:22+00:00",
-      "path": "/home/user/wnba-pbpstats-2026-pipeline/data/pbpstats_wnba_2026/features_master/2026/team_totals_features_master.csv",
-      "rows": 836,
-      "size_bytes": 3020724,
-      "snapshots": 60
+      "latest_snapshot_utc": "2026-08-13T14:49:10+00:00",
+      "modified_at_utc": "2026-08-15T13:00:00+00:00",
+      "path": "/home/runner/work/wnba-pbpstats-2026-pipeline/wnba-pbpstats-2026-pipeline/data/pbpstats_wnba_2026/features_master/2026/team_totals_features_master.csv",
+      "rows": 864,
+      "size_bytes": 3115551,
+      "snapshots": 62
     }
   },
   "stage": "all"
