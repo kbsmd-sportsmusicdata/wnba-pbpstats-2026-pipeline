@@ -1,6 +1,4 @@
 level,column,issue,windows_invalidated,entities_affected,first_window_end_utc,last_window_end_utc,detail
-team,seconds_played,league_wide_scale_break,15,15,2026-08-07 14:43:29,2026-08-07 14:43:29,Column was re-based by the source at 2026-08-07 14:43:29; window deltas across that boundary are not comparable.
-team,*all columns*,snapshot_quarantined,0,15,2026-06-03 18:58:03+00:00,2026-06-03 18:58:03+00:00,0.0368 of 125 additive columns broke the cumulative monotone envelope; the snapshot was dropped and adjacent windows bridge across it.
 player,seconds_played,league_wide_scale_break,220,220,2026-08-07 14:43:29,2026-08-07 14:43:29,Column was re-based by the source at 2026-08-07 14:43:29; window deltas across that boundary are not comparable.
 player,minutes,league_wide_scale_break,220,220,2026-08-07 14:43:29,2026-08-07 14:43:29,Column was re-based by the source at 2026-08-07 14:43:29; window deltas across that boundary are not comparable.
 player,seconds_played,negative_delta,885,159,2026-06-03 21:18:01,2026-08-05 15:53:24,Cumulative total was revised downward by the source.
@@ -11,3 +9,5 @@ player,usage (weighted-average numerator),negative_delta,33,25,2026-06-07 15:16:
 player,period3_fouls3_minutes,negative_delta,27,26,2026-06-03 21:18:01,2026-08-02 14:52:59,Cumulative total was revised downward by the source.
 player,period4_fouls5_minutes,negative_delta,2,2,2026-06-09 16:24:19,2026-06-21 15:43:44,Cumulative total was revised downward by the source.
 player,*all columns*,snapshot_quarantined,0,197,2026-06-03 18:58:03+00:00,2026-06-03 18:58:03+00:00,0.0762 of 138 additive columns broke the cumulative monotone envelope; the snapshot was dropped and adjacent windows bridge across it.
+team,seconds_played,league_wide_scale_break,15,15,2026-08-07 14:43:29,2026-08-07 14:43:29,Column was re-based by the source at 2026-08-07 14:43:29; window deltas across that boundary are not comparable.
+team,*all columns*,snapshot_quarantined,0,15,2026-06-03 18:58:03+00:00,2026-06-03 18:58:03+00:00,0.0368 of 125 additive columns broke the cumulative monotone envelope; the snapshot was dropped and adjacent windows bridge across it.

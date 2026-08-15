@@ -1,7 +1,7 @@
 {
   "config_hash": "3083742f5a68e7c2490367106b4f131c0170b554ceaf161d9c582947c49cf197",
   "config_path": "analysis/snapshot_window_panel/config/snapshot_window_panel_config.json",
-  "generated_at_utc": "2026-08-15T13:00:47+00:00",
+  "generated_at_utc": "2026-08-15T13:13:10+00:00",
   "outputs": {
     "player_window_panel_2026.csv": 3817,
     "team_window_panel_2026.csv": 382,
@@ -46,14 +46,14 @@
       "windows": 382
     }
   },
-  "run_id": "20260815T130047+0000",
+  "run_id": "20260815T131310+0000",
   "season": 2026,
   "source_manifest": {
     "player_master": {
       "columns": 315,
       "first_snapshot_utc": "2026-06-02T22:58:54+00:00",
       "latest_snapshot_utc": "2026-08-13T14:49:10+00:00",
-      "modified_at_utc": "2026-08-15T13:00:00+00:00",
+      "modified_at_utc": "2026-08-15T13:12:53+00:00",
       "path": "/home/runner/work/wnba-pbpstats-2026-pipeline/wnba-pbpstats-2026-pipeline/data/pbpstats_wnba_2026/features_master/2026/player_totals_features_master.csv",
       "rows": 12910,
       "size_bytes": 35161265,
@@ -63,12 +63,12 @@
       "columns": 300,
       "first_snapshot_utc": "2026-06-02T22:58:54+00:00",
       "latest_snapshot_utc": "2026-08-13T14:49:10+00:00",
-      "modified_at_utc": "2026-08-15T13:00:00+00:00",
+      "modified_at_utc": "2026-08-15T13:12:53+00:00",
       "path": "/home/runner/work/wnba-pbpstats-2026-pipeline/wnba-pbpstats-2026-pipeline/data/pbpstats_wnba_2026/features_master/2026/team_totals_features_master.csv",
       "rows": 864,
       "size_bytes": 3115551,
       "snapshots": 62
     }
   },
-  "stage": "all"
+  "stage": "team"
 }
