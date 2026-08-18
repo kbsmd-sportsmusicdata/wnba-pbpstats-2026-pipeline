@@ -235,6 +235,28 @@ def _story(
     }
 
 
+def _display_names(standings: pd.DataFrame) -> dict[object, str]:
+    """Map normalized team_id to its abbreviation for human-readable findings.
+
+    The rest of the brief is rendered by ``render_markdown``, which maps IDs to
+    abbreviations; these narrative stories were the one place that printed the raw
+    numeric IDs. Current standings is the derived source of truth and always carries the
+    abbreviation, so it is the authority here. A team whose abbreviation is missing or
+    blank falls back to its ID rather than dropping out -- which is also what keeps the
+    ID-only test fixtures working unchanged.
+    """
+
+    has_abbreviation = "team_abbreviation" in standings.columns
+    names: dict[object, str] = {}
+    for row in standings.itertuples(index=False):
+        abbreviation = getattr(row, "team_abbreviation", None) if has_abbreviation else None
+        if isinstance(abbreviation, str) and abbreviation.strip():
+            names[row.team_id] = abbreviation.strip()
+        else:
+            names[row.team_id] = str(row.team_id)
+    return names
+
+
 def _stable_extreme(frame: pd.DataFrame, value: str, *, largest: bool = True) -> pd.Series:
     return frame.sort_values(
         [value, "team_id"], ascending=[not largest, True], kind="stable"
@@ -290,16 +312,22 @@ def build_broadcast_insights(
         cfg,
     )
     joined = standings.merge(forecast, on="team_id", validate="one_to_one")
+    names = _display_names(standings)
+
+    def team(team_id: object) -> str:
+        return names.get(team_id, str(team_id))
+
     stories: list[dict[str, object]] = []
 
     leader = _stable_extreme(forecast, "rank_1_probability")
+    leader_name = team(leader.team_id)
     stories.append(
         _story(
             category="leader_race",
-            team_or_race=leader.team_id,
-            data_point=f"{leader.team_id} rank-1 probability: {_pct(leader.rank_1_probability)}",
-            quick_read=f"{leader.team_id} owns the strongest simulated path to the top seed.",
-            focus=f"{leader.team_id}'s top-seed path",
+            team_or_race=leader_name,
+            data_point=f"{leader_name} rank-1 probability: {_pct(leader.rank_1_probability)}",
+            quick_read=f"{leader_name} owns the strongest simulated path to the top seed.",
+            focus=f"{leader_name}'s top-seed path",
             why="The top seed sets the headline for the remaining regular-season race.",
             sources="forecast_summary.team_id, forecast_summary.rank_1_probability",
         )
@@ -308,18 +336,20 @@ def build_broadcast_insights(
     qualifier = standings.loc[standings["current_rank"].eq(cfg.playoff_qualifiers)].iloc[0]
     first_out = standings.loc[standings["current_rank"].eq(cfg.playoff_qualifiers + 1)].iloc[0]
     q_forecast = forecast.set_index("team_id")
-    cutline_name = f"{qualifier.team_id} / {first_out.team_id}"
+    qualifier_name = team(qualifier.team_id)
+    first_out_name = team(first_out.team_id)
+    cutline_name = f"{qualifier_name} / {first_out_name}"
     stories.append(
         _story(
             category="playoff_cutline",
             team_or_race=cutline_name,
             data_point=(
-                f"Rank {cfg.playoff_qualifiers} {qualifier.team_id}: "
+                f"Rank {cfg.playoff_qualifiers} {qualifier_name}: "
                 f"{_pct(q_forecast.loc[qualifier.team_id, 'playoff_probability'])}; "
-                f"rank {cfg.playoff_qualifiers + 1} {first_out.team_id}: "
+                f"rank {cfg.playoff_qualifiers + 1} {first_out_name}: "
                 f"{_pct(q_forecast.loc[first_out.team_id, 'playoff_probability'])}"
             ),
-            quick_read=f"{qualifier.team_id} and {first_out.team_id} define the current playoff cutline.",
+            quick_read=f"{qualifier_name} and {first_out_name} define the current playoff cutline.",
             focus=f"the {cutline_name} cutline split",
             why="One team is currently in the configured playoff field and the other is first out.",
             sources="current_standings.current_rank, forecast_summary.playoff_probability, config.playoff_qualifiers",
@@ -329,15 +359,17 @@ def build_broadcast_insights(
     top4_limit = min(4, cfg.playoff_qualifiers)
     top4_in = standings.loc[standings["current_rank"].eq(top4_limit)].iloc[0]
     top4_out = standings.loc[standings["current_rank"].eq(top4_limit + 1)].iloc[0]
-    top4_name = f"{top4_in.team_id} / {top4_out.team_id}"
+    top4_in_name = team(top4_in.team_id)
+    top4_out_name = team(top4_out.team_id)
+    top4_name = f"{top4_in_name} / {top4_out_name}"
     stories.append(
         _story(
             category="top4_race",
             team_or_race=top4_name,
             data_point=(
-                f"Rank {top4_limit} {top4_in.team_id}: "
+                f"Rank {top4_limit} {top4_in_name}: "
                 f"{_pct(q_forecast.loc[top4_in.team_id, 'top4_probability'])}; "
-                f"rank {top4_limit + 1} {top4_out.team_id}: "
+                f"rank {top4_limit + 1} {top4_out_name}: "
                 f"{_pct(q_forecast.loc[top4_out.team_id, 'top4_probability'])}"
             ),
             quick_read=f"{top4_name} is the current top-four boundary.",
@@ -350,8 +382,10 @@ def build_broadcast_insights(
     direct = leverage.loc[leverage["direct_h2h_tiebreak_flag"].astype(bool)]
     tiebreak_game = _game_extreme(direct, largest=True)
     if tiebreak_game is not None:
-        tiebreak_data = f"{tiebreak_game.game_id}: {tiebreak_game.home_id} vs {tiebreak_game.away_id}"
-        tiebreak_name = f"{tiebreak_game.home_id} / {tiebreak_game.away_id}"
+        tiebreak_home = team(tiebreak_game.home_id)
+        tiebreak_away = team(tiebreak_game.away_id)
+        tiebreak_data = f"{tiebreak_game.game_id}: {tiebreak_home} vs {tiebreak_away}"
+        tiebreak_name = f"{tiebreak_home} / {tiebreak_away}"
         tiebreak_sources = "game_leverage.game_id, game_leverage.home_id, game_leverage.away_id, game_leverage.direct_h2h_tiebreak_flag"
     else:
         pairs = []
@@ -366,8 +400,10 @@ def build_broadcast_insights(
                 right_pct = right.wins / right_gp if right_gp else 0.0
                 pairs.append((abs(left_pct - right_pct), left.team_id, right.team_id))
         _, left_id, right_id = min(pairs)
-        tiebreak_name = f"{left_id} / {right_id}"
-        tiebreak_data = f"Closest current records: {left_id} and {right_id}"
+        left_name = team(left_id)
+        right_name = team(right_id)
+        tiebreak_name = f"{left_name} / {right_name}"
+        tiebreak_data = f"Closest current records: {left_name} and {right_name}"
         tiebreak_sources = "current_standings.team_id, current_standings.wins, current_standings.losses"
     stories.append(
         _story(
@@ -392,9 +428,9 @@ def build_broadcast_insights(
     ]
     if sos_rows:
         sos = _stable_extreme(pd.DataFrame(sos_rows), "opponent_playoff_probability_mean")
-        sos_data = f"{sos.team_id} average remaining-opponent playoff probability: {_pct(sos.opponent_playoff_probability_mean)}"
-        sos_name = sos.team_id
-        sos_quick = f"{sos.team_id} has the strongest remaining-opponent forecast profile."
+        sos_name = team(sos.team_id)
+        sos_data = f"{sos_name} average remaining-opponent playoff probability: {_pct(sos.opponent_playoff_probability_mean)}"
+        sos_quick = f"{sos_name} has the strongest remaining-opponent forecast profile."
     else:
         sos_data = "No remaining games; remaining-opponent sample size is 0."
         sos_name = "League schedule"
@@ -413,13 +449,14 @@ def build_broadcast_insights(
 
     joined["projected_rise"] = joined["current_rank"] - joined["expected_final_rank"]
     riser = _stable_extreme(joined, "projected_rise")
+    riser_name = team(riser.team_id)
     stories.append(
         _story(
             category="most_likely_riser",
-            team_or_race=riser.team_id,
-            data_point=f"{riser.team_id} projected rank movement: {riser.projected_rise:+.2f}",
-            quick_read=f"{riser.team_id} has the largest current-rank to expected-rank rise.",
-            focus=f"{riser.team_id}'s upward seed path",
+            team_or_race=riser_name,
+            data_point=f"{riser_name} projected rank movement: {riser.projected_rise:+.2f}",
+            quick_read=f"{riser_name} has the largest current-rank to expected-rank rise.",
+            focus=f"{riser_name}'s upward seed path",
             why="The comparison identifies the largest forecast rise without rerunning the model.",
             sources="current_standings.current_rank, forecast_summary.expected_final_rank",
         )
@@ -428,26 +465,28 @@ def build_broadcast_insights(
     playoff_seeds = joined.loc[joined["current_rank"].le(cfg.playoff_qualifiers)].copy()
     playoff_seeds["projected_drop"] = playoff_seeds["expected_final_rank"] - playoff_seeds["current_rank"]
     vulnerable = _stable_extreme(playoff_seeds, "projected_drop")
+    vulnerable_name = team(vulnerable.team_id)
     stories.append(
         _story(
             category="most_vulnerable_seed",
-            team_or_race=vulnerable.team_id,
-            data_point=f"{vulnerable.team_id} projected rank movement: {vulnerable.projected_drop:+.2f}",
-            quick_read=f"{vulnerable.team_id} has the largest projected drop among current playoff seeds.",
-            focus=f"{vulnerable.team_id}'s seed defense",
+            team_or_race=vulnerable_name,
+            data_point=f"{vulnerable_name} projected rank movement: {vulnerable.projected_drop:+.2f}",
+            quick_read=f"{vulnerable_name} has the largest projected drop among current playoff seeds.",
+            focus=f"{vulnerable_name}'s seed defense",
             why="The current seed is more favorable than its simulation-average final rank.",
             sources="current_standings.current_rank, forecast_summary.expected_final_rank, config.playoff_qualifiers",
         )
     )
 
     recent = _stable_extreme(strength, "recent_net_rating")
+    recent_name = team(recent.team_id)
     stories.append(
         _story(
             category="recent_form",
-            team_or_race=recent.team_id,
-            data_point=f"{recent.team_id} recent Net Rating: {recent.recent_net_rating:+.2f}",
-            quick_read=f"{recent.team_id} has the best supplied recent-form rating.",
-            focus=f"whether {recent.team_id}'s recent form carries into this game",
+            team_or_race=recent_name,
+            data_point=f"{recent_name} recent Net Rating: {recent.recent_net_rating:+.2f}",
+            quick_read=f"{recent_name} has the best supplied recent-form rating.",
+            focus=f"whether {recent_name}'s recent form carries into this game",
             why="Recent Net Rating is the cutoff-safe form indicator supplied by the strength layer.",
             sources="team_strength.team_id, team_strength.recent_net_rating",
         )
@@ -459,9 +498,10 @@ def build_broadcast_insights(
         high_data = "No remaining games; high-leverage game sample size is 0."
         high_quick = "There is no remaining game to rank for leverage."
     else:
-        high_name = f"{high_game.home_id} / {high_game.away_id}"
-        high_data = f"{high_game.game_id}: leverage {high_game.leverage_score:.1f} ({high_game.leverage_label})"
-        high_quick = f"{high_game.game_id} is the highest normalized leverage game."
+        high_matchup = f"{team(high_game.home_id)} vs {team(high_game.away_id)}"
+        high_name = f"{team(high_game.home_id)} / {team(high_game.away_id)}"
+        high_data = f"{high_matchup} ({high_game.game_id}): leverage {high_game.leverage_score:.1f} ({high_game.leverage_label})"
+        high_quick = f"{high_matchup} ({high_game.game_id}) is the highest normalized leverage game."
     stories.append(
         _story(
             category="high_leverage_game",
@@ -510,8 +550,10 @@ def build_broadcast_insights(
                 leverage.loc[leverage["game_id"].ne(high_game.game_id)],
                 largest=False,
             )
-            schedule_name = f"{schedule_game.home_id} / {schedule_game.away_id}"
-            schedule_data = f"{schedule_game.game_id}: {schedule_game.home_id} vs {schedule_game.away_id}, leverage {schedule_game.leverage_score:.1f}"
+            schedule_home = team(schedule_game.home_id)
+            schedule_away = team(schedule_game.away_id)
+            schedule_name = f"{schedule_home} / {schedule_away}"
+            schedule_data = f"{schedule_game.game_id}: {schedule_home} vs {schedule_away}, leverage {schedule_game.leverage_score:.1f}"
             schedule_quick = f"{schedule_game.game_id} is a second, distinct schedule watch after the top leverage game."
             schedule_sources = "game_leverage.game_id, game_leverage.home_id, game_leverage.away_id, game_leverage.leverage_score"
         stories.append(

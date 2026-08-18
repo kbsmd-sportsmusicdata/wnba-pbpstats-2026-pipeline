@@ -236,6 +236,65 @@ class BroadcastInsightsTest(unittest.TestCase):
             _remaining(), _simulation_result(), _standings(), _cfg()
         )
 
+    def test_findings_render_team_abbreviations_when_supplied(self) -> None:
+        """The narrative findings must read like the rest of the brief, not raw IDs.
+
+        Every other table in the brief maps team_id to its abbreviation; these stories
+        were the one place that printed the bare numeric ID (``Leader Race -- 8``). The
+        abbreviation is taken from current standings, the derived source of truth.
+        """
+        from standings_playoff_forecast.broadcast_insights import build_broadcast_insights
+
+        abbreviations = {
+            "A": "ALP", "B": "BRV", "C": "CHR", "D": "DLT", "E": "ECH", "F": "FOX",
+        }
+        standings = _standings()
+        standings["team_abbreviation"] = standings["team_id"].map(abbreviations)
+
+        insights = build_broadcast_insights(
+            _forecast_summary(),
+            standings,
+            _strength(),
+            _remaining(),
+            self._leverage(),
+            _cfg(),
+            historical_context=_history(),
+        ).set_index("category")
+
+        # Team- and game-based findings all use abbreviations.
+        self.assertEqual(insights.loc["leader_race", "team_or_race"], "ALP")
+        self.assertEqual(insights.loc["recent_form", "team_or_race"], "ECH")
+        self.assertIn("ALP", insights.loc["leader_race", "data_point"])
+        # g1 (A vs B) carries the highest leverage, so the top game reads as ALP / BRV.
+        self.assertEqual(insights.loc["high_leverage_game", "team_or_race"], "ALP / BRV")
+        self.assertIn("ALP vs BRV", insights.loc["high_leverage_game", "data_point"])
+
+        # No finding leaks a bare raw team_id where a name was expected.
+        raw_ids = set(abbreviations)
+        for category in ("leader_race", "recent_form", "most_likely_riser", "remaining_sos"):
+            self.assertNotIn(insights.loc[category, "team_or_race"], raw_ids)
+
+    def test_findings_fall_back_to_team_id_without_an_abbreviation(self) -> None:
+        """A blank or absent abbreviation degrades to the ID rather than dropping out."""
+        from standings_playoff_forecast.broadcast_insights import build_broadcast_insights
+
+        standings = _standings()
+        standings["team_abbreviation"] = ["", "BRV", "CHR", "DLT", "ECH", "FOX"]
+
+        insights = build_broadcast_insights(
+            _forecast_summary(),
+            standings,
+            _strength(),
+            _remaining(),
+            self._leverage(),
+            _cfg(),
+            historical_context=_history(),
+        ).set_index("category")
+
+        # A (leader) has a blank abbreviation and falls back to its ID; E keeps "ECH".
+        self.assertEqual(insights.loc["leader_race", "team_or_race"], "A")
+        self.assertEqual(insights.loc["recent_form", "team_or_race"], "ECH")
+
     def test_emits_exact_priority_categories_and_traceable_actionable_fields(self) -> None:
         """Catches omitted/duplicate stories and non-deterministic tied leaders."""
         from standings_playoff_forecast.broadcast_insights import (
