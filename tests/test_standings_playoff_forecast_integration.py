@@ -27,7 +27,12 @@ import build_standings_playoff_forecast as builder
 from standings_playoff_forecast.contracts import ForecastModelConfig, SeasonConfig
 from standings_playoff_forecast.historical_context import HISTORICAL_CONTEXT_COLUMNS
 from standings_playoff_forecast.outputs import CSV_FILENAMES, PAYLOAD_KEYS
+from standings_playoff_forecast.clinching import CLINCH_COLUMNS
 from standings_playoff_forecast.standings import ExternalStandingsQA, STANDINGS_COLUMNS
+
+# The pipeline appends the arithmetic clinch proofs to current standings, and the output
+# layer carries extra standings columns through by design.
+STANDINGS_COLUMNS_WITH_PROOFS = [*STANDINGS_COLUMNS, *CLINCH_COLUMNS]
 from standings_playoff_forecast.team_game_layer import LedgerValidationResult
 
 
@@ -646,8 +651,10 @@ class OrchestratorIntegrationTests(unittest.TestCase):
             forecast = pd.read_csv(expected / "forecast_summary.csv")
             standings = pd.read_csv(expected / "current_standings.csv")
             ranks = pd.read_csv(expected / "rank_probability_matrix.csv")
-            self.assertEqual(list(standings.columns), STANDINGS_COLUMNS)
-            self.assertEqual(set(payload["standings"][0]), set(STANDINGS_COLUMNS))
+            self.assertEqual(list(standings.columns), STANDINGS_COLUMNS_WITH_PROOFS)
+            self.assertEqual(
+                set(payload["standings"][0]), set(STANDINGS_COLUMNS_WITH_PROOFS)
+            )
             self.assertEqual(len(forecast), 2)
             self.assertAlmostEqual(forecast["playoff_probability"].sum(), 1.0)
             self.assertTrue(
@@ -1023,7 +1030,7 @@ class OrchestratorIntegrationTests(unittest.TestCase):
                 for filename in (*CSV_FILENAMES.values(), "forecast_payload.json", "run_manifest.json"):
                     (output_root / filename).write_text("fixture\n", encoding="utf-8")
                 self.assertEqual(
-                    list(bundle.current_standings.columns), STANDINGS_COLUMNS
+                    list(bundle.current_standings.columns), STANDINGS_COLUMNS_WITH_PROOFS
                 )
                 self.assertEqual(bundle.current_standings["current_rank"].tolist(), [2, 1])
                 self.assertEqual(kwargs["conditional_simulation_count"], 0)

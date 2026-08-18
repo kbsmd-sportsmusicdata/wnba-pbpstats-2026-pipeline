@@ -14,6 +14,10 @@ from typing import Any, Mapping, Sequence
 import pandas as pd
 
 from standings_playoff_forecast.broadcast_insights import build_broadcast_insights
+from standings_playoff_forecast.clinching import (
+    attach_clinch_status,
+    verify_against_simulation,
+)
 from standings_playoff_forecast.config import (
     CONFIG_ROOT,
     REPOSITORY_ROOT,
@@ -467,6 +471,11 @@ def _run_pipeline(
         remaining_schedule,
         cfg,
     )
+    # Arithmetic, not simulated: the schedule counts have just been validated, so the
+    # clinch and elimination proofs are available before a single season is drawn.
+    current_standings = attach_clinch_status(
+        current_standings, season_schedule_counts, cfg
+    )
     matchup_probabilities = score_matchups(
         remaining_schedule, team_strength, team_games, model_cfg
     )
@@ -477,6 +486,7 @@ def _run_pipeline(
         simulation_count=simulation_count,
         seed=random_seed,
     )
+    verify_against_simulation(current_standings, simulation_result.forecast_summary)
 
     if historical_context_override is not None:
         historical_context = historical_context_override

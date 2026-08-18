@@ -25,6 +25,18 @@ The schedule determines which games qualify and the team box must provide exactl
 
 External standings QA reports `matched`, `mismatch`, `unavailable`, or `unparseable`. Every external status is non-blocking because the external snapshot is validation evidence, not a forecast input.
 
+## Clinching Is Proved, Not Simulated
+
+`clinched_playoffs`, `eliminated_from_playoffs`, and `status_note` are counting arguments over the games that remain, computed before the Monte Carlo runs and carried on both `current_standings.csv` and `forecast_summary.csv`.
+
+- **Eliminated** when at least `playoff_qualifiers` other teams already hold more wins than this team could reach by winning out. Each of those teams finishes strictly ahead on wins, so no tiebreak can rescue it.
+- **Clinched** when at most `playoff_qualifiers - 1` other teams could still reach this team's current win total. Every other team finishes strictly below it even if it loses out.
+- **`in_contention`** otherwise.
+
+A playoff probability of 1.0000 over a hundred thousand simulated seasons is a different claim from "cannot be caught", and the two are reported separately for that reason. Both tests ignore that remaining games are shared between teams, which makes them **conservative**: they confirm a clinch or an elimination no earlier than the league does, never earlier. A team can therefore sit at a simulated 0.0000 and still be alive on paper. Resolving the shared-schedule case exactly is the classic baseball elimination problem — a max-flow computation for first place, and NP-hard for a general top-`k` cut — so the conservative bound is what is published and what is claimed.
+
+The two views are cross-checked every run: a team proved eliminated with a non-zero simulated probability, or proved clinched below one, fails the build rather than publishing a contradiction.
+
 ## Validation Semantics
 
 The forecast fails closed for:
@@ -34,7 +46,8 @@ The forecast fails closed for:
 - `non-reciprocal game rows`, including duplicate or incomplete directional rows;
 - `wrong team universe`;
 - `completed + remaining != configured season length`;
-- `simulation invariant failure`; or
+- `simulation invariant failure`;
+- `clinch proof contradicting the simulation`; or
 - `renderer artifact failure`.
 
 The forecast continues with an explicit warning or QA status when:
