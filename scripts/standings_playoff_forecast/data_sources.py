@@ -50,8 +50,25 @@ def _configured_path(root: str, filename: str) -> Path:
     return REPOSITORY_ROOT / root / filename
 
 
-def _load_pbp_team_features(path: Path) -> pd.DataFrame:
-    frame = pd.read_csv(path)
+def _load_pbp_team_features(path: Path) -> pd.DataFrame | None:
+    """Load optional PBPStats team features, warning rather than failing closed.
+
+    Enrichment is optional by default, so a file that exists but cannot be parsed --
+    empty, truncated, or half-written by an interrupted refresh -- has to follow the
+    same unavailable path as a missing file rather than aborting the whole forecast.
+    Returning ``None`` still trips the required-mode guard in the builder, which
+    rejects a null enrichment source, so the ``required=true`` contract is unchanged.
+    """
+
+    try:
+        frame = pd.read_csv(path)
+    except Exception as error:
+        warnings.warn(
+            f"Optional PBPStats team features could not be read: {path}: {error}",
+            RuntimeWarning,
+            stacklevel=2,
+        )
+        return None
     sidecar_path = path.with_suffix(".json")
     if not sidecar_path.is_file():
         return frame
@@ -215,7 +232,9 @@ def load_forecast_sources(
         schedule_path=mandatory_paths["schedule"],
         team_box_path=mandatory_paths["team_box"],
         team_history_path=history_path,
-        pbp_team_features_path=optional_path if optional_path.is_file() else None,
+        # An unreadable file contributed nothing, so it is not reported as a source:
+        # the manifest would otherwise hash a file the forecast never used.
+        pbp_team_features_path=optional_path if pbp_team_features is not None else None,
         pbp_team_features_sidecar_path=pbp_team_features_sidecar_path,
         pbp_team_features_sidecar_evidence_kind=(
             pbp_team_features_sidecar_evidence_kind

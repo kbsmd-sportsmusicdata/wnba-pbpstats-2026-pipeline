@@ -292,6 +292,90 @@ class ForecastSourceLoaderTest(unittest.TestCase):
             getattr(sources, "external_standings_load_status", None), "unparseable"
         )
 
+    def test_unparseable_pbpstats_features_warn_and_return_none(self) -> None:
+        """An unreadable optional source must not abort the forecast.
+
+        Enrichment defaults to optional, so a file that exists but cannot be parsed --
+        empty, truncated, half-written by an interrupted refresh -- has to follow the
+        same unavailable path as a missing file rather than taking the whole build
+        down with it.
+        """
+
+        from standings_playoff_forecast.config import load_season_config
+        from standings_playoff_forecast.data_sources import load_forecast_sources
+
+        cfg = load_season_config(2026)
+        cases = {"empty": b"", "undecodable": b"\xff\xfe\x00\x00team_id"}
+        for case_name, payload in cases.items():
+            with self.subTest(case=case_name):
+                with tempfile.TemporaryDirectory() as temp_dir:
+                    source_root = Path(temp_dir)
+                    paths = {
+                        "schedule_path": source_root / "schedule.parquet",
+                        "team_box_path": source_root / "team_box.parquet",
+                        "external_standings_path": source_root / "standings.parquet",
+                    }
+                    pd.DataFrame({"game_id": ["101"]}).to_parquet(paths["schedule_path"])
+                    pd.DataFrame({"game_id": ["101"]}).to_parquet(paths["team_box_path"])
+                    pd.DataFrame({"team_id": ["1"]}).to_parquet(
+                        paths["external_standings_path"]
+                    )
+                    features_path = source_root / "team_totals_features_latest.csv"
+                    features_path.write_bytes(payload)
+
+                    with self.assertWarnsRegex(
+                        RuntimeWarning, "Optional PBPStats team features could not be read"
+                    ):
+                        sources = load_forecast_sources(
+                            cfg, **paths, pbp_team_features_path=features_path
+                        )
+
+                self.assertIsNone(sources.pbp_team_features)
+                # The file contributed nothing, so it is not reported as a source.
+                self.assertIsNone(sources.pbp_team_features_path)
+                self.assertIsNone(sources.pbp_team_features_sidecar_path)
+                # The mandatory tables still loaded.
+                self.assertEqual(sources.schedule["game_id"].tolist(), ["101"])
+                self.assertEqual(sources.team_box["game_id"].tolist(), ["101"])
+
+    def test_unparseable_pbpstats_features_still_fail_closed_when_required(self) -> None:
+        """Optional mode degrades; ``required=true`` must still stop the build."""
+
+        from dataclasses import replace as dataclass_replace
+
+        from standings_playoff_forecast.config import load_model_config, load_season_config
+        from standings_playoff_forecast.data_sources import load_forecast_sources
+
+        sys.path.insert(0, str(ROOT / "scripts"))
+        from build_standings_playoff_forecast import _enforce_required_pbpstats
+
+        cfg = load_season_config(2026)
+        with tempfile.TemporaryDirectory() as temp_dir:
+            source_root = Path(temp_dir)
+            paths = {
+                "schedule_path": source_root / "schedule.parquet",
+                "team_box_path": source_root / "team_box.parquet",
+                "external_standings_path": source_root / "standings.parquet",
+            }
+            pd.DataFrame({"game_id": ["101"]}).to_parquet(paths["schedule_path"])
+            pd.DataFrame({"game_id": ["101"]}).to_parquet(paths["team_box_path"])
+            pd.DataFrame({"team_id": ["1"]}).to_parquet(paths["external_standings_path"])
+            features_path = source_root / "team_totals_features_latest.csv"
+            features_path.write_bytes(b"")
+
+            with self.assertWarns(RuntimeWarning):
+                sources = load_forecast_sources(
+                    cfg, **paths, pbp_team_features_path=features_path
+                )
+
+        required_cfg = dataclass_replace(
+            load_model_config(), pbpstats_enrichment_required=True
+        )
+        with self.assertRaisesRegex(
+            ValueError, "required PBPStats enrichment source is unavailable"
+        ):
+            _enforce_required_pbpstats(sources, pd.DataFrame(), required_cfg, cfg)
+
     def test_optional_pbpstats_sidecar_distinguishes_snapshot_from_save_upper_bound(self) -> None:
         from standings_playoff_forecast.config import load_season_config
         from standings_playoff_forecast.data_sources import load_forecast_sources
