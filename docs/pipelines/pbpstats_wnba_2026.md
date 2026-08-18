@@ -105,6 +105,28 @@ The first run is a full historical build (every player, every game log). Subsequ
 python -m unittest tests.test_fetch_wnba_pbpstats_game_logs
 ```
 
+## Shared Normalized Game Layer
+
+`scripts/build_wnba_game_layer_2026.py` turns the combined game logs into analysis-ready per-game tables that every downstream analysis reads instead of re-deriving game grain from season totals:
+
+```bash
+python scripts/build_wnba_game_layer_2026.py
+```
+
+```text
+data/processed/wnba_pbpstats_player_game/season=2026/player_game.parquet   # one row per player-game
+data/processed/wnba_pbpstats_team_game/season=2026/team_game.parquet       # one row per team-game
+data/processed/wnba_pbpstats_player_game/season=2026/game_layer_manifest.json
+```
+
+Each row is snake_cased, has its zero-omitted stats filled to 0 (pbpstats semantics), and is joined to the `get-games` spine for `game_date`, `is_home`, `opponent_team_id`, `team_points`/`opponent_points`, `margin`, `win`, and possessions. Player-game rows are keyed **`player_id + game_id`**; team-game rows are keyed **`team_id + game_id`**. The per-game team is derived from the spine by matching the played-for abbreviation, so a mid-season trade attributes each game to the team actually played for rather than the player's current team. The transforms live in the importable `wnba_game_layer` package and fail closed on a row absent from the spine or matching neither side of its game.
+
+These two paths are distinct from the forecast's own `data/processed/wnba_team_game/` layer (that one is SportsDataverse-derived, in ESPN id space); the pbpstats layer is richer (full advanced metric set) and in pbpstats id space.
+
+```bash
+python -m unittest tests.test_wnba_game_layer
+```
+
 ## GitHub Actions
 
 The workflow at `.github/workflows/pbpstats-wnba-2026.yml` supports:
