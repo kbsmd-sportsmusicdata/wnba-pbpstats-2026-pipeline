@@ -209,7 +209,7 @@ def build_summary(output_root: Path) -> str:
 
     if paths["board"].exists():
         board = pd.read_csv(paths["board"])
-        for track in ("Underrated Now", "Trending Up"):
+        for track in ("Underrated Now", "Recent Form"):
             subset = board[(board["board_track"] == track) & (board["sample_flag"] == "Reliable")].head(8)
             if subset.empty:
                 continue
