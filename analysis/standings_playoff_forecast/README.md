@@ -17,6 +17,16 @@ Two sources are optional:
 
 The upstream refresh entry points remain `scripts/fetch_wnba_sportsdataverse_2026.py` and `.github/workflows/sportsdataverse-wnba-2026.yml` for SportsDataverse data, plus `scripts/pbpstats_2026_pull_clean.py`, `scripts/pbpstats_2026_features.py`, and `.github/workflows/pbpstats-wnba-2026.yml` for optional PBPStats context. An explicit `snapshot_as_of` is treated as stats coverage. When only `last_saved_at_utc` exists, the forecast labels it as a conservative cutoff-safety upper bound rather than an exact coverage date.
 
+## Completed-Game Source: ESPN Live vs SportsDataverse
+
+The forecast's cutoff is the date of the last completed game in the `schedule`/`team_box` inputs. Three feeds can supply those, chosen by the workflow's `source_feed` input:
+
+- **`pbpstats` (default)** — `scripts/fetch_wnba_pbpstats_forecast_2026.py` pulls completed results, scores and per-game team box scores from `api.pbpstats.com` (`get-games` plus `get-game-logs` Team), the same host the daily PBPStats workflow already reaches from GitHub runners. It **overlays** those fresh results onto the SportsDataverse fixture list — the one part of that feed that does not lag, since fixtures do not change once published — and writes into `data/raw/pbpstats_forecast/wnba_2026/`. Fresh and CI-native: the cutoff tracks the games actually played (mid-August rather than 2026-08-01).
+- **`sportsdataverse`** — the republished ESPN data under `data/raw/sportsdataverse/wnba_2026/`. Reliable on GitHub runners but its release cadence runs a couple of weeks behind the season, which caps the cutoff in the past. Kept as a fallback.
+- **`espn`** — `scripts/fetch_wnba_espn_2026.py` pulls directly from ESPN's site API. Fresh, but **ESPN returns HTTP 403 to GitHub-hosted Actions runners** (it blocks cloud egress IP ranges, and no header change gets around it), so `espn` only works from a machine ESPN will serve: a local checkout or self-hosted runner.
+
+pbpstats ids are crosswalked to the SportsDataverse (ESPN) id space through `team_history`, and results are aligned to each SportsDataverse fixture by date and team pair, so the forecast's own schedule reconciliation — cup final, postponements and all — runs unchanged and simply sees a later completion boundary. Each fresh feed writes to its own data root and the build is pointed at it with `--sportsdataverse-data-root`, leaving the SportsDataverse files the other analyses depend on untouched. The fetch fails closed if a completed game is missing its team box scores or if the overlaid schedule does not reconcile to the configured games-per-team. When a non-SportsDataverse feed is chosen, the SportsDataverse `standings_2026.parquet` used for external QA is not present in that root, so external QA reports `unavailable` — it is validation evidence only and never a forecast input.
+
 ## Canonical Current Standings
 
 Current standings are reconstructed from the completed-game ledger rather than ingested as a derived table. This guarantees that standings, head-to-head state, point differential, recent form, schedule accounting, and Monte Carlo initialization share one auditable source of truth.
