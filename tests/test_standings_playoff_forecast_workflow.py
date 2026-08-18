@@ -143,7 +143,7 @@ def _workflow_env(**overrides: str) -> dict[str, str]:
             "FORECAST_SEASON": "2026",
             "FORECAST_CUTOFF": "",
             "FORECAST_SIMULATIONS": "100000",
-            "SOURCE_FEED": "espn",
+            "SOURCE_FEED": "sportsdataverse",
             "ESPN_DATA_ROOT": "data/raw/espn/wnba_2026",
             "REFRESH_SPORTSDATAVERSE": "false",
             "REFRESH_PBPSTATS": "false",
@@ -182,7 +182,7 @@ class WorkflowContractTests(unittest.TestCase):
             "season": ("string", True, "2026"),
             "cutoff": ("string", False, ""),
             "simulations": ("string", True, "100000"),
-            "source_feed": ("choice", True, "espn"),
+            "source_feed": ("choice", True, "sportsdataverse"),
             "refresh_sportsdataverse": ("boolean", True, True),
             "refresh_pbpstats": ("boolean", True, False),
             "run_tests": ("boolean", True, True),
@@ -194,7 +194,7 @@ class WorkflowContractTests(unittest.TestCase):
             self.assertEqual(definition["type"], input_type)
             self.assertIs(definition["required"], required)
             self.assertEqual(definition["default"], default)
-        self.assertEqual(inputs["source_feed"]["options"], ["espn", "sportsdataverse"])
+        self.assertEqual(inputs["source_feed"]["options"], ["sportsdataverse", "espn"])
 
         job = workflow["jobs"]["standings-playoff-forecast"]  # type: ignore[index]
         self.assertEqual(job["runs-on"], "ubuntu-latest")
@@ -541,20 +541,22 @@ class WorkflowContractTests(unittest.TestCase):
                     "all",
                     "--team-game-output-path-file",
                     str(TEAM_GAME_PATH_EVIDENCE),
-                    # Default source_feed=espn points the forecast at the live ESPN root.
-                    "--sportsdataverse-data-root",
-                    "data/raw/espn/wnba_2026",
                 ],
             )
-
-            # The SportsDataverse feed reads the default root, so no override is added.
-            sdv_env = dict(env)
-            sdv_env["SOURCE_FEED"] = "sportsdataverse"
-            sdv_result = _run(["bash", "-euo", "pipefail", "-c", build], env=sdv_env, check=False)
-            self.assertEqual(sdv_result.returncode, 0, sdv_result.stderr)
+            # The default source_feed=sportsdataverse reads the default root: no override.
             self.assertNotIn(
                 "--sportsdataverse-data-root",
                 capture.read_text(encoding="utf-8").splitlines(),
+            )
+
+            # Opting into espn points the forecast at the live ESPN root.
+            espn_env = dict(env)
+            espn_env["SOURCE_FEED"] = "espn"
+            espn_result = _run(["bash", "-euo", "pipefail", "-c", build], env=espn_env, check=False)
+            self.assertEqual(espn_result.returncode, 0, espn_result.stderr)
+            self.assertEqual(
+                capture.read_text(encoding="utf-8").splitlines()[-2:],
+                ["--sportsdataverse-data-root", "data/raw/espn/wnba_2026"],
             )
 
             env["FORECAST_CUTOFF"] = "2026-08-01"

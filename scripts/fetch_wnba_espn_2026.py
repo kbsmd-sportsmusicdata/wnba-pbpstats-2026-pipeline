@@ -22,6 +22,14 @@ game type before it reaches a deliverable.
 
 Network access is deliberately confined to :func:`fetch_json`; everything else is a pure
 transform over the returned JSON, so the assembly is unit-tested without a live endpoint.
+
+**Reachability caveat.** ESPN's site API refuses GitHub-hosted Actions runners with an
+HTTP 403 -- the block is on cloud egress IP ranges, not the User-Agent, so headers do not
+get around it. This fetcher therefore runs from a machine ESPN will serve: a developer's
+local checkout, or a self-hosted runner. The forecast workflow keeps `sportsdataverse` as
+its default source for that reason; `espn` is opt-in for where it can actually reach the
+API. Run it locally and commit the two parquet files, or point the forecast at the output
+root, when you need data fresher than SportsDataverse has republished.
 """
 
 from __future__ import annotations

@@ -19,13 +19,13 @@ name: WNBA Standings and Playoff Forecast
         type: string
         default: "100000"
       source_feed:
-        description: "Completed-game source: espn (live, freshest) or sportsdataverse (republished, may lag)"
+        description: "Completed-game source. sportsdataverse works on GitHub runners; espn is fresher but ESPN IP-blocks GitHub Actions, so espn only works on a self-hosted runner or a local run."
         required: true
         type: choice
         options:
-          - espn
           - sportsdataverse
-        default: espn
+          - espn
+        default: sportsdataverse
       refresh_sportsdataverse:
         description: "Refresh 2026 SportsDataverse sources"
         required: true
