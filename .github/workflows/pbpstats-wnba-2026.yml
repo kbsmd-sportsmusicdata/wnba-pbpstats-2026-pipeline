@@ -12,6 +12,7 @@ jobs:
       contents: write
     env:
       PBPSTATS_PIPELINE_DATA_ROOT: data/pbpstats_wnba_2026
+      PBPSTATS_GAME_LOGS_DATA_ROOT: data/pbpstats_2026_player_game_logs
     steps:
       - name: Check out repository
         uses: actions/checkout@v7
@@ -32,9 +33,12 @@ jobs:
       - name: Build current-season features and leaderboards
         run: python scripts/pbpstats_2026_features.py
 
+      - name: Ingest player and team game logs (historical + incremental)
+        run: python scripts/fetch_wnba_pbpstats_game_logs_2026.py
+
       - name: Commit generated outputs if changed
         run: |
-          find data/pbpstats_wnba_2026 -type f \( -name '*.csv' -o -name '*.json' \) -print0 | xargs -0 git add
+          find data/pbpstats_wnba_2026 data/pbpstats_2026_player_game_logs -type f \( -name '*.csv' -o -name '*.json' \) -print0 | xargs -0 git add
           if git diff --cached --quiet; then
             echo "No generated file changes to commit"
             exit 0
