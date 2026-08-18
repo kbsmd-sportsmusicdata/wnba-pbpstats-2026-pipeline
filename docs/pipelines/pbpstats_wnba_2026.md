@@ -59,6 +59,52 @@ data/pbpstats_wnba_2026/features_latest/2026/leaderboards/*.csv
 - Re-running without upstream data changes should not append duplicate rows to any master CSV.
 - Shot quality fields are normalized into the `shotquality_pbp` naming family.
 
+## Player and Team Game Logs
+
+`scripts/fetch_wnba_pbpstats_game_logs_2026.py` ingests per-game logs for every player and team, producing one combined player-game table for downstream analysis plus the individual raw API responses behind it.
+
+```bash
+python scripts/fetch_wnba_pbpstats_game_logs_2026.py
+```
+
+The fan-out is: `get-totals` (Player) enumerates the season's players → `get-game-logs` (Player) is called once per player → the per-game rows are combined, with the player identity the rows omit (`PlayerId`, `PlayerName`, `TeamId`, `TeamAbbreviation`) injected from the totals lookup. Team logs are ingested the same way from `get-totals`/`get-game-logs` (Team). `get-games` is the authoritative game dimension / schedule-result spine; logs join to it by `GameId`.
+
+### Data Root and Folder Contract
+
+The script reads `PBPSTATS_GAME_LOGS_DATA_ROOT` when set (default `data/pbpstats_2026_player_game_logs`):
+
+```text
+data/pbpstats_2026_player_game_logs/
+  get_games_wnba_2026_regular_season.json        # raw get-games response (the spine)
+  games_wnba_2026_regular_season.csv             # game dimension derived from get-games
+  get_totals_player_wnba_2026_regular_season.json
+  get_totals_team_wnba_2026_regular_season.json
+  player_lookup_wnba_2026.csv                    # player_id, player_name, team_id, team_abbreviation, games_played
+  team_lookup_wnba_2026.csv
+  player_game_logs_wnba_2026_regular_season.csv  # combined player-game table (column union)
+  player_game_logs_wnba_2026_regular_season.json # combined, ragged (preserves pbpstats zero-omission)
+  team_game_logs_wnba_2026_regular_season.csv
+  team_game_logs_wnba_2026_regular_season.json
+  player_game_logs_failures.json                 # entities that failed transiently, retried next run
+  team_game_logs_failures.json
+  ingest_manifest.json
+  raw/
+    player_<ID>_game_logs.json                   # one raw response per player
+    team_<ID>_game_logs.json
+```
+
+The combined player log's primary key is **`PlayerId` + `GameId`**; the combined JSON is what the playoff project consumes. Because pbpstats omits zero-valued stats, an absent column in a row means zero — the JSON stays ragged to preserve that, while the CSV is the column union with blanks for the same absences.
+
+### Historical Build vs Incremental Refresh
+
+The first run is a full historical build (every player, every game log). Subsequent runs are incremental: **`GameId` is the freshness checkpoint**, not `GamesPlayed`, because the feeds refresh at different times and a game can appear in `get-games` before `get-totals` counts it. A run re-fetches only the entities a newly-appeared game touches, plus any entity whose stored row count no longer matches its `GamesPlayed` and anything that failed transiently before, then replaces those entities' rows and appends onto the existing baseline. A transient `5xx` on one entity is recorded in the failures file and retried automatically on the next run rather than sinking the whole build.
+
+### Tests
+
+```bash
+python -m unittest tests.test_fetch_wnba_pbpstats_game_logs
+```
+
 ## GitHub Actions
 
 The workflow at `.github/workflows/pbpstats-wnba-2026.yml` supports:
@@ -66,4 +112,4 @@ The workflow at `.github/workflows/pbpstats-wnba-2026.yml` supports:
 - `workflow_dispatch` for manual runs
 - a daily in-season schedule during May through October
 
-The workflow stages and commits only generated CSV/JSON files under `data/pbpstats_wnba_2026/`.
+The workflow runs the pull/clean, features, and game-log ingest steps, then stages and commits only generated CSV/JSON files under `data/pbpstats_wnba_2026/` and `data/pbpstats_2026_player_game_logs/`.
