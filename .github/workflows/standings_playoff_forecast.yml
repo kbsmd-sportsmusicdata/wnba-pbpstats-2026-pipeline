@@ -19,13 +19,14 @@ name: WNBA Standings and Playoff Forecast
         type: string
         default: "100000"
       source_feed:
-        description: "Completed-game source. sportsdataverse works on GitHub runners; espn is fresher but ESPN IP-blocks GitHub Actions, so espn only works on a self-hosted runner or a local run."
+        description: "Completed-game source. pbpstats (default) is fresh and works on GitHub runners; sportsdataverse is the republished fallback and lags; espn is fresh but ESPN IP-blocks GitHub Actions, so it only works on a self-hosted or local run."
         required: true
         type: choice
         options:
+          - pbpstats
           - sportsdataverse
           - espn
-        default: sportsdataverse
+        default: pbpstats
       refresh_sportsdataverse:
         description: "Refresh 2026 SportsDataverse sources"
         required: true
@@ -63,6 +64,7 @@ jobs:
       FORECAST_SIMULATIONS: ${{ inputs.simulations }}
       SOURCE_FEED: ${{ inputs.source_feed }}
       ESPN_DATA_ROOT: data/raw/espn/wnba_2026
+      PBPSTATS_FORECAST_DATA_ROOT: data/raw/pbpstats_forecast/wnba_2026
       REFRESH_SPORTSDATAVERSE: ${{ inputs.refresh_sportsdataverse }}
       REFRESH_PBPSTATS: ${{ inputs.refresh_pbpstats }}
 
@@ -119,6 +121,14 @@ jobs:
         if: ${{ inputs.refresh_sportsdataverse && inputs.season == '2026' }}
         run: python scripts/fetch_wnba_sportsdataverse_2026.py
 
+      - name: Fetch pbpstats fresh completed games
+        if: ${{ inputs.source_feed == 'pbpstats' && inputs.season == '2026' }}
+        run: |
+          python scripts/fetch_wnba_pbpstats_forecast_2026.py \
+            --season 2026 \
+            --data-root "$PBPSTATS_FORECAST_DATA_ROOT" \
+            --expected-games-per-team 44
+
       - name: Fetch ESPN live source
         if: ${{ inputs.source_feed == 'espn' && inputs.season == '2026' }}
         run: |
@@ -146,9 +156,12 @@ jobs:
             --render all
             --team-game-output-path-file .git/standings_forecast_team_game_output_path
           )
-          # The ESPN feed lands in its own data root; point the forecast at it so its
-          # cutoff tracks the live schedule instead of the republished SportsDataverse one.
-          if [[ "$SOURCE_FEED" == "espn" && "$FORECAST_SEASON" == "2026" ]]; then
+          # The fresh feeds land in their own data roots; point the forecast at the chosen
+          # one so its cutoff tracks completed games instead of the lagging SportsDataverse
+          # republish. sportsdataverse reads the default root and needs no override.
+          if [[ "$SOURCE_FEED" == "pbpstats" && "$FORECAST_SEASON" == "2026" ]]; then
+            ARGS+=(--sportsdataverse-data-root "$PBPSTATS_FORECAST_DATA_ROOT")
+          elif [[ "$SOURCE_FEED" == "espn" && "$FORECAST_SEASON" == "2026" ]]; then
             ARGS+=(--sportsdataverse-data-root "$ESPN_DATA_ROOT")
           fi
           if [[ -n "$FORECAST_CUTOFF" ]]; then

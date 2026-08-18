@@ -143,8 +143,9 @@ def _workflow_env(**overrides: str) -> dict[str, str]:
             "FORECAST_SEASON": "2026",
             "FORECAST_CUTOFF": "",
             "FORECAST_SIMULATIONS": "100000",
-            "SOURCE_FEED": "sportsdataverse",
+            "SOURCE_FEED": "pbpstats",
             "ESPN_DATA_ROOT": "data/raw/espn/wnba_2026",
+            "PBPSTATS_FORECAST_DATA_ROOT": "data/raw/pbpstats_forecast/wnba_2026",
             "REFRESH_SPORTSDATAVERSE": "false",
             "REFRESH_PBPSTATS": "false",
         }
@@ -182,7 +183,7 @@ class WorkflowContractTests(unittest.TestCase):
             "season": ("string", True, "2026"),
             "cutoff": ("string", False, ""),
             "simulations": ("string", True, "100000"),
-            "source_feed": ("choice", True, "sportsdataverse"),
+            "source_feed": ("choice", True, "pbpstats"),
             "refresh_sportsdataverse": ("boolean", True, True),
             "refresh_pbpstats": ("boolean", True, False),
             "run_tests": ("boolean", True, True),
@@ -194,7 +195,7 @@ class WorkflowContractTests(unittest.TestCase):
             self.assertEqual(definition["type"], input_type)
             self.assertIs(definition["required"], required)
             self.assertEqual(definition["default"], default)
-        self.assertEqual(inputs["source_feed"]["options"], ["sportsdataverse", "espn"])
+        self.assertEqual(inputs["source_feed"]["options"], ["pbpstats", "sportsdataverse", "espn"])
 
         job = workflow["jobs"]["standings-playoff-forecast"]  # type: ignore[index]
         self.assertEqual(job["runs-on"], "ubuntu-latest")
@@ -270,6 +271,7 @@ class WorkflowContractTests(unittest.TestCase):
                 "FORECAST_SIMULATIONS": "${{ inputs.simulations }}",
                 "SOURCE_FEED": "${{ inputs.source_feed }}",
                 "ESPN_DATA_ROOT": "data/raw/espn/wnba_2026",
+                "PBPSTATS_FORECAST_DATA_ROOT": "data/raw/pbpstats_forecast/wnba_2026",
                 "REFRESH_SPORTSDATAVERSE": "${{ inputs.refresh_sportsdataverse }}",
                 "REFRESH_PBPSTATS": "${{ inputs.refresh_pbpstats }}",
             },
@@ -541,9 +543,17 @@ class WorkflowContractTests(unittest.TestCase):
                     "all",
                     "--team-game-output-path-file",
                     str(TEAM_GAME_PATH_EVIDENCE),
+                    # Default source_feed=pbpstats points the forecast at the fresh pbpstats root.
+                    "--sportsdataverse-data-root",
+                    "data/raw/pbpstats_forecast/wnba_2026",
                 ],
             )
-            # The default source_feed=sportsdataverse reads the default root: no override.
+
+            # The sportsdataverse feed reads the default root, so no override is added.
+            sdv_env = dict(env)
+            sdv_env["SOURCE_FEED"] = "sportsdataverse"
+            sdv_result = _run(["bash", "-euo", "pipefail", "-c", build], env=sdv_env, check=False)
+            self.assertEqual(sdv_result.returncode, 0, sdv_result.stderr)
             self.assertNotIn(
                 "--sportsdataverse-data-root",
                 capture.read_text(encoding="utf-8").splitlines(),
