@@ -130,6 +130,41 @@ def fetch_team_game_log(team_id: str, season: str, season_type: str, fetcher: Ca
     return list(payload.get("multi_row_table_data") or [])
 
 
+def game_logs_fetcher(game_logs_root: Path, season_type: str) -> Callable:
+    """A ``fetcher`` backed by the committed pbpstats game-log ingest instead of the live API.
+
+    The forecast otherwise makes one live ``get-game-logs`` call per team, and a single team's
+    transient 500 aborts the whole build. The daily game-log ingest already fetches the same data
+    with per-entity retry and commits it, so serving the forecast from those files removes the
+    brittle 15-call live dependency while staying as fresh as the last ingest run. The ``get-games``
+    spine is served from the same committed run so the schedule and the team boxes stay consistent.
+    """
+    slug = "wnba_2026_" + season_type.strip().lower().replace(" ", "_")
+    games_path = game_logs_root / f"get_games_{slug}.json"
+    team_logs_path = game_logs_root / f"team_game_logs_{slug}.json"
+    for path in (games_path, team_logs_path):
+        if not path.exists():
+            raise PBPStatsFetchError(f"committed game-log file is missing: {path}")
+
+    games_payload = json.loads(games_path.read_text(encoding="utf-8"))
+    team_rows = json.loads(team_logs_path.read_text(encoding="utf-8"))
+    rows_by_team: Dict[str, List[dict]] = {}
+    for row in team_rows:
+        team_id = _norm_id(row.get("TeamId"))
+        if team_id is not None:
+            rows_by_team.setdefault(team_id, []).append(row)
+
+    def fetcher(endpoint: str, params: Optional[Mapping[str, Any]] = None) -> dict:
+        params = params or {}
+        if endpoint.startswith(f"/get-games/"):
+            return games_payload
+        if endpoint.startswith(f"/get-game-logs/"):
+            return {"multi_row_table_data": rows_by_team.get(_norm_id(params.get("EntityId")), [])}
+        raise PBPStatsFetchError(f"game_logs_fetcher cannot serve endpoint {endpoint}")
+
+    return fetcher
+
+
 # ----------------------------------------------------------------------- pure parse
 
 
@@ -445,6 +480,15 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> argparse.Namespace:
     parser.add_argument("--sportsdataverse-schedule", default=SPORTSDATAVERSE_SCHEDULE)
     parser.add_argument("--team-history", default=TEAM_HISTORY)
     parser.add_argument("--expected-games-per-team", type=int, default=None)
+    parser.add_argument(
+        "--from-game-logs",
+        default=None,
+        metavar="ROOT",
+        help=(
+            "Read completed games and team box scores from the committed pbpstats game-log ingest "
+            "at ROOT instead of the live API. Resilient: no per-team live fetch to 500 mid-build."
+        ),
+    )
     return parser.parse_args(argv)
 
 
@@ -455,6 +499,9 @@ def _resolve(path_str: str) -> Path:
 
 def main(argv: Optional[Sequence[str]] = None) -> None:
     args = parse_args(argv)
+    fetcher = request_json
+    if args.from_game_logs:
+        fetcher = game_logs_fetcher(_resolve(args.from_game_logs), args.season_type)
     manifest = build(
         args.season,
         args.season_type,
@@ -462,6 +509,7 @@ def main(argv: Optional[Sequence[str]] = None) -> None:
         sportsdataverse_schedule=_resolve(args.sportsdataverse_schedule),
         team_history_path=_resolve(args.team_history),
         expected_games_per_team=args.expected_games_per_team,
+        fetcher=fetcher,
     )
     diagnostics = manifest["diagnostics"]
     print(

@@ -124,10 +124,25 @@ jobs:
       - name: Fetch pbpstats fresh completed games
         if: ${{ inputs.source_feed == 'pbpstats' && inputs.season == '2026' }}
         run: |
-          python scripts/fetch_wnba_pbpstats_forecast_2026.py \
-            --season 2026 \
-            --data-root "$PBPSTATS_FORECAST_DATA_ROOT" \
+          set -euo pipefail
+          GAME_LOGS_ROOT=data/pbpstats_2026_player_game_logs
+          ARGS=(
+            --season 2026
+            --data-root "$PBPSTATS_FORECAST_DATA_ROOT"
             --expected-games-per-team 44
+          )
+          # Prefer the committed game-log ingest: it fetches the same completed results and team
+          # box scores with per-entity retry, so the forecast no longer makes 15 brittle live
+          # get-game-logs calls where a single team's transient 500 aborts the whole build. Falls
+          # back to a live fetch only if the committed ingest output is not present in the checkout.
+          if [[ -f "$GAME_LOGS_ROOT/get_games_wnba_2026_regular_season.json" \
+                && -f "$GAME_LOGS_ROOT/team_game_logs_wnba_2026_regular_season.json" ]]; then
+            echo "Using committed pbpstats game-log ingest (resilient; no live per-team fetch)"
+            ARGS+=(--from-game-logs "$GAME_LOGS_ROOT")
+          else
+            echo "Committed game logs absent; falling back to a live pbpstats fetch"
+          fi
+          python scripts/fetch_wnba_pbpstats_forecast_2026.py "${ARGS[@]}"
 
       - name: Fetch ESPN live source
         if: ${{ inputs.source_feed == 'espn' && inputs.season == '2026' }}
