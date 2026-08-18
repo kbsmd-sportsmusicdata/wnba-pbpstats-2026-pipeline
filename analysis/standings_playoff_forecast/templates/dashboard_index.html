@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en" data-season="{{SEASON}}" data-team-count="{{TEAM_COUNT}}" data-playoff-qualifiers="{{PLAYOFF_QUALIFIERS}}" data-top-boundary="{{TOP_BOUNDARY}}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <link rel="icon" href="data:,">
+  <title>WNBA {{SEASON}} Standings &amp; Playoff Forecast</title>
+  <link rel="stylesheet" href="./assets/styles.css">
+  <script id="forecast-payload" type="application/json">{{EMBEDDED_PAYLOAD}}</script>
+  <script src="./assets/charts.js" defer></script>
+  <script src="./assets/app.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to forecast</a>
+  <header class="site-header">
+    <div class="shell header-grid">
+      <div>
+        <h1>WNBA Standings &amp; Playoff Forecast</h1>
+        <p id="header-status">Season {{SEASON}} · loading validated forecast</p>
+      </div>
+      <dl class="run-status" aria-label="Forecast run status">
+        <div><dt>Data cutoff</dt><dd id="header-cutoff">Loading</dd></div>
+        <div><dt>Model</dt><dd id="header-model">Loading</dd></div>
+      </dl>
+    </div>
+  </header>
+
+  <main id="main-content" class="shell">
+    <form class="control-rail" aria-label="Forecast display controls">
+      <label for="team-select">Team
+        <select id="team-select" name="team"></select>
+      </label>
+      <fieldset id="race-view">
+        <legend>Race view</legend>
+        <label><input type="radio" name="race" value="all" checked> All</label>
+        <label><input type="radio" name="race" value="top4"> Top 4</label>
+        <label><input type="radio" name="race" value="cutline"> Playoff Cutline</label>
+        <label><input type="radio" name="race" value="longshots"> Long Shots</label>
+      </fieldset>
+      <fieldset id="probability-view">
+        <legend>Probability view</legend>
+        <label><input type="radio" name="probability" value="playoff" checked> Playoff</label>
+        <label><input type="radio" name="probability" value="rank"> Exact Rank</label>
+        <label><input type="radio" name="probability" value="wins"> Wins Range</label>
+      </fieldset>
+    </form>
+    <p id="app-status" class="status-message" role="status" aria-live="polite">Loading forecast payload…</p>
+    <section id="error-state" class="error-state" role="alert" aria-live="assertive" hidden></section>
+
+    <section id="snapshot-kpis" class="section-band" aria-labelledby="snapshot-title">
+      <h2 id="snapshot-title">Snapshot KPIs</h2>
+      <dl id="kpi-list" class="kpi-rail"></dl>
+    </section>
+
+    <div class="standings-grid">
+      <section id="current-standings" class="section-band" aria-labelledby="current-title">
+        <h2 id="current-title">Current standings / cutline</h2>
+        <div id="current-table" class="table-wrap" tabindex="0" aria-label="Scrollable current standings table">
+          <table><caption>Current standings reconstructed from completed regular-season schedule + team-box results.</caption><tbody></tbody></table>
+        </div>
+      </section>
+      <section id="projected-standings" class="section-band" aria-labelledby="projected-title">
+        <h2 id="projected-title">Projected standings</h2>
+        <p id="probability-mode-note" class="section-note"></p>
+        <div id="projected-table" class="table-wrap" tabindex="0" aria-label="Scrollable projected standings table">
+          <table><caption>Projected order and supplied probability evidence</caption><tbody></tbody></table>
+        </div>
+      </section>
+    </div>
+
+    <section id="rank-probability" class="section-band" aria-labelledby="rank-title">
+      <div class="section-heading-row"><h2 id="rank-title">Exact-rank probability heatmap</h2><span class="scroll-cue" aria-hidden="true">Scroll horizontally →</span></div>
+      <div id="rank-table" class="table-wrap" tabindex="0" aria-label="Scrollable exact-rank probability table">
+        <table><caption>Probability of every supplied final rank for visible race teams</caption><tbody></tbody></table>
+      </div>
+    </section>
+
+    <div class="detail-grid">
+      <section id="schedule-leverage" class="section-band" aria-labelledby="leverage-title">
+        <h2 id="leverage-title">Remaining schedule leverage</h2>
+        <div id="leverage-table" class="table-wrap" tabindex="0" aria-label="Scrollable leverage table">
+          <table><caption>Supplied remaining-game leverage and conditional swings</caption><tbody></tbody></table>
+        </div>
+      </section>
+      <section id="team-detail" class="section-band" aria-labelledby="team-title">
+        <h2 id="team-title">Team detail</h2>
+        <dl id="team-detail-list" class="detail-list"></dl>
+      </section>
+      <section id="historical-comparison" class="section-band" aria-labelledby="history-title">
+        <h2 id="history-title">Historical comparison</h2>
+        <div id="history-content"></div>
+      </section>
+      <section id="broadcast-insights" class="section-band" aria-labelledby="insights-title">
+        <h2 id="insights-title">Broadcast insights</h2>
+        <ol id="insights-list" class="insights-list"></ol>
+      </section>
+    </div>
+
+    <section id="method-cutoff" class="section-band method-band" aria-labelledby="method-title">
+      <h2 id="method-title">Method / cutoff</h2>
+      <dl id="method-list" class="method-list"></dl>
+      <p>Current standings reconstructed from completed regular-season schedule + team-box results.</p>
+      <p>Current .500+ records are descriptive. Official final tiebreak simulations recompute the .500+ opponent set from each simulated final season.</p>
+      <p>All probabilities, exact ranks, projected wins, leverage values, and insight text come from the validated static payload. This page filters, sorts, and formats; it does not forecast or rerank.</p>
+    </section>
+  </main>
+</body>
+</html>

@@ -1,0 +1,249 @@
+"""Repository-relative source discovery for the standings forecast."""
+
+import json
+import warnings
+from collections.abc import Mapping
+from dataclasses import dataclass
+from enum import Enum
+from pathlib import Path
+
+import pandas as pd
+
+from .contracts import SeasonConfig
+
+
+REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
+TEAM_HISTORY_PATH = (
+    REPOSITORY_ROOT
+    / "analysis"
+    / "standings_playoff_forecast"
+    / "config"
+    / "team_history.csv"
+)
+
+
+class ExternalStandingsLoadStatus(str, Enum):
+    LOADED = "loaded"
+    UNAVAILABLE = "unavailable"
+    UNPARSEABLE = "unparseable"
+
+
+@dataclass(frozen=True)
+class ForecastSources:
+    schedule: pd.DataFrame
+    team_box: pd.DataFrame
+    team_history: pd.DataFrame
+    pbp_team_features: pd.DataFrame | None
+    external_standings: pd.DataFrame | None
+    external_standings_load_status: ExternalStandingsLoadStatus
+    schedule_path: Path
+    team_box_path: Path
+    team_history_path: Path
+    pbp_team_features_path: Path | None
+    external_standings_path: Path | None
+    pbp_team_features_sidecar_path: Path | None = None
+    pbp_team_features_sidecar_evidence_kind: str | None = None
+    pbp_team_features_sidecar_evidence_date: str | None = None
+
+
+def _configured_path(root: str, filename: str) -> Path:
+    return REPOSITORY_ROOT / root / filename
+
+
+def _load_pbp_team_features(path: Path) -> pd.DataFrame | None:
+    """Load optional PBPStats team features, warning rather than failing closed.
+
+    Enrichment is optional by default, so a file that exists but cannot be parsed --
+    empty, truncated, or half-written by an interrupted refresh -- has to follow the
+    same unavailable path as a missing file rather than aborting the whole forecast.
+    Returning ``None`` still trips the required-mode guard in the builder, which
+    rejects a null enrichment source, so the ``required=true`` contract is unchanged.
+    """
+
+    try:
+        frame = pd.read_csv(path)
+    except Exception as error:
+        warnings.warn(
+            f"Optional PBPStats team features could not be read: {path}: {error}",
+            RuntimeWarning,
+            stacklevel=2,
+        )
+        return None
+    sidecar_path = path.with_suffix(".json")
+    if not sidecar_path.is_file():
+        return frame
+    try:
+        payload = json.loads(sidecar_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return frame
+    metadata = payload.get("metadata") if isinstance(payload, Mapping) else None
+    if not isinstance(metadata, Mapping):
+        return frame
+    snapshot_as_of = metadata.get("snapshot_as_of")
+    last_saved_at_utc = metadata.get("last_saved_at_utc")
+    if snapshot_as_of is not None:
+        evidence_key = "snapshot_as_of"
+        evidence_value = snapshot_as_of
+        provenance_kind = "snapshot_as_of"
+    else:
+        evidence_key = "cutoff_safety_upper_bound"
+        evidence_value = last_saved_at_utc
+        provenance_kind = "last_saved_at_utc_upper_bound"
+    run_id = metadata.get("run_id")
+    row_count = metadata.get("row_count")
+    feature_run_ids = (
+        set(frame["_feature_run_id"].dropna().astype(str))
+        if "_feature_run_id" in frame.columns
+        else set()
+    )
+    if (
+        evidence_value is None
+        or pd.isna(pd.to_datetime(evidence_value, errors="coerce"))
+        or row_count != len(frame)
+        or (feature_run_ids and feature_run_ids != {str(run_id)})
+    ):
+        return frame
+    frame.attrs["pbpstats_snapshot_metadata"] = {
+        evidence_key: evidence_value,
+        "provenance_kind": provenance_kind,
+        "run_id": run_id,
+        "sidecar": str(sidecar_path),
+    }
+    return frame
+
+
+def _validated_pbp_sidecar_contract(
+    frame: pd.DataFrame | None,
+) -> tuple[Path | None, str | None, str | None]:
+    """Return provenance only when the loader accepted the sidecar evidence."""
+
+    if frame is None:
+        return None, None, None
+    metadata = frame.attrs.get("pbpstats_snapshot_metadata")
+    if not isinstance(metadata, Mapping):
+        return None, None, None
+    kind = metadata.get("provenance_kind")
+    if kind == "snapshot_as_of":
+        evidence_date = metadata.get("snapshot_as_of")
+    elif kind == "last_saved_at_utc_upper_bound":
+        evidence_date = metadata.get("cutoff_safety_upper_bound")
+    else:
+        return None, None, None
+    sidecar = metadata.get("sidecar")
+    if (
+        not isinstance(sidecar, str)
+        or not isinstance(evidence_date, str)
+        or pd.isna(pd.to_datetime(evidence_date, errors="coerce"))
+    ):
+        return None, None, None
+    sidecar_path = Path(sidecar).expanduser().resolve()
+    if not sidecar_path.is_file():
+        return None, None, None
+    return sidecar_path, kind, evidence_date
+
+
+def _load_optional_parquet(
+    path: Path,
+) -> tuple[pd.DataFrame | None, ExternalStandingsLoadStatus]:
+    if not path.is_file():
+        warnings.warn(
+            f"Optional external standings are unavailable: {path}",
+            RuntimeWarning,
+            stacklevel=2,
+        )
+        return None, ExternalStandingsLoadStatus.UNAVAILABLE
+    try:
+        return pd.read_parquet(path), ExternalStandingsLoadStatus.LOADED
+    except Exception as error:
+        warnings.warn(
+            f"Optional external standings could not be read: {path}: {error}",
+            RuntimeWarning,
+            stacklevel=2,
+        )
+        return None, ExternalStandingsLoadStatus.UNPARSEABLE
+
+
+def load_forecast_sources(
+    cfg: SeasonConfig,
+    *,
+    schedule_path: Path | str | None = None,
+    team_box_path: Path | str | None = None,
+    external_standings_path: Path | str | None = None,
+    team_history_path: Path | str | None = None,
+    pbp_team_features_path: Path | str | None = None,
+) -> ForecastSources:
+    """Load source tables, with mandatory SDV paths failing closed."""
+
+    mandatory_paths = {
+        "schedule": Path(schedule_path)
+        if schedule_path is not None
+        else _configured_path(cfg.sportsdataverse_data_root, cfg.source_files["schedule"]),
+        "team_box": Path(team_box_path)
+        if team_box_path is not None
+        else _configured_path(cfg.sportsdataverse_data_root, cfg.source_files["team_box"]),
+    }
+    for source_name, path in mandatory_paths.items():
+        if not path.is_file():
+            raise FileNotFoundError(f"missing mandatory {source_name} source: {path}")
+
+    optional_path = (
+        Path(pbp_team_features_path)
+        if pbp_team_features_path is not None
+        else _configured_path(
+            cfg.pbpstats_data_root, cfg.source_files["pbp_team_features"]
+        )
+    )
+    configured_external_standings = cfg.optional_validation_files.get("standings")
+    external_standings_candidate = (
+        Path(external_standings_path)
+        if external_standings_path is not None
+        else _configured_path(cfg.sportsdataverse_data_root, configured_external_standings)
+        if configured_external_standings is not None
+        else None
+    )
+    history_path = (
+        Path(team_history_path) if team_history_path is not None else TEAM_HISTORY_PATH
+    )
+    if not history_path.is_file():
+        raise FileNotFoundError(f"missing team-history source: {history_path}")
+    if external_standings_candidate is None:
+        external_standings = None
+        external_standings_load_status = ExternalStandingsLoadStatus.UNAVAILABLE
+    else:
+        (
+            external_standings,
+            external_standings_load_status,
+        ) = _load_optional_parquet(external_standings_candidate)
+    pbp_team_features = (
+        _load_pbp_team_features(optional_path) if optional_path.is_file() else None
+    )
+    (
+        pbp_team_features_sidecar_path,
+        pbp_team_features_sidecar_evidence_kind,
+        pbp_team_features_sidecar_evidence_date,
+    ) = _validated_pbp_sidecar_contract(pbp_team_features)
+    return ForecastSources(
+        schedule=pd.read_parquet(mandatory_paths["schedule"]),
+        team_box=pd.read_parquet(mandatory_paths["team_box"]),
+        team_history=pd.read_csv(history_path),
+        pbp_team_features=pbp_team_features,
+        external_standings=external_standings,
+        external_standings_load_status=external_standings_load_status,
+        schedule_path=mandatory_paths["schedule"],
+        team_box_path=mandatory_paths["team_box"],
+        team_history_path=history_path,
+        # An unreadable file contributed nothing, so it is not reported as a source:
+        # the manifest would otherwise hash a file the forecast never used.
+        pbp_team_features_path=optional_path if pbp_team_features is not None else None,
+        pbp_team_features_sidecar_path=pbp_team_features_sidecar_path,
+        pbp_team_features_sidecar_evidence_kind=(
+            pbp_team_features_sidecar_evidence_kind
+        ),
+        pbp_team_features_sidecar_evidence_date=(
+            pbp_team_features_sidecar_evidence_date
+        ),
+        external_standings_path=external_standings_candidate
+        if external_standings_candidate is not None
+        and external_standings_candidate.is_file()
+        else None,
+    )

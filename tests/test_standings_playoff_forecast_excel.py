@@ -1,0 +1,519 @@
+"""Workbook contract tests for the standings/playoff forecast Excel layer."""
+
+from __future__ import annotations
+
+import datetime as dt
+import json
+import sys
+import tempfile
+import unittest
+from dataclasses import replace
+from pathlib import Path
+
+import pandas as pd
+from openpyxl import load_workbook
+
+
+ROOT = Path(__file__).resolve().parents[1]
+SCRIPTS = ROOT / "scripts"
+if str(SCRIPTS) not in sys.path:
+    sys.path.insert(0, str(SCRIPTS))
+
+from tests.test_standings_playoff_forecast_outputs import (  # noqa: E402
+    _inputs,
+    _write_fixture_bundle,
+)
+
+
+EXPECTED_SHEETS = [
+    "Dashboard",
+    "Current Standings",
+    "Remaining Schedule",
+    "Forecast",
+    "Broadcast Insights",
+    "Team Games Source",
+    "Model Notes",
+]
+
+
+def _team_games() -> pd.DataFrame:
+    return pd.DataFrame(
+        [
+            {
+                "season": 2031,
+                "season_type": "Regular Season",
+                "game_id": "g1",
+                "game_date": pd.Timestamp("2031-06-01"),
+                "team_id": "B",
+                "team_abbreviation": "BRV",
+                "opponent_id": "A",
+                "opponent_abbreviation": "ALP",
+                "home_away": "away",
+                "win": 0,
+                "loss": 1,
+                "points_for": 70,
+                "points_against": 80,
+                "margin": -10,
+                "wins_to_date": 0,
+                "losses_to_date": 1,
+                "win_pct_to_date": 0.0,
+                "point_diff_to_date": -10,
+                "source_game_completed": True,
+                "source_team_box_path": "literal/team_box.parquet",
+            },
+            {
+                "season": 2031,
+                "season_type": "Regular Season",
+                "game_id": "g1",
+                "game_date": pd.Timestamp("2031-06-01"),
+                "team_id": "A",
+                "team_abbreviation": "ALP",
+                "opponent_id": "B",
+                "opponent_abbreviation": "BRV",
+                "home_away": "home",
+                "win": 1,
+                "loss": 0,
+                "points_for": 80,
+                "points_against": 70,
+                "margin": 10,
+                "wins_to_date": 1,
+                "losses_to_date": 0,
+                "win_pct_to_date": 1.0,
+                "point_diff_to_date": 10,
+                "source_game_completed": True,
+                "source_team_box_path": "literal/team_box.parquet",
+            },
+        ]
+    )
+
+
+def _literal_bundle(root: Path, *, history_available: bool = True):
+    cfg, model_cfg, bundle = _inputs(root)
+    # Deliberately non-round probabilities prove the workbook is a view of the
+    # validated bundle rather than a second simulation/calculation surface.
+    bundle.simulation_result.forecast_summary.loc[:, "playoff_probability"] = [
+        0.731,
+        0.269,
+    ]
+    bundle.simulation_result.forecast_summary.loc[:, "top4_probability"] = [
+        0.731,
+        0.269,
+    ]
+    bundle.simulation_result.forecast_summary.loc[:, "home_court_probability"] = [
+        0.731,
+        0.269,
+    ]
+    bundle.simulation_result.forecast_summary.loc[:, "out_probability"] = [
+        0.269,
+        0.731,
+    ]
+    bundle.simulation_result.forecast_summary.loc[:, "expected_final_rank"] = [
+        1.269,
+        1.731,
+    ]
+    bundle.simulation_result.forecast_summary.loc[:, "rank_1_probability"] = [
+        0.731,
+        0.269,
+    ]
+    bundle.simulation_result.forecast_summary.loc[:, "rank_2_probability"] = [
+        0.269,
+        0.731,
+    ]
+    bundle.simulation_result.rank_probability_matrix.loc[:, "probability"] = [
+        0.731,
+        0.269,
+        0.269,
+        0.731,
+    ]
+    categories = [
+        "leader_race",
+        "playoff_cutline",
+        "top4_race",
+        "tiebreak_watch",
+        "remaining_sos",
+        "most_likely_riser",
+        "most_vulnerable_seed",
+        "recent_form",
+        "high_leverage_game",
+        "historical_context",
+    ]
+    base_insight = bundle.broadcast_insights.iloc[0].to_dict()
+    insights = []
+    for priority, category in enumerate(categories, start=1):
+        row = dict(base_insight)
+        row.update(
+            priority=priority,
+            category=category,
+            quick_read_snippet=f"Literal story {priority}.",
+        )
+        insights.append(row)
+    bundle = replace(bundle, broadcast_insights=pd.DataFrame(insights))
+    if not history_available:
+        bundle.historical_context.drop(bundle.historical_context.index, inplace=True)
+    processed_root = _write_fixture_bundle(root, cfg, model_cfg, bundle)
+    return cfg, processed_root
+
+
+def _header_map(sheet) -> dict[str, int]:
+    return {cell.value: cell.column for cell in sheet[2] if cell.value is not None}
+
+
+class ExcelRendererTests(unittest.TestCase):
+    def test_source_strings_are_literal_text_and_only_authored_formula_is_active(self):
+        """Catches source-controlled strings being interpreted as Excel formulas."""
+        from standings_playoff_forecast.render_excel import render_excel
+
+        attacks = {
+            "Attack Equal": "=2+3",
+            "Attack Plus": "  +SUM(1,2)",
+            "Attack Minus": "-1+2",
+            "Attack At": "\t@SUM(1,2)",
+        }
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            cfg, processed_root = _literal_bundle(root)
+            team_games = _team_games()
+            for header, value in attacks.items():
+                team_games[header.lower().replace(" ", "_")] = value
+
+            # This value is written outside the generic table path on Dashboard.
+            forecast_path = processed_root / "forecast_summary.csv"
+            forecast = pd.read_csv(forecast_path)
+            forecast.loc[forecast["current_rank"].eq(1), "team_abbreviation"] = (
+                attacks["Attack Equal"]
+            )
+            forecast.to_csv(forecast_path, index=False)
+
+            workbook_path = render_excel(processed_root, team_games, cfg=cfg)
+            workbook = load_workbook(workbook_path, data_only=False)
+
+            source = workbook["Team Games Source"]
+            headers = _header_map(source)
+            for header, expected in attacks.items():
+                cell = source.cell(3, headers[header])
+                self.assertEqual(cell.value, expected)
+                self.assertEqual(cell.data_type, "s")
+
+            dashboard_value = workbook["Dashboard"]["A5"]
+            self.assertEqual(dashboard_value.value, attacks["Attack Equal"])
+            self.assertEqual(dashboard_value.data_type, "s")
+
+            margin = next(
+                source.cell(row, headers["Margin"])
+                for row in range(3, source.max_row + 1)
+                if source.cell(row, headers["Margin"]).value == -10
+            )
+            self.assertEqual(margin.value, -10)
+            self.assertEqual(margin.data_type, "n")
+
+            notes = workbook["Model Notes"]
+            note_headers = _header_map(notes)
+            linked_row = next(
+                row
+                for row in range(3, notes.max_row + 1)
+                if notes.cell(row, note_headers["Item"]).value
+                == "Linked standings leader"
+            )
+            trusted_formula = notes.cell(linked_row, note_headers["Value"])
+            self.assertEqual(trusted_formula.value, "='Current Standings'!B3")
+            self.assertEqual(trusted_formula.data_type, "f")
+
+    def test_current_context_and_methodology_use_supplied_standings_fields(self):
+        """Catches renderer-side GB/.500 recomputation and lost context fields."""
+        from standings_playoff_forecast.render_excel import render_excel
+
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            cfg, processed_root = _literal_bundle(root)
+            standings_path = processed_root / "current_standings.csv"
+            current = pd.read_csv(standings_path)
+            current["games_back"] = current["games_back"].astype(float)
+            current.loc[current["team_id"].eq("A"), "games_back"] = 7.25
+            current.loc[current["team_id"].eq("A"), "home_record"] = "9-1"
+            current.loc[current["team_id"].eq("A"), "road_record"] = "4-6"
+            current.loc[current["team_id"].eq("A"), "last10_record"] = "8-2"
+            current.loc[current["team_id"].eq("A"), "current_streak_label"] = "W6"
+            current.loc[current["team_id"].eq("A"), "conference_record"] = pd.NA
+            current.loc[
+                current["team_id"].eq("A"), "record_vs_current_500_plus"
+            ] = "7-3"
+            current.to_csv(standings_path, index=False)
+
+            workbook_path = render_excel(processed_root, _team_games(), cfg=cfg)
+            workbook = load_workbook(workbook_path, data_only=False)
+            standings = workbook["Current Standings"]
+            headers = _header_map(standings)
+            alpha_row = 3
+            expected = {
+                "GB": 7.25,
+                "Home": "9-1",
+                "Road": "4-6",
+                "Last 10": "8-2",
+                "Streak": "W6",
+                "Conference": None,
+                "Current .500+": "7-3",
+            }
+            for header, value in expected.items():
+                self.assertEqual(standings.cell(alpha_row, headers[header]).value, value)
+
+            notes = workbook["Model Notes"]
+            note_values = {
+                cell.value
+                for row in notes.iter_rows()
+                for cell in row
+                if isinstance(cell.value, str)
+            }
+            self.assertIn(
+                "Current standings reconstructed from completed regular-season schedule + team-box results.",
+                note_values,
+            )
+            self.assertIn(
+                "Current .500+ records are descriptive. Official final tiebreak simulations recompute the .500+ opponent set from each simulated final season.",
+                note_values,
+            )
+
+    def test_current_standings_owns_identity_when_strength_repeats_metadata(self):
+        from standings_playoff_forecast.render_excel import render_excel
+
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            cfg, processed_root = _literal_bundle(root)
+            current = pd.read_csv(processed_root / "current_standings.csv")
+            strength_path = processed_root / "team_strength.csv"
+            strength = pd.read_csv(strength_path)
+            production_identity = current[
+                ["team_id", "franchise_id", "team_abbreviation", "team_name"]
+            ]
+            strength = strength.merge(
+                production_identity,
+                on="team_id",
+                how="left",
+                validate="one_to_one",
+            )
+            strength.to_csv(strength_path, index=False)
+
+            workbook_path = render_excel(processed_root, _team_games(), cfg=cfg)
+            workbook = load_workbook(workbook_path, data_only=False)
+            standings = workbook["Current Standings"]
+            headers = _header_map(standings)
+            self.assertEqual(
+                [standings.cell(row, headers["Team"]).value for row in (3, 4)],
+                ["ALP", "BRV"],
+            )
+
+    def test_renders_exact_workbook_contract_without_recalculating_forecast(self):
+        from standings_playoff_forecast.render_excel import render_excel
+
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            cfg, processed_root = _literal_bundle(root)
+            workbook_path = render_excel(processed_root, _team_games(), cfg=cfg)
+
+            expected_path = (
+                Path(cfg.output_root)
+                / "deliverables"
+                / "season=2031"
+                / "latest"
+                / "wnba_standings_playoff_forecast.xlsx"
+            )
+            self.assertEqual(workbook_path, expected_path)
+            self.assertTrue(workbook_path.is_file())
+
+            workbook = load_workbook(workbook_path, data_only=False)
+            self.assertEqual(workbook.sheetnames, EXPECTED_SHEETS)
+            self.assertTrue(
+                workbook["Dashboard"].sheet_properties.pageSetUpPr.fitToPage
+            )
+            self.assertEqual(workbook["Dashboard"].page_setup.fitToWidth, 1)
+            self.assertEqual(workbook["Model Notes"].page_setup.fitToHeight, 1)
+            dashboard_text = {
+                cell.value
+                for row in workbook["Dashboard"].iter_rows()
+                for cell in row
+                if isinstance(cell.value, str)
+            }
+            for label in (
+                "Current Leader",
+                "2031 Playoff Cutline (1st / 2nd)",
+                "Projected Playoff Field",
+                "Top-4 / Home-Court Race",
+                "Most Uncertain Seed",
+                "Remaining SOS Extremes",
+                "Highest-Leverage Games",
+                "Headline Storylines",
+                "Historical Cutline Comparison",
+            ):
+                self.assertIn(label, dashboard_text)
+
+            forecast = workbook["Forecast"]
+            headers = _header_map(forecast)
+            self.assertIn("Rank 1 %", headers)
+            self.assertIn("Rank 2 %", headers)
+            self.assertIn("OUT %", headers)
+            self.assertEqual(forecast.cell(3, headers["Team"]).value, "ALP")
+            supplied_probability = pd.read_csv(
+                processed_root / "forecast_summary.csv"
+            ).sort_values(["current_rank", "team_id"], kind="stable").iloc[0][
+                "playoff_probability"
+            ]
+            self.assertEqual(
+                forecast.cell(3, headers["Playoff %"]).value,
+                supplied_probability,
+            )
+            self.assertEqual(forecast.cell(3, headers["Playoff %"]).number_format, "0.0%")
+
+            remaining = workbook["Remaining Schedule"]
+            remaining_headers = _header_map(remaining)
+            self.assertIsInstance(
+                remaining.cell(3, remaining_headers["Date"]).value,
+                pd.Timestamp.to_pydatetime(pd.Timestamp("2031-06-03")).__class__,
+            )
+            self.assertEqual(remaining.freeze_panes, "A3")
+            self.assertEqual(remaining.auto_filter.ref, f"A2:S{remaining.max_row}")
+            self.assertTrue(remaining.tables)
+
+            source = workbook["Team Games Source"]
+            source_headers = _header_map(source)
+            self.assertEqual(source.cell(3, source_headers["Team ID"]).value, "A")
+            self.assertEqual(source.freeze_panes, "F3")
+            self.assertTrue(source.tables)
+            cumulative_contract = {
+                "Wins To Date": (1, "#,##0"),
+                "Losses To Date": (0, "#,##0"),
+                "Win Pct To Date": (1.0, "0.0%"),
+                "Point Diff To Date": (10, "+0;-0;0"),
+            }
+            for header, (expected_value, expected_format) in cumulative_contract.items():
+                cell = source.cell(3, source_headers[header])
+                self.assertEqual(cell.value, expected_value)
+                self.assertIsInstance(cell.value, (int, float))
+                self.assertNotIsInstance(cell.value, (dt.date, dt.time))
+                self.assertEqual(cell.number_format, expected_format)
+            date_cell = source.cell(3, source_headers["Date"])
+            self.assertIsInstance(date_cell.value, dt.datetime)
+            self.assertEqual(date_cell.number_format, "yyyy-mm-dd")
+
+            formulas = [
+                cell.value
+                for sheet in workbook.worksheets
+                for row in sheet.iter_rows()
+                for cell in row
+                if isinstance(cell.value, str) and cell.value.startswith("=")
+            ]
+            self.assertTrue(formulas)
+            self.assertTrue(any("='Current Standings'!" in value for value in formulas))
+            for formula in formulas:
+                self.assertNotIn("#REF!", formula)
+
+            data_only = load_workbook(workbook_path, data_only=True)
+            self.assertEqual(data_only.sheetnames, EXPECTED_SHEETS)
+            self.assertEqual(
+                data_only["Forecast"].cell(3, headers["Playoff %"]).value,
+                supplied_probability,
+            )
+            error_tokens = ("#REF!", "#DIV/0!", "#VALUE!", "#NAME?", "#N/A")
+            for opened in (workbook, data_only):
+                errors = [
+                    (sheet.title, cell.coordinate, cell.value)
+                    for sheet in opened.worksheets
+                    for row in sheet.iter_rows()
+                    for cell in row
+                    if isinstance(cell.value, str)
+                    and any(token in cell.value for token in error_tokens)
+                ]
+                self.assertEqual(errors, [])
+            self.assertEqual(workbook["Broadcast Insights"].max_row, 12)
+
+    def test_history_unavailable_is_explicit_and_repeated_write_is_safe(self):
+        from standings_playoff_forecast.render_excel import render_excel
+
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            cfg, processed_root = _literal_bundle(root, history_available=False)
+            first = render_excel(processed_root, _team_games(), cfg=cfg)
+            second = render_excel(processed_root, _team_games(), cfg=cfg)
+            self.assertEqual(first, second)
+            workbook = load_workbook(second, data_only=False)
+            values = [
+                cell.value
+                for row in workbook["Dashboard"].iter_rows()
+                for cell in row
+            ]
+            self.assertIn("Historical context unavailable for this run.", values)
+            self.assertFalse(list(second.parent.glob(f".{second.name}.*.tmp")))
+
+    def test_schema_failure_does_not_publish_partial_workbook(self):
+        from standings_playoff_forecast.render_excel import render_excel
+
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            cfg, processed_root = _literal_bundle(root)
+            forecast_path = processed_root / "forecast_summary.csv"
+            forecast = pd.read_csv(forecast_path).drop(columns=["playoff_probability"])
+            forecast.to_csv(forecast_path, index=False)
+
+            final_path = (
+                Path(cfg.output_root)
+                / "deliverables"
+                / "season=2031"
+                / "latest"
+                / "wnba_standings_playoff_forecast.xlsx"
+            )
+            with self.assertRaisesRegex(ValueError, "forecast_summary.*playoff_probability"):
+                render_excel(processed_root, _team_games(), cfg=cfg)
+            self.assertFalse(final_path.exists())
+            self.assertFalse(final_path.parent.exists())
+
+    def test_manifest_and_model_notes_preserve_provenance(self):
+        from standings_playoff_forecast.render_excel import render_excel
+
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            cfg, processed_root = _literal_bundle(root)
+            manifest = json.loads((processed_root / "run_manifest.json").read_text())
+            workbook_path = render_excel(processed_root, _team_games(), cfg=cfg)
+            workbook = load_workbook(workbook_path, data_only=False)
+            notes = workbook["Model Notes"]
+            note_rows = {
+                notes.cell(row, 1).value: notes.cell(row, 2).value
+                for row in range(3, notes.max_row + 1)
+            }
+            self.assertEqual(note_rows["Cutoff date"], manifest["cutoff_date"])
+            self.assertEqual(note_rows["Model version"], manifest["model_version"])
+            self.assertEqual(note_rows["Simulation count"], manifest["simulation_count"])
+            self.assertEqual(note_rows["Random seed"], manifest["random_seed"])
+            self.assertIn("machine-readable forecast bundle", note_rows["Probability source"])
+
+    def test_model_notes_disclose_supplied_external_standings_mismatch_counts(self):
+        from standings_playoff_forecast.render_excel import render_excel
+
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            cfg, processed_root = _literal_bundle(root)
+            manifest_path = processed_root / "run_manifest.json"
+            manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+            manifest["external_standings_qa"] = {
+                "status": "mismatch",
+                "compared_team_count": 2,
+                "mismatch_team_ids": ["A", "B"],
+            }
+            manifest_path.write_text(json.dumps(manifest) + "\n", encoding="utf-8")
+            payload_path = processed_root / "forecast_payload.json"
+            payload = json.loads(payload_path.read_text(encoding="utf-8"))
+            payload["metadata"] = manifest
+            payload_path.write_text(json.dumps(payload) + "\n", encoding="utf-8")
+
+            workbook_path = render_excel(processed_root, _team_games(), cfg=cfg)
+            notes = load_workbook(workbook_path, data_only=False)["Model Notes"]
+            note_rows = {
+                notes.cell(row, 1).value: notes.cell(row, 2).value
+                for row in range(3, notes.max_row + 1)
+            }
+            self.assertEqual(
+                note_rows["External standings QA"],
+                "mismatch (2 teams compared; 2 mismatched)",
+            )
+
+
+if __name__ == "__main__":
+    unittest.main()

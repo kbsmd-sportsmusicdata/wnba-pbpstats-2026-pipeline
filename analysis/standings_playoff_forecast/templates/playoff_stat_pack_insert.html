@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="data:,">
+  <title>WNBA {{SEASON}} Playoff Forecast — Broadcast Stat-Pack Insert</title>
+  <style>
+{{INLINE_CSS}}
+  </style>
+</head>
+<body>
+  <main class="sheet" aria-labelledby="page-title">
+    <header class="masthead">
+      <div class="title-block">
+        <h1 id="page-title">WNBA Playoff Forecast</h1>
+        <p>Broadcast stat-pack insert · {{SEASON}}</p>
+      </div>
+      <section aria-labelledby="status-title" class="status-block">
+        <h2 id="status-title">Model &amp; cutline status</h2>
+        <dl>
+          <div><dt>Data cutoff</dt><dd>{{CUTOFF}}</dd></div>
+          <div><dt>Model</dt><dd>{{MODEL}}</dd></div>
+          <div><dt>Simulations</dt><dd>{{SIMULATIONS}}</dd></div>
+          <div><dt>Source status</dt><dd>{{SOURCE_STATUS}}</dd></div>
+          <div><dt>PBPStats</dt><dd>{{PBP_STATUS}}</dd></div>
+        </dl>
+      </section>
+      <section aria-labelledby="field-title" class="field-block">
+        <h2 id="field-title">Current playoff field</h2>
+        {{CURRENT_FIELD}}
+      </section>
+      <section aria-labelledby="cutline-title" class="cutline-block">
+        <h2 id="cutline-title">The cutline</h2>
+        {{CUTLINE}}
+      </section>
+    </header>
+
+    <section class="primary-grid">
+      <section class="zone projected" aria-labelledby="projected-title">
+        <h2 id="projected-title">Projected standings &amp; playoff probability</h2>
+        {{PROJECTED}}
+      </section>
+      <section class="zone heat" aria-labelledby="heat-title">
+        <h2 id="heat-title">Exact-rank probability</h2>
+        <p class="zone-note">Configured cutline race; every cell is supplied by the forecast matrix.</p>
+        {{HEATMAP}}
+      </section>
+      <section class="zone schedule" aria-labelledby="schedule-title">
+        <h2 id="schedule-title">Remaining schedule &amp; win impact</h2>
+        <h3>Remaining SOS extremes</h3>
+        {{SOS}}
+        <h3>Highest-leverage games</h3>
+        {{LEVERAGE}}
+      </section>
+    </section>
+
+    <footer class="bottom-grid">
+      <section class="zone nuggets" aria-labelledby="nuggets-title">
+        <h2 id="nuggets-title">Five broadcast nuggets</h2>
+        <ol>{{NUGGETS}}</ol>
+      </section>
+      <section class="zone tiebreak" aria-labelledby="tiebreak-title">
+        <h2 id="tiebreak-title">Tiebreak watch</h2>
+        <p>Official configured order:</p>
+        <ol>{{TIEBREAKS}}</ol>
+        <p class="caveat"><strong>Non-official fallback:</strong> stable normalized team ID only after every configured criterion remains tied. {{FALLBACK_COUNT}} fallback events in this run.</p>
+      </section>
+      <section class="zone methodology" aria-labelledby="method-title">
+        <h2 id="method-title">Methodology &amp; source</h2>
+        <p>{{METHOD}}</p>
+        <p class="caveat">Rankings and probabilities change with new source data. Use official league sources for final standings and playoff seeding.</p>
+      </section>
+    </footer>
+  </main>
+</body>
+</html>

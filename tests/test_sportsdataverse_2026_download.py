@@ -87,6 +87,13 @@ class SportsDataverse2026DownloadTest(unittest.TestCase):
         self.assertIn("wnba_stats_pbp", file_map["wnba_pbp_2026.parquet"]["url"])
         self.assertIn("espn_wnba_pbp", file_map["espn_pbp_2026.parquet"]["url"])
 
+    def test_wide_wnba_stats_standings_is_downloaded_but_not_adapted_here(self):
+        file_map = SPORTSDV.build_2026_file_list()
+
+        source = file_map["wnba_stats_standings_2026.parquet"]
+        self.assertEqual(source["source"], "WNBA.com")
+        self.assertIn("wnba_stats_standings", source["url"])
+
     def test_default_output_paths_stay_inside_sportsdataverse_2026_tree(self):
         self.assertEqual(
             SPORTSDV.DATA_ROOT,
@@ -115,6 +122,7 @@ class SportsDataverse2026DownloadTest(unittest.TestCase):
             self.assertEqual(len(manifest["files"]), 15)
             self.assertTrue((data_root / "player_box_2026.parquet").exists())
             self.assertTrue((data_root / "espn_pbp_2026.parquet").exists())
+            self.assertTrue((data_root / "wnba_stats_standings_2026.parquet").exists())
 
             manifest_path = data_root / "run_logs" / "download_manifest_2026.json"
             saved_manifest = json.loads(manifest_path.read_text(encoding="utf-8"))

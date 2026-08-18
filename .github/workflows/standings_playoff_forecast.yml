@@ -22,7 +22,7 @@ name: WNBA Standings and Playoff Forecast
         description: "Refresh 2026 SportsDataverse sources"
         required: true
         type: boolean
-        default: false
+        default: true
       refresh_pbpstats:
         description: "Refresh 2026 PBPStats sources"
         required: true
@@ -122,7 +122,12 @@ jobs:
       - name: Build forecast and deliverables
         run: |
           set -euo pipefail
-          ARGS=(--season "$FORECAST_SEASON" --simulations "$FORECAST_SIMULATIONS" --render all)
+          ARGS=(
+            --season "$FORECAST_SEASON"
+            --simulations "$FORECAST_SIMULATIONS"
+            --render all
+            --team-game-output-path-file .git/standings_forecast_team_game_output_path
+          )
           if [[ -n "$FORECAST_CUTOFF" ]]; then
             ARGS+=(--cutoff "$FORECAST_CUTOFF")
           fi
@@ -150,6 +155,81 @@ jobs:
               exit 1
             fi
           done
+          python - "$PROCESSED_ROOT/run_manifest.json" <<'PY'
+          import json
+          from pathlib import Path
+          import sys
+
+          manifest_path = Path(sys.argv[1])
+          manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+          expected_source = {
+              "current_standings": "derived_from_schedule_and_team_box",
+              "schedule": "mandatory",
+              "team_box": "mandatory",
+              "external_standings": "optional_validation",
+          }
+          if manifest.get("source_of_truth") != expected_source:
+              raise SystemExit("run manifest does not identify the canonical derived-standings source")
+          source_files = manifest.get("source_files")
+          if not isinstance(source_files, list) or not source_files:
+              raise SystemExit("run manifest source_files must be a nonempty list")
+          sources_by_name = {}
+          for source in source_files:
+              if not isinstance(source, dict):
+                  raise SystemExit("run manifest source_files entries must be mappings")
+              name = source.get("name")
+              if not isinstance(name, str) or not name.strip():
+                  raise SystemExit("run manifest source provenance has an invalid name")
+              if name in sources_by_name:
+                  raise SystemExit(f"run manifest has duplicate source provenance: {name}")
+              path = source.get("path")
+              if (
+                  not isinstance(path, str)
+                  or not path.strip()
+                  or not Path(path).is_absolute()
+              ):
+                  raise SystemExit(f"run manifest source {name} has an invalid path")
+              size_bytes = source.get("size_bytes")
+              if (
+                  isinstance(size_bytes, bool)
+                  or not isinstance(size_bytes, int)
+                  or size_bytes < 0
+              ):
+                  raise SystemExit(f"run manifest source {name} has invalid size_bytes")
+              sha256 = source.get("sha256")
+              if (
+                  not isinstance(sha256, str)
+                  or len(sha256) != 64
+                  or any(character not in "0123456789abcdef" for character in sha256.lower())
+              ):
+                  raise SystemExit(f"run manifest source {name} has an invalid SHA-256")
+              sources_by_name[name] = source
+          missing_mandatory_sources = {"schedule", "team_box"}.difference(sources_by_name)
+          if missing_mandatory_sources:
+              missing = ", ".join(sorted(missing_mandatory_sources))
+              raise SystemExit(f"run manifest is missing mandatory source provenance: {missing}")
+          if manifest.get("ledger_validation") != {"status": "validated"}:
+              raise SystemExit("canonical completed-game ledger is not validated")
+          schedule_validation = manifest.get("season_schedule_validation")
+          if (
+              not isinstance(schedule_validation, dict)
+              or schedule_validation.get("status") != "validated"
+          ):
+              raise SystemExit("season schedule counts are not validated")
+          external_qa = manifest.get("external_standings_qa")
+          if not isinstance(external_qa, dict):
+              raise SystemExit("run manifest is missing external standings QA evidence")
+          external_status = external_qa.get("status")
+          allowed_external_statuses = {
+              "unavailable",
+              "unparseable",
+              "matched",
+              "mismatch",
+          }
+          if external_status not in allowed_external_statuses:
+              raise SystemExit(f"invalid external standings QA status: {external_status!r}")
+          print(f"external standings QA: {external_status} (non-blocking)")
+          PY
 
       - name: Upload forecast artifact
         uses: actions/upload-artifact@v7
@@ -168,10 +248,45 @@ jobs:
             echo "commit_outputs requires a branch ref" >&2
             exit 2
           fi
+          TEAM_GAME_OUTPUT="$(python - "$FORECAST_SEASON" "$FORECAST_CUTOFF" <<'PY'
+          import os
+          from pathlib import Path
+          import sys
+
+          season, cutoff = sys.argv[1:]
+          workspace = Path.cwd().resolve()
+          evidence_path = workspace / ".git/standings_forecast_team_game_output_path"
+          try:
+              lines = evidence_path.read_text(encoding="utf-8").splitlines()
+          except OSError as error:
+              raise SystemExit(f"team-game output path evidence is unavailable: {error}")
+          if len(lines) != 1 or not lines[0].strip():
+              raise SystemExit("team-game output path evidence must contain exactly one path")
+          raw_path = Path(lines[0])
+          if not raw_path.is_absolute():
+              raise SystemExit("team-game output path evidence must be absolute")
+          candidate = Path(os.path.abspath(raw_path))
+          season_root = (
+              workspace / f"data/processed/wnba_team_game/season={season}"
+          )
+          allowed = {season_root / "team_game.parquet"}
+          if cutoff:
+              allowed.add(season_root / f"cutoff={cutoff}" / "team_game.parquet")
+          if candidate not in allowed:
+              raise SystemExit(
+                  "team-game output path evidence is outside the exact forecast allowlist"
+              )
+          if candidate.is_symlink() or not candidate.is_file():
+              raise SystemExit(
+                  f"team-game output is missing or is not a regular file: {candidate}"
+              )
+          print(candidate.relative_to(workspace).as_posix())
+          PY
+          )"
           git add -- \
             "analysis/standings_playoff_forecast/data/processed/season=$FORECAST_SEASON/latest" \
             "analysis/standings_playoff_forecast/deliverables/season=$FORECAST_SEASON/latest" \
-            "data/processed/wnba_team_game/season=$FORECAST_SEASON/team_game.parquet"
+            "$TEAM_GAME_OUTPUT"
           if git diff --cached --quiet; then
             echo "No standings forecast output changes to commit"
             exit 0

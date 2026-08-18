@@ -1,0 +1,10 @@
+{
+  "league": "WNBA",
+  "season_type": "Regular Season",
+  "simulation_count": 100000,
+  "recent_window_games": 10,
+  "historical_context": {
+    "enabled": true,
+    "min_prior_seasons": 1
+  }
+}

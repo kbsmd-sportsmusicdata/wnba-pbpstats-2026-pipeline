@@ -1,0 +1,26 @@
+{
+  "season": 2026,
+  "team_count": 15,
+  "regular_season_games_per_team": 44,
+  "playoff_qualifiers": 8,
+  "seeding_scope": "league",
+  "tiebreaks": [
+    "head_to_head_win_pct",
+    "record_vs_final_500_plus",
+    "head_to_head_point_diff",
+    "overall_point_diff"
+  ],
+  "multi_team_restart_after_elimination": true,
+  "sportsdataverse_data_root": "data/raw/sportsdataverse/wnba_2026",
+  "pbpstats_data_root": "data/pbpstats_wnba_2026",
+  "source_files": {
+    "schedule": "schedule_2026.parquet",
+    "team_box": "team_box_2026.parquet",
+    "pbp_team_features": "features_latest/2026/team_totals_features_latest.csv"
+  },
+  "optional_validation_files": {
+    "standings": "standings_2026.parquet"
+  },
+  "output_root": "analysis/standings_playoff_forecast",
+  "normalized_team_game_root": "data/processed/wnba_team_game"
+}
