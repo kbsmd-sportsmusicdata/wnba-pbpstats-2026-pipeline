@@ -1,0 +1,2 @@
+context_level,metric,season,season_count,seed_band,qualifier_rank,team_id,target_progress_pct,as_of_progress_pct,as_of_net_rating,final_rank,value,sample_size,availability_status
+availability,historical_minimum_status,,0,,,,,,,,,0,insufficient_prior_seasons

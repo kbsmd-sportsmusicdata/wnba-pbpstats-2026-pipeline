@@ -1,0 +1,16 @@
+team_id,franchise_id,team_abbreviation,team_name,games_played,wins,losses,win_pct,points_for,points_against,point_differential,games_back,home_wins,home_losses,road_wins,road_losses,home_record,road_record,last10_wins,last10_losses,last10_record,current_streak_type,current_streak_length,current_streak_label,conference_wins,conference_losses,conference_record,record_vs_current_500_plus_wins,record_vs_current_500_plus_losses,record_vs_current_500_plus,record_vs_current_500_plus_pct,current_rank,playoff_cutline_flag,clinched_playoffs,eliminated_from_playoffs,status_note
+8,minnesota_lynx,MIN,Minnesota Lynx,30,24,6,0.80000000000000004,2766,2484,282,0,11,4,13,2,11-4,13-2,9,1,9-1,W,9,W9,,,,8,4,8-4,0.66666666666666663,1,top4,False,False,in_contention
+17,las_vegas_aces,LV,Las Vegas Aces,29,20,9,0.68965517241379315,2651,2511,140,3.5,9,5,11,4,9-5,11-4,6,4,6-4,L,1,L1,,,,7,6,7-6,0.53846153846153844,2,top4,False,False,in_contention
+129689,golden_state_valkyries,GS,Golden State Valkyries,28,19,9,0.6785714285714286,2300,2153,147,4,11,4,8,5,11-4,8-5,8,2,8-2,L,2,L2,,,,10,7,10-7,0.58823529411764708,3,top4,False,False,in_contention
+5,indiana_fever,IND,Indiana Fever,29,19,10,0.65517241379310343,2795,2612,183,4.5,11,5,8,5,11-5,8-5,8,2,8-2,W,5,W5,,,,6,7,6-7,0.46153846153846156,4,top4,False,False,in_contention
+20,atlanta_dream,ATL,Atlanta Dream,28,18,10,0.6428571428571429,2503,2387,116,5,10,4,8,6,10-4,8-6,6,4,6-4,W,5,W5,,,,7,8,7-8,0.46666666666666667,5,playoff_field,False,False,in_contention
+3,dallas_wings,DAL,Dallas Wings,29,18,11,0.62068965517241381,2592,2490,102,5.5,8,5,10,6,8-5,10-6,7,3,7-3,L,2,L2,,,,6,10,6-10,0.375,6,playoff_field,False,False,in_contention
+16,washington_mystics,WSH,Washington Mystics,28,16,12,0.5714285714285714,2273,2320,-47,7,8,6,8,6,8-6,8-6,7,3,7-3,W,4,W4,,,,7,8,7-8,0.46666666666666667,7,playoff_field,False,False,in_contention
+9,new_york_liberty,NY,New York Liberty,30,17,13,0.56666666666666665,2696,2632,64,7,8,5,9,8,8-5,9-8,5,5,5-5,W,1,W1,,,,7,8,7-8,0.46666666666666667,8,playoff_field,False,False,in_contention
+19,chicago_sky,CHI,Chicago Sky,29,11,18,0.37931034482758619,2541,2594,-53,12.5,7,7,4,11,7-7,4-11,5,5,5-5,W,2,W2,,,,3,13,3-13,0.1875,9,cutline_chase,False,False,in_contention
+132052,portland_fire,POR,Portland Fire,29,11,18,0.37931034482758619,2485,2656,-171,12.5,6,8,5,10,6-8,5-10,3,7,3-7,L,4,L4,,,,6,12,6-12,0.33333333333333331,10,cutline_chase,False,False,in_contention
+6,los_angeles_sparks,LA,Los Angeles Sparks,27,10,17,0.37037037037037035,2404,2540,-136,12.5,5,9,5,8,5-9,5-8,2,8,2-8,L,6,L6,,,,4,11,4-11,0.26666666666666666,11,outside,False,False,in_contention
+11,phoenix_mercury,PHX,Phoenix Mercury,30,11,19,0.36666666666666664,2506,2606,-100,13,5,10,6,9,5-10,6-9,4,6,4-6,L,1,L1,,,,3,14,3-14,0.17647058823529413,12,outside,False,False,in_contention
+131935,toronto_tempo,TOR,Toronto Tempo,28,10,18,0.35714285714285715,2466,2620,-154,13,6,11,4,7,6-11,4-7,1,9,1-9,L,5,L5,,,,1,15,1-15,0.0625,13,outside,False,False,in_contention
+18,connecticut_sun,CON,Connecticut Sun,29,7,22,0.2413793103448276,2332,2537,-205,16.5,4,10,3,12,4-10,3-12,3,7,3-7,L,4,L4,,,,2,13,2-13,0.13333333333333333,14,outside,False,False,in_contention
+14,seattle_storm,SEA,Seattle Storm,31,6,25,0.19354838709677419,2559,2727,-168,18.5,4,11,2,14,4-11,2-14,1,9,1-9,L,8,L8,,,,3,15,3-15,0.16666666666666666,15,outside,False,False,in_contention

@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="data:,">
+  <title>WNBA 2026 Playoff Forecast — Broadcast Stat-Pack Insert</title>
+  <style>
+@page { size: 17in 11in; margin: 0.25in; }
+
+:root {
+  --navy: #12233f;
+  --navy-2: #1b3153;
+  --blue: #1f5f9c;
+  --blue-pale: #eaf2f9;
+  --amber: #bd6900;
+  --amber-pale: #fff4df;
+  --ink: #1d2734;
+  --muted: #5e6978;
+  --rule: #cbd5df;
+  --paper: #ffffff;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; background: var(--paper); color: var(--ink); }
+body { font-family: Arial, Helvetica, sans-serif; font-size: 9px; line-height: 1.25; }
+.sheet { width: 16.5in; height: 10.5in; overflow: hidden; display: grid; grid-template-rows: 1.75in 5.55in 3.08in; gap: 0.06in; }
+h1, h2, h3, p, dl, ol { margin-top: 0; }
+h1, h2, h3 { font-family: Georgia, "Times New Roman", serif; color: var(--navy); }
+h1 { margin-bottom: 0.05in; font-size: 28px; line-height: 1; text-transform: uppercase; letter-spacing: -0.4px; }
+h2 { margin: 0; padding: 0.07in 0.1in; font-size: 13px; line-height: 1.05; background: var(--navy); color: white; text-transform: uppercase; letter-spacing: 0.25px; }
+h3 { margin: 0.08in 0 0.03in; font-size: 10px; text-transform: uppercase; }
+.masthead { display: grid; grid-template-columns: 2.8fr 1.5fr 2fr 1.4fr; border: 1px solid var(--navy); min-height: 0; }
+.masthead > * { min-width: 0; padding: 0.1in; border-right: 1px solid var(--navy); overflow: hidden; }
+.masthead > *:last-child { border-right: 0; }
+.masthead h2 { margin: -0.1in -0.1in 0.08in; }
+.title-block { display: flex; flex-direction: column; justify-content: center; }
+.title-block p { margin: 0; font: 700 14px/1.2 Arial, sans-serif; color: var(--navy-2); letter-spacing: 1.4px; text-transform: uppercase; }
+dl { margin-bottom: 0; }
+dl div { display: grid; grid-template-columns: 0.9fr 1.1fr; gap: 0.05in; padding: 0.025in 0; }
+dt { font-weight: 700; }
+dd { margin: 0; }
+.cutline-block { text-align: center; }
+.cutline-callout { margin: 0.18in 0 0.08in; color: var(--amber); font: 700 17px/1.1 Georgia, serif; text-transform: uppercase; border-bottom: 2px dashed var(--amber); padding-bottom: 0.08in; }
+.cutline-teams { font-size: 11px; line-height: 1.4; }
+.primary-grid { display: grid; grid-template-columns: 1.35fr 1.45fr 1.65fr; gap: 0.06in; min-height: 0; }
+.bottom-grid { display: grid; grid-template-columns: 1.25fr 1fr 1.15fr; gap: 0.06in; min-height: 0; }
+.zone { border: 1px solid var(--navy); min-width: 0; overflow: hidden; }
+.zone > :not(h2) { margin-left: 0.08in; margin-right: 0.08in; }
+.zone-note { margin-top: 0.05in; margin-bottom: 0.04in; font-style: italic; color: var(--muted); }
+.table-scroll { overflow: hidden; }
+table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+th, td { padding: 0.025in 0.035in; border-bottom: 1px solid #e2e8ef; text-align: right; white-space: nowrap; }
+th { color: var(--navy); font-size: 8px; text-transform: uppercase; border-bottom-color: var(--navy); }
+th:nth-child(2), td:nth-child(2) { text-align: left; }
+tbody tr:nth-child(even) { background: #f5f8fb; }
+.field-block table { font-size: 8px; }
+.field-block th, .field-block td { padding: 0.008in 0.025in; line-height: 1.05; }
+.probability { color: var(--blue); }
+.heat-table { font-size: 7.5px; }
+.heat-table th, .heat-table td { padding: 0.021in 0.018in; text-align: center; }
+.heat-table th:first-child, .heat-table td:first-child { text-align: left; font-weight: 700; }
+.heat-cell { display: block; padding: 0.03in 0.01in; background: color-mix(in srgb, var(--blue) var(--heat), white); color: var(--navy); }
+.schedule table { font-size: 8px; }
+.schedule .data-table th:last-child, .schedule .data-table td:last-child { white-space: normal; }
+.nuggets ol { list-style: none; padding: 0; margin-top: 0.06in; }
+.nugget { display: grid; grid-template-columns: 0.25in 1fr; gap: 0.04in; border-bottom: 1px solid var(--rule); padding: 0.045in 0; }
+.nugget-number { width: 0.2in; height: 0.2in; display: grid; place-items: center; background: var(--navy); color: white; font-weight: 700; }
+.nugget em { display: block; color: var(--muted); margin-top: 0.015in; }
+.tiebreak ol { margin: 0.05in 0 0.05in 0.25in; padding: 0; }
+.tiebreak li { padding: 0.025in 0; }
+.methodology p { margin-top: 0.08in; font-size: 9px; line-height: 1.4; }
+.caveat { padding-top: 0.05in; border-top: 1px solid var(--rule); color: var(--muted); font-style: italic; }
+.empty-state { padding: 0.08in; background: var(--blue-pale); color: var(--muted); }
+
+@media screen {
+  body { padding: 20px; background: #dfe5ec; }
+  .sheet { margin: 0 auto; background: white; box-shadow: 0 8px 30px rgba(18, 35, 63, 0.18); }
+}
+
+@media print {
+  body { background: white; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+  .sheet { margin: 0; box-shadow: none; }
+}
+
+  </style>
+</head>
+<body>
+  <main class="sheet" aria-labelledby="page-title">
+    <header class="masthead">
+      <div class="title-block">
+        <h1 id="page-title">WNBA Playoff Forecast</h1>
+        <p>Broadcast stat-pack insert · 2026</p>
+      </div>
+      <section aria-labelledby="status-title" class="status-block">
+        <h2 id="status-title">Model &amp; cutline status</h2>
+        <dl>
+          <div><dt>Data cutoff</dt><dd>2026-08-01</dd></div>
+          <div><dt>Model</dt><dd>v1_heuristic_margin</dd></div>
+          <div><dt>Simulations</dt><dd>10,000</dd></div>
+          <div><dt>Source status</dt><dd>7 source files · ext mismatch</dd></div>
+          <div><dt>PBPStats</dt><dd>available_not_safe_for_cutoff</dd></div>
+        </dl>
+      </section>
+      <section aria-labelledby="field-title" class="field-block">
+        <h2 id="field-title">Current playoff field</h2>
+        <div class="table-scroll"><table class="data-table"><thead><tr><th scope="col">Rank</th><th scope="col">Team</th><th scope="col">W–L</th><th scope="col">Pct</th><th scope="col">GB</th><th scope="col">Home / Road</th><th scope="col">L10</th><th scope="col">Streak</th><th scope="col">Current .500+</th></tr></thead><tbody><tr><td>1</td><td>MIN</td><td>24–6</td><td>80.0%</td><td>0.00</td><td>11-4 / 13-2</td><td>9-1</td><td>W9</td><td>8-4</td></tr><tr><td>2</td><td>LV</td><td>20–9</td><td>69.0%</td><td>3.50</td><td>9-5 / 11-4</td><td>6-4</td><td>L1</td><td>7-6</td></tr><tr><td>3</td><td>GS</td><td>19–9</td><td>67.9%</td><td>4.00</td><td>11-4 / 8-5</td><td>8-2</td><td>L2</td><td>10-7</td></tr><tr><td>4</td><td>IND</td><td>19–10</td><td>65.5%</td><td>4.50</td><td>11-5 / 8-5</td><td>8-2</td><td>W5</td><td>6-7</td></tr><tr><td>5</td><td>ATL</td><td>18–10</td><td>64.3%</td><td>5.00</td><td>10-4 / 8-6</td><td>6-4</td><td>W5</td><td>7-8</td></tr><tr><td>6</td><td>DAL</td><td>18–11</td><td>62.1%</td><td>5.50</td><td>8-5 / 10-6</td><td>7-3</td><td>L2</td><td>6-10</td></tr><tr><td>7</td><td>WSH</td><td>16–12</td><td>57.1%</td><td>7.00</td><td>8-6 / 8-6</td><td>7-3</td><td>W4</td><td>7-8</td></tr><tr><td>8</td><td>NY</td><td>17–13</td><td>56.7%</td><td>7.00</td><td>8-5 / 9-8</td><td>5-5</td><td>W1</td><td>7-8</td></tr></tbody></table></div>
+      </section>
+      <section aria-labelledby="cutline-title" class="cutline-block">
+        <h2 id="cutline-title">The cutline</h2>
+        <p class="cutline-callout">8th / 9th cutline</p><p class="cutline-teams"><strong>NY</strong> 99.1% · <strong>CHI</strong> 3.0%</p>
+      </section>
+    </header>
+
+    <section class="primary-grid">
+      <section class="zone projected" aria-labelledby="projected-title">
+        <h2 id="projected-title">Projected standings &amp; playoff probability</h2>
+        <div class="table-scroll"><table class="data-table"><thead><tr><th scope="col"></th><th scope="col">Team</th><th scope="col">Playoff</th><th scope="col">Exp rank</th><th scope="col">P10 · P50 · P90</th></tr></thead><tbody><tr><td>1</td><td>MIN</td><td><strong class="probability">100.0%</strong></td><td>1.27</td><td>32.0–34.0–36.0</td></tr><tr><td>2</td><td>GS</td><td><strong class="probability">100.0%</strong></td><td>2.96</td><td>28.0–30.0–33.0</td></tr><tr><td>3</td><td>LV</td><td><strong class="probability">100.0%</strong></td><td>3.29</td><td>28.0–30.0–32.0</td></tr><tr><td>4</td><td>IND</td><td><strong class="probability">100.0%</strong></td><td>4.05</td><td>27.0–29.0–31.0</td></tr><tr><td>5</td><td>ATL</td><td><strong class="probability">100.0%</strong></td><td>4.78</td><td>26.0–28.0–30.0</td></tr><tr><td>6</td><td>DAL</td><td><strong class="probability">100.0%</strong></td><td>5.09</td><td>26.0–28.0–30.0</td></tr><tr><td>7</td><td>NY</td><td><strong class="probability">99.1%</strong></td><td>7.12</td><td>22.0–24.0–27.0</td></tr><tr><td>8</td><td>WSH</td><td><strong class="probability">95.8%</strong></td><td>7.49</td><td>21.0–24.0–26.0</td></tr><tr><td>9</td><td>CHI</td><td><strong class="probability">3.0%</strong></td><td>9.71</td><td>16.0–18.0–21.0</td></tr><tr><td>10</td><td>PHX</td><td><strong class="probability">1.1%</strong></td><td>10.61</td><td>15.0–17.0–19.0</td></tr><tr><td>11</td><td>POR</td><td><strong class="probability">0.7%</strong></td><td>10.87</td><td>15.0–17.0–19.0</td></tr><tr><td>12</td><td>LA</td><td><strong class="probability">0.4%</strong></td><td>11.30</td><td>13.0–16.0–18.0</td></tr><tr><td>13</td><td>TOR</td><td><strong class="probability">0.0%</strong></td><td>12.78</td><td>11.0–13.0–15.0</td></tr><tr><td>14</td><td>CON</td><td><strong class="probability">0.0%</strong></td><td>14.28</td><td>9.0–11.0–13.0</td></tr><tr><td>15</td><td>SEA</td><td><strong class="probability">0.0%</strong></td><td>14.39</td><td>9.0–11.0–13.0</td></tr></tbody></table></div>
+      </section>
+      <section class="zone heat" aria-labelledby="heat-title">
+        <h2 id="heat-title">Exact-rank probability</h2>
+        <p class="zone-note">Configured cutline race; every cell is supplied by the forecast matrix.</p>
+        <div class="table-scroll"><table class="data-table heat-table"><thead><tr><th scope="col">Team</th><th scope="col">1</th><th scope="col">2</th><th scope="col">3</th><th scope="col">4</th><th scope="col">5</th><th scope="col">6</th><th scope="col">7</th><th scope="col">8</th><th scope="col">9</th><th scope="col">10</th><th scope="col">11</th><th scope="col">12</th><th scope="col">13</th><th scope="col">14</th><th scope="col">15</th></tr></thead><tbody><tr><td>ATL</td><td><span class="heat-cell" style="--heat:9%">0.7%</span></td><td><span class="heat-cell" style="--heat:13%">5.9%</span></td><td><span class="heat-cell" style="--heat:19%">12.2%</span></td><td><span class="heat-cell" style="--heat:26%">21.1%</span></td><td><span class="heat-cell" style="--heat:33%">28.8%</span></td><td><span class="heat-cell" style="--heat:26%">20.7%</span></td><td><span class="heat-cell" style="--heat:15%">8.0%</span></td><td><span class="heat-cell" style="--heat:10%">2.5%</span></td><td><span class="heat-cell" style="--heat:8%">0.0%</span></td><td><span class="heat-cell" style="--heat:8%">0.0%</span></td><td><span class="heat-cell" style="--heat:8%">0.0%</span></td><td><span class="heat-cell" style="--heat:8%">0.0%</span></td><td><span class="heat-cell" style="--heat:8%">0.0%</span></td><td><span class="heat-cell" style="--heat:8%">0.0%</span></td><td><span class="heat-cell" style="--heat:8%">0.0%</span></td></tr><tr><td>DAL</td><td><span class="heat-cell" style="--heat:8%">0.2%</span></td><td><span class="heat-cell" style="--heat:12%">4.9%</span></td><td><span class="heat-cell" style="--heat:16%">8.9%</span></td><td><span class="heat-cell" style="--heat:22%">16.1%</span></td><td><span class="heat-cell" style="--heat:29%">24.3%</span></td><td><span class="heat-cell" style="--heat:39%">35.1%</span></td><td><span class="heat-cell" style="--heat:15%">8.4%</span></td><td><span class="heat-cell" style="--heat:10%">2.2%</span></td><td><span class="heat-cell" style="--heat:8%">0.0%</span></td><td><span class="heat-cell" style="--heat:8%">0.0%</span></td><td><span class="heat-cell" style="--heat:8%">0.0%</span></td><td><span class="heat-cell" style="--heat:8%">0.0%</span></td><td><span class="heat-cell" style="--heat:8%">0.0%</span></td><td><span class="heat-cell" style="--heat:8%">0.0%</span></td><td><span class="heat-cell" style="--heat:8%">0.0%</span></td></tr><tr><td>WSH</td><td><span class="heat-cell" style="--heat:8%">0.0%</span></td><td><span class="heat-cell" style="--heat:8%">0.0%</span></td><td><span class="heat-cell" style="--heat:8%">0.2%</span></td><td><span class="heat-cell" style="--heat:9%">0.8%</span></td><td><span class="heat-cell" style="--heat:10%">2.6%</span></td><td><span class="heat-cell" style="--heat:15%">7.8%</span></td><td><span class="heat-cell" style="--heat:32%">27.8%</span></td><td><span class="heat-cell" style="--heat:57%">56.5%</span></td><td><span class="heat-cell" style="--heat:11%">3.6%</span></td><td><span class="heat-cell" style="--heat:8%">0.5%</span></td><td><span class="heat-cell" style="--heat:8%">0.1%</span></td><td><span class="heat-cell" style="--heat:8%">0.0%</span></td><td><span class="heat-cell" style="--heat:8%">0.0%</span></td><td><span class="heat-cell" style="--heat:8%">0.0%</span></td><td><span class="heat-cell" style="--heat:8%">0.0%</span></td></tr><tr><td>NY</td><td><span class="heat-cell" style="--heat:8%">0.0%</span></td><td><span class="heat-cell" style="--heat:8%">0.0%</span></td><td><span class="heat-cell" style="--heat:8%">0.2%</span></td><td><span class="heat-cell" style="--heat:9%">1.1%</span></td><td><span class="heat-cell" style="--heat:11%">3.7%</span></td><td><span class="heat-cell" style="--heat:18%">11.2%</span></td><td><span class="heat-cell" style="--heat:51%">49.8%</span></td><td><span class="heat-cell" style="--heat:37%">33.1%</span></td><td><span class="heat-cell" style="--heat:9%">0.9%</span></td><td><span class="heat-cell" style="--heat:8%">0.1%</span></td><td><span class="heat-cell" style="--heat:8%">0.0%</span></td><td><span class="heat-cell" style="--heat:8%">0.0%</span></td><td><span class="heat-cell" style="--heat:8%">0.0%</span></td><td><span class="heat-cell" style="--heat:8%">0.0%</span></td><td><span class="heat-cell" style="--heat:8%">0.0%</span></td></tr><tr><td>CHI</td><td><span class="heat-cell" style="--heat:8%">0.0%</span></td><td><span class="heat-cell" style="--heat:8%">0.0%</span></td><td><span class="heat-cell" style="--heat:8%">0.0%</span></td><td><span class="heat-cell" style="--heat:8%">0.0%</span></td><td><span class="heat-cell" style="--heat:8%">0.0%</span></td><td><span class="heat-cell" style="--heat:8%">0.0%</span></td><td><span class="heat-cell" style="--heat:8%">0.3%</span></td><td><span class="heat-cell" style="--heat:10%">2.7%</span></td><td><span class="heat-cell" style="--heat:53%">51.6%</span></td><td><span class="heat-cell" style="--heat:30%">25.3%</span></td><td><span class="heat-cell" style="--heat:19%">12.9%</span></td><td><span class="heat-cell" style="--heat:13%">5.5%</span></td><td><span class="heat-cell" style="--heat:9%">1.5%</span></td><td><span class="heat-cell" style="--heat:8%">0.1%</span></td><td><span class="heat-cell" style="--heat:8%">0.0%</span></td></tr><tr><td>POR</td><td><span class="heat-cell" style="--heat:8%">0.0%</span></td><td><span class="heat-cell" style="--heat:8%">0.0%</span></td><td><span class="heat-cell" style="--heat:8%">0.0%</span></td><td><span class="heat-cell" style="--heat:8%">0.0%</span></td><td><span class="heat-cell" style="--heat:8%">0.0%</span></td><td><span class="heat-cell" style="--heat:8%">0.0%</span></td><td><span class="heat-cell" style="--heat:8%">0.0%</span></td><td><span class="heat-cell" style="--heat:9%">0.6%</span></td><td><span class="heat-cell" style="--heat:19%">13.0%</span></td><td><span class="heat-cell" style="--heat:30%">25.7%</span></td><td><span class="heat-cell" style="--heat:33%">28.4%</span></td><td><span class="heat-cell" style="--heat:29%">24.7%</span></td><td><span class="heat-cell" style="--heat:14%">6.9%</span></td><td><span class="heat-cell" style="--heat:9%">0.7%</span></td><td><span class="heat-cell" style="--heat:8%">0.0%</span></td></tr><tr><td>LA</td><td><span class="heat-cell" style="--heat:8%">0.0%</span></td><td><span class="heat-cell" style="--heat:8%">0.0%</span></td><td><span class="heat-cell" style="--heat:8%">0.0%</span></td><td><span class="heat-cell" style="--heat:8%">0.0%</span></td><td><span class="heat-cell" style="--heat:8%">0.0%</span></td><td><span class="heat-cell" style="--heat:8%">0.0%</span></td><td><span class="heat-cell" style="--heat:8%">0.0%</span></td><td><span class="heat-cell" style="--heat:8%">0.3%</span></td><td><span class="heat-cell" style="--heat:17%">10.1%</span></td><td><span class="heat-cell" style="--heat:24%">18.9%</span></td><td><span class="heat-cell" style="--heat:29%">24.7%</span></td><td><span class="heat-cell" style="--heat:32%">27.0%</span></td><td><span class="heat-cell" style="--heat:20%">14.1%</span></td><td><span class="heat-cell" style="--heat:11%">4.0%</span></td><td><span class="heat-cell" style="--heat:9%">0.8%</span></td></tr></tbody></table></div>
+      </section>
+      <section class="zone schedule" aria-labelledby="schedule-title">
+        <h2 id="schedule-title">Remaining schedule &amp; win impact</h2>
+        <h3>Remaining SOS extremes</h3>
+        <div class="table-scroll"><table class="data-table"><thead><tr><th scope="col">Team</th><th scope="col">SOS rank</th><th scope="col">Remaining</th></tr></thead><tbody><tr><td>MIN</td><td>1</td><td>14</td></tr><tr><td>IND</td><td>2</td><td>15</td></tr><tr><td>CON</td><td>3</td><td>15</td></tr><tr><td>DAL</td><td>13</td><td>15</td></tr><tr><td>WSH</td><td>14</td><td>16</td></tr><tr><td>GS</td><td>15</td><td>16</td></tr></tbody></table></div>
+        <h3>Highest-leverage games</h3>
+        <div class="table-scroll"><table class="data-table"><thead><tr><th scope="col">Date</th><th scope="col">Matchup</th><th scope="col">Score</th><th scope="col">Level</th><th scope="col">Home / away playoff swing</th></tr></thead><tbody><tr><td>2026-08-16</td><td>IND at ATL</td><td>100.0</td><td>Critical</td><td>+0.0% / +0.0%</td></tr><tr><td>2026-08-14</td><td>DAL at IND</td><td>59.6</td><td>Moderate</td><td>+0.0% / +0.0%</td></tr><tr><td>2026-08-20</td><td>IND at DAL</td><td>59.6</td><td>Moderate</td><td>+0.0% / +0.0%</td></tr><tr><td>2026-08-18</td><td>ATL at LV</td><td>55.1</td><td>Moderate</td><td>+0.0% / +0.0%</td></tr><tr><td>2026-09-20</td><td>WSH at IND</td><td>54.3</td><td>Moderate</td><td>+0.0% / -3.2%</td></tr></tbody></table></div>
+      </section>
+    </section>
+
+    <footer class="bottom-grid">
+      <section class="zone nuggets" aria-labelledby="nuggets-title">
+        <h2 id="nuggets-title">Five broadcast nuggets</h2>
+        <ol><li class="nugget"><span class="nugget-number">1</span><span><strong>Leader Race:</strong> MIN owns the strongest simulated path to the top seed. <em>The top seed sets the headline for the remaining regular-season race.</em></span></li><li class="nugget"><span class="nugget-number">2</span><span><strong>Playoff Cutline:</strong> NY and CHI define the current playoff cutline. <em>One team is currently in the configured playoff field and the other is first out.</em></span></li><li class="nugget"><span class="nugget-number">3</span><span><strong>Top4 Race:</strong> IND / ATL is the current top-four boundary. <em>A top-four finish carries the forecast&#x27;s home-court significance.</em></span></li><li class="nugget"><span class="nugget-number">4</span><span><strong>Tiebreak Watch:</strong> Keep POR / CHI on the tiebreak board. <em>The configured standings rules use direct results before deterministic fallback when records tie.</em></span></li><li class="nugget"><span class="nugget-number">5</span><span><strong>Remaining Sos:</strong> MIN has the strongest remaining-opponent forecast profile. <em>Opponent playoff probability gives a transparent schedule-strength lens without changing the forecast.</em></span></li></ol>
+      </section>
+      <section class="zone tiebreak" aria-labelledby="tiebreak-title">
+        <h2 id="tiebreak-title">Tiebreak watch</h2>
+        <p>Official configured order:</p>
+        <ol><li>Head To Head Win Pct</li><li>Record Vs Final 500 Plus</li><li>Head To Head Point Diff</li><li>Overall Point Diff</li></ol>
+        <p class="caveat"><strong>Non-official fallback:</strong> stable normalized team ID only after every configured criterion remains tied. 0 fallback events in this run.</p>
+      </section>
+      <section class="zone methodology" aria-labelledby="method-title">
+        <h2 id="method-title">Methodology &amp; source</h2>
+        <p>10,000 simulations · seed 20260801 · model v1_heuristic_margin. Sources: standings_2026.parquet, team_totals_features_latest.csv, team_totals_features_latest.json, schedule_2026.parquet, default.json, team_box_2026.parquet, team_history.csv. PBPStats contextual status: available_not_safe_for_cutoff (last_saved_at_utc_upper_bound). External standings QA: mismatch (15 teams compared; 15 mismatched). Current standings reconstructed from completed regular-season schedule + team-box results. Current .500+ records are descriptive. Official final tiebreak simulations recompute the .500+ opponent set from each simulated final season. Probabilities are estimates, not mathematical clinch or elimination proof.</p>
+        <p class="caveat">Rankings and probabilities change with new source data. Use official league sources for final standings and playoff seeding.</p>
+      </section>
+    </footer>
+  </main>
+</body>
+</html>
