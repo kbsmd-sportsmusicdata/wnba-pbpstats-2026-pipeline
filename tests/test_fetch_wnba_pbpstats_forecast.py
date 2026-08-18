@@ -204,6 +204,64 @@ class OverlayTest(unittest.TestCase):
         self.assertTrue((completed["home_score"] + completed["away_score"] > 0).all())
 
 
+class GameLogsFetcherTest(unittest.TestCase):
+    """The committed-data fetcher must serve the same shapes as the live API, keyed per team."""
+
+    def _write_committed(self, root: Path):
+        import json as _json
+
+        games = _get_games_payload()
+        root.mkdir(parents=True, exist_ok=True)
+        (root / "get_games_wnba_2026_regular_season.json").write_text(_json.dumps(games), encoding="utf-8")
+        # Team logs: one flat list across all teams, each row tagged with its pbpstats TeamId,
+        # exactly as the game-log ingest commits them.
+        rows = []
+        for team in _TEAMS:
+            for g in games["results"]:
+                if team["pbp"] in (g["HomeTeamId"], g["AwayTeamId"]):
+                    rows.append({"GameId": g["GameId"], "Date": g["Date"], "TeamId": team["pbp"], **_STATS})
+        (root / "team_game_logs_wnba_2026_regular_season.json").write_text(_json.dumps(rows), encoding="utf-8")
+        return games
+
+    def test_serves_games_and_per_team_logs_from_committed_files(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp) / "game_logs"
+            games = self._write_committed(root)
+            fetcher = pbp.game_logs_fetcher(root, "Regular Season")
+
+            served_games = fetcher("/get-games/wnba", {"Season": "2026", "SeasonType": "Regular Season"})
+            self.assertEqual(len(served_games["results"]), len(games["results"]))
+
+            team = _TEAMS[0]["pbp"]
+            log = fetcher("/get-game-logs/wnba", {"EntityId": team, "EntityType": "Team"})
+            self.assertTrue(log["multi_row_table_data"])
+            self.assertTrue(all(str(r["TeamId"]) == team for r in log["multi_row_table_data"]))
+
+    def test_missing_committed_files_fail_closed(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            with self.assertRaisesRegex(pbp.PBPStatsFetchError, "committed game-log file is missing"):
+                pbp.game_logs_fetcher(Path(tmp), "Regular Season")
+
+    def test_build_through_committed_fetcher_reconciles(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            history = root / "team_history.csv"
+            schedule = root / "sdv_schedule.parquet"
+            _team_history(history)
+            _sdv_schedule(schedule)
+            self._write_committed(root / "game_logs")
+
+            manifest = pbp.build(
+                "2026", "Regular Season", root / "out",
+                sportsdataverse_schedule=schedule,
+                team_history_path=history,
+                expected_games_per_team=None,
+                fetcher=pbp.game_logs_fetcher(root / "game_logs", "Regular Season"),
+            )
+            self.assertEqual(manifest["diagnostics"]["games_completed"], 6)
+            self.assertEqual(manifest["matched_games"], 6)
+
+
 class BuildIntegrationTest(unittest.TestCase):
     def test_build_output_drops_into_the_forecast_stages(self):
         from standings_playoff_forecast.config import load_season_config
