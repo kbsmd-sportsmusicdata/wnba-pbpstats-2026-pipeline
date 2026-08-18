@@ -270,6 +270,52 @@ class ProbabilityAggregationTest(unittest.TestCase):
         self.assertAlmostEqual(summary["playoff_probability"].sum(), 1.0)
         self.assertTrue(matrix["probability"].between(0.0, 1.0).all())
 
+    def test_band_probabilities_never_exceed_one_for_a_locked_out_team(self) -> None:
+        """A team out of the field in every run must have out_probability exactly 1.0.
+
+        Summed from the per-rank floats -- `sum(count / simulation_count)` -- a locked-out
+        team's out band lands one ULP above 1.0 for many (count distribution, run count)
+        pairs, which trips the downstream `probabilities within [0, 1]` guard and fails the
+        whole build. 109 runs with the counts below is the smallest case that reproduces
+        it; the real pipeline hit it at 2,000 runs. Summing the integer counts first and
+        dividing once is exact, because n / n is 1.0.
+        """
+        from standings_playoff_forecast.simulation import _build_probability_outputs
+
+        cfg = _season_config(team_count=15, qualifiers=8, simulations=109)
+        team_ids = tuple("ABCDEFGHIJKLMNO")  # fifteen teams
+        # The last team is locked out: its 109 finishes are spread across the seven
+        # non-playoff ranks 9..15 as (16, 16, 16, 16, 15, 15, 15) -- the distribution whose
+        # naive float sum overshoots 1.0.
+        out_ranks = np.repeat(np.arange(9, 16), (16, 16, 16, 16, 15, 15, 15))
+        self.assertEqual(len(out_ranks), 109)
+        final_ranks = np.empty((109, 15), dtype=np.int64)
+        final_ranks[:, :14] = np.arange(1, 15)  # the other fourteen teams fill ranks 1..14
+        final_ranks[:, 14] = out_ranks
+        final_wins = np.zeros((109, 15), dtype=np.int64)
+        final_losses = np.zeros((109, 15), dtype=np.int64)
+
+        summary, _ = _build_probability_outputs(
+            team_ids=team_ids,
+            final_wins=final_wins,
+            final_losses=final_losses,
+            final_ranks=final_ranks,
+            cfg=cfg,
+        )
+
+        bands = [
+            "playoff_probability",
+            "top4_probability",
+            "home_court_probability",
+            "out_probability",
+            *[f"rank_{rank}_probability" for rank in range(1, 16)],
+        ]
+        values = summary[bands].to_numpy(dtype=float)
+        self.assertTrue((values <= 1.0).all(), summary[bands].max().to_dict())
+        self.assertTrue((values >= 0.0).all())
+        locked_out = summary.set_index("team_id").loc["O", "out_probability"]
+        self.assertEqual(locked_out, 1.0)
+
     def test_probability_mass_validator_rejects_team_and_rank_mass_drift(self) -> None:
         from standings_playoff_forecast.simulation import _validate_probability_mass
 

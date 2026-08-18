@@ -234,6 +234,16 @@ def _build_probability_outputs(
     top4_limit = min(4, playoff_limit)
     win_percentiles = np.percentile(final_wins, [10, 50, 90], axis=0)
 
+    # Band probabilities sum the integer counts first and divide once, rather than adding
+    # the per-rank floats. A team locked into -- or out of -- the field has a band count
+    # equal to the simulation count, and n / n is exactly 1.0, whereas adding several
+    # `count / simulation_count` floats can land one ULP above 1.0 and trip the [0, 1]
+    # guard downstream. The overshoot is data- and simulation-count-dependent, so it
+    # surfaces at some counts (e.g. a team that misses at 2,000 runs) and not others.
+    playoff_band = rank_counts[:, :playoff_limit].sum(axis=1) / simulation_count
+    top4_band = rank_counts[:, :top4_limit].sum(axis=1) / simulation_count
+    out_band = rank_counts[:, playoff_limit:].sum(axis=1) / simulation_count
+
     summary = pd.DataFrame(
         {
             "team_id": team_ids,
@@ -244,16 +254,16 @@ def _build_probability_outputs(
             "wins_p50": win_percentiles[1],
             "wins_p90": win_percentiles[2],
             "expected_final_rank": final_ranks.mean(axis=0),
-            "playoff_probability": rank_probabilities[:, :playoff_limit].sum(axis=1),
-            "top4_probability": rank_probabilities[:, :top4_limit].sum(axis=1),
-            "home_court_probability": rank_probabilities[:, :top4_limit].sum(axis=1),
+            "playoff_probability": playoff_band,
+            "top4_probability": top4_band,
+            "home_court_probability": top4_band,
         }
     )
     for final_rank in range(1, team_count + 1):
         summary[f"rank_{final_rank}_probability"] = rank_probabilities[
             :, final_rank - 1
         ]
-    summary["out_probability"] = rank_probabilities[:, playoff_limit:].sum(axis=1)
+    summary["out_probability"] = out_band
 
     matrix = pd.DataFrame(
         {
