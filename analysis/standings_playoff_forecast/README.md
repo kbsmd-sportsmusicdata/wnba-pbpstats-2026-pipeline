@@ -17,6 +17,15 @@ Two sources are optional:
 
 The upstream refresh entry points remain `scripts/fetch_wnba_sportsdataverse_2026.py` and `.github/workflows/sportsdataverse-wnba-2026.yml` for SportsDataverse data, plus `scripts/pbpstats_2026_pull_clean.py`, `scripts/pbpstats_2026_features.py`, and `.github/workflows/pbpstats-wnba-2026.yml` for optional PBPStats context. An explicit `snapshot_as_of` is treated as stats coverage. When only `last_saved_at_utc` exists, the forecast labels it as a conservative cutoff-safety upper bound rather than an exact coverage date.
 
+## Completed-Game Source: ESPN Live vs SportsDataverse
+
+The forecast's cutoff is the date of the last completed game in the `schedule`/`team_box` inputs. Two feeds can supply those, chosen by the workflow's `source_feed` input:
+
+- **`espn` (default)** — `scripts/fetch_wnba_espn_2026.py` pulls the schedule and team box scores directly from ESPN's public site API into `data/raw/espn/wnba_2026/`, and the build reads that root via `--sportsdataverse-data-root`. This is the freshest source: it tracks the games as they are played.
+- **`sportsdataverse`** — the republished ESPN data under `data/raw/sportsdataverse/wnba_2026/`. Same ultimate origin, but its release cadence has run a couple of weeks behind the season, which silently caps the cutoff in the past (e.g. frozen at 2026-08-01 while games had been played into mid-August).
+
+The ESPN fetcher emits only the columns the forecast consumes and writes to its own data root, so the SportsDataverse files the other analyses depend on are left untouched. It fails closed if a completed game is missing box scores or if the schedule does not reconcile to the configured games-per-team, so a labelling or coverage gap surfaces at fetch time rather than as a silently wrong forecast. When `source_feed=espn`, the SportsDataverse `standings_2026.parquet` used for external QA is not present in the ESPN root, so external QA reports `unavailable` — it is validation evidence only and never a forecast input.
+
 ## Canonical Current Standings
 
 Current standings are reconstructed from the completed-game ledger rather than ingested as a derived table. This guarantees that standings, head-to-head state, point differential, recent form, schedule accounting, and Monte Carlo initialization share one auditable source of truth.

@@ -18,6 +18,14 @@ name: WNBA Standings and Playoff Forecast
         required: true
         type: string
         default: "100000"
+      source_feed:
+        description: "Completed-game source: espn (live, freshest) or sportsdataverse (republished, may lag)"
+        required: true
+        type: choice
+        options:
+          - espn
+          - sportsdataverse
+        default: espn
       refresh_sportsdataverse:
         description: "Refresh 2026 SportsDataverse sources"
         required: true
@@ -53,6 +61,8 @@ jobs:
       FORECAST_SEASON: ${{ inputs.season }}
       FORECAST_CUTOFF: ${{ inputs.cutoff }}
       FORECAST_SIMULATIONS: ${{ inputs.simulations }}
+      SOURCE_FEED: ${{ inputs.source_feed }}
+      ESPN_DATA_ROOT: data/raw/espn/wnba_2026
       REFRESH_SPORTSDATAVERSE: ${{ inputs.refresh_sportsdataverse }}
       REFRESH_PBPSTATS: ${{ inputs.refresh_pbpstats }}
 
@@ -109,6 +119,14 @@ jobs:
         if: ${{ inputs.refresh_sportsdataverse && inputs.season == '2026' }}
         run: python scripts/fetch_wnba_sportsdataverse_2026.py
 
+      - name: Fetch ESPN live source
+        if: ${{ inputs.source_feed == 'espn' && inputs.season == '2026' }}
+        run: |
+          python scripts/fetch_wnba_espn_2026.py \
+            --season 2026 \
+            --data-root "$ESPN_DATA_ROOT" \
+            --expected-games-per-team 44
+
       - name: Refresh PBPStats
         if: ${{ inputs.refresh_pbpstats && inputs.season == '2026' }}
         run: |
@@ -128,6 +146,11 @@ jobs:
             --render all
             --team-game-output-path-file .git/standings_forecast_team_game_output_path
           )
+          # The ESPN feed lands in its own data root; point the forecast at it so its
+          # cutoff tracks the live schedule instead of the republished SportsDataverse one.
+          if [[ "$SOURCE_FEED" == "espn" && "$FORECAST_SEASON" == "2026" ]]; then
+            ARGS+=(--sportsdataverse-data-root "$ESPN_DATA_ROOT")
+          fi
           if [[ -n "$FORECAST_CUTOFF" ]]; then
             ARGS+=(--cutoff "$FORECAST_CUTOFF")
           fi
