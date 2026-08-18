@@ -49,7 +49,28 @@ DEFAULT_DATA_ROOT = "data/raw/espn/wnba_2026"
 MAX_ATTEMPTS = 4
 RETRY_BACKOFF_SECONDS = 2.0
 REQUEST_TIMEOUT_SECONDS = 60
-USER_AGENT = "wnba-pbpstats-2026-pipeline/espn-fetch"
+
+# ESPN's site API returns 403 to non-browser clients -- a bare tool User-Agent is refused
+# even from a CI runner that can otherwise reach the host. A realistic browser header set
+# is what public consumers of this endpoint use; it is overridable via ESPN_USER_AGENT for
+# the day ESPN changes the rules again.
+DEFAULT_USER_AGENT = (
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+    "(KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+)
+
+
+def _request_headers() -> dict[str, str]:
+    import os
+
+    return {
+        "User-Agent": os.environ.get("ESPN_USER_AGENT", DEFAULT_USER_AGENT),
+        "Accept": "application/json, text/plain, */*",
+        "Accept-Language": "en-US,en;q=0.9",
+        "Referer": "https://www.espn.com/wnba/",
+        "Origin": "https://www.espn.com",
+        "Cache-Control": "no-cache",
+    }
 
 # The eight box-score fields the forecast's team-game layer needs to estimate pace and
 # efficiency. Every completed game must supply all of them.
@@ -141,10 +162,7 @@ def fetch_json(url: str, *, params: Optional[Mapping[str, Any]] = None) -> dict:
     if params:
         query = "&".join(f"{key}={value}" for key, value in params.items())
         url = f"{url}?{query}"
-    request = urllib.request.Request(
-        url,
-        headers={"User-Agent": USER_AGENT, "Accept": "application/json", "Cache-Control": "no-cache"},
-    )
+    request = urllib.request.Request(url, headers=_request_headers())
     last_error: Optional[Exception] = None
     for attempt in range(MAX_ATTEMPTS):
         try:

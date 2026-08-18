@@ -246,6 +246,21 @@ class BuildFrameTest(unittest.TestCase):
         self.assertFalse(espn.reconcile(schedule, expected_games_per_team=7)["reconciled"])
 
 
+class RequestHeaderTest(unittest.TestCase):
+    def test_headers_present_a_browser_user_agent(self):
+        """ESPN's site API 403s a bare tool User-Agent, so this must stay browser-like."""
+        headers = espn._request_headers()
+        self.assertIn("Mozilla/5.0", headers["User-Agent"])
+        self.assertIn("espn.com", headers["Referer"])
+
+    def test_user_agent_is_overridable(self):
+        import os
+        from unittest import mock
+
+        with mock.patch.dict(os.environ, {"ESPN_USER_AGENT": "custom/1.0"}):
+            self.assertEqual(espn._request_headers()["User-Agent"], "custom/1.0")
+
+
 class DiscoverDatesTest(unittest.TestCase):
     def test_dates_come_from_the_league_calendar(self):
         payload = {"leagues": [{"calendar": ["2026-05-02T00:00Z", "2026-05-01T00:00Z", "bogus"]}]}
