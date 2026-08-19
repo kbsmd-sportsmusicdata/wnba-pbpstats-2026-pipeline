@@ -119,6 +119,32 @@ The slopes remain in the outputs as **descriptive context**, and the track is na
 `Recent Form` rather than `Trending Up` for the same reason: the label must not imply a
 forecast the data does not support.
 
+### Re-checked on the per-game layer — the weight stands
+
+Moving the trajectory onto the true per-game layer sharpened the *measurement* but did not
+change the *conclusion*. The same held-out test, re-run game-by-game (hold out each player's
+last 5 games, fit the shrunk possession-weighted slope over the prior 10, predict the held-out
+level), reproducible via `scripts/hidden_value/validate_trajectory.py`:
+
+| Signal | Incremental R² over level | Slope sign |
+|---|---:|:--:|
+| Production (`points_per_75`) | +0.012 | negative (−1.32) |
+| Efficiency (`ts_pct`) | +0.019 | negative (−1.10) |
+| Usage | +0.000 | none |
+| On-court net rating | +0.008 | negative |
+| Role expansion (`on_court_poss_share`) | +0.024 | **positive (+2.98)** |
+
+Production and efficiency trends stay **anti-predictive**: the sign is still inverted, so a
+sharper trend measures the mean reversion more precisely rather than turning it into a forecast.
+Better input does not earn the component more weight — ranking on a rising production trend would
+still be selecting players about to regress. The trajectory weight therefore **stays at 0.05**.
+
+The one signal that survives is again **role expansion**: the possession-share slope predicts
+future possession share with the correct positive sign, and the per-game layer measures it more
+clearly (+0.024, strengthening to +0.036 over a 15-game window, versus +0.011 on the window
+panel). It predicts a player's future *opportunity*, not their future production, so it remains
+descriptive here rather than a scored, weighted term.
+
 ### How the trend is computed
 
 Every slope is still **shrunk toward zero in proportion to how little data supports it**
