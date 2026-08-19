@@ -36,6 +36,7 @@ from hidden_value.features import (
     build_start_rate,
     percentile,
 )
+from hidden_value.game_form import build_game_trajectories
 from hidden_value.trajectory import build_player_trajectories
 
 
@@ -82,13 +83,30 @@ def build_outputs(config: Dict[str, Any]) -> Dict[str, Any]:
         return _empty_manifest(config, sources, stats, paths["manifest"])
 
     trajectory_config = config.get("trajectory", {})
-    trajectories = build_player_trajectories(
-        sources.player_window_panel,
-        metrics=trajectory_config.get("metrics", []),
-        recent_windows=int(trajectory_config.get("recent_windows", 10)),
-        min_windows=int(trajectory_config.get("min_windows", 4)),
-        shrinkage_constant=float(trajectory_config.get("shrinkage_constant", 6.0)),
-    )
+    metrics = trajectory_config.get("metrics", [])
+    shrinkage_constant = float(trajectory_config.get("shrinkage_constant", 6.0))
+    # Prefer the true per-game layer for recent-form trajectory; fall back to the snapshot window
+    # panel when the game layer is unavailable, so the board still builds.
+    requested_source = trajectory_config.get("source", "game_layer")
+    if requested_source == "game_layer" and not sources.player_game.empty:
+        trajectories = build_game_trajectories(
+            sources.player_game,
+            metrics=metrics,
+            recent_games=int(trajectory_config.get("recent_games", trajectory_config.get("recent_windows", 10))),
+            min_games=int(trajectory_config.get("min_games", trajectory_config.get("min_windows", 4))),
+            shrinkage_constant=shrinkage_constant,
+        )
+        trajectory_source = "game_layer"
+    else:
+        trajectories = build_player_trajectories(
+            sources.player_window_panel,
+            metrics=metrics,
+            recent_windows=int(trajectory_config.get("recent_windows", 10)),
+            min_windows=int(trajectory_config.get("min_windows", 4)),
+            shrinkage_constant=shrinkage_constant,
+        )
+        trajectory_source = "window_panel" if requested_source == "game_layer" else requested_source
+    stats["trajectory_source"] = trajectory_source
     start_rates = build_start_rate(sources.possessions)
 
     panel = build_player_panel(

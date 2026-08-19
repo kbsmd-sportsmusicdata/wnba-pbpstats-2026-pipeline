@@ -58,9 +58,18 @@ first build.
 
 ## Trajectory, And Why It Carries Almost No Weight
 
-From the snapshot window panel, over the trailing windows: a possession-weighted
-least-squares slope for production, efficiency, usage, possession share and on-court net
-rating.
+Over a player's trailing games: a possession-weighted least-squares slope for production,
+efficiency, usage, possession share and on-court net rating, each shrunk toward zero in
+proportion to how few games support it.
+
+The trend is now measured on the **true per-game layer**
+(`data/processed/wnba_pbpstats_player_game/`, `trajectory.source: "game_layer"`) — one row per
+player-game with its own possessions, efficiency and usage — rather than on deltas between
+snapshots of cumulative season totals. The snapshot window panel remains a fallback
+(`trajectory.source: "window_panel"`, or automatically when the game layer is absent), and the
+output schema is identical either way, so the board and role model are unchanged. The per-game
+source simply gives a sharper, wider trajectory read (every player with at least `min_games`
+recent games gets a real slope) without touching the weighting below.
 
 **Held-out testing showed this signal does not forecast what comes next, so it carries a
 weight of 0.05 rather than the 0.25 it was first given.**

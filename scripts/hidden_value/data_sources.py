@@ -21,6 +21,7 @@ class LoadedSources:
     rapm: pd.DataFrame
     possessions: pd.DataFrame
     player_impact: pd.DataFrame
+    player_game: pd.DataFrame = field(default_factory=pd.DataFrame)
     source_manifest: Dict[str, Dict[str, Any]] = field(default_factory=dict)
 
 
@@ -122,6 +123,9 @@ def load_sources(config: Dict[str, Any]) -> LoadedSources:
     sports_root = path_from_config(config.get("sportsdataverse_data_root", "data/raw/sportsdataverse/wnba_2026"))
     panel_root = path_from_config(config.get("window_panel_root", "analysis/snapshot_window_panel"))
     impact_root = path_from_config(config.get("possession_impact_root", "analysis/possession_impact"))
+    game_layer = path_from_config(
+        config.get("player_game_layer", f"data/processed/wnba_pbpstats_player_game/season={season}/player_game.parquet")
+    )
 
     targets = {
         "player_features": pbp_root / "features_latest" / season / "player_totals_features_latest.csv",
@@ -130,6 +134,7 @@ def load_sources(config: Dict[str, Any]) -> LoadedSources:
         "rapm": impact_root / source_files.get("rapm", "data/processed/rapm_player_2026.csv"),
         "possessions": sports_root / source_files.get("possessions", "wnba_possessions_2026.parquet"),
         "player_impact": sports_root / source_files.get("player_impact", "wnba_player_impact_2026.parquet"),
+        "player_game": game_layer,
     }
 
     frames: Dict[str, pd.DataFrame] = {}
