@@ -29,35 +29,35 @@
   },
   "config_hash": "1ada186e48515531709ce6b75d3d2e259709e86ec0b1c619e2aed8a2c22c7a57",
   "config_path": "analysis/team_identity_shift/config/team_identity_shift_config.json",
-  "generated_at_utc": "2026-08-19T19:44:36+00:00",
+  "generated_at_utc": "2026-08-19T20:13:29+00:00",
   "outputs": {
     "team_identity_shift_2026.csv": 15,
     "team_shift_decomposition_2026.csv": 15,
     "team_shift_dimension_deltas_2026.csv": 195,
     "team_style_periods_2026.csv": 30
   },
-  "run_id": "20260819T194436+0000",
+  "run_id": "20260819T201329+0000",
   "season": 2026,
   "source_manifest": {
     "schedule": {
       "columns": 77,
-      "modified_at_utc": "2026-08-19T19:14:07+00:00",
-      "path": "/home/user/wnba-pbpstats-2026-pipeline/data/raw/sportsdataverse/wnba_2026/schedule_2026.parquet",
+      "modified_at_utc": "2026-08-19T20:13:09+00:00",
+      "path": "/home/runner/work/wnba-pbpstats-2026-pipeline/wnba-pbpstats-2026-pipeline/data/raw/sportsdataverse/wnba_2026/schedule_2026.parquet",
       "rows": 333,
       "size_bytes": 313514
     },
     "team_game": {
       "columns": 236,
-      "modified_at_utc": "2026-08-19T19:14:07+00:00",
-      "path": "/home/user/wnba-pbpstats-2026-pipeline/data/processed/wnba_pbpstats_team_game/season=2026/team_game.parquet",
+      "modified_at_utc": "2026-08-19T20:13:09+00:00",
+      "path": "/home/runner/work/wnba-pbpstats-2026-pipeline/wnba-pbpstats-2026-pipeline/data/processed/wnba_pbpstats_team_game/season=2026/team_game.parquet",
       "rows": 524,
       "size_bytes": 349879
     },
     "team_window_panel": {
       "columns": 182,
       "latest_window_end_utc": "2026-08-17T14:15:19+00:00",
-      "modified_at_utc": "2026-08-18T04:56:13+00:00",
-      "path": "/home/user/wnba-pbpstats-2026-pipeline/analysis/snapshot_window_panel/data/processed/team_window_panel_2026.csv",
+      "modified_at_utc": "2026-08-19T20:13:09+00:00",
+      "path": "/home/runner/work/wnba-pbpstats-2026-pipeline/wnba-pbpstats-2026-pipeline/analysis/snapshot_window_panel/data/processed/team_window_panel_2026.csv",
       "rows": 404,
       "size_bytes": 540790
     }
