@@ -2,6 +2,7 @@
   "analysis_stats": {
     "bench_flag_coverage": 1.0,
     "coverage": {
+      "coverage_date_source": "game_layer",
       "coverage_from": "2026-05-08",
       "coverage_games": 195,
       "coverage_through": "2026-07-22"
@@ -34,16 +35,25 @@
   },
   "config_hash": "2ca80646ac117b6a2f5a688b1dec626074cdb5caeb2a5705fd3e8761de7b2623",
   "config_path": "analysis/possession_impact/config/possession_impact_config.json",
-  "generated_at_utc": "2026-08-12T20:32:47+00:00",
+  "generated_at_utc": "2026-08-19T20:15:13+00:00",
   "outputs": {
     "bench_net_rating_2026.csv": 15,
     "clutch_net_rating_2026.csv": 15,
     "rapm_alpha_cv_2026.csv": 10,
     "rapm_player_2026.csv": 207
   },
-  "run_id": "20260812T203247+0000",
+  "run_id": "20260819T201513+0000",
   "season": 2026,
   "source_manifest": {
+    "game_dimension": {
+      "columns": 2,
+      "games": 262,
+      "modified_at_utc": "2026-08-19T19:14:07+00:00",
+      "path": "/home/user/wnba-pbpstats-2026-pipeline/data/processed/wnba_pbpstats_team_game/season=2026/team_game.parquet",
+      "rows": 262,
+      "size_bytes": 349879,
+      "status": "resolved"
+    },
     "game_logs": {
       "columns": 35,
       "games": 202,
@@ -55,10 +65,10 @@
     },
     "player_features": {
       "columns": 311,
-      "modified_at_utc": "2026-08-12T19:02:39+00:00",
+      "modified_at_utc": "2026-08-18T21:16:18+00:00",
       "path": "/home/user/wnba-pbpstats-2026-pipeline/data/pbpstats_wnba_2026/features_latest/2026/player_totals_features_latest.csv",
       "rows": 226,
-      "size_bytes": 652942,
+      "size_bytes": 658066,
       "status": "resolved"
     },
     "player_impact": {
@@ -80,10 +90,10 @@
     },
     "team_features": {
       "columns": 296,
-      "modified_at_utc": "2026-08-12T19:02:39+00:00",
+      "modified_at_utc": "2026-08-18T21:16:18+00:00",
       "path": "/home/user/wnba-pbpstats-2026-pipeline/data/pbpstats_wnba_2026/features_latest/2026/team_totals_features_latest.csv",
       "rows": 15,
-      "size_bytes": 56869,
+      "size_bytes": 56816,
       "status": "resolved"
     },
     "wnba_pbp": {

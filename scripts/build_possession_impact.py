@@ -65,27 +65,38 @@ def _write(path: Path, df: pd.DataFrame) -> int:
     return len(df)
 
 
-def coverage_window(possessions: pd.DataFrame, game_logs: pd.DataFrame) -> Dict[str, Any]:
+def coverage_window(
+    possessions: pd.DataFrame,
+    game_logs: pd.DataFrame,
+    game_dimension: pd.DataFrame = None,
+) -> Dict[str, Any]:
     """Date the possession coverage.
 
-    The possession feed carries game ids but no dates. The WNBA game logs share that id
-    space, so they supply the window the outputs actually reflect.
+    The possession feed carries game ids but no dates. The shared game layer's game dimension
+    supplies that mapping fresh and CI-native; the SportsDataverse game logs are the fallback
+    when the game layer is absent. Both share the possession feed's id space.
     """
     window: Dict[str, Any] = {
         "coverage_games": int(possessions["game_id"].nunique()) if not possessions.empty else 0,
         "coverage_from": None,
         "coverage_through": None,
+        "coverage_date_source": None,
     }
-    if possessions.empty or game_logs.empty or "game_date" not in game_logs.columns:
+    if possessions.empty:
         return window
 
-    covered = set(possessions["game_id"].astype(str))
-    logs = game_logs[game_logs["game_id"].astype(str).isin(covered)]
-    dates = pd.to_datetime(logs["game_date"], errors="coerce").dropna()
-    if dates.empty:
+    for source_name, dates_frame in (("game_layer", game_dimension), ("sportsdataverse_game_logs", game_logs)):
+        if dates_frame is None or dates_frame.empty or "game_date" not in dates_frame.columns:
+            continue
+        covered = set(possessions["game_id"].astype(str))
+        matched = dates_frame[dates_frame["game_id"].astype(str).isin(covered)]
+        dates = pd.to_datetime(matched["game_date"], errors="coerce").dropna()
+        if dates.empty:
+            continue
+        window["coverage_from"] = dates.min().date().isoformat()
+        window["coverage_through"] = dates.max().date().isoformat()
+        window["coverage_date_source"] = source_name
         return window
-    window["coverage_from"] = dates.min().date().isoformat()
-    window["coverage_through"] = dates.max().date().isoformat()
     return window
 
 
@@ -158,7 +169,7 @@ def build_outputs(config: Dict[str, Any]) -> Dict[str, Any]:
         paths["manifest"].write_text(stable_json_dumps(manifest) + "\n", encoding="utf-8")
         return manifest
 
-    window = coverage_window(possessions, sources.game_logs)
+    window = coverage_window(possessions, sources.game_logs, sources.game_dimension)
     stats["coverage"] = window
 
     possessions = attach_home_flag(possessions, sources.wnba_pbp)
