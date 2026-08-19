@@ -25,6 +25,14 @@ Every output carries a `coverage_through` column on every row, so the lag is vis
 if you open a single CSV. Don't compare these numbers to season-to-date figures from the
 other modules without accounting for it.
 
+The possession feed carries game ids but no dates, so the coverage window is dated by joining
+those ids to the shared game layer's game dimension (`data/processed/wnba_pbpstats_team_game/`) —
+fresh and CI-native — falling back to the SportsDataverse game logs when the layer is absent. The
+run manifest records which was used under `coverage.coverage_date_source`. This dates the feed's
+lag precisely; it does not change what the possession feed itself covers, which still comes from
+SportsDataverse (the pbpstats game logs have no possession/lineup detail, so they cannot feed RAPM,
+bench or clutch splits).
+
 ## Running
 
 ```bash

@@ -56,7 +56,7 @@ jobs:
 
       - name: Run Possession Impact tests
         if: ${{ inputs.run_tests }}
-        run: python -m unittest tests/test_possession_impact.py
+        run: python -m unittest tests/test_possession_impact.py tests/test_possession_impact_coverage.py
 
       - name: Refresh SportsDataverse downloads
         if: ${{ inputs.refresh_downloads }}

@@ -21,6 +21,7 @@ class LoadedSources:
     game_logs: pd.DataFrame
     player_features: pd.DataFrame
     team_features: pd.DataFrame
+    game_dimension: pd.DataFrame = field(default_factory=pd.DataFrame)
     source_manifest: Dict[str, Dict[str, Any]] = field(default_factory=dict)
 
 
@@ -147,6 +148,22 @@ def load_sources(config: Dict[str, Any]) -> LoadedSources:
     manifest["player_features"] = _file_record(player_path if player_path.exists() else None, player_features)
     manifest["team_features"] = _file_record(team_path if team_path.exists() else None, team_features)
 
+    # The shared game layer supplies the fresh, CI-native game_id -> date dimension used to date
+    # possession coverage, replacing the dependency on the lagging SportsDataverse game logs.
+    game_layer_path = path_from_config(
+        config.get("team_game_layer", f"data/processed/wnba_pbpstats_team_game/season={season}/team_game.parquet")
+    )
+    game_layer = _read_parquet_optional(game_layer_path if game_layer_path.exists() else None)
+    if not game_layer.empty and {"game_id", "game_date"}.issubset(game_layer.columns):
+        game_dimension = (
+            game_layer[["game_id", "game_date"]].drop_duplicates("game_id").reset_index(drop=True)
+        )
+    else:
+        game_dimension = pd.DataFrame()
+    manifest["game_dimension"] = _file_record(
+        game_layer_path if game_layer_path.exists() else None, game_dimension
+    )
+
     return LoadedSources(
         possessions=frames["possessions"],
         wnba_pbp=frames["wnba_pbp"],
@@ -154,6 +171,7 @@ def load_sources(config: Dict[str, Any]) -> LoadedSources:
         game_logs=frames["game_logs"],
         player_features=player_features,
         team_features=team_features,
+        game_dimension=game_dimension,
         source_manifest=manifest,
     )
 
