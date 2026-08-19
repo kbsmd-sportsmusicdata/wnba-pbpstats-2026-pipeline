@@ -4,9 +4,15 @@ Turns the daily PBPStats cumulative-snapshot archive into a **game-window panel*
 per team or player per window of games — so that the season-total feeds can support trend,
 form and trajectory analysis.
 
-This is the base layer for team identity-shift work, playoff-readiness modelling, and player
-trajectory / hidden-value boards. Those all need a time dimension the PBPStats endpoints do
-not publish.
+It supplies a time dimension the PBPStats season-total endpoints do not publish.
+
+**Role note.** The hidden-value trajectory and the team identity-shift analysis now read the
+shared per-game layer (`data/processed/wnba_pbpstats_player_game/`,
+`data/processed/wnba_pbpstats_team_game/`) directly, since it carries one true row per game rather
+than a reconstruction from cumulative-snapshot deltas. This panel is retained as their **documented
+fallback** — both fall back to it automatically when the game layer is absent — and it still runs
+its snapshot-integrity screening, which flags mid-season restatements in the PBPStats archive. It is
+intentionally kept (not dead code) and intentionally not a primary analysis input any longer.
 
 ## Outputs
 
