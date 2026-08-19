@@ -17,6 +17,9 @@
     "reliable_total_possessions": 800
   },
   "trajectory": {
+    "source": "game_layer",
+    "recent_games": 10,
+    "min_games": 5,
     "recent_windows": 10,
     "min_windows": 4,
     "shrinkage_constant": 6.0,

@@ -57,13 +57,14 @@ jobs:
 
       - name: Run Hidden Value tests
         if: ${{ inputs.run_tests }}
-        run: python -m unittest tests/test_hidden_value.py
+        run: python -m unittest tests/test_hidden_value.py tests/test_hidden_value_game_form.py
 
       - name: Rebuild upstream analyses
         if: ${{ inputs.rebuild_dependencies }}
         run: |
           python scripts/build_snapshot_window_panel.py --config "$PANEL_CONFIG_PATH" --stage player
           python scripts/build_possession_impact.py --config "$IMPACT_CONFIG_PATH"
+          python scripts/build_wnba_game_layer_2026.py
 
       - name: Build hidden value watchlist
         run: |

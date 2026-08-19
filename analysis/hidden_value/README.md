@@ -21,8 +21,10 @@ python scripts/build_hidden_value.py \
   --config analysis/hidden_value/config/hidden_value_config.json
 ```
 
-CI equivalent is the **Hidden Value** workflow. Depends on the snapshot window panel and
-possession impact outputs, so rebuild those first if the data has moved.
+CI equivalent is the **Hidden Value** workflow. The recent-form trajectory reads the shared
+per-game layer (`data/processed/wnba_pbpstats_player_game/`); the role model and impact inputs
+still depend on the snapshot window panel and possession impact outputs, so rebuild those (and the
+game layer) first if the data has moved.
 
 ## Two tracks, not one ranking
 
