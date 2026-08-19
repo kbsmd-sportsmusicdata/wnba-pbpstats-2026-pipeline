@@ -36,9 +36,13 @@ jobs:
       - name: Ingest player and team game logs (historical + incremental)
         run: python scripts/fetch_wnba_pbpstats_game_logs_2026.py
 
+      - name: Build shared normalized game layer
+        run: python scripts/build_wnba_game_layer_2026.py
+
       - name: Commit generated outputs if changed
         run: |
           find data/pbpstats_wnba_2026 data/pbpstats_2026_player_game_logs -type f \( -name '*.csv' -o -name '*.json' \) -print0 | xargs -0 git add
+          git add -A data/processed/wnba_pbpstats_player_game data/processed/wnba_pbpstats_team_game
           if git diff --cached --quiet; then
             echo "No generated file changes to commit"
             exit 0
