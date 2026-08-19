@@ -14,10 +14,16 @@ built on the [snapshot window panel](../snapshot_window_panel/methodology.md).
 
 ## Periods
 
+The default source is the shared per-game team layer, where **each window is one game**
+(`periods.source: "game_layer"`). The recent/baseline split then lands exactly on the target game
+count rather than on a snapshot boundary, and the permutation null below scrambles real games. The
+snapshot window panel is a fallback (`periods.source: "window_panel"`, or automatic when the layer
+is absent); everything below is identical either way — with multi-game snapshot windows the recent
+block can exceed the target slightly, whereas per-game windows hit it exactly.
+
 The recent period is the smallest trailing set of windows that reaches the target game
 count (default 10). Windows are never split, so the block widens rather than cutting a
-window in half — with multi-game windows the recent block can exceed the target slightly.
-Everything earlier is the baseline period, which must contain at least
+window in half. Everything earlier is the baseline period, which must contain at least
 `min_baseline_games` (default 8) or the team is skipped.
 
 Period rates are always recomputed from **summed window totals**, never averaged across

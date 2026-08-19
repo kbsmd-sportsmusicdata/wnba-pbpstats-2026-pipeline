@@ -17,6 +17,7 @@ SEASON = 2026
 class LoadedSources:
     team_window_panel: pd.DataFrame
     schedule: pd.DataFrame
+    team_game: pd.DataFrame = field(default_factory=pd.DataFrame)
     source_manifest: Dict[str, Dict[str, Any]] = field(default_factory=dict)
 
 
@@ -120,7 +121,19 @@ def load_sources(config: Dict[str, Any]) -> LoadedSources:
         manifest["schedule"]["status"] = "missing"
         manifest["schedule"]["requested_path"] = str(schedule_path)
 
-    return LoadedSources(team_window_panel=panel, schedule=schedule, source_manifest=manifest)
+    season = str(config.get("season", SEASON))
+    game_layer_path = path_from_config(
+        config.get("team_game_layer", f"data/processed/wnba_pbpstats_team_game/season={season}/team_game.parquet")
+    )
+    team_game = pd.read_parquet(game_layer_path) if game_layer_path.exists() else pd.DataFrame()
+    manifest["team_game"] = _file_record(game_layer_path if game_layer_path.exists() else None, team_game)
+    if not game_layer_path.exists():
+        manifest["team_game"]["status"] = "missing"
+        manifest["team_game"]["requested_path"] = str(game_layer_path)
+
+    return LoadedSources(
+        team_window_panel=panel, schedule=schedule, team_game=team_game, source_manifest=manifest
+    )
 
 
 def write_github_step_summary(markdown: str) -> None:

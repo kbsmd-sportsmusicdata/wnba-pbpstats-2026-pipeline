@@ -3,8 +3,12 @@
 Which WNBA teams have actually changed how they play this season, whether the change is
 helping, and whether the reason will hold up.
 
-Built on the [snapshot window panel](../snapshot_window_panel/), which supplies the time
-dimension the PBPStats season totals lack.
+The time dimension comes from the shared per-game team layer
+(`data/processed/wnba_pbpstats_team_game/`, `periods.source: "game_layer"`): **one window per
+game**, so the recent/baseline split is exact and the permutation null scrambles real games. The
+[snapshot window panel](../snapshot_window_panel/) remains a fallback (`periods.source:
+"window_panel"`, or automatically when the game layer is absent); the analysis is identical either
+way, only the time grain sharpens.
 
 ## Outputs
 

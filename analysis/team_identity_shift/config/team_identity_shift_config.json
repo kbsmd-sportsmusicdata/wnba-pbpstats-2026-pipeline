@@ -9,7 +9,8 @@
   },
   "periods": {
     "recent_games": 10,
-    "min_baseline_games": 8
+    "min_baseline_games": 8,
+    "source": "game_layer"
   },
   "style_dimensions": [
     "three_point_attempt_rate",
@@ -30,7 +31,7 @@
     "iterations": 4000,
     "random_seed": 20260812,
     "significant_percentile": 0.95,
-    "moderate_percentile": 0.80
+    "moderate_percentile": 0.8
   },
   "labels": {
     "helping_net_rating_delta": 2.0,

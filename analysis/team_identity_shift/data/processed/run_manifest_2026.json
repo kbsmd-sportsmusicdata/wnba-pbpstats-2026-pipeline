@@ -1,57 +1,65 @@
 {
   "analysis_stats": {
     "league_scales": {
-      "assist_rate": 0.019370493365995372,
-      "assisted_points_share": 0.01797958077862942,
-      "corner3_share_of_3pa": 0.03023714004512109,
-      "ft_attempt_rate": 0.0408334339320819,
-      "live_ball_turnover_rate": 0.0106364185074167,
-      "midrange_fga_share": 0.058516283791782954,
-      "off_reb_per_100_off_poss": 1.9527067414574022,
-      "pace": 1.8309459101199932,
-      "penalty_off_poss_share": 0.03574079171738437,
-      "rim_fga_share": 0.057598935036925855,
-      "second_chance_off_poss_share": 0.013880083111458616,
-      "three_point_attempt_rate": 0.050326146081892856,
-      "turnover_rate": 0.015619094941908352
+      "assist_rate": 0.02159579196430473,
+      "assisted_points_share": 0.019342712887816343,
+      "corner3_share_of_3pa": 0.029672353391004467,
+      "ft_attempt_rate": 0.03958749044167368,
+      "live_ball_turnover_rate": 0.01051400328983414,
+      "midrange_fga_share": 0.058009768711548115,
+      "off_reb_per_100_off_poss": 1.958206797635858,
+      "pace": 1.8603703510043925,
+      "penalty_off_poss_share": 0.035218302895019996,
+      "rim_fga_share": 0.05806229974087153,
+      "second_chance_off_poss_share": 0.013849958885814483,
+      "three_point_attempt_rate": 0.049882610915862165,
+      "turnover_rate": 0.014539276524699597
     },
-    "max_decomposition_residual": 4.085620730620576e-14,
+    "max_decomposition_residual": 2.6645352591003757e-14,
     "moderate_shifts": 4,
+    "panel_source": "game_layer",
     "permutation_iterations": 4000,
     "recent_games_target": 10,
     "schedule_context_teams": 15,
-    "significant_shifts": 3,
+    "significant_shifts": 1,
     "status": "ok",
     "style_dimensions": 13,
     "teams_evaluated": 15,
     "teams_skipped_insufficient_baseline": []
   },
-  "config_hash": "cad8d290fd7dc272242ec4a136e81622654b25b2b2254957ce6107c373c84763",
+  "config_hash": "1ada186e48515531709ce6b75d3d2e259709e86ec0b1c619e2aed8a2c22c7a57",
   "config_path": "analysis/team_identity_shift/config/team_identity_shift_config.json",
-  "generated_at_utc": "2026-08-15T13:13:13+00:00",
+  "generated_at_utc": "2026-08-19T19:44:36+00:00",
   "outputs": {
     "team_identity_shift_2026.csv": 15,
     "team_shift_decomposition_2026.csv": 15,
     "team_shift_dimension_deltas_2026.csv": 195,
     "team_style_periods_2026.csv": 30
   },
-  "run_id": "20260815T131313+0000",
+  "run_id": "20260819T194436+0000",
   "season": 2026,
   "source_manifest": {
     "schedule": {
       "columns": 77,
-      "modified_at_utc": "2026-08-15T13:12:53+00:00",
-      "path": "/home/runner/work/wnba-pbpstats-2026-pipeline/wnba-pbpstats-2026-pipeline/data/raw/sportsdataverse/wnba_2026/schedule_2026.parquet",
+      "modified_at_utc": "2026-08-19T19:14:07+00:00",
+      "path": "/home/user/wnba-pbpstats-2026-pipeline/data/raw/sportsdataverse/wnba_2026/schedule_2026.parquet",
       "rows": 333,
-      "size_bytes": 270331
+      "size_bytes": 313514
+    },
+    "team_game": {
+      "columns": 236,
+      "modified_at_utc": "2026-08-19T19:14:07+00:00",
+      "path": "/home/user/wnba-pbpstats-2026-pipeline/data/processed/wnba_pbpstats_team_game/season=2026/team_game.parquet",
+      "rows": 524,
+      "size_bytes": 349879
     },
     "team_window_panel": {
       "columns": 182,
-      "latest_window_end_utc": "2026-08-13T14:49:10+00:00",
-      "modified_at_utc": "2026-08-15T13:13:10+00:00",
-      "path": "/home/runner/work/wnba-pbpstats-2026-pipeline/wnba-pbpstats-2026-pipeline/analysis/snapshot_window_panel/data/processed/team_window_panel_2026.csv",
-      "rows": 382,
-      "size_bytes": 511810
+      "latest_window_end_utc": "2026-08-17T14:15:19+00:00",
+      "modified_at_utc": "2026-08-18T04:56:13+00:00",
+      "path": "/home/user/wnba-pbpstats-2026-pipeline/analysis/snapshot_window_panel/data/processed/team_window_panel_2026.csv",
+      "rows": 404,
+      "size_bytes": 540790
     }
   }
 }
