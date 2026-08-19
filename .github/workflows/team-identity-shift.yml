@@ -56,7 +56,7 @@ jobs:
 
       - name: Run Team Identity Shift tests
         if: ${{ inputs.run_tests }}
-        run: python -m unittest tests/test_team_identity_shift.py
+        run: python -m unittest tests/test_team_identity_shift.py tests/test_team_identity_shift_game_panel.py
 
       - name: Rebuild snapshot window panel
         if: ${{ inputs.rebuild_window_panel }}
@@ -64,6 +64,7 @@ jobs:
           python scripts/build_snapshot_window_panel.py \
             --config "$PANEL_CONFIG_PATH" \
             --stage team
+          python scripts/build_wnba_game_layer_2026.py
 
       - name: Build team identity shift
         run: |

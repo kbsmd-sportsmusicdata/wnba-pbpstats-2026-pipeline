@@ -50,7 +50,9 @@ DIMENSIONS = [
 ]
 
 CONFIG = {
-    "periods": {"recent_games": 4, "min_baseline_games": 2},
+    # These end-to-end builder tests exercise the snapshot window-panel path with a synthetic
+    # panel, so they pin that source rather than the game-layer default.
+    "periods": {"recent_games": 4, "min_baseline_games": 2, "source": "window_panel"},
     "style_dimensions": DIMENSIONS,
     "permutation_test": {
         "iterations": 200,

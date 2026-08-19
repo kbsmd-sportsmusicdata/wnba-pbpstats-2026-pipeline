@@ -27,6 +27,7 @@ from team_identity_shift.data_sources import (
     write_github_step_summary,
 )
 from team_identity_shift.decomposition import build_decomposition_table
+from team_identity_shift.game_panel import build_game_team_panel
 from team_identity_shift.schedule_context import build_period_schedule_context, schedule_deltas
 from team_identity_shift.shift import apply_schedule_adjustment, build_shift_table, totals_columns_for
 from team_identity_shift.style import build_style_frame, dimension_deltas, league_scales
@@ -55,14 +56,27 @@ def build_outputs(config: Dict[str, Any]) -> Dict[str, Any]:
     paths = output_paths(output_root)
     sources = load_sources(config)
 
-    panel = sources.team_window_panel
-    dimensions = list(config.get("style_dimensions", []))
+    # Prefer one true window per game from the shared team-game layer; fall back to the snapshot
+    # window panel when the layer is absent, so the analysis still builds.
     periods_config = config.get("periods", {})
+    requested_source = periods_config.get("source", "game_layer")
+    if requested_source == "game_layer" and not sources.team_game.empty:
+        panel = build_game_team_panel(sources.team_game)
+        panel_source = "game_layer"
+    else:
+        panel = sources.team_window_panel
+        panel_source = "window_panel" if requested_source == "game_layer" else requested_source
+
+    dimensions = list(config.get("style_dimensions", []))
     recent_games = int(periods_config.get("recent_games", 10))
     min_baseline_games = int(periods_config.get("min_baseline_games", 8))
 
     row_counts: Dict[str, int] = {}
-    stats: Dict[str, Any] = {"recent_games_target": recent_games, "style_dimensions": len(dimensions)}
+    stats: Dict[str, Any] = {
+        "recent_games_target": recent_games,
+        "style_dimensions": len(dimensions),
+        "panel_source": panel_source,
+    }
 
     if panel.empty:
         stats["status"] = "window_panel_missing"
