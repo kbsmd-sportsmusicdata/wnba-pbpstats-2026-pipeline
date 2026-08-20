@@ -8,6 +8,7 @@
   <title>WNBA {{SEASON}} Standings &amp; Playoff Forecast</title>
   <link rel="stylesheet" href="./assets/styles.css">
   <script id="forecast-payload" type="application/json">{{EMBEDDED_PAYLOAD}}</script>
+  <script id="functional-depth-strip" type="application/json">{{EMBEDDED_DEPTH_STRIP}}</script>
   <script src="./assets/charts.js" defer></script>
   <script src="./assets/app.js" defer></script>
 </head>
@@ -96,6 +97,13 @@
         <ol id="insights-list" class="insights-list"></ol>
       </section>
     </div>
+
+    <section id="functional-depth" class="section-band" aria-labelledby="depth-title" hidden>
+      <h2 id="depth-title">Functional depth — descriptive context</h2>
+      <p class="section-note">Descriptive context only. Not part of the validated forecast: it does not enter the standings, matchup probabilities, or the simulation.</p>
+      <div id="depth-strip" class="depth-strip" aria-hidden="true"></div>
+      <div id="depth-table" class="table-wrap" tabindex="0" aria-label="Scrollable functional depth table"></div>
+    </section>
 
     <section id="method-cutoff" class="section-band method-band" aria-labelledby="method-title">
       <h2 id="method-title">Method / cutoff</h2>
