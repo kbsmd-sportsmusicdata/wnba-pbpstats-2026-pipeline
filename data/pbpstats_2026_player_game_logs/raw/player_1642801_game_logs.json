@@ -3,16 +3,16 @@
     "Name": "Aaliyah Nye",
     "ShortName": "Aaliyah Nye",
     "TeamAbbreviation": "ATL",
-    "SecondsPlayed": 1817.8000000000002,
-    "GamesPlayed": 17,
-    "Minutes": 30,
+    "SecondsPlayed": 1838.6,
+    "GamesPlayed": 18,
+    "Minutes": 31,
     "PlusMinus": 7,
     "OffPoss": 56,
-    "DefPoss": 69,
+    "DefPoss": 70,
     "PenaltyOffPoss": 48,
-    "PenaltyDefPoss": 39,
+    "PenaltyDefPoss": 40,
     "SecondChanceOffPoss": 9,
-    "TotalPoss": 125,
+    "TotalPoss": 126,
     "AtRimFGM": 1,
     "AtRimFGA": 1,
     "PenaltyAtRimFGM": 1,
@@ -75,7 +75,7 @@
     "PenaltyPointsExcludingTakeFouls": 11,
     "PenaltyOffPossExcludingTakeFouls": 48,
     "OnOffRtg": 141.07142857142856,
-    "OnDefRtg": 104.34782608695653,
+    "OnDefRtg": 102.85714285714286,
     "Assisted2sPct": 1.0,
     "NonPutbacksAssisted2sPct": 1.0,
     "Assisted3sPct": 1.0,
@@ -606,6 +606,16 @@
       "GameId": "1022600261",
       "Team": "ATL",
       "Opponent": "IND"
+    },
+    {
+      "Minutes": "00:20",
+      "DefPoss": 1,
+      "PenaltyDefPoss": 1,
+      "TotalPoss": 1,
+      "Date": "2026-08-18",
+      "GameId": "1022600266",
+      "Team": "ATL",
+      "Opponent": "LVA"
     }
   ]
 }

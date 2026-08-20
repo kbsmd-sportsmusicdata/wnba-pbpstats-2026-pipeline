@@ -3143,6 +3143,54 @@
       "AwayPossessions": 77,
       "HomeTeamAbbreviation": "GSV",
       "AwayTeamAbbreviation": "DAL"
+    },
+    {
+      "GameId": "1022600263",
+      "Date": "2026-08-18",
+      "HomeTeamId": "1611661323",
+      "AwayTeamId": "1611661320",
+      "HomePoints": 85,
+      "AwayPoints": 77,
+      "HomePossessions": 80,
+      "AwayPossessions": 81,
+      "HomeTeamAbbreviation": "CON",
+      "AwayTeamAbbreviation": "LAS"
+    },
+    {
+      "GameId": "1022600264",
+      "Date": "2026-08-18",
+      "HomeTeamId": "1611661332",
+      "AwayTeamId": "1611661325",
+      "HomePoints": 95,
+      "AwayPoints": 101,
+      "HomePossessions": 86,
+      "AwayPossessions": 84,
+      "HomeTeamAbbreviation": "TOR",
+      "AwayTeamAbbreviation": "IND"
+    },
+    {
+      "GameId": "1022600265",
+      "Date": "2026-08-18",
+      "HomeTeamId": "1611661329",
+      "AwayTeamId": "1611661313",
+      "HomePoints": 93,
+      "AwayPoints": 86,
+      "HomePossessions": 87,
+      "AwayPossessions": 88,
+      "HomeTeamAbbreviation": "CHI",
+      "AwayTeamAbbreviation": "NYL"
+    },
+    {
+      "GameId": "1022600266",
+      "Date": "2026-08-18",
+      "HomeTeamId": "1611661319",
+      "AwayTeamId": "1611661330",
+      "HomePoints": 82,
+      "AwayPoints": 97,
+      "HomePossessions": 84,
+      "AwayPossessions": 84,
+      "HomeTeamAbbreviation": "LVA",
+      "AwayTeamAbbreviation": "ATL"
     }
   ]
 }
