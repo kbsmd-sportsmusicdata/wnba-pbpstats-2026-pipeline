@@ -1,0 +1,77 @@
+name: Functional Depth
+
+on:
+  workflow_dispatch:
+    inputs:
+      run_tests:
+        description: "Run functional depth tests before building"
+        required: true
+        type: boolean
+        default: true
+      rebuild_dependencies:
+        description: "Rebuild the game layer and possession impact first"
+        required: true
+        type: boolean
+        default: false
+      commit_outputs:
+        description: "Commit generated analysis/functional_depth outputs"
+        required: true
+        type: boolean
+        default: false
+
+jobs:
+  functional-depth:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      CONFIG_PATH: analysis/functional_depth/config/functional_depth_config.json
+      IMPACT_CONFIG_PATH: analysis/possession_impact/config/possession_impact_config.json
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run Functional Depth tests
+        if: ${{ inputs.run_tests }}
+        run: python -m unittest tests/test_functional_depth.py
+
+      - name: Rebuild upstream inputs
+        if: ${{ inputs.rebuild_dependencies }}
+        run: |
+          python scripts/build_wnba_game_layer_2026.py
+          python scripts/build_possession_impact.py --config "$IMPACT_CONFIG_PATH"
+
+      - name: Build functional depth score
+        run: python scripts/build_functional_depth.py --config "$CONFIG_PATH"
+
+      - name: Commit generated functional depth outputs if requested
+        if: ${{ inputs.commit_outputs }}
+        run: |
+          git add analysis/functional_depth
+          if git diff --cached --quiet; then
+            echo "No Functional Depth output changes to commit"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "chore: refresh functional depth score"
+          # main can move while this run is in flight; rebase before pushing, retrying with backoff.
+          for attempt in 1 2 3 4 5; do
+            if git push origin HEAD:"${GITHUB_REF_NAME}"; then exit 0; fi
+            git fetch origin "${GITHUB_REF_NAME}"
+            git rebase -X theirs "origin/${GITHUB_REF_NAME}" || { git rebase --abort; exit 1; }
+            sleep $((attempt * 3))
+          done
+          echo "failed to push after retries" >&2
+          exit 1

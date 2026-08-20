@@ -1,0 +1,21 @@
+{
+  "season": 2026,
+  "game_layer_root": "data/processed",
+  "possession_impact_root": "analysis/possession_impact",
+  "output_root": "analysis/functional_depth",
+  "source_files": {
+    "player_game": "wnba_pbpstats_player_game/season=2026/player_game.parquet",
+    "bench_net_rating": "data/processed/bench_net_rating_2026.csv"
+  },
+  "depth": {
+    "rotation_minutes": 12.0,
+    "min_games": 5,
+    "weights": {
+      "production_distribution": 0.25,
+      "rotation_trust": 0.15,
+      "role_redundancy": 0.20,
+      "replacement_resilience": 0.20,
+      "performance_floor": 0.20
+    }
+  }
+}
