@@ -78,6 +78,8 @@ The reusable normalized team-game layer lives at `data/processed/wnba_team_game/
 
 The dashboard embeds the same validated JSON payload that is copied to `dashboard/data/forecast_payload.json`. Open the downloaded `dashboard/index.html` directly with a browser, including through `file://`; no local server is required. For hosted use, the app retains its JSON-fetch fallback.
 
+The dashboard also carries a **Functional depth — descriptive context** panel (the star-dependency ↔ distributed-resilience strip from the [Functional Depth](../functional_depth/) analysis). It is embedded from `analysis/functional_depth/data/processed/functional_depth_strip_2026.csv` when present and is **descriptive only** — it never enters the validated payload, the standings, the matchup probabilities, or the simulation, and the dashboard renders normally (panel hidden) when the strip is absent.
+
 ## Season and Historical Scope
 
 The CLI requires an explicit `--season` parameter. Season-specific competition rules and source paths are configured per verified season; unknown seasons fail closed. The initial target is 2026. Prior normalized partitions may provide descriptive context, optionally bounded by `--history-start`, but historical model training is out of scope for V1. `--skip-history` produces a valid empty history output and does not prevent the current-season forecast.

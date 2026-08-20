@@ -127,3 +127,41 @@ tbody tr.selected-row { background: var(--amber-pale); color: var(--navy); font-
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; animation: none !important; }
 }
+
+/* Functional depth strip (descriptive context panel). */
+.depth-strip { margin: var(--space-2) 0 var(--space-3); }
+.depth-strip-track {
+  position: relative;
+  height: 3.75rem;
+  margin: 1.6rem 0 0.5rem;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--amber-pale), var(--blue-pale));
+  border: 1px solid var(--rule);
+}
+.depth-strip-end {
+  position: absolute;
+  top: -1.35rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+.depth-strip-start { left: 0; }
+.depth-strip-finish { right: 0; }
+.depth-marker {
+  position: absolute;
+  top: 50%;
+  left: var(--pos, 50%);
+  transform: translate(-50%, -50%);
+  padding: 0.15rem 0.4rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--paper);
+  background: var(--cobalt);
+  border-radius: 4px;
+  white-space: nowrap;
+}
+.depth-marker[data-profile="star_dependent"] { background: var(--amber); }
+.depth-marker[data-profile="distributed_resilience"] { background: var(--cobalt-strong); }
+.depth-marker[data-profile="balanced"] { background: var(--muted); }
