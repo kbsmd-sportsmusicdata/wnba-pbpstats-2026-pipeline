@@ -1,20 +1,20 @@
 {
-  "games_in_spine": 266,
-  "generated_at_utc": "2026-08-20T02:47:29+00:00",
+  "games_in_spine": 268,
+  "generated_at_utc": "2026-08-20T15:04:39+00:00",
   "player_game": {
     "columns": 252,
-    "games": 266,
+    "games": 268,
     "path": "/home/runner/work/wnba-pbpstats-2026-pipeline/wnba-pbpstats-2026-pipeline/data/processed/wnba_pbpstats_player_game/season=2026/player_game.parquet",
-    "players": 226,
-    "rows": 5260
+    "players": 227,
+    "rows": 5301
   },
   "season": "2026",
   "season_type": "Regular Season",
   "team_game": {
     "columns": 236,
-    "games": 266,
+    "games": 268,
     "path": "/home/runner/work/wnba-pbpstats-2026-pipeline/wnba-pbpstats-2026-pipeline/data/processed/wnba_pbpstats_team_game/season=2026/team_game.parquet",
-    "rows": 532,
+    "rows": 536,
     "teams": 15
   }
 }

@@ -1,22 +1,12 @@
 [
   {
-    "player_id": "1627671",
-    "name": "Rachel Banham",
+    "player_id": "1643426",
+    "name": "Olivia Miles",
     "error": "failed to fetch /get-game-logs/wnba after 5 attempts: retryable status 500"
   },
   {
-    "player_id": "1629546",
-    "name": "Marine Johannes",
-    "error": "failed to fetch /get-game-logs/wnba after 5 attempts: retryable status 500"
-  },
-  {
-    "player_id": "1643461",
-    "name": "Laura Ziegler",
-    "error": "failed to fetch /get-game-logs/wnba after 5 attempts: retryable status 500"
-  },
-  {
-    "player_id": "1643525",
-    "name": "Alex Fowler",
+    "player_id": "1643440",
+    "name": "Darianna Littlepage-Buggs",
     "error": "failed to fetch /get-game-logs/wnba after 5 attempts: retryable status 500"
   }
 ]
