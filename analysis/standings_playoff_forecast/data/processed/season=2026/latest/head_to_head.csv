@@ -37,7 +37,7 @@ team_id,franchise_id,opponent_id,opponent_franchise_id,games_played,wins,losses,
 131935,toronto_tempo,19,chicago_sky,2,2,0,1,196,172,24
 131935,toronto_tempo,20,atlanta_dream,4,0,4,0,351,414,-63
 131935,toronto_tempo,3,dallas_wings,3,0,3,0,259,291,-32
-131935,toronto_tempo,5,indiana_fever,1,0,1,0,91,113,-22
+131935,toronto_tempo,5,indiana_fever,2,0,2,0,186,214,-28
 131935,toronto_tempo,6,los_angeles_sparks,3,2,1,0.66666666666666663,326,292,34
 131935,toronto_tempo,8,minnesota_lynx,3,0,3,0,237,304,-67
 131935,toronto_tempo,9,new_york_liberty,2,1,1,0.5,175,188,-13
@@ -91,7 +91,7 @@ team_id,franchise_id,opponent_id,opponent_franchise_id,games_played,wins,losses,
 17,las_vegas_aces,16,washington_mystics,3,2,1,0.66666666666666663,268,252,16
 17,las_vegas_aces,18,connecticut_sun,2,2,0,1,199,163,36
 17,las_vegas_aces,19,chicago_sky,3,2,1,0.66666666666666663,288,273,15
-17,las_vegas_aces,20,atlanta_dream,2,2,0,1,194,171,23
+17,las_vegas_aces,20,atlanta_dream,3,2,1,0.66666666666666663,276,268,8
 17,las_vegas_aces,3,dallas_wings,3,1,2,0.33333333333333331,252,275,-23
 17,las_vegas_aces,5,indiana_fever,3,1,2,0.33333333333333331,229,277,-48
 17,las_vegas_aces,6,los_angeles_sparks,3,2,1,0.66666666666666663,279,248,31
@@ -108,7 +108,7 @@ team_id,franchise_id,opponent_id,opponent_franchise_id,games_played,wins,losses,
 18,connecticut_sun,20,atlanta_dream,2,0,2,0,144,195,-51
 18,connecticut_sun,3,dallas_wings,2,0,2,0,146,169,-23
 18,connecticut_sun,5,indiana_fever,2,0,2,0,163,208,-45
-18,connecticut_sun,6,los_angeles_sparks,1,1,0,1,84,81,3
+18,connecticut_sun,6,los_angeles_sparks,2,2,0,1,169,158,11
 18,connecticut_sun,8,minnesota_lynx,2,1,1,0.5,170,175,-5
 18,connecticut_sun,9,new_york_liberty,3,0,3,0,230,277,-47
 19,chicago_sky,11,phoenix_mercury,3,1,2,0.33333333333333331,261,263,-2
@@ -124,14 +124,14 @@ team_id,franchise_id,opponent_id,opponent_franchise_id,games_played,wins,losses,
 19,chicago_sky,5,indiana_fever,2,0,2,0,192,204,-12
 19,chicago_sky,6,los_angeles_sparks,3,2,1,0.66666666666666663,278,272,6
 19,chicago_sky,8,minnesota_lynx,3,1,2,0.33333333333333331,219,243,-24
-19,chicago_sky,9,new_york_liberty,2,0,2,0,189,191,-2
+19,chicago_sky,9,new_york_liberty,3,1,2,0.33333333333333331,282,277,5
 20,atlanta_dream,11,phoenix_mercury,2,2,0,1,178,162,16
 20,atlanta_dream,129689,golden_state_valkyries,3,0,3,0,224,243,-19
 20,atlanta_dream,131935,toronto_tempo,4,4,0,1,414,351,63
 20,atlanta_dream,132052,portland_fire,2,1,1,0.5,178,168,10
 20,atlanta_dream,14,seattle_storm,3,2,1,0.66666666666666663,277,272,5
 20,atlanta_dream,16,washington_mystics,3,1,2,0.33333333333333331,259,237,22
-20,atlanta_dream,17,las_vegas_aces,2,0,2,0,171,194,-23
+20,atlanta_dream,17,las_vegas_aces,3,1,2,0.33333333333333331,268,276,-8
 20,atlanta_dream,18,connecticut_sun,2,2,0,1,195,144,51
 20,atlanta_dream,19,chicago_sky,2,2,0,1,175,166,9
 20,atlanta_dream,3,dallas_wings,3,3,0,1,245,222,23
@@ -155,7 +155,7 @@ team_id,franchise_id,opponent_id,opponent_franchise_id,games_played,wins,losses,
 3,dallas_wings,9,new_york_liberty,3,2,1,0.66666666666666663,277,252,25
 5,indiana_fever,11,phoenix_mercury,3,2,1,0.66666666666666663,287,277,10
 5,indiana_fever,129689,golden_state_valkyries,3,1,2,0.33333333333333331,253,260,-7
-5,indiana_fever,131935,toronto_tempo,1,1,0,1,113,91,22
+5,indiana_fever,131935,toronto_tempo,2,2,0,1,214,186,28
 5,indiana_fever,132052,portland_fire,3,2,1,0.66666666666666663,286,271,15
 5,indiana_fever,14,seattle_storm,3,3,0,1,304,280,24
 5,indiana_fever,16,washington_mystics,2,1,1,0.5,180,180,0
@@ -174,7 +174,7 @@ team_id,franchise_id,opponent_id,opponent_franchise_id,games_played,wins,losses,
 6,los_angeles_sparks,14,seattle_storm,2,1,1,0.5,152,165,-13
 6,los_angeles_sparks,16,washington_mystics,2,1,1,0.5,162,167,-5
 6,los_angeles_sparks,17,las_vegas_aces,3,1,2,0.33333333333333331,248,279,-31
-6,los_angeles_sparks,18,connecticut_sun,1,0,1,0,81,84,-3
+6,los_angeles_sparks,18,connecticut_sun,2,0,2,0,158,169,-11
 6,los_angeles_sparks,19,chicago_sky,3,1,2,0.33333333333333331,272,278,-6
 6,los_angeles_sparks,20,atlanta_dream,1,0,1,0,92,101,-9
 6,los_angeles_sparks,3,dallas_wings,2,0,2,0,178,194,-16
@@ -203,7 +203,7 @@ team_id,franchise_id,opponent_id,opponent_franchise_id,games_played,wins,losses,
 9,new_york_liberty,16,washington_mystics,3,2,1,0.66666666666666663,267,243,24
 9,new_york_liberty,17,las_vegas_aces,3,2,1,0.66666666666666663,297,251,46
 9,new_york_liberty,18,connecticut_sun,3,3,0,1,277,230,47
-9,new_york_liberty,19,chicago_sky,2,2,0,1,191,189,2
+9,new_york_liberty,19,chicago_sky,3,2,1,0.66666666666666663,277,282,-5
 9,new_york_liberty,20,atlanta_dream,1,1,0,1,104,90,14
 9,new_york_liberty,3,dallas_wings,3,1,2,0.33333333333333331,252,277,-25
 9,new_york_liberty,5,indiana_fever,3,1,2,0.33333333333333331,263,289,-26
