@@ -132,7 +132,7 @@ tbody tr.selected-row { background: var(--amber-pale); color: var(--navy); font-
 .depth-strip { margin: var(--space-2) 0 var(--space-3); }
 .depth-strip-track {
   position: relative;
-  height: 3.75rem;
+  height: 5.5rem;
   margin: 1.6rem 0 0.5rem;
   border-radius: 999px;
   background: linear-gradient(90deg, var(--amber-pale), var(--blue-pale));
@@ -151,7 +151,7 @@ tbody tr.selected-row { background: var(--amber-pale); color: var(--navy); font-
 .depth-strip-finish { right: 0; }
 .depth-marker {
   position: absolute;
-  top: 50%;
+  top: calc(50% + var(--offset, 0rem));
   left: var(--pos, 50%);
   transform: translate(-50%, -50%);
   padding: 0.15rem 0.4rem;

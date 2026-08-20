@@ -279,13 +279,29 @@
     const track = charts.element("div", null, "depth-strip-track");
     track.appendChild(charts.element("span", "Star dependency", "depth-strip-end depth-strip-start"));
     track.appendChild(charts.element("span", "Distributed resilience", "depth-strip-end depth-strip-finish"));
-    rows.forEach((row) => {
-      const axis = Number(row.dependency_axis);
-      if (!Number.isFinite(axis)) return;
+
+    const placeable = rows.filter((row) => Number.isFinite(Number(row.dependency_axis)));
+    const positionOf = (row) => Math.max(0, Math.min(100, ((Number(row.dependency_axis) + 1) / 2) * 100));
+    // Teams that land on the same horizontal spot (a tied axis) must stack vertically, or later
+    // markers would completely cover earlier ones and hide those teams.
+    const bucketKey = (pos) => Math.round(pos);
+    const bucketSizes = new Map();
+    placeable.forEach((row) => {
+      const key = bucketKey(positionOf(row));
+      bucketSizes.set(key, (bucketSizes.get(key) || 0) + 1);
+    });
+    const bucketSeen = new Map();
+    placeable.forEach((row) => {
+      const pos = positionOf(row);
+      const key = bucketKey(pos);
+      const size = bucketSizes.get(key);
+      const index = bucketSeen.get(key) || 0;
+      bucketSeen.set(key, index + 1);
       const marker = charts.element("span", row.team_abbreviation, "depth-marker");
-      marker.style.setProperty("--pos", `${Math.max(0, Math.min(100, ((axis + 1) / 2) * 100))}%`);
+      marker.style.setProperty("--pos", `${pos}%`);
+      marker.style.setProperty("--offset", `${(index - (size - 1) / 2) * 1.5}rem`);
       marker.dataset.profile = row.depth_profile || "";
-      marker.title = `${row.team_abbreviation}: ${String(row.depth_profile || "n/a").replaceAll("_", " ")} (axis ${axis.toFixed(2)})`;
+      marker.title = `${row.team_abbreviation}: ${String(row.depth_profile || "n/a").replaceAll("_", " ")} (axis ${Number(row.dependency_axis).toFixed(2)})`;
       track.appendChild(marker);
     });
     container.appendChild(track);
