@@ -203,6 +203,35 @@ class OverlayTest(unittest.TestCase):
         # A completed fixture carries real scores, not the placeholder zeros.
         self.assertTrue((completed["home_score"] + completed["away_score"] > 0).all())
 
+    def test_pbpstats_is_the_completion_authority_over_native_sdv_finals(self):
+        """An SDV fixture marked final natively but absent from pbpstats is reset to not-complete.
+
+        This is the regression for the forecast's completed-game ledger parity failure: a refreshed
+        SportsDataverse schedule reported games final ahead of the (committed) pbpstats feed, and
+        inheriting those flags left completed games with no pbpstats box.
+        """
+        with tempfile.TemporaryDirectory() as tmp:
+            sched_path = Path(tmp) / "schedule.parquet"
+            _sdv_schedule(sched_path)
+            schedule = pd.read_parquet(sched_path)
+            # SportsDataverse marks a fixture pbpstats does NOT cover as already final, with a score.
+            schedule.loc[schedule.index[-1], ["status_type_completed", "status_type_name", "home_score", "away_score"]] = [
+                True,
+                "STATUS_FINAL",
+                77,
+                70,
+            ]
+            crosswalk = {t["pbp"]: t["espn"] for t in _TEAMS}
+            games = _get_games_payload()  # covers only the first round; not that last fixture
+            overlaid, matched = pbp.overlay_schedule(schedule, pbp.index_games(games["results"], crosswalk))
+
+        completed = overlaid[overlaid["status_type_completed"].map(pbp._is_true)]
+        # Only the six pbpstats-covered games are completed; the native SDV final is reset.
+        self.assertEqual(len(completed), 6)
+        self.assertEqual(set(completed["game_id"]), set(matched))
+        # Every completed game is one pbpstats matched (so it will have a box score).
+        self.assertTrue(all(pbp._norm_id(gid) in matched for gid in completed["game_id"]))
+
 
 class GameLogsFetcherTest(unittest.TestCase):
     """The committed-data fetcher must serve the same shapes as the live API, keyed per team."""
