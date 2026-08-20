@@ -245,18 +245,30 @@ def index_games(games: Sequence[Mapping[str, Any]], crosswalk: Mapping[str, str]
 def overlay_schedule(schedule: pd.DataFrame, games_by_key: Mapping[tuple, Mapping[str, Any]]) -> tuple:
     """Mark SDV fixtures complete and fill their scores from pbpstats, aligned by team id.
 
-    SportsDataverse's home/away designation (venue-based) is kept; pbpstats scores are
-    assigned to whichever side each team plays, so a disagreement over orientation between
-    the two feeds cannot flip a result. Returns the overlaid schedule and the map from each
-    matched fixture's game id to the pbpstats record, which the team box build reuses.
+    pbpstats is the sole authority for completion: every fixture starts *not* completed and only
+    the ones pbpstats reports become final. This is deliberate. SportsDataverse marks its own games
+    final on a different cadence, and when a refreshed SDV schedule reports a game final that the
+    (committed) pbpstats feed has not covered yet, inheriting that flag would leave a completed game
+    with no pbpstats box score -- which fails the forecast's completed-game ledger parity. Resetting
+    first guarantees every completed game carries a pbpstats box and keeps the cutoff tracking
+    pbpstats coverage exactly, in either lag direction.
+
+    SportsDataverse's home/away designation (venue-based) is kept; pbpstats scores are assigned to
+    whichever side each team plays, so a disagreement over orientation between the two feeds cannot
+    flip a result. Returns the overlaid schedule and the map from each matched fixture's game id to
+    the pbpstats record, which the team box build reuses.
     """
     result = schedule.copy()
     dates = pd.to_datetime(result["game_date"].astype(str), errors="coerce").dt.strftime("%Y-%m-%d")
     home_ids = result["home_id"].map(_norm_id)
     away_ids = result["away_id"].map(_norm_id)
 
-    completed_flags = result["status_type_completed"].tolist()
-    status_names = result["status_type_name"].astype("object").tolist()
+    count = len(result)
+    # Completion is reset for every fixture and re-granted only to pbpstats-covered games -- this is
+    # the completion authority. Everything else on the row (status_type_name, the SDV scores) is left
+    # exactly as SportsDataverse published it, so the schedule's own qualifiers -- postponed-game
+    # exclusion keys off status_type_name, not this flag -- keep working unchanged.
+    completed_flags: List[Any] = [False] * count
     home_scores = result["home_score"].astype("object").tolist()
     away_scores = result["away_score"].astype("object").tolist()
 
@@ -269,11 +281,9 @@ def overlay_schedule(schedule: pd.DataFrame, games_by_key: Mapping[tuple, Mappin
         home_scores[position] = game["scores_by_team"].get(home)
         away_scores[position] = game["scores_by_team"].get(away)
         completed_flags[position] = True
-        status_names[position] = "STATUS_FINAL"
         matched[_norm_id(result.iloc[position]["game_id"])] = game
 
     result["status_type_completed"] = completed_flags
-    result["status_type_name"] = status_names
     result["home_score"] = home_scores
     result["away_score"] = away_scores
     return result, matched

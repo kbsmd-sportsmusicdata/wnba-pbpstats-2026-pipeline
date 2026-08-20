@@ -50,4 +50,19 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git commit -m "chore: refresh WNBA 2026 PBPStats outputs"
-          git push
+          # main can move while this run is in flight (a merge, another scheduled run). Rebase our
+          # single data-refresh commit onto the latest main before pushing, retrying a few times.
+          # On the rare conflict over the same regenerated files, our freshly built version wins
+          # (-X theirs favors the commit being replayed during a rebase).
+          for attempt in 1 2 3 4 5; do
+            if git push origin HEAD:"${GITHUB_REF_NAME}"; then
+              echo "pushed on attempt ${attempt}"
+              exit 0
+            fi
+            echo "push rejected (attempt ${attempt}); rebasing onto latest ${GITHUB_REF_NAME}"
+            git fetch origin "${GITHUB_REF_NAME}"
+            git rebase -X theirs "origin/${GITHUB_REF_NAME}" || { git rebase --abort; exit 1; }
+            sleep $((attempt * 3))
+          done
+          echo "failed to push after retries" >&2
+          exit 1
