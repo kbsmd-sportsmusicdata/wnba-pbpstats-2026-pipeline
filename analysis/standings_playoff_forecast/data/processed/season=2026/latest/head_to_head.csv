@@ -25,13 +25,13 @@ team_id,franchise_id,opponent_id,opponent_franchise_id,games_played,wins,losses,
 129689,golden_state_valkyries,3,dallas_wings,3,3,0,1,263,226,37
 129689,golden_state_valkyries,5,indiana_fever,3,2,1,0.66666666666666663,260,253,7
 129689,golden_state_valkyries,6,los_angeles_sparks,2,2,0,1,162,136,26
-129689,golden_state_valkyries,8,minnesota_lynx,2,0,2,0,159,168,-9
+129689,golden_state_valkyries,8,minnesota_lynx,3,0,3,0,225,245,-20
 129689,golden_state_valkyries,9,new_york_liberty,2,2,0,1,163,137,26
 131935,toronto_tempo,11,phoenix_mercury,2,1,1,0.5,178,179,-1
 131935,toronto_tempo,129689,golden_state_valkyries,3,0,3,0,235,271,-36
 131935,toronto_tempo,132052,portland_fire,2,0,2,0,163,196,-33
 131935,toronto_tempo,14,seattle_storm,2,2,0,1,179,145,34
-131935,toronto_tempo,16,washington_mystics,3,0,3,0,212,233,-21
+131935,toronto_tempo,16,washington_mystics,4,0,4,0,294,326,-32
 131935,toronto_tempo,17,las_vegas_aces,1,0,1,0,83,109,-26
 131935,toronto_tempo,18,connecticut_sun,2,2,0,1,207,199,8
 131935,toronto_tempo,19,chicago_sky,2,2,0,1,196,172,24
@@ -71,7 +71,7 @@ team_id,franchise_id,opponent_id,opponent_franchise_id,games_played,wins,losses,
 14,seattle_storm,9,new_york_liberty,3,1,2,0.33333333333333331,268,275,-7
 16,washington_mystics,11,phoenix_mercury,1,1,0,1,95,75,20
 16,washington_mystics,129689,golden_state_valkyries,3,1,2,0.33333333333333331,208,218,-10
-16,washington_mystics,131935,toronto_tempo,3,3,0,1,233,212,21
+16,washington_mystics,131935,toronto_tempo,4,4,0,1,326,294,32
 16,washington_mystics,132052,portland_fire,2,1,1,0.5,180,198,-18
 16,washington_mystics,14,seattle_storm,3,2,1,0.66666666666666663,247,240,7
 16,washington_mystics,17,las_vegas_aces,3,1,2,0.33333333333333331,252,268,-16
@@ -89,7 +89,7 @@ team_id,franchise_id,opponent_id,opponent_franchise_id,games_played,wins,losses,
 17,las_vegas_aces,132052,portland_fire,3,3,0,1,291,252,39
 17,las_vegas_aces,14,seattle_storm,1,1,0,1,101,91,10
 17,las_vegas_aces,16,washington_mystics,3,2,1,0.66666666666666663,268,252,16
-17,las_vegas_aces,18,connecticut_sun,2,2,0,1,199,163,36
+17,las_vegas_aces,18,connecticut_sun,3,3,0,1,300,241,59
 17,las_vegas_aces,19,chicago_sky,3,2,1,0.66666666666666663,288,273,15
 17,las_vegas_aces,20,atlanta_dream,3,2,1,0.66666666666666663,276,268,8
 17,las_vegas_aces,3,dallas_wings,3,1,2,0.33333333333333331,252,275,-23
@@ -103,7 +103,7 @@ team_id,franchise_id,opponent_id,opponent_franchise_id,games_played,wins,losses,
 18,connecticut_sun,132052,portland_fire,3,1,2,0.33333333333333331,233,241,-8
 18,connecticut_sun,14,seattle_storm,3,1,2,0.33333333333333331,221,244,-23
 18,connecticut_sun,16,washington_mystics,3,1,2,0.33333333333333331,233,237,-4
-18,connecticut_sun,17,las_vegas_aces,2,0,2,0,163,199,-36
+18,connecticut_sun,17,las_vegas_aces,3,0,3,0,241,300,-59
 18,connecticut_sun,19,chicago_sky,3,1,2,0.33333333333333331,260,242,18
 18,connecticut_sun,20,atlanta_dream,2,0,2,0,144,195,-51
 18,connecticut_sun,3,dallas_wings,2,0,2,0,146,169,-23
@@ -136,7 +136,7 @@ team_id,franchise_id,opponent_id,opponent_franchise_id,games_played,wins,losses,
 20,atlanta_dream,19,chicago_sky,2,2,0,1,175,166,9
 20,atlanta_dream,3,dallas_wings,3,3,0,1,245,222,23
 20,atlanta_dream,5,indiana_fever,4,2,2,0.5,383,375,8
-20,atlanta_dream,6,los_angeles_sparks,1,1,0,1,101,92,9
+20,atlanta_dream,6,los_angeles_sparks,2,2,0,1,225,180,45
 20,atlanta_dream,8,minnesota_lynx,2,1,1,0.5,172,186,-14
 20,atlanta_dream,9,new_york_liberty,1,0,1,0,90,104,-14
 3,dallas_wings,11,phoenix_mercury,1,1,0,1,85,70,15
@@ -149,7 +149,7 @@ team_id,franchise_id,opponent_id,opponent_franchise_id,games_played,wins,losses,
 3,dallas_wings,18,connecticut_sun,2,2,0,1,169,146,23
 3,dallas_wings,19,chicago_sky,3,3,0,1,288,272,16
 3,dallas_wings,20,atlanta_dream,3,0,3,0,222,245,-23
-3,dallas_wings,5,indiana_fever,2,1,1,0.5,194,202,-8
+3,dallas_wings,5,indiana_fever,3,2,1,0.66666666666666663,285,287,-2
 3,dallas_wings,6,los_angeles_sparks,2,2,0,1,194,178,16
 3,dallas_wings,8,minnesota_lynx,4,0,4,0,329,378,-49
 3,dallas_wings,9,new_york_liberty,3,2,1,0.66666666666666663,277,252,25
@@ -163,7 +163,7 @@ team_id,franchise_id,opponent_id,opponent_franchise_id,games_played,wins,losses,
 5,indiana_fever,18,connecticut_sun,2,2,0,1,208,163,45
 5,indiana_fever,19,chicago_sky,2,2,0,1,204,192,12
 5,indiana_fever,20,atlanta_dream,4,2,2,0.5,375,383,-8
-5,indiana_fever,3,dallas_wings,2,1,1,0.5,202,194,8
+5,indiana_fever,3,dallas_wings,3,1,2,0.33333333333333331,287,285,2
 5,indiana_fever,6,los_angeles_sparks,3,2,1,0.66666666666666663,290,271,19
 5,indiana_fever,8,minnesota_lynx,1,0,1,0,100,108,-8
 5,indiana_fever,9,new_york_liberty,3,2,1,0.66666666666666663,289,263,26
@@ -176,13 +176,13 @@ team_id,franchise_id,opponent_id,opponent_franchise_id,games_played,wins,losses,
 6,los_angeles_sparks,17,las_vegas_aces,3,1,2,0.33333333333333331,248,279,-31
 6,los_angeles_sparks,18,connecticut_sun,2,0,2,0,158,169,-11
 6,los_angeles_sparks,19,chicago_sky,3,1,2,0.33333333333333331,272,278,-6
-6,los_angeles_sparks,20,atlanta_dream,1,0,1,0,92,101,-9
+6,los_angeles_sparks,20,atlanta_dream,2,0,2,0,180,225,-45
 6,los_angeles_sparks,3,dallas_wings,2,0,2,0,178,194,-16
 6,los_angeles_sparks,5,indiana_fever,3,1,2,0.33333333333333331,271,290,-19
 6,los_angeles_sparks,8,minnesota_lynx,3,1,2,0.33333333333333331,259,277,-18
 6,los_angeles_sparks,9,new_york_liberty,3,1,2,0.33333333333333331,288,295,-7
 8,minnesota_lynx,11,phoenix_mercury,3,3,0,1,303,261,42
-8,minnesota_lynx,129689,golden_state_valkyries,2,2,0,1,168,159,9
+8,minnesota_lynx,129689,golden_state_valkyries,3,3,0,1,245,225,20
 8,minnesota_lynx,131935,toronto_tempo,3,3,0,1,304,237,67
 8,minnesota_lynx,132052,portland_fire,3,3,0,1,293,248,45
 8,minnesota_lynx,14,seattle_storm,3,3,0,1,279,246,33

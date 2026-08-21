@@ -27,6 +27,17 @@
     return document.getElementById(id);
   }
 
+  function readDepthStrip() {
+    const embedded = document.getElementById("functional-depth-strip");
+    if (!embedded || !embedded.textContent.trim()) return [];
+    try {
+      const data = JSON.parse(embedded.textContent);
+      return Array.isArray(data) ? data : [];
+    } catch (error) {
+      return [];
+    }
+  }
+
   function formatProbability(value) {
     return value === null || value === undefined ? "Unavailable" : `${(Number(value) * 100).toFixed(1)}%`;
   }
@@ -263,6 +274,64 @@
     });
   }
 
+  function renderDepthStrip(container, rows) {
+    charts.clear(container);
+    const track = charts.element("div", null, "depth-strip-track");
+    track.appendChild(charts.element("span", "Star dependency", "depth-strip-end depth-strip-start"));
+    track.appendChild(charts.element("span", "Distributed resilience", "depth-strip-end depth-strip-finish"));
+
+    const placeable = rows.filter((row) => Number.isFinite(Number(row.dependency_axis)));
+    const positionOf = (row) => Math.max(0, Math.min(100, ((Number(row.dependency_axis) + 1) / 2) * 100));
+    // Teams that land on the same horizontal spot (a tied axis) must stack vertically, or later
+    // markers would completely cover earlier ones and hide those teams.
+    const bucketKey = (pos) => Math.round(pos);
+    const bucketSizes = new Map();
+    placeable.forEach((row) => {
+      const key = bucketKey(positionOf(row));
+      bucketSizes.set(key, (bucketSizes.get(key) || 0) + 1);
+    });
+    const bucketSeen = new Map();
+    placeable.forEach((row) => {
+      const pos = positionOf(row);
+      const key = bucketKey(pos);
+      const size = bucketSizes.get(key);
+      const index = bucketSeen.get(key) || 0;
+      bucketSeen.set(key, index + 1);
+      const marker = charts.element("span", row.team_abbreviation, "depth-marker");
+      marker.style.setProperty("--pos", `${pos}%`);
+      marker.style.setProperty("--offset", `${(index - (size - 1) / 2) * 1.5}rem`);
+      marker.dataset.profile = row.depth_profile || "";
+      marker.title = `${row.team_abbreviation}: ${String(row.depth_profile || "n/a").replaceAll("_", " ")} (axis ${Number(row.dependency_axis).toFixed(2)})`;
+      track.appendChild(marker);
+    });
+    container.appendChild(track);
+  }
+
+  function renderDepth() {
+    const section = byId("functional-depth");
+    if (!section) return;
+    const rows = readDepthStrip();
+    if (!rows.length) {
+      section.hidden = true;
+      return;
+    }
+    section.hidden = false;
+    const ordered = rows.slice().sort((a, b) => Number(a.dependency_axis) - Number(b.dependency_axis));
+    renderDepthStrip(byId("depth-strip"), ordered);
+    charts.renderTable(
+      byId("depth-table"),
+      "Functional Depth Score — descriptive context, sorted star-dependent to distributed.",
+      [
+        { label: "Team", value: (row) => row.team_abbreviation },
+        { label: "Profile", value: (row) => String(row.depth_profile || "").replaceAll("_", " ") },
+        { label: "Star ↔ distributed axis", value: (row) => formatNumber(row.dependency_axis, 2) },
+        { label: "Top scorer share", value: (row) => formatProbability(row.top_scorer_share) },
+        { label: "Depth score", value: (row) => formatNumber(row.functional_depth_score, 1) },
+      ],
+      ordered
+    );
+  }
+
   function renderMethod() {
     const metadata = payload.metadata;
     const externalQa = metadata.external_standings_qa;
@@ -313,6 +382,7 @@
     renderTeamDetail(visibleRows);
     renderHistory();
     renderInsights();
+    renderDepth();
     renderMethod();
     updateUrl(historyMode);
     byId("app-status").textContent = `${visibleRows.length} of ${config.teamCount} teams shown · ${state.race} race · ${state.probability} probability evidence.`;
