@@ -1,12 +1,17 @@
 [
   {
-    "player_id": "1643426",
-    "name": "Olivia Miles",
+    "player_id": "1642320",
+    "name": "Jaylyn Sherrod",
     "error": "failed to fetch /get-game-logs/wnba after 5 attempts: retryable status 500"
   },
   {
-    "player_id": "1643440",
-    "name": "Darianna Littlepage-Buggs",
+    "player_id": "1642815",
+    "name": "Makayla Timpson",
+    "error": "failed to fetch /get-game-logs/wnba after 5 attempts: retryable status 500"
+  },
+  {
+    "player_id": "202252",
+    "name": "Alysha Clark",
     "error": "failed to fetch /get-game-logs/wnba after 5 attempts: retryable status 500"
   }
 ]
