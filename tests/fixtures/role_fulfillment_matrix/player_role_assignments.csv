@@ -1,0 +1,6 @@
+player_id,player_name,role_code,assignment_confidence,review_status,reviewed_by,reviewed_at,assignment_notes
+FX-001,Avery Sample,backup_creator,0.90,reviewed,fixture-reviewer,2026-08-20,Synthetic creator assignment
+FX-002,Jordan Fixture,rim_finisher,0.95,reviewed,fixture-reviewer,2026-08-20,Synthetic finisher assignment
+FX-003,Morgan Example,backup_creator,0.85,reviewed,fixture-reviewer,2026-08-20,Synthetic non-contender
+FX-004,Riley Pending,backup_creator,0.70,reviewed,fixture-reviewer,2026-08-20,Synthetic pending eligibility
+FX-005,Taylor Small Sample,backup_creator,0.80,reviewed,fixture-reviewer,2026-08-20,Synthetic insufficient sample

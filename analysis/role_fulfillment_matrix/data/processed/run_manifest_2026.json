@@ -1,0 +1,58 @@
+{
+  "config_hash": "ed086276608dbf80d9ecc3664f7d5333b9fa181c8b750aac3b68518c557f56dc",
+  "config_path": "analysis/role_fulfillment_matrix/config/fixture_config.json",
+  "formula_version": "rfm-fixture-v1",
+  "funnel_counts": {
+    "excluded_eligibility_not_reviewed": 1,
+    "excluded_insufficient_recent_sample": 1,
+    "excluded_non_contender_team": 1,
+    "players_considered": 5,
+    "players_scored": 2
+  },
+  "generated_at_utc": "2026-08-21T18:22:12+00:00",
+  "live_scoring_blockers": [
+    "reviewed age/experience eligibility table",
+    "reviewed player-role assignments"
+  ],
+  "live_scoring_status": "blocked",
+  "mode": "fixture",
+  "output_rows": {
+    "candidate_funnel_2026.csv": 5,
+    "role_fulfillment_evidence_2026.json": 20,
+    "role_fulfillment_matrix_2026.csv": 2
+  },
+  "players_scored": 2,
+  "season": 2026,
+  "source_manifest": {
+    "eligibility": {
+      "columns": 10,
+      "path": "tests/fixtures/role_fulfillment_matrix/player_eligibility.csv",
+      "rows": 5,
+      "status": "synthetic_fixture"
+    },
+    "player_game": {
+      "columns": 17,
+      "path": "tests/fixtures/role_fulfillment_matrix/player_game.csv",
+      "rows": 27,
+      "status": "synthetic_fixture"
+    },
+    "role_assignments": {
+      "columns": 8,
+      "path": "tests/fixtures/role_fulfillment_matrix/player_role_assignments.csv",
+      "rows": 5,
+      "status": "synthetic_fixture"
+    },
+    "role_definitions": {
+      "columns": null,
+      "path": "analysis/role_fulfillment_matrix/config/role_definitions.json",
+      "rows": 2,
+      "status": "reviewable_configuration"
+    },
+    "standings": {
+      "columns": 6,
+      "path": "tests/fixtures/role_fulfillment_matrix/standings.csv",
+      "rows": 2,
+      "status": "synthetic_fixture"
+    }
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "backup_creator": {
+    "label": "Backup Creator",
+    "metrics": [
+      {"code": "assists_per_75", "family": "behavior", "direction": "higher", "floor": 2.0, "target": 8.0, "weight": 0.50, "denominator": "off_poss"},
+      {"code": "true_shooting_pct", "family": "efficiency", "direction": "higher", "floor": 0.40, "target": 0.60, "weight": 0.30, "denominator": "true_shooting_attempts"},
+      {"code": "assist_turnover_ratio", "family": "mistake_control", "direction": "higher", "floor": 0.80, "target": 3.00, "weight": 0.20, "denominator": "turnovers"}
+    ]
+  },
+  "rim_finisher": {
+    "label": "Rim Pressure Finisher",
+    "metrics": [
+      {"code": "rim_fga_share", "family": "behavior", "direction": "higher", "floor": 0.20, "target": 0.60, "weight": 0.50, "denominator": "fga"},
+      {"code": "rim_fg_pct", "family": "efficiency", "direction": "higher", "floor": 0.40, "target": 0.70, "weight": 0.30, "denominator": "at_rim_fga"},
+      {"code": "turnover_rate", "family": "mistake_control", "direction": "lower", "floor": 0.12, "target": 0.02, "weight": 0.20, "denominator": "off_poss"}
+    ]
+  }
+}

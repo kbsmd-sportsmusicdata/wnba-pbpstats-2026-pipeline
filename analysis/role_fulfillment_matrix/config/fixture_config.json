@@ -1,0 +1,32 @@
+{
+  "season": 2026,
+  "mode": "fixture",
+  "formula_version": "rfm-fixture-v1",
+  "output_root": "analysis/role_fulfillment_matrix",
+  "sources": {
+    "standings": "tests/fixtures/role_fulfillment_matrix/standings.csv",
+    "player_game": "tests/fixtures/role_fulfillment_matrix/player_game.csv",
+    "eligibility": "tests/fixtures/role_fulfillment_matrix/player_eligibility.csv",
+    "role_assignments": "tests/fixtures/role_fulfillment_matrix/player_role_assignments.csv",
+    "role_definitions": "analysis/role_fulfillment_matrix/config/role_definitions.json"
+  },
+  "contender": {"current_rank_max": 6},
+  "windows": {
+    "baseline_start": "2026-08-01",
+    "baseline_end": "2026-08-17",
+    "recent_start": "2026-08-18",
+    "recent_end": "2026-08-20"
+  },
+  "minimums": {"recent_games": 3, "recent_off_poss": 100},
+  "opportunity": {
+    "minutes_per_game": {"floor": 10, "target": 30, "weight": 0.30},
+    "possession_share": {"floor": 0.20, "target": 0.70, "weight": 0.40},
+    "possession_share_delta": {"floor": -0.10, "target": 0.20, "weight": 0.30}
+  },
+  "stability": {
+    "recent_games_target": 3,
+    "recent_off_poss_target": 120,
+    "possession_share_sd_ceiling": 0.15,
+    "weights": {"games": 0.20, "possessions": 0.30, "consistency": 0.30, "assignment_confidence": 0.20}
+  }
+}
