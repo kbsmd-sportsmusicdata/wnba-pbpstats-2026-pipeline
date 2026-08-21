@@ -39,6 +39,7 @@ SECTION_ORDER = (
     "Useful broadcast checkpoints",
     "Tiebreak watch",
     "Historical context",
+    "Head-to-head records",
     "Method / caveats",
 )
 
@@ -616,6 +617,38 @@ def _table(headers: tuple[str, ...], rows: list[tuple[object, ...]]) -> list[str
     return lines
 
 
+def _head_to_head_table(
+    head_to_head: pd.DataFrame,
+    ordered_team_ids: list[object],
+    abbreviations: Mapping[object, str],
+) -> list[str]:
+    """A win-loss matrix: each row team's head-to-head record against every opponent column.
+
+    Cells are the row team's ``wins-losses`` in games played so far. The diagonal is ``—`` (a
+    team against itself) and a pair that has not met is ``–``. Reads directly from the validated
+    ``head_to_head`` bundle; it reranks nothing.
+    """
+    record: dict[tuple[str, str], tuple[int, int, int]] = {}
+    for row in head_to_head.itertuples():
+        record[(str(row.team_id), str(row.opponent_id))] = (
+            int(row.wins),
+            int(row.losses),
+            int(row.games_played),
+        )
+    headers = ("Team", *(abbreviations[team_id] for team_id in ordered_team_ids))
+    rows: list[tuple[object, ...]] = []
+    for team_id in ordered_team_ids:
+        cells: list[object] = [abbreviations[team_id]]
+        for opponent_id in ordered_team_ids:
+            if team_id == opponent_id:
+                cells.append("—")
+                continue
+            entry = record.get((str(team_id), str(opponent_id)))
+            cells.append(f"{entry[0]}-{entry[1]}" if entry and entry[2] else "–")
+        rows.append(tuple(cells))
+    return _table(headers, rows)
+
+
 def _status(row: pd.Series) -> str:
     if _boolean(row.get("clinched_playoffs")):
         return "Mathematically clinched"
@@ -983,10 +1016,25 @@ def _build_markdown(
                 + "."
             )
 
+    lines.extend(["", f"## {SECTION_ORDER[9]}", ""])
+    lines.append(
+        "Each cell is the row team's win-loss record against the column team in games played so "
+        "far this season. Rows and columns are ordered by current standing; **—** marks a team "
+        "against itself and **–** a pair that has not met yet."
+    )
+    lines.append("")
+    lines.extend(
+        _head_to_head_table(
+            frames["head_to_head"],
+            current.sort_values("current_rank")["team_id"].tolist(),
+            abbreviations,
+        )
+    )
+
     lines.extend(
         [
             "",
-            f"## {SECTION_ORDER[9]}",
+            f"## {SECTION_ORDER[10]}",
             "",
             (
                 f"The top {qualifier} of {int(cfg.team_count)} teams qualify league-wide. "
