@@ -2220,3 +2220,4 @@ PlayerId,PlayerName,_dataset,_league,_season,_season_type,_source_endpoint,_sour
 1642803,Michelle Onyiah,players_directory,wnba,,,/get-all-players-for-league/wnba,{},20260808T142047Z,2026-08-08T14:20:48+00:00,9dfbed2686872b448bfc301ef0cd4299cf32171941b3f0bb101493d48b7cfb11,"[""players""]"
 1642791,Zaay Green,players_directory,wnba,,,/get-all-players-for-league/wnba,{},20260813T144904Z,2026-08-13T14:49:04+00:00,ee18fbeda834b0a49e5c744a5657132501dda255f9a1adcb3a99c9aac760c589,"[""players""]"
 1643825,Elena Buenavida,players_directory,wnba,,,/get-all-players-for-league/wnba,{},20260813T144904Z,2026-08-13T14:49:04+00:00,787e08137a6b845e8d3215d1d3ca355767ac42ab6c2da4ebd2b61c1a19a89f0e,"[""players""]"
+1642835,Morgan Maly,players_directory,wnba,,,/get-all-players-for-league/wnba,{},20260822T140916Z,2026-08-22T14:09:17+00:00,a3a7fe40e826f7c5b08f84635a88163e39650aee21b933d810c871245bf5ab72,"[""players""]"

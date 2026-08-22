@@ -1,17 +1,22 @@
 [
   {
-    "player_id": "1642320",
-    "name": "Jaylyn Sherrod",
+    "player_id": "1628915",
+    "name": "Kia Nurse",
     "error": "failed to fetch /get-game-logs/wnba after 5 attempts: retryable status 500"
   },
   {
-    "player_id": "1642815",
-    "name": "Makayla Timpson",
+    "player_id": "1631263",
+    "name": "Nikolina Milic",
     "error": "failed to fetch /get-game-logs/wnba after 5 attempts: retryable status 500"
   },
   {
-    "player_id": "202252",
-    "name": "Alysha Clark",
+    "player_id": "1643447",
+    "name": "Gabriela Jaquez",
+    "error": "failed to fetch /get-game-logs/wnba after 5 attempts: retryable status 500"
+  },
+  {
+    "player_id": "1643450",
+    "name": "Rori Harmon",
     "error": "failed to fetch /get-game-logs/wnba after 5 attempts: retryable status 500"
   }
 ]

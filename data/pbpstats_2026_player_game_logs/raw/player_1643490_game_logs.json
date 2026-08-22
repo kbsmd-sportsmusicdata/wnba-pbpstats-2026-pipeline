@@ -3,16 +3,16 @@
     "Name": "Eliska Joklova",
     "ShortName": "Eliska Joklova",
     "TeamAbbreviation": "MIN",
-    "SecondsPlayed": 6256.5,
-    "GamesPlayed": 18,
-    "Minutes": 104,
+    "SecondsPlayed": 6291.1,
+    "GamesPlayed": 19,
+    "Minutes": 105,
     "PlusMinus": 23,
     "OffPoss": 203,
-    "DefPoss": 203,
+    "DefPoss": 205,
     "PenaltyOffPoss": 56,
-    "PenaltyDefPoss": 94,
+    "PenaltyDefPoss": 96,
     "SecondChanceOffPoss": 27,
-    "TotalPoss": 406,
+    "TotalPoss": 408,
     "AtRimFGM": 9,
     "AtRimFGA": 13,
     "SecondChanceAtRimFGM": 1,
@@ -91,7 +91,7 @@
     "Period1Fouls2Minutes": 1,
     "Period2Fouls2Minutes": 4,
     "OnOffRtg": 116.74876847290642,
-    "OnDefRtg": 105.41871921182268,
+    "OnDefRtg": 104.39024390243904,
     "Assisted2sPct": 0.5,
     "NonPutbacksAssisted2sPct": 0.5,
     "Fg2Pct": 0.5882352941176471,
@@ -975,6 +975,16 @@
       "GameId": "1022600250",
       "Team": "MIN",
       "Opponent": "PDX"
+    },
+    {
+      "Minutes": "00:34",
+      "DefPoss": 2,
+      "PenaltyDefPoss": 2,
+      "TotalPoss": 2,
+      "Date": "2026-08-21",
+      "GameId": "1022600272",
+      "Team": "MIN",
+      "Opponent": "WAS"
     }
   ]
 }

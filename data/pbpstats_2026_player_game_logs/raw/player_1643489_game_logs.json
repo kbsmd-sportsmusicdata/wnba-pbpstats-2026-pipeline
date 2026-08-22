@@ -3,16 +3,16 @@
     "Name": "Antonia Delaere",
     "ShortName": "Antonia Delaere",
     "TeamAbbreviation": "MIN",
-    "SecondsPlayed": 24897.0,
-    "GamesPlayed": 35,
-    "Minutes": 415,
+    "SecondsPlayed": 24931.6,
+    "GamesPlayed": 36,
+    "Minutes": 416,
     "PlusMinus": 87,
     "OffPoss": 828,
-    "DefPoss": 840,
+    "DefPoss": 842,
     "PenaltyOffPoss": 205,
-    "PenaltyDefPoss": 270,
+    "PenaltyDefPoss": 272,
     "SecondChanceOffPoss": 125,
-    "TotalPoss": 1668,
+    "TotalPoss": 1670,
     "AtRimFGM": 7,
     "AtRimFGA": 12,
     "PenaltyAtRimFGM": 1,
@@ -108,7 +108,7 @@
     "Period3Fouls4Minutes": 1,
     "Period4Fouls4Minutes": 10,
     "OnOffRtg": 112.43961352657006,
-    "OnDefRtg": 100.47619047619047,
+    "OnDefRtg": 100.2375296912114,
     "Assisted2sPct": 0.9230769230769231,
     "NonPutbacksAssisted2sPct": 0.9230769230769231,
     "Assisted3sPct": 0.92,
@@ -2007,6 +2007,16 @@
       "GameId": "1022600250",
       "Team": "MIN",
       "Opponent": "PDX"
+    },
+    {
+      "Minutes": "00:34",
+      "DefPoss": 2,
+      "PenaltyDefPoss": 2,
+      "TotalPoss": 2,
+      "Date": "2026-08-21",
+      "GameId": "1022600272",
+      "Team": "MIN",
+      "Opponent": "WAS"
     }
   ]
 }
