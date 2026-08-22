@@ -4,16 +4,18 @@
   const payload = JSON.parse(document.getElementById("rfm-data").textContent);
   const candidates = payload.candidates;
   const evidence = payload.evidence;
+  const {
+    formatEvidenceValue,
+    formatScore,
+    hasPlottableScores,
+    scoreWidth,
+  } = globalThis.RFMScoreDisplay;
 
   function node(tag, className, text) {
     const element = document.createElement(tag);
     if (className) element.className = className;
     if (text !== undefined) element.textContent = text;
     return element;
-  }
-
-  function score(value) {
-    return Number(value).toFixed(0);
   }
 
   function renderFunnel() {
@@ -36,12 +38,13 @@
 
   function metricBar(label, value, code) {
     const wrap = node("div", "metric");
+    if (formatScore(value) === "Unavailable") wrap.classList.add("metric-unavailable");
     const line = node("div", "metric-line");
     line.append(node("span", null, label));
-    line.append(node("b", null, score(value)));
+    line.append(node("b", null, formatScore(value)));
     const track = node("div", "track");
     const fill = node("span", `fill fill-${code}`);
-    fill.style.width = `${Math.max(0, Math.min(100, Number(value)))}%`;
+    fill.style.width = `${scoreWidth(value)}%`;
     track.append(fill);
     wrap.append(line, track);
     return wrap;
@@ -92,13 +95,14 @@
     axisY.textContent = "FULFILLMENT →";
     svg.append(axisY);
 
-    candidates.forEach((candidate, index) => {
+    const plottable = candidates.filter(hasPlottableScores);
+    plottable.forEach((candidate, index) => {
       const x = plot.x + Number(candidate.opportunity_score) / 100 * plot.w;
       const y = plot.y + plot.h - Number(candidate.fulfillment_score) / 100 * plot.h;
       const radius = 10 + Number(candidate.stability_score) / 100 * 12;
       const circle = svgElement("circle", {cx: x, cy: y, r: radius, class: `candidate-dot dot-${index}`});
       circle.setAttribute("tabindex", "0");
-      circle.setAttribute("aria-label", `${candidate.player_name}: Fulfillment ${score(candidate.fulfillment_score)}, Opportunity ${score(candidate.opportunity_score)}, Stability ${score(candidate.stability_score)}`);
+      circle.setAttribute("aria-label", `${candidate.player_name}: Fulfillment ${formatScore(candidate.fulfillment_score)}, Opportunity ${formatScore(candidate.opportunity_score)}, Stability ${formatScore(candidate.stability_score)}`);
       circle.dataset.playerId = candidate.player_id;
       svg.append(circle);
       const label = svgElement("text", {x: x + radius + 8, y: y + 5, class: "dot-label"});
@@ -106,13 +110,17 @@
       svg.append(label);
     });
     target.append(svg);
+    const omitted = candidates.length - plottable.length;
+    if (omitted > 0) {
+      target.append(node("p", "matrix-note", `${omitted} unavailable candidate${omitted === 1 ? "" : "s"} omitted from the matrix.`));
+    }
   }
 
   function renderTable() {
     const body = document.querySelector("#candidate-table tbody");
     candidates.forEach((candidate) => {
       const row = document.createElement("tr");
-      [candidate.player_name, candidate.role_label, score(candidate.fulfillment_score), score(candidate.opportunity_score), score(candidate.stability_score)].forEach((value, index) => {
+      [candidate.player_name, candidate.role_label, formatScore(candidate.fulfillment_score), formatScore(candidate.opportunity_score), formatScore(candidate.stability_score)].forEach((value, index) => {
         const cell = node("td", index > 1 ? "numeric" : null, value);
         row.append(cell);
       });
@@ -141,8 +149,8 @@
         const line = node("div", "evidence-row");
         const copy = node("div");
         copy.append(node("strong", null, item.metric_code.replaceAll("_", " ")));
-        copy.append(node("small", null, `Denominator ${Number(item.denominator).toFixed(1)} · ${item.window_start} to ${item.window_end}`));
-        line.append(copy, node("b", null, item.metric_value === null ? "Unavailable" : Number(item.metric_value).toFixed(3)));
+        copy.append(node("small", null, `${item.source_name} · ${item.window_scope} · Denominator ${formatEvidenceValue(item.denominator, 1)} · ${item.window_start} to ${item.window_end}`));
+        line.append(copy, node("b", null, formatEvidenceValue(item.metric_value)));
         section.append(line);
       });
       content.append(section);

@@ -104,6 +104,6 @@ high Stability with low Fulfillment is valid and covered by a regression test.
 | Metrics | Recompute rates from counts, recent/baseline separation | Zero denominators, overtime, traded-player team windows. |
 | Scores | Independent dimensions, formula version, stability/performance separation | Hand-calculated reviewer set, role thresholds, sensitivity analysis. |
 | Evidence | Source, windows, denominators, safeguards | Cross-source lag and crosswalk quality labels. |
-| Web | Exact bundle, direct-file payload, safe text rendering, accessible dialog | Browser keyboard, mobile, contrast, and print QA. |
+| Web | Exact bundle, direct-file payload, null-safe score formatting, unavailable-point omission, safe text rendering, accessible dialog | Browser keyboard, contrast, and print QA. |
 | Workflow | Manual-only, fixture config, no commit/push | Protected review gate before any live job is introduced. |
 | Isolation | No forecast path changes | Retain as a permanent regression check. |

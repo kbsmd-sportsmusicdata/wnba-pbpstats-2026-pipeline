@@ -18,6 +18,7 @@ From the repository root:
 
 ```bash
 python3 -m unittest tests/test_role_fulfillment_matrix.py tests/test_role_fulfillment_matrix_web.py
+node --test tests/test_role_fulfillment_matrix_client.js
 python3 scripts/build_role_fulfillment_matrix.py
 ```
 

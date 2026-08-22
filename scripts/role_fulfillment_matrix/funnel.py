@@ -25,10 +25,15 @@ def build_candidate_funnel(
     eligibility = sources.eligibility.rename(columns={
         "review_status": "eligibility_review_status",
         "player_name": "eligibility_player_name",
+        "reviewed_by": "eligibility_reviewed_by",
+        "reviewed_at": "eligibility_reviewed_at",
+        "source_url": "eligibility_source_url",
     })
     assignments = sources.role_assignments.rename(columns={
         "review_status": "assignment_review_status",
         "player_name": "assignment_player_name",
+        "reviewed_by": "assignment_reviewed_by",
+        "reviewed_at": "assignment_reviewed_at",
     })
     frame = players.merge(standings, on="team_abbreviation", how="left")
     frame = frame.merge(eligibility, on="player_id", how="left")

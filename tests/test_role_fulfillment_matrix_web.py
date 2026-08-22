@@ -37,6 +37,7 @@ class StandaloneBundleTest(unittest.TestCase):
             "data/processed/run_manifest_2026.json",
             "deliverables/role_fulfillment_matrix/index.html",
             "deliverables/role_fulfillment_matrix/assets/app.js",
+            "deliverables/role_fulfillment_matrix/assets/score_display.js",
             "deliverables/role_fulfillment_matrix/assets/styles.css",
             "deliverables/role_fulfillment_matrix/data/role_fulfillment_payload.json",
         })

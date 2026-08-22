@@ -24,7 +24,10 @@ class AnalysisResult:
 
 
 def _funnel_counts(funnel: pd.DataFrame) -> Dict[str, int]:
-    counts = {"players_considered": int(len(funnel)), "players_scored": int((funnel["funnel_status"] == "included").sum())}
+    counts = {
+        "players_considered": int(len(funnel)),
+        "candidates_included": int((funnel["funnel_status"] == "included").sum()),
+    }
     for reason, count in funnel["exclusion_reason"].value_counts().items():
         if reason:
             counts[f"excluded_{reason}"] = int(count)
@@ -73,6 +76,8 @@ def build_analysis(config: Dict[str, Any]) -> AnalysisResult:
         scores = scores.sort_values(["fulfillment_score", "player_name"], ascending=[False, True]).reset_index(drop=True)
     evidence = pd.DataFrame(evidence_rows)
     counts = _funnel_counts(funnel)
+    players_scored = int((scores.get("score_status") != "unavailable").sum()) if not scores.empty else 0
+    counts["players_scored"] = players_scored
     manifest = {
         "season": int(config["season"]),
         "mode": "fixture",
@@ -82,7 +87,7 @@ def build_analysis(config: Dict[str, Any]) -> AnalysisResult:
             "reviewed player-role assignments",
         ],
         "formula_version": config["formula_version"],
-        "players_scored": counts["players_scored"],
+        "players_scored": players_scored,
         "funnel_counts": counts,
         "source_manifest": sources.source_manifest,
     }

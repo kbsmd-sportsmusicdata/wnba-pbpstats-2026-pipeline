@@ -23,6 +23,10 @@ def render_dashboard(payload: Dict[str, Any], template_root: Path, bundle_root: 
     _atomic_text(bundle_root / "index.html", html)
     _atomic_text(bundle_root / "data" / "role_fulfillment_payload.json", serialized + "\n")
     shutil.copyfile(template_root / "assets" / "app.js", bundle_root / "assets" / "app.js")
+    shutil.copyfile(
+        template_root / "assets" / "score_display.js",
+        bundle_root / "assets" / "score_display.js",
+    )
     shutil.copyfile(template_root / "assets" / "styles.css", bundle_root / "assets" / "styles.css")
 
 

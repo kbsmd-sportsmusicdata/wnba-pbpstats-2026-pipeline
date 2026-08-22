@@ -61,6 +61,20 @@ class FunnelAndScoringTest(unittest.TestCase):
         self.assertEqual(funnel.loc["FX-004", "exclusion_reason"], "eligibility_not_reviewed")
         self.assertEqual(funnel.loc["FX-005", "exclusion_reason"], "insufficient_recent_sample")
 
+    def test_empty_baseline_window_flows_to_unavailable_scores(self):
+        config = load_config(FIXTURE_CONFIG)
+        config["windows"] = dict(config["windows"])
+        config["windows"]["baseline_start"] = "2025-01-01"
+        config["windows"]["baseline_end"] = "2025-01-31"
+
+        result = build_analysis(config)
+
+        self.assertEqual(set(result.scores["player_id"]), {"FX-001", "FX-002"})
+        self.assertTrue((result.scores["score_status"] == "unavailable").all())
+        self.assertTrue(result.scores["baseline_possession_share"].isna().all())
+        self.assertEqual(result.manifest["funnel_counts"]["candidates_included"], 2)
+        self.assertEqual(result.manifest["players_scored"], 0)
+
     def test_rates_are_recomputed_from_summed_counts(self):
         scores = self.result.scores.set_index("player_id")
         creator = scores.loc["FX-001"]
@@ -90,9 +104,47 @@ class FunnelAndScoringTest(unittest.TestCase):
         self.assertFalse(evidence.empty)
         self.assertTrue({
             "player_id", "score_family", "metric_code", "metric_value", "denominator",
-            "window_start", "window_end", "source_name", "safeguard"
+            "window_start", "window_end", "window_scope", "source_name", "safeguard"
         }.issubset(evidence))
-        self.assertTrue((evidence["source_name"] == "synthetic_fixture_player_game").all())
+        self.assertEqual(set(evidence["source_name"]), {
+            "synthetic_fixture_player_game",
+            "synthetic_fixture_role_assignments",
+        })
+
+    def test_stability_evidence_preserves_raw_observations(self):
+        stability = self.result.evidence[
+            (self.result.evidence["player_id"] == "FX-001")
+            & (self.result.evidence["score_family"] == "stability")
+        ].set_index("metric_code")
+
+        self.assertEqual(stability.loc["games", "metric_value"], 3.0)
+        self.assertEqual(stability.loc["possessions", "metric_value"], 120.0)
+        self.assertAlmostEqual(
+            stability.loc["consistency", "metric_value"],
+            0.2041241452319315,
+            places=12,
+        )
+        self.assertEqual(stability.loc["assignment_confidence", "metric_value"], 0.9)
+        self.assertEqual(stability.loc["games", "component_score"], 100.0)
+
+    def test_evidence_provenance_matches_each_metric_source_and_window(self):
+        evidence = self.result.evidence[
+            self.result.evidence["player_id"] == "FX-001"
+        ].set_index("metric_code")
+
+        delta = evidence.loc["possession_share_delta"]
+        self.assertEqual(delta["source_name"], "synthetic_fixture_player_game")
+        self.assertEqual(delta["window_scope"], "baseline_to_recent")
+        self.assertEqual(delta["window_start"], "2026-08-01")
+        self.assertEqual(delta["window_end"], "2026-08-20")
+        self.assertEqual(delta["baseline_denominator"], 240.0)
+        self.assertEqual(delta["recent_denominator"], 240.0)
+
+        assignment = evidence.loc["assignment_confidence"]
+        self.assertEqual(assignment["source_name"], "synthetic_fixture_role_assignments")
+        self.assertEqual(assignment["window_scope"], "assignment_review")
+        self.assertEqual(assignment["window_start"], "2026-08-20")
+        self.assertEqual(assignment["window_end"], "2026-08-20")
 
     def test_manifest_declares_live_scoring_block(self):
         manifest = self.result.manifest

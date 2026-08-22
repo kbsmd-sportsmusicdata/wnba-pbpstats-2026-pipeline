@@ -12,6 +12,12 @@ COUNT_COLUMNS = [
     "minutes", "off_poss", "team_possessions", "points", "assists", "turnovers",
     "fga", "fgm", "fta", "ftm", "at_rim_fga", "at_rim_fgm",
 ]
+IDENTITY_COLUMNS = ["player_id", "player_name", "team_abbreviation"]
+DERIVED_COLUMNS = [
+    "games", "possession_share_sd", "minutes_per_game", "possession_share",
+    "assists_per_75", "assist_turnover_ratio", "true_shooting_attempts",
+    "true_shooting_pct", "rim_fga_share", "rim_fg_pct", "turnover_rate",
+]
 
 
 def _safe_ratio(numerator: float, denominator: float) -> float:
@@ -21,9 +27,10 @@ def _safe_ratio(numerator: float, denominator: float) -> float:
 
 
 def aggregate_window(frame: pd.DataFrame, prefix: str) -> pd.DataFrame:
-    columns = ["player_id", "player_name", "team_abbreviation"]
+    columns = IDENTITY_COLUMNS
     if frame.empty:
-        return pd.DataFrame(columns=["player_id"])
+        value_columns = [f"{prefix}_{column}" for column in COUNT_COLUMNS + DERIVED_COLUMNS]
+        return pd.DataFrame(columns=columns + value_columns)
 
     numeric = frame.copy()
     for column in COUNT_COLUMNS:

@@ -58,20 +58,31 @@ def opportunity(row: pd.Series, config: Dict[str, Any]) -> Tuple[float, list[Dic
 def stability(row: pd.Series, config: Dict[str, Any]) -> Tuple[float, list[Dict[str, Any]]]:
     rules = config["stability"]
     weights = rules["weights"]
-    values = {
-        "games": min(float(row.get("recent_games", 0)) / float(rules["recent_games_target"]), 1.0) * 100,
-        "possessions": min(float(row.get("recent_off_poss", 0)) / float(rules["recent_off_poss_target"]), 1.0) * 100,
+    raw_values = {
+        "games": float(row.get("recent_games", np.nan)),
+        "possessions": float(row.get("recent_off_poss", np.nan)),
+        "consistency": float(row.get("recent_possession_share_sd", np.nan)),
+        "assignment_confidence": float(row.get("assignment_confidence", np.nan)),
+    }
+    components = {
+        "games": min(raw_values["games"] / float(rules["recent_games_target"]), 1.0) * 100,
+        "possessions": min(raw_values["possessions"] / float(rules["recent_off_poss_target"]), 1.0) * 100,
         "consistency": normalize(
-            float(row.get("recent_possession_share_sd", np.nan)),
+            raw_values["consistency"],
             float(rules["possession_share_sd_ceiling"]),
             0.0,
             "lower",
         ),
-        "assignment_confidence": float(row.get("assignment_confidence", np.nan)) * 100,
+        "assignment_confidence": raw_values["assignment_confidence"] * 100,
     }
-    parts = [(value, float(weights[code])) for code, value in values.items()]
+    parts = [(value, float(weights[code])) for code, value in components.items()]
     detail = [
-        {"code": code, "value": value / 100.0, "component_score": value, "weight": weights[code]}
-        for code, value in values.items()
+        {
+            "code": code,
+            "value": raw_values[code],
+            "component_score": component,
+            "weight": weights[code],
+        }
+        for code, component in components.items()
     ]
     return weighted_score(parts), detail

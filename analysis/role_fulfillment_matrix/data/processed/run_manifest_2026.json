@@ -3,13 +3,14 @@
   "config_path": "analysis/role_fulfillment_matrix/config/fixture_config.json",
   "formula_version": "rfm-fixture-v1",
   "funnel_counts": {
+    "candidates_included": 2,
     "excluded_eligibility_not_reviewed": 1,
     "excluded_insufficient_recent_sample": 1,
     "excluded_non_contender_team": 1,
     "players_considered": 5,
     "players_scored": 2
   },
-  "generated_at_utc": "2026-08-21T18:22:12+00:00",
+  "generated_at_utc": "2026-08-22T01:41:56+00:00",
   "live_scoring_blockers": [
     "reviewed age/experience eligibility table",
     "reviewed player-role assignments"

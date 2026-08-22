@@ -26,6 +26,9 @@ jobs:
       - name: Run fixture-only contract and web tests
         run: python -m unittest tests/test_role_fulfillment_matrix.py tests/test_role_fulfillment_matrix_web.py
 
+      - name: Run fixture-only client display tests
+        run: node --test tests/test_role_fulfillment_matrix_client.js
+
       - name: Build fixture-only standalone artifact
         run: python scripts/build_role_fulfillment_matrix.py --config analysis/role_fulfillment_matrix/config/fixture_config.json
 
