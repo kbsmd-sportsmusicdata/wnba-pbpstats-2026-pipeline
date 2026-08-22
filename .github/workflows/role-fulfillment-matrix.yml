@@ -1,0 +1,41 @@
+name: Role Fulfillment Matrix Fixture Prototype
+
+on:
+  workflow_dispatch:
+
+jobs:
+  fixture-prototype:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.11"
+
+      - name: Install repository dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run fixture-only contract and web tests
+        run: python -m unittest tests/test_role_fulfillment_matrix.py tests/test_role_fulfillment_matrix_web.py
+
+      - name: Run fixture-only client display tests
+        run: node --test tests/test_role_fulfillment_matrix_client.js
+
+      - name: Build fixture-only standalone artifact
+        run: python scripts/build_role_fulfillment_matrix.py --config analysis/role_fulfillment_matrix/config/fixture_config.json
+
+      - name: Upload review artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: role-fulfillment-matrix-fixture-prototype
+          path: |
+            analysis/role_fulfillment_matrix/data/processed
+            analysis/role_fulfillment_matrix/deliverables/role_fulfillment_matrix

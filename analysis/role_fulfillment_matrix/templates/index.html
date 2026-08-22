@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Fixture-only Role Fulfillment Matrix experiment">
+  <title>Role Fulfillment Matrix · Fixture Prototype</title>
+  <link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+  <main class="shell">
+    <header class="hero">
+      <div>
+        <p class="eyebrow">WNBA ANALYTICS LAB · EXPERIMENT</p>
+        <h1>Role Fulfillment Matrix</h1>
+        <p class="dek">Separate the opportunity a young contributor receives from how well the assigned role is fulfilled—and how stable the evidence is.</p>
+      </div>
+      <div class="hero-mark" aria-hidden="true"><span>RFM</span><small>V1</small></div>
+    </header>
+
+    <section id="fixture-banner" class="status-banner" aria-label="Prototype status">
+      <strong>Fixture-only prototype</strong>
+      <span>Synthetic players and teams. Live scoring is blocked pending reviewed eligibility and role assignments.</span>
+    </section>
+
+    <section class="section-block" aria-labelledby="funnel-title">
+      <div class="section-heading">
+        <div><p class="kicker">01 · IDENTIFY</p><h2 id="funnel-title">Candidate funnel</h2></div>
+        <p>Every exclusion is explicit; no player silently disappears.</p>
+      </div>
+      <div id="funnel-summary" class="funnel-grid"></div>
+    </section>
+
+    <section class="section-block" aria-labelledby="cards-title">
+      <div class="section-heading">
+        <div><p class="kicker">02 · DIAGNOSE</p><h2 id="cards-title">Three scores, three questions</h2></div>
+        <p>Fulfillment is performance. Opportunity is access. Stability is confidence.</p>
+      </div>
+      <div id="score-cards" class="score-grid"></div>
+    </section>
+
+    <section class="section-block matrix-section" aria-labelledby="matrix-title">
+      <div class="section-heading">
+        <div><p class="kicker">03 · COMPARE</p><h2 id="matrix-title">Role matrix</h2></div>
+        <p>Point size reflects Stability—not a hidden composite score.</p>
+      </div>
+      <div id="role-matrix" class="matrix-wrap" role="img" aria-label="Role Fulfillment Matrix"></div>
+    </section>
+
+    <section class="section-block" aria-labelledby="table-title">
+      <div class="section-heading">
+        <div><p class="kicker">04 · VERIFY</p><h2 id="table-title">Candidate evidence</h2></div>
+        <p>Open a row to inspect formulas, denominators, source windows, and safeguards.</p>
+      </div>
+      <div class="table-wrap">
+        <table id="candidate-table">
+          <thead><tr><th>Player</th><th>Assigned role</th><th>FUL</th><th>OPP</th><th>STB</th><th>Evidence</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <footer><span>Formula <b id="formula-version"></b></span><span>Live scoring: <b>BLOCKED</b></span></footer>
+  </main>
+
+  <dialog id="evidence-dialog" aria-labelledby="evidence-title">
+    <div class="dialog-head"><div><p class="kicker">EVIDENCE DRAWER</p><h2 id="evidence-title"></h2></div><button id="close-evidence" type="button" aria-label="Close evidence">×</button></div>
+    <p id="evidence-subtitle" class="dialog-subtitle"></p>
+    <div id="evidence-content"></div>
+  </dialog>
+
+  <script id="rfm-data" type="application/json">__RFM_PAYLOAD__</script>
+  <script src="assets/score_display.js"></script>
+  <script src="assets/app.js"></script>
+</body>
+</html>
