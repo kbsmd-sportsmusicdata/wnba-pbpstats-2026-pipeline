@@ -3287,6 +3287,42 @@
       "AwayPossessions": 79,
       "HomeTeamAbbreviation": "TOR",
       "AwayTeamAbbreviation": "PDX"
+    },
+    {
+      "GameId": "1022600275",
+      "Date": "2026-08-22",
+      "HomeTeamId": "1611661313",
+      "AwayTeamId": "1611661325",
+      "HomePoints": 109,
+      "AwayPoints": 102,
+      "HomePossessions": 83,
+      "AwayPossessions": 83,
+      "HomeTeamAbbreviation": "NYL",
+      "AwayTeamAbbreviation": "IND"
+    },
+    {
+      "GameId": "1022600276",
+      "Date": "2026-08-22",
+      "HomeTeamId": "1611661320",
+      "AwayTeamId": "1611661323",
+      "HomePoints": 77,
+      "AwayPoints": 68,
+      "HomePossessions": 83,
+      "AwayPossessions": 83,
+      "HomeTeamAbbreviation": "LAS",
+      "AwayTeamAbbreviation": "CON"
+    },
+    {
+      "GameId": "1022600277",
+      "Date": "2026-08-22",
+      "HomeTeamId": "1611661317",
+      "AwayTeamId": "1611661330",
+      "HomePoints": 89,
+      "AwayPoints": 99,
+      "HomePossessions": 80,
+      "AwayPossessions": 80,
+      "HomeTeamAbbreviation": "PHX",
+      "AwayTeamAbbreviation": "ATL"
     }
   ]
 }
