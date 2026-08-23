@@ -131,7 +131,7 @@ high Stability with low Fulfillment is valid and covered by a regression test.
 | Impact feed lags player-game feed | Recent opportunity and stale impact are not comparable on one clock. | Rebuild to a shared cutoff or keep impact evidence-only with lag labels. |
 | True player on/off not materialized | On-court net rating is not on-minus-off impact. | Validate a separate possession/lineup pipeline after the prototype is approved. |
 | Live-v1 validation completed | All 11 production calculations match the locked expected values; sensitivity movement is at most 10 points, with two adjacent-band crossings. | Preserve the approved report and locked expected table. |
-| Live adapter review completed | The adapter passes freshness, zero-omission, 36-player coverage, team-join, and 11-player parity checks. | Preserve these checks on every dry run. |
+| Live adapter review completed | The adapter passes freshness, zero-omission, 37-player coverage, team-join, and 11-player parity checks. | Preserve these checks on every dry run. |
 | End-to-end dry-run review | Real contender, roster, window, funnel, score, evidence, and UI paths now execute without publishing. | Review `data/review/live_dry_run/role_fulfillment_matrix_live_dry_run_validation.md`, then explicitly approve or reject live enablement. |
 
 ## Test plan

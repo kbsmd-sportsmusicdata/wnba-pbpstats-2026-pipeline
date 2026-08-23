@@ -11,39 +11,40 @@ Live output remains disabled. This package validates the adapter boundary only.
 ## Source and grain
 
 - Source: PBPStats 2026 regular-season player and team game logs
-- Source player rows: 5,425
-- Canonical participating rows: 5,424
+- Source player rows: 5,483
+- Canonical participating rows: 5,482
 - Explicit non-participation exclusions: 1
-- Coverage through: 2026-08-21
+- Coverage through: 2026-08-22
 - Canonical grain: unique `player_id + game_id`
 
 ## Gate result
 
 **Adapter status: `review_ready`.**
 
-- Reviewed assignments matched: 36 of 36
+- Reviewed assignments matched: 37 of 37
 - Reviewed-player refresh failures: 0
-- Global refresh failures: 4
+- Global refresh failures: 2
 - Locked parity matches: 11 of 11
 - Maximum locked-field difference: 0.000000000
+- Locked parity window: 2026-08-07 through 2026-08-20
 
 Warnings:
-- 4 unrelated player refresh failures do not affect reviewed-role coverage
+- 2 unrelated player refresh failures do not affect reviewed-role coverage
 
 ## Automated checks
 
 | Check | Status | Observed | Expectation |
 |---|---|---:|---|
-| `player_game_key_uniqueness` | **pass** | 5424 | 0 duplicate player-game keys |
-| `team_game_join_coverage` | **pass** | 5424 | 5424 expected |
+| `player_game_key_uniqueness` | **pass** | 5482 | 0 duplicate player-game keys |
+| `team_game_join_coverage` | **pass** | 5482 | 5482 expected |
 | `nonparticipation_exclusion` | **pass** | 1 | zero-minute rows without possession evidence |
-| `possession_identity` | **pass** | 5424 | total_poss equals off_poss plus def_poss |
-| `manifest_freshness` | **pass** | 2026-08-21 | recent end 2026-08-20 |
-| `manifest_source_date_consistency` | **pass** | 2026-08-21 | manifest coverage 2026-08-21 |
-| `reviewed_assignment_coverage` | **pass** | 36 | 36 expected |
+| `possession_identity` | **pass** | 5482 | total_poss equals off_poss plus def_poss |
+| `manifest_freshness` | **pass** | 2026-08-22 | recent end 2026-08-21 |
+| `manifest_source_date_consistency` | **pass** | 2026-08-22 | manifest coverage 2026-08-22 |
+| `reviewed_assignment_coverage` | **pass** | 37 | 37 expected |
 | `reviewed_candidate_refresh_failures` | **pass** | 0 | must be zero |
-| `manifest_failure_ledger_consistency` | **pass** | 4 | manifest declares 4 |
-| `global_refresh_failures` | **warn** | 4 | allowed only outside reviewed population |
+| `manifest_failure_ledger_consistency` | **pass** | 2 | manifest declares 2 |
+| `global_refresh_failures` | **warn** | 2 | allowed only outside reviewed population |
 | `locked_11_player_parity` | **pass** | 11 | 11 expected |
 
 ## Eleven-player parity

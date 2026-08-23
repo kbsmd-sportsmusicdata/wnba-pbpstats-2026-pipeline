@@ -3,18 +3,20 @@
   "review_status": "reviewed",
   "approved_by": "Krystal Beasley",
   "approved_at": "2026-08-22",
+  "last_updated_at": "2026-08-23",
   "assignment_policy": {
     "primary_role": "required_and_scored_after_threshold_approval",
     "secondary_role": "optional_and_unscored",
+    "inactive_without_role": "deferred_until_active",
     "taxonomy_role_count": 6
   },
-  "reviewed_assignment_rows": 36,
+  "reviewed_assignment_rows": 37,
   "reviewed_team_counts": {
     "ATL": 8,
     "GSV": 6,
     "IND": 5,
     "LVA": 3,
-    "MIN": 8,
+    "MIN": 9,
     "NYL": 6
   },
   "reviewed_primary_role_counts": {
@@ -22,7 +24,7 @@
     "interior_finisher_rim_runner": 6,
     "interior_hub_rebounder": 4,
     "lead_creator": 2,
-    "perimeter_scorer_spacer": 11,
+    "perimeter_scorer_spacer": 12,
     "secondary_creator_connector": 8
   },
   "excluded_free_agents": [
@@ -32,8 +34,26 @@
   ],
   "reviewed_output": {
     "path": "analysis/role_fulfillment_matrix/config/player_role_assignments_2026.csv",
-    "sha256": "4ad06269d902f645a5de03e8c012e6439e4e997cd0b607d9416c4d1bd66bdbd1"
+    "sha256": "a29b01f9136da6ed84bbf76da4fa8fed51b42b0be8ff20a9bad2c9698614c455"
   },
+  "supplemental_reviews": [
+    {
+      "reviewed_at": "2026-08-23",
+      "reviewed_by": "Krystal Beasley",
+      "player_name": "Chloe Bibby",
+      "primary_role": "perimeter_scorer_spacer",
+      "secondary_role": "secondary_creator_connector",
+      "assignment_confidence": 0.70,
+      "live_score_safeguard": "current_team_sample_required"
+    },
+    {
+      "reviewed_at": "2026-08-23",
+      "reviewed_by": "Krystal Beasley",
+      "player_name": "Janiah Barker",
+      "decision": "defer_role_while_inactive",
+      "reactivation_policy": "reviewed_primary_role_required"
+    }
+  ],
   "sample_policy": {
     "recent_games_min": 3,
     "recent_off_poss_min": 100,
@@ -44,6 +64,7 @@
   },
   "live_scoring_status": "blocked",
   "remaining_blockers": [
-    "reviewed_live_role_thresholds"
+    "approved_end_to_end_dry_run",
+    "explicit_live_output_enablement"
   ]
 }

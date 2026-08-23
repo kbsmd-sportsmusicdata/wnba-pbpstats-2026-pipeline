@@ -704,27 +704,33 @@ class LiveDryRunOutputTest(unittest.TestCase):
             manifest["adapter_audit"]["locked_parity_max_abs_difference"],
             0.000001,
         )
-        self.assertEqual(manifest["dry_run_gate_status"], "blocked")
+        self.assertEqual(manifest["dry_run_gate_status"], "review_ready")
         self.assertEqual(
             manifest["dry_run_gate_blockers"],
-            [
-                "current contender roster players without reviewed eligibility: 2",
-                "current contender candidates without reviewed role assignments: 1",
-            ],
+            [],
         )
         self.assertEqual(manifest["funnel_counts"]["players_considered"], 232)
         self.assertEqual(
-            manifest["funnel_counts"]["excluded_eligibility_not_reviewed"],
-            2,
+            manifest["funnel_counts"].get("excluded_eligibility_not_reviewed", 0),
+            0,
+        )
+        self.assertEqual(
+            manifest["funnel_counts"].get("excluded_role_assignment_not_reviewed", 0),
+            0,
+        )
+        self.assertEqual(
+            manifest["funnel_counts"]["excluded_inactive_role_review_deferred"],
+            1,
         )
         self.assertGreater(manifest["funnel_counts"]["candidates_included"], 0)
         self.assertIn("Review status: **pending reviewer approval**", report)
         self.assertIn("Live output remains disabled", report)
-        self.assertIn("Chloe Bibby", report)
+        self.assertNotIn("Chloe Bibby", report)
         self.assertIn("role assignment", report)
         self.assertIn("Janiah Barker", report)
-        self.assertIn("Iliana Rupert", report)
-        self.assertIn("reviewed eligibility row required", report)
+        self.assertIn("deferred while inactive", report)
+        self.assertNotIn("Iliana Rupert", report)
+        self.assertNotIn("reviewed eligibility row required", report)
         self.assertIn("Locked 11-player parity: 11 of 11", report)
         self.assertIn("Zero-omitted cells filled:", report)
         self.assertIn("Live-data dry run", html)

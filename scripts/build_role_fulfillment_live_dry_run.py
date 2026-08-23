@@ -66,6 +66,9 @@ def _render_report(manifest: Dict[str, Any], funnel: pd.DataFrame) -> str:
     missing_roles = funnel[
         funnel["exclusion_reason"] == "role_assignment_not_reviewed"
     ]
+    deferred_inactive_roles = funnel[
+        funnel["exclusion_reason"] == "inactive_role_review_deferred"
+    ]
     assignment_mismatches = funnel[
         funnel["exclusion_reason"] == "role_assignment_team_mismatch"
     ]
@@ -86,6 +89,12 @@ def _render_report(manifest: Dict[str, Any], funnel: pd.DataFrame) -> str:
         for row in assignment_mismatches.to_dict("records"):
             lines.append(
                 f"- {row['player_name']} ({row['team_abbreviation']}): reviewed role assignment belongs to another team."
+            )
+    if not deferred_inactive_roles.empty:
+        lines.extend(["", "## Deferred inactive role reviews", ""])
+        for row in deferred_inactive_roles.to_dict("records"):
+            lines.append(
+                f"- {row['player_name']} ({row['team_abbreviation']}): role assignment deferred while inactive; reactivation restores the review blocker."
             )
     lines.extend(
         [
