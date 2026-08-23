@@ -1,3 +1,4 @@
+import hashlib
 import json
 import sys
 import tempfile
@@ -23,6 +24,14 @@ REVIEWED_ASSIGNMENTS = (
     / "role_fulfillment_matrix"
     / "config"
     / "player_role_assignments_2026.csv"
+)
+ROLE_ASSIGNMENT_MANIFEST = (
+    ROOT
+    / "analysis"
+    / "role_fulfillment_matrix"
+    / "data"
+    / "review"
+    / "role_assignment_approval_manifest_2026.json"
 )
 
 
@@ -60,8 +69,8 @@ class DataContractTest(unittest.TestCase):
             "interior_finisher_rim_runner",
         }
 
-        self.assertEqual(len(assignments), 36)
-        self.assertEqual(assignments["player_id"].nunique(), 36)
+        self.assertEqual(len(assignments), 37)
+        self.assertEqual(assignments["player_id"].nunique(), 37)
         self.assertEqual(set(assignments["review_status"]), {"reviewed"})
         self.assertTrue(set(assignments["role_code"]).issubset(allowed_roles))
         self.assertTrue(
@@ -71,6 +80,39 @@ class DataContractTest(unittest.TestCase):
             {"Alex Fowler", "Julie Vanloo", "Ndjakalenga Mwenentanda"}.isdisjoint(
                 assignments["player_name"]
             )
+        )
+        chloe = assignments.set_index("player_name").loc["Chloe Bibby"]
+        self.assertEqual(chloe["team_abbreviation"], "MIN")
+        self.assertEqual(chloe["role_code"], "perimeter_scorer_spacer")
+        self.assertEqual(chloe["secondary_role_code"], "secondary_creator_connector")
+        self.assertAlmostEqual(chloe["assignment_confidence"], 0.70)
+        self.assertEqual(chloe["reviewed_at"], "2026-08-23")
+
+        manifest = json.loads(ROLE_ASSIGNMENT_MANIFEST.read_text())
+        self.assertEqual(manifest["reviewed_assignment_rows"], 37)
+        self.assertEqual(manifest["reviewed_team_counts"]["MIN"], 9)
+        self.assertEqual(
+            manifest["reviewed_primary_role_counts"]["perimeter_scorer_spacer"],
+            12,
+        )
+        self.assertEqual(manifest["last_updated_at"], "2026-08-23")
+        self.assertEqual(
+            manifest["assignment_policy"]["inactive_without_role"],
+            "deferred_until_active",
+        )
+        janiah_review = next(
+            row
+            for row in manifest["supplemental_reviews"]
+            if row["player_name"] == "Janiah Barker"
+        )
+        self.assertEqual(janiah_review["decision"], "defer_role_while_inactive")
+        self.assertEqual(
+            janiah_review["reactivation_policy"],
+            "reviewed_primary_role_required",
+        )
+        self.assertEqual(
+            manifest["reviewed_output"]["sha256"],
+            hashlib.sha256(REVIEWED_ASSIGNMENTS.read_bytes()).hexdigest(),
         )
 
     def test_schema_errors_name_the_source_and_missing_fields(self):
@@ -134,6 +176,40 @@ class FunnelAndScoringTest(unittest.TestCase):
         score = result.scores.set_index("player_id").loc["FX-001"]
         self.assertEqual(score["score_status"], "inactive_suppressed")
         self.assertTrue(pd.isna(score["fulfillment_score"]))
+
+    def test_inactive_player_without_role_is_deferred_until_reactivated(self):
+        config = load_config(FIXTURE_CONFIG)
+        with tempfile.TemporaryDirectory() as tmp:
+            assignments = pd.read_csv(config["sources"]["role_assignments"])
+            assignments = assignments[assignments["player_id"] != "FX-001"]
+            assignment_path = Path(tmp) / "assignments.csv"
+            assignments.to_csv(assignment_path, index=False)
+
+            eligibility = pd.read_csv(config["sources"]["eligibility"])
+            eligibility.loc[eligibility["player_id"] == "FX-001", "active"] = False
+            eligibility.loc[
+                eligibility["player_id"] == "FX-001", "status_type"
+            ] = "inactive"
+            eligibility_path = Path(tmp) / "eligibility.csv"
+            eligibility.to_csv(eligibility_path, index=False)
+
+            config["sources"] = dict(
+                config["sources"],
+                role_assignments=str(assignment_path),
+                eligibility=str(eligibility_path),
+            )
+            deferred = build_analysis(config).funnel.set_index("player_id").loc["FX-001"]
+
+            eligibility.loc[eligibility["player_id"] == "FX-001", "active"] = True
+            eligibility.loc[
+                eligibility["player_id"] == "FX-001", "status_type"
+            ] = "active"
+            eligibility.to_csv(eligibility_path, index=False)
+            reactivated = build_analysis(config).funnel.set_index("player_id").loc["FX-001"]
+
+        self.assertEqual(deferred["exclusion_reason"], "inactive_role_review_deferred")
+        self.assertEqual(deferred["funnel_status"], "excluded")
+        self.assertEqual(reactivated["exclusion_reason"], "role_assignment_not_reviewed")
 
     def test_500_season_possessions_keep_role_visible_without_recent_score(self):
         config = load_config(FIXTURE_CONFIG)

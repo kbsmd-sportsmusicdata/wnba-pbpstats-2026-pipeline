@@ -9,16 +9,17 @@
   "review_status": "reviewed",
   "approved_by": "Krystal Beasley",
   "approved_at": "2026-08-22",
-  "approved_rows": 227,
-  "eligible_players": 120,
-  "ineligible_players": 107,
+  "last_updated_at": "2026-08-23",
+  "approved_rows": 229,
+  "eligible_players": 121,
+  "ineligible_players": 108,
   "pending_input": {
     "path": "analysis/role_fulfillment_matrix/data/review/player_eligibility_2026.pending.csv",
     "sha256": "9f0133f7497f876c119ead5544ce94f061bbf9e4539cbc5e04e5dd87cde0db1e"
   },
   "crosswalk": {
     "path": "analysis/role_fulfillment_matrix/data/review/player_identity_crosswalk_2026.csv",
-    "sha256": "9c6e1c5397b7f29079901d8c3dab77a488a517546fa6df2b3c145e956f3e2aab"
+    "sha256": "1f80e0b5ae7a41bfaf31114fdd91836866d64f4fefbc2152a27c5563cfca399e"
   },
   "build_manifest": {
     "path": "analysis/role_fulfillment_matrix/data/review/eligibility_build_manifest_2026.json",
@@ -26,8 +27,18 @@
   },
   "approved_output": {
     "path": "analysis/role_fulfillment_matrix/config/player_eligibility_2026.csv",
-    "sha256": "52ee4e1232668a5436bfe56c1ef77442fb0ea41155a7d39f8bbcdf3713d96a00"
+    "sha256": "76306c71c1407addc927f3570fe2f6fb07fad83d3e9e3798d2913ee1520635de"
   },
+  "supplemental_reviews": [
+    {
+      "reviewed_at": "2026-08-23",
+      "reviewed_by": "Krystal Beasley",
+      "rows": 2,
+      "path": "analysis/role_fulfillment_matrix/data/review/eligibility_addendum_2026-08-23.csv",
+      "sha256": "2b27123a1dc983d7e1028526fddaf07593ecb9613edabdf7f0e94810fd8e27c9",
+      "identity_scope": "ESPN roster-only players without current PBPStats game records"
+    }
+  ],
   "live_eligibility_status": "approved",
   "live_scoring_status": "blocked",
   "remaining_blockers": [

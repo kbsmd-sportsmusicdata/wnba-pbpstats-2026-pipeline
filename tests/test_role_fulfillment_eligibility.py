@@ -23,6 +23,14 @@ APPROVAL_MANIFEST = (
     / "review"
     / "eligibility_approval_manifest_2026.json"
 )
+ELIGIBILITY_ADDENDUM = (
+    ROOT
+    / "analysis"
+    / "role_fulfillment_matrix"
+    / "data"
+    / "review"
+    / "eligibility_addendum_2026-08-23.csv"
+)
 PENDING_ELIGIBILITY = (
     ROOT
     / "analysis"
@@ -366,25 +374,46 @@ class ApprovedEligibilityArtifactTest(unittest.TestCase):
         self.assertTrue(APPROVED_ELIGIBILITY.exists(), "approved eligibility table is missing")
         eligibility = pd.read_csv(APPROVED_ELIGIBILITY)
 
-        self.assertEqual(len(eligibility), 227)
-        self.assertEqual(eligibility["player_id"].nunique(), 227)
-        self.assertEqual(eligibility["espn_athlete_id"].nunique(), 227)
+        self.assertEqual(len(eligibility), 229)
+        self.assertEqual(eligibility["player_id"].nunique(), 229)
+        self.assertEqual(eligibility["espn_athlete_id"].nunique(), 229)
         self.assertTrue((eligibility["eligible_flag"] == (eligibility["experience_years"] <= 3)).all())
         self.assertEqual(set(eligibility["review_status"]), {"reviewed"})
         self.assertEqual(set(eligibility["reviewed_by"]), {"Krystal Beasley"})
-        self.assertEqual(set(eligibility["reviewed_at"]), {"2026-08-22"})
+        self.assertEqual(set(eligibility["reviewed_at"]), {"2026-08-22", "2026-08-23"})
 
         pending = pd.read_csv(PENDING_ELIGIBILITY)
         review_fields = ["review_status", "reviewed_by", "reviewed_at"]
+        pending_ids = set(pending["player_id"].astype(str))
+        original_approved = eligibility[
+            eligibility["player_id"].astype(str).isin(pending_ids)
+        ].drop(columns=review_fields).reset_index(drop=True)
+        pending_without_review = pending.drop(columns=review_fields)
+        original_approved["player_id"] = original_approved["player_id"].astype(str)
+        pending_without_review["player_id"] = pending_without_review["player_id"].astype(str)
         pd.testing.assert_frame_equal(
-            pending.drop(columns=review_fields),
-            eligibility.drop(columns=review_fields),
+            pending_without_review,
+            original_approved,
             check_dtype=False,
         )
 
+        addendum = pd.read_csv(ELIGIBILITY_ADDENDUM)
+        self.assertEqual(
+            set(addendum["player_name"]),
+            {"Janiah Barker", "Iliana Rupert"},
+        )
+        addendum = addendum.set_index("player_name")
+        self.assertEqual(addendum.loc["Janiah Barker", "player_id"], "espn:4565501")
+        self.assertEqual(addendum.loc["Janiah Barker", "experience_years"], 0)
+        self.assertTrue(bool(addendum.loc["Janiah Barker", "eligible_flag"]))
+        self.assertEqual(addendum.loc["Janiah Barker", "status_type"], "inactive")
+        self.assertEqual(addendum.loc["Iliana Rupert", "player_id"], "espn:4790263")
+        self.assertEqual(addendum.loc["Iliana Rupert", "experience_years"], 4)
+        self.assertFalse(bool(addendum.loc["Iliana Rupert", "eligible_flag"]))
+
         crosswalk = pd.read_csv(CROSSWALK)
-        matched_ids = set(crosswalk.loc[crosswalk["match_status"] == "matched", "player_id"])
-        self.assertEqual(set(eligibility["player_id"]), matched_ids)
+        covered_ids = set(crosswalk.loc[crosswalk["player_id"].notna(), "player_id"])
+        self.assertEqual(set(eligibility["player_id"]), covered_ids)
 
     def test_approval_manifest_hashes_promoted_table_and_keeps_scoring_blocked(self):
         self.assertTrue(APPROVAL_MANIFEST.exists(), "eligibility approval manifest is missing")
@@ -393,7 +422,10 @@ class ApprovedEligibilityArtifactTest(unittest.TestCase):
         self.assertEqual(manifest["review_status"], "reviewed")
         self.assertEqual(manifest["approved_by"], "Krystal Beasley")
         self.assertEqual(manifest["approved_at"], "2026-08-22")
-        self.assertEqual(manifest["approved_rows"], 227)
+        self.assertEqual(manifest["last_updated_at"], "2026-08-23")
+        self.assertEqual(manifest["approved_rows"], 229)
+        self.assertEqual(manifest["eligible_players"], 121)
+        self.assertEqual(manifest["ineligible_players"], 108)
         self.assertEqual(manifest["live_eligibility_status"], "approved")
         self.assertEqual(manifest["live_scoring_status"], "blocked")
         self.assertEqual(
@@ -411,6 +443,14 @@ class ApprovedEligibilityArtifactTest(unittest.TestCase):
         self.assertEqual(
             manifest["build_manifest"]["sha256"],
             hashlib.sha256(BUILD_MANIFEST.read_bytes()).hexdigest(),
+        )
+        self.assertEqual(len(manifest["supplemental_reviews"]), 1)
+        supplement = manifest["supplemental_reviews"][0]
+        self.assertEqual(supplement["reviewed_at"], "2026-08-23")
+        self.assertEqual(supplement["rows"], 2)
+        self.assertEqual(
+            supplement["sha256"],
+            hashlib.sha256(ELIGIBILITY_ADDENDUM.read_bytes()).hexdigest(),
         )
 
     def test_dry_run_config_references_approved_eligibility_without_enabling_output(self):

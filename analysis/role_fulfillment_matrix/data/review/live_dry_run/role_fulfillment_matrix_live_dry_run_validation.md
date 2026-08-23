@@ -14,27 +14,25 @@ Live output remains disabled. This package exercises the approved real-data path
 - Players considered: 232
 - Candidates included: 19
 - Players with all three scores: 11
-- End-to-end gate status: `blocked`
+- End-to-end gate status: `review_ready`
 
 ## Source gate
 
 - PBPStats adapter status: `review_ready`
-- Reviewed assignment coverage: 36 of 36
+- Reviewed assignment coverage: 37 of 37
 - Locked 11-player parity: 11 of 11
 - Maximum parity difference: 0.000000000
 - Locked parity window: 2026-08-07 through 2026-08-20
-- Zero-omitted cells filled: 23242 across allowlisted additive fields
+- Zero-omitted cells filled: 23485 across allowlisted additive fields
 - Reviewed-player refresh failures: 0
-- Global refresh failures: 4
+- Global refresh failures: 2
 
 Warnings:
-- 4 unrelated player refresh failures do not affect reviewed-role coverage
+- 2 unrelated player refresh failures do not affect reviewed-role coverage
 
-## Current-candidate review blockers
+## Deferred inactive role reviews
 
-- Iliana Rupert (GSV): reviewed eligibility row required.
-- Janiah Barker (LVA): reviewed eligibility row required.
-- Chloe Bibby (MIN): reviewed primary role assignment required.
+- Janiah Barker (LVA): role assignment deferred while inactive; reactivation restores the review blocker.
 
 ## Remaining gate
 
