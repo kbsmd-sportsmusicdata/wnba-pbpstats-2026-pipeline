@@ -26,5 +26,6 @@ eligibility table is `../../config/player_eligibility_2026.csv`.
 6. The reviewed promotion and its hash are recorded in
    `eligibility_approval_manifest_2026.json`; do not overwrite the pending snapshot.
 
-This approval resolves only the experience/eligibility blocker. Reviewed player-role assignments
-and reviewed live role thresholds remain required before live scoring can be enabled.
+The experience/eligibility and player-role assignment blockers are resolved, and the six-role
+`rfm-live-v1` formula slate is approved. Live output remains disabled pending reviewer approval of
+the 11-player validation package and a reviewed live-source adapter.

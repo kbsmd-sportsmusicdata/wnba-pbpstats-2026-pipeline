@@ -1,0 +1,12 @@
+player_name,role_code,component_1,component_2,component_3,component_4,component_5,expected_fulfillment_score
+Angel Reese,interior_hub_rebounder,100.000000,100.000000,100.000000,14.299243,94.678218,82.061581
+Caitlin Clark,lead_creator,100.000000,81.088101,51.649511,,,82.238808
+Isobel Borlase,downhill_pressure_wing,10.000000,66.666667,0.000000,96.465967,,35.626527
+Janelle Salaun,perimeter_scorer_spacer,64.864865,18.262586,82.885905,,,54.488389
+Kaitlyn Chen,secondary_creator_connector,68.518519,100.000000,46.759260,,,71.435185
+Madina Okot,interior_finisher_rim_runner,8.695652,100.000000,0.000000,,,38.913043
+Mai Yamamoto,secondary_creator_connector,54.065041,100.000000,100.000000,,,81.626016
+Makayla Timpson,interior_finisher_rim_runner,90.000000,100.000000,93.998153,,,94.299631
+Marine Fauthoux,secondary_creator_connector,100.000000,0.000000,2.925533,,,40.877660
+Olivia Miles,lead_creator,100.000000,100.000000,66.189502,,,91.547376
+Pauline Astier,secondary_creator_connector,67.543860,50.206327,70.394738,,,63.197863

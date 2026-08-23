@@ -43,9 +43,10 @@ class DataContractTest(unittest.TestCase):
         with self.assertRaises(LiveScoringBlocked) as raised:
             load_sources(config)
         message = str(raised.exception)
-        self.assertIn("reviewed live role thresholds", message)
+        self.assertIn("rfm-live-v1 formulas are approved", message)
+        self.assertIn("11-player validation", message)
+        self.assertIn("live output remains disabled", message)
         self.assertNotIn("until reviewed player-role assignments", message)
-        self.assertIn("player-role assignments are approved", message)
 
     def test_reviewed_assignment_registry_covers_rostered_pool_only(self):
         self.assertTrue(REVIEWED_ASSIGNMENTS.exists(), "reviewed assignment registry is missing")

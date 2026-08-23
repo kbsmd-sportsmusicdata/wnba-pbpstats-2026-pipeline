@@ -11,7 +11,9 @@ playoff forecast dashboard.
 - **Real eligibility data:** reviewed and approved for all 227 PBPStats players.
 - **Real role assignments:** reviewed and approved for 36 roster-attached eligible players on
   top-six contenders; three confirmed free agents remain in eligibility history only.
-- **Why scoring remains blocked:** reviewed live role formulas and thresholds are not yet approved.
+- **Live formula status:** the six-role `rfm-live-v1` formulas and thresholds are approved.
+- **Why scoring remains blocked:** the 11-player hand-calculation and threshold-sensitivity report
+  is generated but remains pending reviewer approval; the live adapter is not wired.
 - **Output interpretation:** all names, teams, and scores in the generated dashboard are synthetic.
 
 ## Eligibility review package
@@ -74,6 +76,31 @@ and sample status remain separate from role approval:
   `score_status = season_context_only` when the recent gate fails;
 - season-context fallback rows carry separate season, recent-game, and recent-possession flags and
   do not receive Fulfillment, Opportunity, or Stability scores.
+- assignment confidence below `0.50` suppresses all scores;
+- role-specific denominator failure suppresses Fulfillment only while preserving valid Opportunity
+  and Stability evidence.
+
+## rfm-live-v1 validation gate
+
+The approved six-role registry is `config/role_definitions_live_v1.json`. Its locked August 7–20
+review cohort and independent expected calculations live under
+`tests/fixtures/role_fulfillment_matrix/`.
+
+Generate the review package without enabling live output:
+
+```bash
+python3 scripts/build_role_fulfillment_live_v1_validation.py
+```
+
+Outputs are confined to `data/review/live_v1_validation/`:
+
+- `hand_calculated_11_player_validation.csv`;
+- `threshold_sensitivity_11_player.csv`;
+- `role_fulfillment_matrix_live_v1_validation.md`.
+
+The current package matches all 11 locked calculations. A 10% threshold-band shift produces a
+maximum 10-point change; two players cross one adjacent descriptive band. These bands are review
+aids, not categorical player labels.
 
 ## Outputs
 
@@ -104,8 +131,9 @@ Do not switch to live mode by changing the config string alone. Promotion requir
 1. a unique, source-cited eligibility row for every candidate;
 2. a reviewed player-role assignment for every roster-attached candidate; **complete**;
 3. coverage, duplicate, and unknown-role checks;
-4. reviewed role formulas and thresholds; **remaining blocker**;
+4. reviewed role formulas and thresholds; **complete as `rfm-live-v1`**;
 5. a shared-cutoff decision for lagging impact context;
-6. fixture parity tests against a hand-calculated review set.
+6. reviewer approval of the generated 11-player hand-calculation and sensitivity package;
+7. reviewed live-source adapter and freshness/coverage checks.
 
 Until those are complete, `live_config.template.json` fails before any live table is read.

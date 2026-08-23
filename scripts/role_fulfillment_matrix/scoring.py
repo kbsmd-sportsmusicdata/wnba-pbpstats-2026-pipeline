@@ -33,9 +33,29 @@ def fulfillment(row: pd.Series, role: Dict[str, Any]) -> Tuple[float, list[Dict[
     detail = []
     for metric in role["metrics"]:
         value = row.get(f"recent_{metric['code']}")
-        component = normalize(value, metric["floor"], metric["target"], metric["direction"])
+        minimum_denominator = metric.get("minimum_denominator")
+        denominator_value = row.get(f"recent_{metric['denominator']}")
+        denominator_met = (
+            minimum_denominator is None
+            or (
+                pd.notna(denominator_value)
+                and np.isfinite(float(denominator_value))
+                and float(denominator_value) >= float(minimum_denominator)
+            )
+        )
+        component = (
+            normalize(value, metric["floor"], metric["target"], metric["direction"])
+            if denominator_met
+            else float("nan")
+        )
         parts.append((component, float(metric["weight"])))
-        detail.append({**metric, "value": value, "component_score": component})
+        detail.append({
+            **metric,
+            "value": value,
+            "denominator_value": denominator_value,
+            "denominator_met": denominator_met,
+            "component_score": component,
+        })
     return weighted_score(parts), detail
 
 

@@ -1,0 +1,53 @@
+{
+  "lead_creator": {
+    "label": "Lead Creator",
+    "metrics": [
+      {"code": "assists_per_75", "family": "behavior", "direction": "higher", "floor": 5.0, "target": 9.0, "weight": 0.45, "denominator": "off_poss", "minimum_denominator": 100},
+      {"code": "true_shooting_pct", "family": "efficiency", "direction": "higher", "floor": 0.52, "target": 0.62, "weight": 0.30, "denominator": "true_shooting_attempts", "minimum_denominator": 10},
+      {"code": "turnover_rate", "family": "mistake_control", "direction": "lower", "floor": 0.085, "target": 0.04, "weight": 0.25, "denominator": "off_poss", "minimum_denominator": 100}
+    ]
+  },
+  "secondary_creator_connector": {
+    "label": "Secondary Creator / Connector",
+    "metrics": [
+      {"code": "assists_per_75", "family": "behavior", "direction": "higher", "floor": 3.5, "target": 6.5, "weight": 0.40, "denominator": "off_poss", "minimum_denominator": 100},
+      {"code": "true_shooting_pct", "family": "efficiency", "direction": "higher", "floor": 0.50, "target": 0.60, "weight": 0.30, "denominator": "true_shooting_attempts", "minimum_denominator": 10},
+      {"code": "turnover_rate", "family": "mistake_control", "direction": "lower", "floor": 0.065, "target": 0.025, "weight": 0.30, "denominator": "off_poss", "minimum_denominator": 100}
+    ]
+  },
+  "perimeter_scorer_spacer": {
+    "label": "Perimeter Scorer / Spacer",
+    "metrics": [
+      {"code": "three_point_fga_share", "family": "behavior", "direction": "higher", "floor": 0.40, "target": 0.70, "weight": 0.50, "denominator": "fga", "minimum_denominator": 15},
+      {"code": "true_shooting_pct", "family": "efficiency", "direction": "higher", "floor": 0.50, "target": 0.60, "weight": 0.30, "denominator": "true_shooting_attempts", "minimum_denominator": 10},
+      {"code": "turnover_rate", "family": "mistake_control", "direction": "lower", "floor": 0.06, "target": 0.02, "weight": 0.20, "denominator": "off_poss", "minimum_denominator": 100}
+    ]
+  },
+  "downhill_pressure_wing": {
+    "label": "Downhill Pressure Wing",
+    "metrics": [
+      {"code": "rim_fga_share", "family": "behavior", "direction": "higher", "floor": 0.25, "target": 0.55, "weight": 0.30, "denominator": "fga", "minimum_denominator": 15},
+      {"code": "fta_rate", "family": "behavior", "direction": "higher", "floor": 0.20, "target": 0.50, "weight": 0.20, "denominator": "fga", "minimum_denominator": 15},
+      {"code": "true_shooting_pct", "family": "efficiency", "direction": "higher", "floor": 0.50, "target": 0.62, "weight": 0.30, "denominator": "true_shooting_attempts", "minimum_denominator": 10},
+      {"code": "turnover_rate", "family": "mistake_control", "direction": "lower", "floor": 0.07, "target": 0.03, "weight": 0.20, "denominator": "off_poss", "minimum_denominator": 100}
+    ]
+  },
+  "interior_finisher_rim_runner": {
+    "label": "Interior Finisher / Rim Runner",
+    "metrics": [
+      {"code": "rim_fga_share", "family": "behavior", "direction": "higher", "floor": 0.50, "target": 0.75, "weight": 0.45, "denominator": "fga", "minimum_denominator": 15},
+      {"code": "rim_fg_pct", "family": "efficiency", "direction": "higher", "floor": 0.55, "target": 0.72, "weight": 0.35, "denominator": "at_rim_fga", "minimum_denominator": 8},
+      {"code": "turnover_rate", "family": "mistake_control", "direction": "lower", "floor": 0.07, "target": 0.025, "weight": 0.20, "denominator": "off_poss", "minimum_denominator": 100}
+    ]
+  },
+  "interior_hub_rebounder": {
+    "label": "Interior Hub / Rebounder",
+    "metrics": [
+      {"code": "rebounds_per_75_total_possessions", "family": "behavior", "direction": "higher", "floor": 3.5, "target": 7.0, "weight": 0.35, "denominator": "total_poss", "minimum_denominator": 200},
+      {"code": "offensive_rebounds_per_75_off_poss", "family": "behavior", "direction": "higher", "floor": 1.5, "target": 4.5, "weight": 0.15, "denominator": "off_poss", "minimum_denominator": 100},
+      {"code": "assists_per_75", "family": "behavior", "direction": "higher", "floor": 1.5, "target": 4.0, "weight": 0.15, "denominator": "off_poss", "minimum_denominator": 100},
+      {"code": "true_shooting_pct", "family": "efficiency", "direction": "higher", "floor": 0.48, "target": 0.60, "weight": 0.20, "denominator": "true_shooting_attempts", "minimum_denominator": 10},
+      {"code": "turnover_rate", "family": "mistake_control", "direction": "lower", "floor": 0.075, "target": 0.035, "weight": 0.15, "denominator": "off_poss", "minimum_denominator": 100}
+    ]
+  }
+}

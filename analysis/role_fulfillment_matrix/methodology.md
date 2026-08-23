@@ -47,6 +47,14 @@ contender requirement
 
 These are implementation fixtures, not reviewed live role definitions.
 
+## Approved live role registry
+
+`config/role_definitions_live_v1.json` contains the approved `rfm-live-v1` formulas for Lead
+Creator, Secondary Creator / Connector, Perimeter Scorer / Spacer, Downhill Pressure Wing,
+Interior Finisher / Rim Runner, and Interior Hub / Rebounder. Every component declares its source
+denominator and a minimum denominator. The live registry does not replace the two-role fixture
+registry because the executable live adapter remains deliberately blocked.
+
 ## Formula contract
 
 Each role metric declares a floor, target, direction, weight, and denominator. Higher-is-better
@@ -89,6 +97,11 @@ high Stability with low Fulfillment is valid and covered by a regression test.
 15. Fixture output is labeled in the page, payload, processed tables, and manifest.
 16. Lagging RAPM/on-court context is excluded from headline fixture scores.
 17. Output paths are confined to `analysis/role_fulfillment_matrix/`.
+18. Assignment confidence below `0.50` suppresses all three scores.
+19. A role-specific denominator failure sets Fulfillment to `insufficient_role_evidence` while
+    leaving valid Opportunity and Stability scores available.
+20. Live-v1 validation uses an independent locked expected-score table and a plus/minus 10% shift
+    of every metric threshold band.
 
 ## Blockers to live scoring
 
@@ -99,7 +112,8 @@ high Stability with low Fulfillment is valid and covered by a regression test.
 | ESPN/PBPStats identity mismatch | Direct numeric joins drop players because the namespaces differ. | Add and test an explicit one-to-one crosswalk before using roster/DNP context. |
 | Impact feed lags player-game feed | Recent opportunity and stale impact are not comparable on one clock. | Rebuild to a shared cutoff or keep impact evidence-only with lag labels. |
 | True player on/off not materialized | On-court net rating is not on-minus-off impact. | Validate a separate possession/lineup pipeline after the prototype is approved. |
-| Role thresholds unvalidated | Fixture floors/targets only prove plumbing. | Basketball review plus hand-calculated validation set. |
+| Live-v1 validation awaiting review | All 11 production calculations match the locked expected values; sensitivity movement is at most 10 points, with two adjacent-band crossings. | Review `data/review/live_v1_validation/role_fulfillment_matrix_live_v1_validation.md`. |
+| Live adapter not wired | The reviewed registry expects additional three-point and rebound fields at the player-game grain. | Add a source adapter with zero-omitted count handling, field coverage, freshness, and crosswalk tests only after validation approval. |
 
 ## Test plan
 
@@ -108,7 +122,7 @@ high Stability with low Fulfillment is valid and covered by a regression test.
 | Contracts | Missing columns, missing sources, fixture-only mode, live block | Duplicate eligibility IDs, incomplete candidate coverage, source-citation format. |
 | Funnel | Contender, reviewed eligibility, valid assignment, affiliation status, inactive suppression, recent sample, and 500-possession season fallback | Boundary ranks, trades, two-team players, cutoff mismatch. |
 | Metrics | Recompute rates from counts, recent/baseline separation | Zero denominators, overtime, traded-player team windows. |
-| Scores | Independent dimensions, formula version, stability/performance separation | Hand-calculated reviewer set, role thresholds, sensitivity analysis. |
+| Scores | Independent dimensions, formula version, stability/performance separation, 11-player hand calculations, threshold sensitivity | Reviewer approval of the generated live-v1 package, then adapter parity checks. |
 | Evidence | Source, windows, denominators, safeguards | Cross-source lag and crosswalk quality labels. |
 | Web | Exact bundle, direct-file payload, null-safe score formatting, unavailable-point omission, safe text rendering, accessible dialog | Browser keyboard, contrast, and print QA. |
 | Workflow | Manual-only, fixture config, no commit/push | Protected review gate before any live job is introduced. |

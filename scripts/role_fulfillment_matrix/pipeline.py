@@ -42,6 +42,9 @@ def build_analysis(config: Dict[str, Any]) -> AnalysisResult:
 
     score_rows = []
     evidence_rows = []
+    minimum_assignment_confidence = float(
+        config.get("minimums", {}).get("assignment_confidence_score", 0.0)
+    )
     for _, candidate in included.iterrows():
         role = sources.role_definitions[candidate["role_code"]]
         if bool(candidate.get("inactive_rostered")):
@@ -52,12 +55,24 @@ def build_analysis(config: Dict[str, Any]) -> AnalysisResult:
             fulfillment_score = opportunity_score = stability_score = float("nan")
             fulfillment_detail = opportunity_detail = stability_detail = []
             status = "season_context_only"
+        elif float(candidate.get("assignment_confidence", 0.0)) < minimum_assignment_confidence:
+            fulfillment_score = opportunity_score = stability_score = float("nan")
+            fulfillment_detail = opportunity_detail = stability_detail = []
+            status = "assignment_confidence_insufficient"
         else:
             fulfillment_score, fulfillment_detail = fulfillment(candidate, role)
             opportunity_score, opportunity_detail = opportunity(candidate, config)
             stability_score, stability_detail = stability(candidate, config)
             values = [fulfillment_score, opportunity_score, stability_score]
-            status = "fixture_only" if all(pd.notna(value) for value in values) else "unavailable"
+            if all(pd.notna(value) for value in values):
+                status = "fixture_only"
+            elif pd.isna(fulfillment_score) and all(
+                pd.notna(value) for value in (opportunity_score, stability_score)
+            ):
+                status = "insufficient_role_evidence"
+            else:
+                status = "unavailable"
+        score_values = [fulfillment_score, opportunity_score, stability_score]
         record = candidate.to_dict()
         record.update({
             "role_label": role["label"],
@@ -65,12 +80,15 @@ def build_analysis(config: Dict[str, Any]) -> AnalysisResult:
             "opportunity_score": round(opportunity_score, 2),
             "stability_score": round(stability_score, 2),
             "score_status": status,
-            "coverage_pct": 100.0 if status == "fixture_only" else 0.0,
+            "coverage_pct": round(
+                100.0 * sum(pd.notna(value) for value in score_values) / len(score_values),
+                2,
+            ),
             "formula_version": config["formula_version"],
             "analysis_mode": "fixture",
         })
         score_rows.append(record)
-        if status in {"fixture_only", "unavailable"}:
+        if status in {"fixture_only", "insufficient_role_evidence", "unavailable"}:
             evidence_rows.extend(build_evidence_rows(
                 record,
                 {
@@ -93,7 +111,7 @@ def build_analysis(config: Dict[str, Any]) -> AnalysisResult:
         "mode": "fixture",
         "live_scoring_status": "blocked",
         "live_scoring_blockers": [
-            "reviewed live role thresholds",
+            "rfm-live-v1 validation approval and reviewed live adapter",
         ],
         "formula_version": config["formula_version"],
         "players_scored": players_scored,
