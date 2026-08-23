@@ -17,7 +17,7 @@ from .contracts import (
     validate_role_definitions,
 )
 from .adapter_parity import build_adapter_parity
-from .live_policy import derive_analysis_windows
+from .live_policy import derive_analysis_windows, validate_locked_parity_windows
 from .metrics import build_window_metrics
 from .pbpstats_adapter import adapt_pbpstats_player_game, audit_live_adapter
 from .roster_adapter import adapt_espn_roster
@@ -197,8 +197,16 @@ def _load_live_dry_run(config: Dict[str, Any]) -> LoadedSources:
         raise ContractError("live adapter audit blocked: " + "; ".join(adapter_audit["blockers"]))
     parity_path = paths.get("locked_parity_inputs")
     if parity_path is not None:
+        try:
+            parity_windows = validate_locked_parity_windows(
+                config.get("locked_parity_windows")
+            )
+        except ValueError as exc:
+            raise ContractError(str(exc)) from exc
+        parity_config = deepcopy(effective_config)
+        parity_config["windows"] = parity_windows
         parity = build_adapter_parity(
-            build_window_metrics(adapter_result.player_game, effective_config),
+            build_window_metrics(adapter_result.player_game, parity_config),
             _read_table(parity_path),
         )
         parity_matches = int(parity["parity_match"].sum())
@@ -208,6 +216,7 @@ def _load_live_dry_run(config: Dict[str, Any]) -> LoadedSources:
                 "locked_parity_players": int(len(parity)),
                 "locked_parity_matches": parity_matches,
                 "locked_parity_max_abs_difference": parity_maximum,
+                "locked_parity_windows": parity_windows,
             }
         )
         if parity_matches != len(parity):

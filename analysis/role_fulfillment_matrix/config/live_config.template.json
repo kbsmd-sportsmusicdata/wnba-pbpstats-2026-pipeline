@@ -19,6 +19,12 @@
   },
   "contender": {"current_rank_max": 6},
   "window_policy": {"recent_days": 14, "baseline_days": 14, "lag_days": 1},
+  "locked_parity_windows": {
+    "baseline_start": "2026-07-24",
+    "baseline_end": "2026-08-06",
+    "recent_start": "2026-08-07",
+    "recent_end": "2026-08-20"
+  },
   "minimums": {
     "recent_games": 3,
     "recent_off_poss": 100,

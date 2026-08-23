@@ -22,6 +22,7 @@ Live output remains disabled. This package exercises the approved real-data path
 - Reviewed assignment coverage: 36 of 36
 - Locked 11-player parity: 11 of 11
 - Maximum parity difference: 0.000000000
+- Locked parity window: 2026-08-07 through 2026-08-20
 - Zero-omitted cells filled: 23242 across allowlisted additive fields
 - Reviewed-player refresh failures: 0
 - Global refresh failures: 4

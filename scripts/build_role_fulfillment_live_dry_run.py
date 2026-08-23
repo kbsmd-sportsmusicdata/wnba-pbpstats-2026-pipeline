@@ -51,6 +51,9 @@ def _render_report(manifest: Dict[str, Any], funnel: pd.DataFrame) -> str:
         f"- Reviewed assignment coverage: {audit['candidate_coverage']['matched']} of {audit['candidate_coverage']['expected']}",
         f"- Locked 11-player parity: {audit['locked_parity_matches']} of {audit['locked_parity_players']}",
         f"- Maximum parity difference: {audit['locked_parity_max_abs_difference']:.9f}",
+        "- Locked parity window: "
+        f"{audit['locked_parity_windows']['recent_start']} through "
+        f"{audit['locked_parity_windows']['recent_end']}",
         f"- Zero-omitted cells filled: {sum(int(value) for value in zero_filled.values())} across allowlisted additive fields",
         f"- Reviewed-player refresh failures: {len(audit['candidate_refresh_failures'])}",
         f"- Global refresh failures: {audit['global_refresh_failures']}",

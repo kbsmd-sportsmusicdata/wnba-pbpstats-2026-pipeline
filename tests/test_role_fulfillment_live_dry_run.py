@@ -16,7 +16,10 @@ from role_fulfillment_matrix.contracts import (  # noqa: E402
 )
 from role_fulfillment_matrix.data_sources import LoadedSources, load_sources  # noqa: E402
 from role_fulfillment_matrix.funnel import build_candidate_funnel  # noqa: E402
-from role_fulfillment_matrix.live_policy import derive_analysis_windows  # noqa: E402
+from role_fulfillment_matrix.live_policy import (  # noqa: E402
+    derive_analysis_windows,
+    validate_locked_parity_windows,
+)
 from role_fulfillment_matrix.metrics import build_window_metrics  # noqa: E402
 from role_fulfillment_matrix.pipeline import build_analysis  # noqa: E402
 from role_fulfillment_matrix.roster_adapter import (  # noqa: E402
@@ -42,6 +45,15 @@ class LiveDryRunGovernanceTest(unittest.TestCase):
             {"recent_days": 14, "baseline_days": 14, "lag_days": 1},
         )
         self.assertNotIn("windows", config)
+        self.assertEqual(
+            config["locked_parity_windows"],
+            {
+                "baseline_start": "2026-07-24",
+                "baseline_end": "2026-08-06",
+                "recent_start": "2026-08-07",
+                "recent_end": "2026-08-20",
+            },
+        )
         self.assertFalse(config["live_output_enabled"])
 
     def test_cutoff_policy_derives_non_overlapping_fourteen_day_windows(self):
@@ -68,6 +80,21 @@ class LiveDryRunGovernanceTest(unittest.TestCase):
         ):
             with self.subTest(kwargs=kwargs), self.assertRaises(ValueError):
                 derive_analysis_windows("2026-08-21", **kwargs)
+
+    def test_locked_parity_inputs_require_complete_ordered_fixed_windows(self):
+        with self.assertRaisesRegex(ValueError, "requires explicit"):
+            validate_locked_parity_windows(None)
+        with self.assertRaisesRegex(ValueError, "missing required fields"):
+            validate_locked_parity_windows({"recent_start": "2026-08-07"})
+        with self.assertRaisesRegex(ValueError, "must be ordered"):
+            validate_locked_parity_windows(
+                {
+                    "baseline_start": "2026-08-07",
+                    "baseline_end": "2026-08-20",
+                    "recent_start": "2026-07-24",
+                    "recent_end": "2026-08-06",
+                }
+            )
 
     def test_approved_dry_run_is_allowed_but_live_publish_stays_blocked(self):
         config = json.loads(LIVE_CONFIG.read_text())
@@ -251,6 +278,96 @@ class LiveSourceAdapterTest(unittest.TestCase):
         self.assertEqual(
             analysis.manifest["live_scoring_blockers"],
             ["final reviewer approval and explicit live-output enablement"],
+        )
+
+    def test_locked_parity_uses_its_fixed_window_when_scoring_window_advances(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            standings_path = root / "standings.csv"
+            standings_manifest_path = root / "standings_manifest.json"
+            player_path = root / "player.csv"
+            team_path = root / "team.csv"
+            ingest_manifest_path = root / "ingest_manifest.json"
+            failures_path = root / "failures.json"
+            player_core_path = root / "player_core.csv"
+            eligibility_path = root / "eligibility.csv"
+            assignments_path = root / "assignments.csv"
+            parity_path = root / "locked_parity.csv"
+
+            pd.DataFrame(
+                [{"team_id": 17, "team_abbreviation": "LV", "current_rank": 1}]
+            ).to_csv(standings_path, index=False)
+            standings_manifest_path.write_text(json.dumps({"cutoff_date": "2026-08-23"}))
+            fixed_row = self._raw_player_row()
+            later_row = dict(fixed_row, Date="2026-08-22", GameId="g2", Points=30)
+            pd.DataFrame([fixed_row, later_row]).to_csv(player_path, index=False)
+            pd.DataFrame(
+                [
+                    {"Date": "2026-08-20", "GameId": "g1", "TeamAbbreviation": "LVA", "OffPoss": 80},
+                    {"Date": "2026-08-22", "GameId": "g2", "TeamAbbreviation": "LVA", "OffPoss": 80},
+                ]
+            ).to_csv(team_path, index=False)
+            ingest_manifest_path.write_text(
+                json.dumps({"coverage_through": "2026-08-22", "players": {"failed_players": 0}})
+            )
+            failures_path.write_text("[]")
+            pd.DataFrame(
+                [{"athlete_id": "1001", "current_team_id": "17", "active": True, "status_type": "active"}]
+            ).to_csv(player_core_path, index=False)
+            pd.DataFrame([self._eligibility_row()]).to_csv(eligibility_path, index=False)
+            pd.DataFrame([self._assignment_row()]).to_csv(assignments_path, index=False)
+            pd.DataFrame(
+                [
+                    {
+                        "player_id": "p1",
+                        "player_name": "Player One",
+                        "role_code": "lead_creator",
+                        "assignment_confidence": 0.9,
+                        "recent_games": 1,
+                        "recent_off_poss": 40,
+                        "recent_total_poss": 81,
+                        "recent_fga": 8,
+                        "recent_true_shooting_attempts": 8.88,
+                        "recent_at_rim_fga": 3,
+                        "recent_assists_per_75": 9.375,
+                        "recent_true_shooting_pct": 12 / 17.76,
+                        "recent_turnover_rate": 0.05,
+                        "recent_three_point_fga_share": 0.375,
+                        "recent_fta_rate": 0.25,
+                        "recent_rim_fga_share": 0.375,
+                        "recent_rim_fg_pct": 2 / 3,
+                        "recent_rebounds_per_75_total_possessions": 300 / 81,
+                        "recent_offensive_rebounds_per_75_off_poss": 1.875,
+                    }
+                ]
+            ).to_csv(parity_path, index=False)
+
+            config = self._live_config(
+                standings_path=standings_path,
+                standings_manifest_path=standings_manifest_path,
+                player_path=player_path,
+                team_path=team_path,
+                ingest_manifest_path=ingest_manifest_path,
+                failures_path=failures_path,
+                player_core_path=player_core_path,
+                eligibility_path=eligibility_path,
+                assignments_path=assignments_path,
+            )
+            config["sources"]["locked_parity_inputs"] = str(parity_path)
+            config["sources"]["roster_source_as_of"] = "2026-08-23"
+            config["locked_parity_windows"] = {
+                "baseline_start": "2026-07-24",
+                "baseline_end": "2026-08-06",
+                "recent_start": "2026-08-07",
+                "recent_end": "2026-08-20",
+            }
+            sources = load_sources(config)
+
+        self.assertEqual(sources.effective_config["windows"]["recent_end"], "2026-08-22")
+        self.assertEqual(sources.adapter_audit["locked_parity_matches"], 1)
+        self.assertEqual(
+            sources.adapter_audit["locked_parity_windows"],
+            config["locked_parity_windows"],
         )
 
     @staticmethod

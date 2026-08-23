@@ -2,9 +2,31 @@
 
 from __future__ import annotations
 
-from typing import Dict
+from typing import Any, Dict, Mapping
 
 import pandas as pd
+
+
+def validate_locked_parity_windows(configured: Mapping[str, Any] | None) -> Dict[str, str]:
+    """Normalize and validate the fixed windows paired with locked parity inputs."""
+    required = ("baseline_start", "baseline_end", "recent_start", "recent_end")
+    if not isinstance(configured, Mapping):
+        raise ValueError("locked_parity_inputs requires explicit locked_parity_windows")
+    missing = [key for key in required if not configured.get(key)]
+    if missing:
+        raise ValueError(
+            "locked_parity_windows is missing required fields: " + ", ".join(missing)
+        )
+    windows = {
+        key: pd.Timestamp(configured[key]).date().isoformat()
+        for key in required
+    }
+    ordered = [pd.Timestamp(windows[key]) for key in required]
+    if not (ordered[0] <= ordered[1] < ordered[2] <= ordered[3]):
+        raise ValueError(
+            "locked_parity_windows must be ordered baseline_start through recent_end"
+        )
+    return windows
 
 
 def derive_analysis_windows(

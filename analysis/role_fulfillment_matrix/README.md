@@ -139,6 +139,9 @@ Outputs are confined to `data/review/live_adapter_validation/`:
 Only allowlisted additive counts use zero-omitted filling. Identity, dates, game ids, affiliation,
 minutes, and team-game possessions are never imputed. Offensive or defensive possessions may be
 filled with zero only after participation is established, and total possessions must reconcile.
+The locked 11-player parity fixture remains tied to its explicit August 7-20 validation window;
+the cutoff-derived recent window advances independently for dry-run scoring. Both windows are
+recorded in the run manifest so a routine data refresh cannot be mistaken for an adapter change.
 The package was approved by Krystal Beasley on 2026-08-22; that approval authorizes the wiring
 gate only and leaves live output disabled.
 
