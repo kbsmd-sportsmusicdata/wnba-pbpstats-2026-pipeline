@@ -1,0 +1,12 @@
+player_id,player_name,role_code,production_score,hand_calculated_score,absolute_difference,calculation_match,component_count,all_denominators_met
+1642291,Angel Reese,interior_hub_rebounder,82.061581125,82.061581,1.2499999968440534e-07,True,5,True
+1642286,Caitlin Clark,lead_creator,82.23880807777778,82.238808,7.777777000228525e-08,True,3,True
+1642302,Isobel Borlase,downhill_pressure_wing,35.626526833333344,35.626527,1.6666665914044643e-07,True,4,True
+1642767,Janelle Salaun,perimeter_scorer_spacer,54.488389299999994,54.488389,2.9999999640040187e-07,True,3,True
+1642822,Kaitlyn Chen,secondary_creator_connector,71.43518541333333,71.435185,4.1333332490012253e-07,True,3,True
+1643431,Madina Okot,interior_finisher_rim_runner,38.91304340000001,38.913043,4.0000000467443897e-07,True,3,True
+1642769,Mai Yamamoto,secondary_creator_connector,81.62601626666667,81.626016,2.6666666030905617e-07,True,3,True
+1642815,Makayla Timpson,interior_finisher_rim_runner,94.29963066666667,94.299631,3.3333333249174757e-07,True,3,True
+1630469,Marine Fauthoux,secondary_creator_connector,40.87765975,40.87766,2.499999993688107e-07,True,3,True
+1643426,Olivia Miles,lead_creator,91.54737555555556,91.547376,4.444444385853785e-07,True,3,True
+1631136,Pauline Astier,secondary_creator_connector,63.197863203333355,63.197863,2.0333335726263613e-07,True,3,True

@@ -1,0 +1,12 @@
+player_id,player_name,role_code,base,lenient,strict,max_abs_delta,base_band,lenient_band,strict_band,band_changed
+1642302,Isobel Borlase,downhill_pressure_wing,35.626526833333344,42.63265308333334,28.62652683333333,7.006126249999994,low,low,low,False
+1643431,Madina Okot,interior_finisher_rim_runner,38.91304340000001,43.413043400000014,35.0,4.500000000000007,low,low,low,False
+1642815,Makayla Timpson,interior_finisher_rim_runner,94.29963066666667,100.0,85.15155763725491,9.148073029411762,high,high,high,False
+1642291,Angel Reese,interior_hub_rebounder,82.061581125,84.8598485,77.760967625,4.300613499999997,high,high,high,False
+1642286,Caitlin Clark,lead_creator,82.23880807777778,87.73880807777778,76.73880807777776,5.500000000000014,high,high,high,False
+1643426,Olivia Miles,lead_creator,91.54737555555556,94.04737555555556,89.04737555555556,2.5,high,high,high,False
+1642767,Janelle Salaun,perimeter_scorer_spacer,54.488389299999994,64.4883893,44.488389299999994,10.0,moderate,moderate,low,True
+1642822,Kaitlyn Chen,secondary_creator_connector,71.43518541333333,78.43518541333333,64.43518541333333,7.0,moderate,high,moderate,True
+1642769,Mai Yamamoto,secondary_creator_connector,81.62601626666667,85.62601626666665,77.62601626666667,4.0,high,high,high,False
+1630469,Marine Fauthoux,secondary_creator_connector,40.87765975,43.87765975000001,40.0,3.000000000000007,low,low,low,False
+1631136,Pauline Astier,secondary_creator_connector,63.197863203333355,73.19786320333336,53.197863203333355,10.0,moderate,moderate,moderate,False

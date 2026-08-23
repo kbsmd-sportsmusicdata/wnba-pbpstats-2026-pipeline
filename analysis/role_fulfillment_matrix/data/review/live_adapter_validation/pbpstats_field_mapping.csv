@@ -1,0 +1,24 @@
+source_field,canonical_field,transformation,missing_value_policy
+Date,game_date,parse ISO date,never fill
+GameId,game_id,string identity,never fill
+PlayerId,player_id,string identity,never fill
+PlayerName,player_name,direct,never fill
+Team,team_abbreviation,game-context affiliation,never fill
+Minutes,minutes,MM:SS to decimal minutes,never fill
+OffPoss,off_poss,numeric,zero only after participation
+DefPoss,def_poss,numeric,zero only after participation
+OffPoss + DefPoss,total_poss,derive and reconcile to TotalPoss,never arbitrary fill
+team OffPoss,team_possessions,GameId + Team join,never fill
+Points,points,numeric,zero-omitted count
+Assists,assists,numeric,zero-omitted count
+Turnovers,turnovers,numeric,zero-omitted count
+FG2A + FG3A,fga,sum additive counts,zero-omitted inputs
+FG2M + FG3M,fgm,sum additive counts,zero-omitted inputs
+FG3A,fg3a,numeric,zero-omitted count
+FG3M,fg3m,numeric,zero-omitted count
+FTA,fta,numeric,zero-omitted count
+FtPoints,ftm,one point per made free throw,zero-omitted count
+AtRimFGA,at_rim_fga,numeric,zero-omitted count
+AtRimFGM,at_rim_fgm,numeric,zero-omitted count
+Rebounds,rebounds,numeric,zero-omitted count
+OffRebounds,off_rebounds,numeric,zero-omitted count

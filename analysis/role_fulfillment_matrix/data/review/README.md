@@ -26,5 +26,6 @@ eligibility table is `../../config/player_eligibility_2026.csv`.
 6. The reviewed promotion and its hash are recorded in
    `eligibility_approval_manifest_2026.json`; do not overwrite the pending snapshot.
 
-This approval resolves only the experience/eligibility blocker. Reviewed player-role assignments
-and reviewed live role thresholds remain required before live scoring can be enabled.
+The experience/eligibility, player-role assignment, formula, 11-player validation, and PBPStats
+live-adapter review blockers are resolved. Live output remains disabled pending deliberate adapter
+wiring and an end-to-end dry run.

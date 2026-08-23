@@ -1,0 +1,12 @@
+check,status,observed,expectation
+player_game_key_uniqueness,pass,5424,0 duplicate player-game keys
+team_game_join_coverage,pass,5424,5424 expected
+nonparticipation_exclusion,pass,1,zero-minute rows without possession evidence
+possession_identity,pass,5424,total_poss equals off_poss plus def_poss
+manifest_freshness,pass,2026-08-21,recent end 2026-08-20
+manifest_source_date_consistency,pass,2026-08-21,manifest coverage 2026-08-21
+reviewed_assignment_coverage,pass,36,36 expected
+reviewed_candidate_refresh_failures,pass,0,must be zero
+manifest_failure_ledger_consistency,pass,4,manifest declares 4
+global_refresh_failures,warn,4,allowed only outside reviewed population
+locked_11_player_parity,pass,11,11 expected
