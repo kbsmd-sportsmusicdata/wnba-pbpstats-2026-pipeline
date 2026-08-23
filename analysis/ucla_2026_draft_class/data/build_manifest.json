@@ -1,0 +1,46 @@
+{
+  "generated_from": "2026 pbpstats player/team game layer + sportsdataverse 2026",
+  "season": 2026,
+  "season_type": "Regular Season",
+  "games_in_spine": 274,
+  "last_game_date": "2026-08-21",
+  "ucla_six": [
+    {
+      "display_name": "Lauren Betts",
+      "player_id": 1643427.0,
+      "team_abbreviation": "WAS",
+      "draft_selection": 4.0
+    },
+    {
+      "display_name": "Gabriela Jaquez",
+      "player_id": 1643447.0,
+      "team_abbreviation": "CHI",
+      "draft_selection": 5.0
+    },
+    {
+      "display_name": "Kiki Rice",
+      "player_id": 1643445.0,
+      "team_abbreviation": "TOR",
+      "draft_selection": 6.0
+    },
+    {
+      "display_name": "Angela Dugalic",
+      "player_id": 1643455.0,
+      "team_abbreviation": "WAS",
+      "draft_selection": 9.0
+    },
+    {
+      "display_name": "Gianna Kneepkens",
+      "player_id": 1643429.0,
+      "team_abbreviation": "CON",
+      "draft_selection": 15.0
+    },
+    {
+      "display_name": "Charlisse Leger-Walker",
+      "player_id": 1643449.0,
+      "team_abbreviation": "CON",
+      "draft_selection": 18.0
+    }
+  ],
+  "rookie_pool_size": 70
+}
