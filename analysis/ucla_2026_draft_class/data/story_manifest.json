@@ -1,0 +1,27 @@
+{
+  "season": 2026,
+  "season_type": "Regular Season",
+  "games_through": "2026-08-21",
+  "games_in_spine": 274,
+  "league_pool_size": 149,
+  "league_pool_min_minutes": 250,
+  "rookie_pool_size": 37,
+  "rookie_pool_min_minutes": 150,
+  "rookie_population": 70,
+  "lower_is_better": [
+    "blocked_rate",
+    "drtg_swing",
+    "foul_75",
+    "mid_share",
+    "tov_75"
+  ],
+  "files": [
+    "story_league_pool_250min.csv",
+    "story_metric_percentiles_long.csv",
+    "story_monthly_development.csv",
+    "story_rookie_pool_150min.csv",
+    "story_team_context.csv",
+    "story_ucla_six_game_logs.csv",
+    "story_ucla_six_season_profile.csv"
+  ]
+}
