@@ -1,5 +1,6 @@
 player_id,player_name,team_abbreviation,role_code,secondary_role_code,assignment_confidence,review_status,reviewed_by,reviewed_at,assignment_notes
 1643426,Olivia Miles,MIN,lead_creator,perimeter_scorer_spacer,0.95,reviewed,Krystal Beasley,2026-08-22,Reviewed six-role taxonomy assignment
+1631064,Chloe Bibby,MIN,perimeter_scorer_spacer,secondary_creator_connector,0.70,reviewed,Krystal Beasley,2026-08-23,Reviewed from pre-trade CHI evidence; current-team live score withheld until MIN sample meets safeguards
 1641657,Dorka Juhasz,MIN,perimeter_scorer_spacer,interior_hub_rebounder,0.90,reviewed,Krystal Beasley,2026-08-22,Reviewed six-role taxonomy assignment
 1643489,Antonia Delaere,MIN,perimeter_scorer_spacer,secondary_creator_connector,0.90,reviewed,Krystal Beasley,2026-08-22,Reviewed six-role taxonomy assignment
 1642797,Anastasiia Olairi Kosu,MIN,interior_finisher_rim_runner,interior_hub_rebounder,0.90,reviewed,Krystal Beasley,2026-08-22,Reviewed six-role taxonomy assignment

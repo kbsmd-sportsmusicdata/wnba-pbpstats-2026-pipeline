@@ -9,10 +9,10 @@ playoff forecast dashboard.
 - **Fixture mode:** retained for deterministic regression tests.
 - **Live-data mode:** approved sources are wired into an isolated `live_dry_run` path.
 - **Live publishing:** blocked; `live_output_enabled` remains false.
-- **Real eligibility data:** reviewed and approved for all 227 current PBPStats players. New
-  PBPStats identities fail closed, while newer ESPN roster-only identities appear explicitly as
-  `eligibility_not_reviewed` funnel blockers.
-- **Real role assignments:** reviewed and approved for 36 roster-attached eligible players on
+- **Real eligibility data:** reviewed and approved for all 227 current PBPStats players plus two
+  ESPN roster-only identities. Roster-only rows use reviewed `espn:<athlete_id>` placeholders;
+  a later PBPStats appearance fails closed pending a reviewed identity crosswalk.
+- **Real role assignments:** reviewed and approved for 37 roster-attached eligible players on
   top-six contenders; three confirmed free agents remain in eligibility history only.
 - **Live formula status:** the six-role `rfm-live-v1` formulas and thresholds are approved.
 - **Formula validation status:** the 11-player hand-calculation and threshold-sensitivity gate is
@@ -49,6 +49,7 @@ Review outputs:
 - `player_identity_crosswalk_2026.csv`: 227 matched identities plus five source-only records;
 - `eligibility_build_manifest_2026.json`: rule, cutoff, source hash, coverage, and output hashes;
 - `eligibility_approval_manifest_2026.json`: reviewer, approval date, and promoted-table hash;
+- `eligibility_addendum_2026-08-23.csv`: reviewed Janiah Barker and Iliana Rupert roster-only rows;
 - `README.md`: reviewer checklist and promotion boundary.
 
 ## Build
@@ -87,6 +88,8 @@ and sample status remain separate from role approval:
 
 - free agents are excluded as `not_currently_rostered` without deleting eligibility history;
 - inactive rostered players retain their role with `score_status = inactive_suppressed`;
+- inactive rostered players without a reviewed role are excluded as
+  `inactive_role_review_deferred`; reactivation automatically restores the role-review blocker;
 - recent scoring requires at least three games and 100 offensive possessions in the approved
   recent window;
 - a player with at least 500 season offensive possessions may remain visible with

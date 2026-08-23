@@ -2,13 +2,13 @@
   "adapter_audit": {
     "blockers": [],
     "candidate_coverage": {
-      "expected": 36,
-      "matched": 36
+      "expected": 37,
+      "matched": 37
     },
     "candidate_refresh_failures": [],
-    "coverage_through": "2026-08-21",
-    "failure_ledger_rows": 4,
-    "global_refresh_failures": 4,
+    "coverage_through": "2026-08-22",
+    "failure_ledger_rows": 2,
+    "global_refresh_failures": 2,
     "locked_parity_matches": 11,
     "locked_parity_max_abs_difference": 4.878044634892831e-10,
     "locked_parity_players": 11,
@@ -18,36 +18,32 @@
       "recent_end": "2026-08-20",
       "recent_start": "2026-08-07"
     },
-    "manifest_refresh_failures": 4,
+    "manifest_refresh_failures": 2,
     "recent_end": "2026-08-20",
-    "source_max_game_date": "2026-08-21",
+    "source_max_game_date": "2026-08-22",
     "status": "review_ready",
     "warnings": [
-      "4 unrelated player refresh failures do not affect reviewed-role coverage"
+      "2 unrelated player refresh failures do not affect reviewed-role coverage"
     ]
   },
   "analysis_cutoff_date": "2026-08-21",
   "config_hash": "fd62a10d83921c5c34afe207d4f84e438bcf0c18066b43a4f37ad821d69bb988",
   "config_path": "analysis/role_fulfillment_matrix/config/live_config.template.json",
-  "dry_run_gate_blockers": [
-    "current contender roster players without reviewed eligibility: 2",
-    "current contender candidates without reviewed role assignments: 1"
-  ],
-  "dry_run_gate_status": "blocked",
+  "dry_run_gate_blockers": [],
+  "dry_run_gate_status": "review_ready",
   "formula_version": "rfm-live-v1",
   "funnel_counts": {
     "candidates_included": 19,
-    "excluded_eligibility_not_reviewed": 2,
+    "excluded_inactive_role_review_deferred": 1,
     "excluded_insufficient_recent_possessions": 5,
-    "excluded_insufficient_recent_sample": 11,
+    "excluded_insufficient_recent_sample": 12,
     "excluded_non_contender_team": 140,
-    "excluded_not_age_experience_eligible": 51,
+    "excluded_not_age_experience_eligible": 52,
     "excluded_not_currently_rostered": 3,
-    "excluded_role_assignment_not_reviewed": 1,
     "players_considered": 232,
     "players_scored": 11
   },
-  "generated_at_utc": "2026-08-23T22:27:25+00:00",
+  "generated_at_utc": "2026-08-23T23:03:10+00:00",
   "live_output_enabled": false,
   "live_scoring_blockers": [
     "final reviewer approval and explicit live-output enablement"
@@ -65,20 +61,20 @@
     "eligibility": {
       "columns": 21,
       "path": "analysis/role_fulfillment_matrix/config/player_eligibility_2026.csv",
-      "rows": 227,
+      "rows": 229,
       "status": "reviewed_real_data"
     },
     "player_game": {
       "audit": {
         "blockers": [],
         "candidate_coverage": {
-          "expected": 36,
-          "matched": 36
+          "expected": 37,
+          "matched": 37
         },
         "candidate_refresh_failures": [],
-        "coverage_through": "2026-08-21",
-        "failure_ledger_rows": 4,
-        "global_refresh_failures": 4,
+        "coverage_through": "2026-08-22",
+        "failure_ledger_rows": 2,
+        "global_refresh_failures": 2,
         "locked_parity_matches": 11,
         "locked_parity_max_abs_difference": 4.878044634892831e-10,
         "locked_parity_players": 11,
@@ -88,12 +84,12 @@
           "recent_end": "2026-08-20",
           "recent_start": "2026-08-07"
         },
-        "manifest_refresh_failures": 4,
+        "manifest_refresh_failures": 2,
         "recent_end": "2026-08-20",
-        "source_max_game_date": "2026-08-21",
+        "source_max_game_date": "2026-08-22",
         "status": "review_ready",
         "warnings": [
-          "4 unrelated player refresh failures do not affect reviewed-role coverage"
+          "2 unrelated player refresh failures do not affect reviewed-role coverage"
         ]
       },
       "columns": 23,
@@ -102,42 +98,42 @@
       "manifest_path": "data/pbpstats_2026_player_game_logs/ingest_manifest.json",
       "path": "data/pbpstats_2026_player_game_logs/player_game_logs_wnba_2026_regular_season.csv",
       "quality": {
-        "canonical_game_ids": 274,
+        "canonical_game_ids": 277,
         "canonical_player_ids": 227,
-        "canonical_player_rows": 5424,
+        "canonical_player_rows": 5482,
         "excluded_nonparticipation_rows": 1,
-        "source_game_ids": 274,
-        "source_max_game_date": "2026-08-21",
+        "source_game_ids": 277,
+        "source_max_game_date": "2026-08-22",
         "source_player_ids": 227,
-        "source_player_rows": 5425,
-        "team_join_expected": 5424,
-        "team_join_matched": 5424,
+        "source_player_rows": 5483,
+        "team_join_expected": 5482,
+        "team_join_matched": 5482,
         "zero_filled_cells": {
-          "Assists": 1545,
-          "AtRimFGA": 1695,
-          "AtRimFGM": 2290,
+          "Assists": 1558,
+          "AtRimFGA": 1716,
+          "AtRimFGM": 2314,
           "DefPoss": 2,
-          "FG2A": 782,
-          "FG2M": 1506,
-          "FG3A": 1326,
-          "FG3M": 2885,
-          "FTA": 2367,
-          "FtPoints": 2532,
+          "FG2A": 790,
+          "FG2M": 1522,
+          "FG3A": 1337,
+          "FG3M": 2912,
+          "FTA": 2394,
+          "FtPoints": 2561,
           "OffPoss": 14,
-          "OffRebounds": 2830,
-          "Points": 774,
-          "Rebounds": 851,
-          "Turnovers": 1843
+          "OffRebounds": 2864,
+          "Points": 779,
+          "Rebounds": 861,
+          "Turnovers": 1861
         }
       },
-      "rows": 5424,
+      "rows": 5482,
       "status": "reviewed_live_adapter",
       "team_path": "data/pbpstats_2026_player_game_logs/team_game_logs_wnba_2026_regular_season.csv"
     },
     "role_assignments": {
       "columns": 10,
       "path": "analysis/role_fulfillment_matrix/config/player_role_assignments_2026.csv",
-      "rows": 36,
+      "rows": 37,
       "status": "reviewed_real_data"
     },
     "role_definitions": {
@@ -152,15 +148,13 @@
       "quality": {
         "active_players": 207,
         "current_core_players": 232,
-        "eligibility_players_unmatched": 5,
+        "eligibility_players_unmatched": 3,
         "free_agents": 20,
         "inactive_players": 5,
-        "reviewed_players_matched": 227,
+        "reviewed_players_matched": 229,
         "source_as_of": "2026-08-22",
         "unmatched_eligibility_players": [
           "Dulcy Fankam Mendjiadeu",
-          "Iliana Rupert",
-          "Janiah Barker",
           "Kara Dunn",
           "Shey Peddy"
         ]

@@ -94,6 +94,11 @@ def build_candidate_funnel(
             reason = "not_age_experience_eligible"
         elif str(row.get("status_type", "")).strip().lower() == "free-agent":
             reason = "not_currently_rostered"
+        elif (
+            _as_bool(row.get("inactive_rostered"))
+            and row.get("assignment_review_status") != "reviewed"
+        ):
+            reason = "inactive_role_review_deferred"
         elif row.get("assignment_review_status") != "reviewed":
             reason = "role_assignment_not_reviewed"
         elif (
