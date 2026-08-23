@@ -25,6 +25,10 @@ holds the exploratory analysis and the filtered, design-ready data behind it.
   on/off contradiction: her return was a five-game minutes restriction, and
   healthy-Rice on/off is +18 to +21, not +11.4. **Use this one for anything
   going into print.**
+- **[`DERIVED_POSSESSIONS.md`](./DERIVED_POSSESSIONS.md)** — rebuilds the
+  frozen possession layer for the full season from ESPN play-by-play, with the
+  validation report and the duo findings it settles. Read this before quoting
+  any lineup or pairing number.
 - **[`METRIC_FRAMEWORK.md`](./METRIC_FRAMEWORK.md)** — which metrics to use,
   which to avoid and why, the two derivations that do the heavy lifting, and
   the data-coverage limits.
@@ -49,6 +53,11 @@ All are small enough to inline into an HTML artifact.
 | `story_teammate_minute_correlations.csv` | 663 | Every rotation-teammate pair league-wide, minutes correlation and percentile |
 | `story_opponent_adjusted_scoring.csv` | 6 | Schedule strength faced and opponent-adjusted scoring rate |
 | `story_team_defense_strength.csv` | 15 | Team defensive rating and distance from league average |
+| `derived_possessions_2026.parquet` | 44,986 | Full-season possession layer: both five-player lineups, points, calibration weight. Drop-in replacement for the frozen `wnba_possessions_2026.parquet` |
+| `story_duo_splits_full_season.csv` | 24 | Every duo state (both on / one on / neither) with ORtg, DRtg, net |
+| `story_derived_onoff_full_season.csv` | 6 | Possession-level on/off for the six |
+| `story_rice_blocks_derived.csv` | 4 | Rice's return windows on the derived layer |
+| `derived_vs_exact_onoff.csv` | 185 | Derived vs pbpstats-exact on/off, for error bars |
 
 Supporting/intermediate: `on_off_all_players.csv` (exact full-season on/off for
 all 227 players), `possession_on_off_splits.csv` (possession-level splits,
@@ -89,8 +98,8 @@ Two things to carry into the copy: the possessions, lineups and RAPM layers stop
 in **mid-July** while the pbpstats layer runs through **2026-08-21**, and Rice
 (20 games) and Kneepkens (215 minutes) are below any normal stability threshold.
 
-Claims to leave out unless the possessions layer is extended: the Betts +
-Austin two-big net rating and every other duo net rating, all opponent
-shot-profile splits, and all RAPM/BPM/WAR figures. §3 of the pbpstats-only
-document rebuilds the alternating-bigs finding from full-season minutes and is
-the safe version to publish.
+Claims to leave out: all opponent shot-profile splits and all RAPM/BPM/WAR
+figures, whose sources are still frozen in mid-July. The duo numbers are no
+longer on that list — they were rebuilt for the full season, and the Betts +
+Austin two-big angle died in the process (see `DERIVED_POSSESSIONS.md`). Treat
+any duo gap under about 15 points per 100 as indistinguishable from noise.
