@@ -35,9 +35,10 @@ REQUIRED_COLUMNS = {
 def require_fixture_mode(config: Mapping[str, Any]) -> None:
     if config.get("mode") != "fixture":
         raise LiveScoringBlocked(
-            "rfm-live-v1 formulas are approved, but live output remains disabled until the "
-            "11-player validation and threshold sensitivity review are approved. Use the "
-            "fixture config until the final governance gate is complete."
+            "rfm-live-v1 formulas are approved, and the PBPStats live adapter is approved, "
+            "but the adapter is not yet wired and live output remains disabled pending an "
+            "end-to-end dry run. "
+            "Use the fixture config until that implementation gate is complete."
         )
 
 

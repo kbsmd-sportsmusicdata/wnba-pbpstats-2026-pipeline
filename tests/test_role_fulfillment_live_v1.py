@@ -124,21 +124,25 @@ class LiveV1FormulaTest(unittest.TestCase):
             },
         )
 
-    def test_live_config_names_v1_but_remains_blocked_for_validation_review(self):
+    def test_live_config_names_v1_but_remains_blocked_for_adapter_wiring(self):
         raw = json.loads(LIVE_CONFIG.read_text())
         self.assertEqual(raw["formula_version"], "rfm-live-v1")
         self.assertEqual(raw["windows"]["baseline_start"], "2026-07-24")
         self.assertEqual(raw["windows"]["baseline_end"], "2026-08-06")
+        self.assertEqual(raw["validation_status"], "approved_11_player_review")
+        self.assertEqual(raw["live_adapter_status"], "approved_review")
+        self.assertFalse(raw["live_output_enabled"])
         with self.assertRaises(LiveScoringBlocked) as caught:
             require_fixture_mode(raw)
-        self.assertIn("11-player validation", str(caught.exception))
+        self.assertIn("adapter is approved", str(caught.exception))
+        self.assertIn("not yet wired", str(caught.exception))
         self.assertIn("live output remains disabled", str(caught.exception))
 
     def test_fixture_manifest_reports_the_current_validation_blocker(self):
         result = build_analysis(load_config(FIXTURE_CONFIG))
         self.assertEqual(
             result.manifest["live_scoring_blockers"],
-            ["rfm-live-v1 validation approval and reviewed live adapter"],
+            ["deliberate live adapter wiring and end-to-end dry run"],
         )
 
     def test_assignment_confidence_below_half_suppresses_all_scores(self):

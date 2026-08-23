@@ -44,7 +44,8 @@ class DataContractTest(unittest.TestCase):
             load_sources(config)
         message = str(raised.exception)
         self.assertIn("rfm-live-v1 formulas are approved", message)
-        self.assertIn("11-player validation", message)
+        self.assertIn("adapter is approved", message)
+        self.assertIn("not yet wired", message)
         self.assertIn("live output remains disabled", message)
         self.assertNotIn("until reviewed player-role assignments", message)
 

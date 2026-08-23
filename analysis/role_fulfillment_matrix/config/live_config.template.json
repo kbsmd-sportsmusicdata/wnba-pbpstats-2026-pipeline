@@ -34,6 +34,7 @@
     "possession_share_sd_ceiling": 0.15,
     "weights": {"games": 0.20, "possessions": 0.30, "consistency": 0.30, "assignment_confidence": 0.20}
   },
-  "validation_status": "pending_11_player_review",
+  "validation_status": "approved_11_player_review",
+  "live_adapter_status": "approved_review",
   "live_output_enabled": false
 }

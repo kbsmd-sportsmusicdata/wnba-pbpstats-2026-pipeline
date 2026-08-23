@@ -24,6 +24,8 @@ contender requirement
 | Role assignment | `role_code`, optional `secondary_role_code`, `assignment_confidence`, reviewer metadata | Available / reviewed | Thirty-six roster-attached eligible players on top-six contenders have reviewed six-role assignments. Three confirmed free agents are excluded from the current assignment pool. |
 | Creator behavior | assists, offensive possessions | Available / derivable | `75 * assists / off_poss`. |
 | Rim behavior | rim attempts, total FGA | Available / derivable | Rim-attempt share and rim accuracy. |
+| Perimeter behavior | three-point attempts, total FGA | Available / derivable | Three-point attempt share from additive game-level counts. |
+| Interior rebounding | total and offensive rebounds, total and offensive possessions | Available / derivable | Rebounds per 75 total possessions and offensive rebounds per 75 offensive possessions. |
 | Efficiency | points, FGA, FTA; rim makes/attempts | Available / derivable | Recompute TS% and role-specific accuracy from counts. |
 | Mistake control | assists, turnovers, offensive possessions | Available / derivable | A/TO or turnover rate depending on assigned role. |
 | Team impact | on-court ratings, RAPM, lineup/possession inputs | Evidence-only / lagging | True on-off is not materialized; RAPM coverage lags the fresh game layer. |
@@ -53,7 +55,8 @@ These are implementation fixtures, not reviewed live role definitions.
 Creator, Secondary Creator / Connector, Perimeter Scorer / Spacer, Downhill Pressure Wing,
 Interior Finisher / Rim Runner, and Interior Hub / Rebounder. Every component declares its source
 denominator and a minimum denominator. The live registry does not replace the two-role fixture
-registry because the executable live adapter remains deliberately blocked.
+registry because the approved live adapter is not yet wired and live execution remains deliberately
+blocked pending an end-to-end dry run.
 
 ## Formula contract
 
@@ -102,6 +105,13 @@ high Stability with low Fulfillment is valid and covered by a regression test.
     leaving valid Opportunity and Stability scores available.
 20. Live-v1 validation uses an independent locked expected-score table and a plus/minus 10% shift
     of every metric threshold band.
+21. PBPStats blanks become zero only for allowlisted additive counts after participation is
+    established; structural fields are never imputed.
+22. The adapter excludes zero-minute rows only when all possession evidence is absent.
+23. Player-game and team-game keys must be unique, every player row must join one team-game row,
+    and total possessions must equal offensive plus defensive possessions.
+24. Global refresh failures are warnings only when no reviewed-role player is affected; a reviewed
+    candidate failure blocks the adapter gate.
 
 ## Blockers to live scoring
 
@@ -112,8 +122,8 @@ high Stability with low Fulfillment is valid and covered by a regression test.
 | ESPN/PBPStats identity mismatch | Direct numeric joins drop players because the namespaces differ. | Add and test an explicit one-to-one crosswalk before using roster/DNP context. |
 | Impact feed lags player-game feed | Recent opportunity and stale impact are not comparable on one clock. | Rebuild to a shared cutoff or keep impact evidence-only with lag labels. |
 | True player on/off not materialized | On-court net rating is not on-minus-off impact. | Validate a separate possession/lineup pipeline after the prototype is approved. |
-| Live-v1 validation awaiting review | All 11 production calculations match the locked expected values; sensitivity movement is at most 10 points, with two adjacent-band crossings. | Review `data/review/live_v1_validation/role_fulfillment_matrix_live_v1_validation.md`. |
-| Live adapter not wired | The reviewed registry expects additional three-point and rebound fields at the player-game grain. | Add a source adapter with zero-omitted count handling, field coverage, freshness, and crosswalk tests only after validation approval. |
+| Live-v1 validation completed | All 11 production calculations match the locked expected values; sensitivity movement is at most 10 points, with two adjacent-band crossings. | Preserve the approved report and locked expected table. |
+| Live adapter awaiting review | The standalone adapter passes its current freshness, zero-omission, 36-player coverage, team-join, and 11-player parity checks. | Review `data/review/live_adapter_validation/role_fulfillment_matrix_live_adapter_validation.md`; do not wire it before approval. |
 
 ## Test plan
 
@@ -122,7 +132,8 @@ high Stability with low Fulfillment is valid and covered by a regression test.
 | Contracts | Missing columns, missing sources, fixture-only mode, live block | Duplicate eligibility IDs, incomplete candidate coverage, source-citation format. |
 | Funnel | Contender, reviewed eligibility, valid assignment, affiliation status, inactive suppression, recent sample, and 500-possession season fallback | Boundary ranks, trades, two-team players, cutoff mismatch. |
 | Metrics | Recompute rates from counts, recent/baseline separation | Zero denominators, overtime, traded-player team windows. |
-| Scores | Independent dimensions, formula version, stability/performance separation, 11-player hand calculations, threshold sensitivity | Reviewer approval of the generated live-v1 package, then adapter parity checks. |
+| Scores | Independent dimensions, formula version, stability/performance separation, 11-player hand calculations, threshold sensitivity | Approved; preserve regression coverage. |
+| PBPStats adapter | Zero-omitted counts, participation gate, unique keys, possession identity, team-game joins, candidate failures, freshness, 11-player parity | Reviewer approval, then deliberate still-disabled live wiring. |
 | Evidence | Source, windows, denominators, safeguards | Cross-source lag and crosswalk quality labels. |
 | Web | Exact bundle, direct-file payload, null-safe score formatting, unavailable-point omission, safe text rendering, accessible dialog | Browser keyboard, contrast, and print QA. |
 | Workflow | Manual-only, fixture config, no commit/push | Protected review gate before any live job is introduced. |

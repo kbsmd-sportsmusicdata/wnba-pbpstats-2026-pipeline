@@ -111,7 +111,7 @@ def build_analysis(config: Dict[str, Any]) -> AnalysisResult:
         "mode": "fixture",
         "live_scoring_status": "blocked",
         "live_scoring_blockers": [
-            "rfm-live-v1 validation approval and reviewed live adapter",
+            "deliberate live adapter wiring and end-to-end dry run",
         ],
         "formula_version": config["formula_version"],
         "players_scored": players_scored,

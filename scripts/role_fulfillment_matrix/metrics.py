@@ -12,12 +12,20 @@ COUNT_COLUMNS = [
     "minutes", "off_poss", "team_possessions", "points", "assists", "turnovers",
     "fga", "fgm", "fta", "ftm", "at_rim_fga", "at_rim_fgm",
 ]
+LIVE_V1_COUNT_COLUMNS = [
+    "def_poss", "total_poss", "fg3a", "fg3m", "rebounds", "off_rebounds",
+]
 IDENTITY_COLUMNS = ["player_id", "player_name", "team_abbreviation"]
-DERIVED_COLUMNS = [
+BASE_DERIVED_COLUMNS = [
     "games", "possession_share_sd", "minutes_per_game", "possession_share",
     "assists_per_75", "assist_turnover_ratio", "true_shooting_attempts",
     "true_shooting_pct", "rim_fga_share", "rim_fg_pct", "turnover_rate",
 ]
+LIVE_V1_DERIVED_COLUMNS = [
+    "three_point_fga_share", "fta_rate", "rebounds_per_75_total_possessions",
+    "offensive_rebounds_per_75_off_poss",
+]
+DERIVED_COLUMNS = BASE_DERIVED_COLUMNS + LIVE_V1_DERIVED_COLUMNS
 
 
 def _safe_ratio(numerator: float, denominator: float) -> float:
@@ -28,14 +36,19 @@ def _safe_ratio(numerator: float, denominator: float) -> float:
 
 def aggregate_window(frame: pd.DataFrame, prefix: str) -> pd.DataFrame:
     columns = IDENTITY_COLUMNS
+    active_live_counts = [column for column in LIVE_V1_COUNT_COLUMNS if column in frame.columns]
+    active_counts = COUNT_COLUMNS + active_live_counts
+    active_derived = BASE_DERIVED_COLUMNS + (
+        LIVE_V1_DERIVED_COLUMNS if active_live_counts else []
+    )
     if frame.empty:
-        value_columns = [f"{prefix}_{column}" for column in COUNT_COLUMNS + DERIVED_COLUMNS]
+        value_columns = [f"{prefix}_{column}" for column in active_counts + active_derived]
         return pd.DataFrame(columns=columns + value_columns)
 
     numeric = frame.copy()
-    for column in COUNT_COLUMNS:
+    for column in active_counts:
         numeric[column] = pd.to_numeric(numeric[column], errors="coerce")
-    grouped = numeric.groupby(columns, as_index=False, dropna=False)[COUNT_COLUMNS].sum(min_count=1)
+    grouped = numeric.groupby(columns, as_index=False, dropna=False)[active_counts].sum(min_count=1)
     games = numeric.groupby(columns, as_index=False)["game_id"].nunique().rename(columns={"game_id": "games"})
     grouped = grouped.merge(games, on=columns, how="left")
 
@@ -68,6 +81,17 @@ def aggregate_window(frame: pd.DataFrame, prefix: str) -> pd.DataFrame:
     grouped["turnover_rate"] = grouped.apply(
         lambda r: _safe_ratio(r.turnovers, r.off_poss), axis=1
     )
+    if active_live_counts:
+        grouped["three_point_fga_share"] = grouped.apply(
+            lambda r: _safe_ratio(r.fg3a, r.fga), axis=1
+        )
+        grouped["fta_rate"] = grouped.apply(lambda r: _safe_ratio(r.fta, r.fga), axis=1)
+        grouped["rebounds_per_75_total_possessions"] = grouped.apply(
+            lambda r: 75.0 * _safe_ratio(r.rebounds, r.total_poss), axis=1
+        )
+        grouped["offensive_rebounds_per_75_off_poss"] = grouped.apply(
+            lambda r: 75.0 * _safe_ratio(r.off_rebounds, r.off_poss), axis=1
+        )
 
     renamed = {
         column: f"{prefix}_{column}" for column in grouped.columns if column not in columns

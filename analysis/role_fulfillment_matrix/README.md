@@ -12,8 +12,11 @@ playoff forecast dashboard.
 - **Real role assignments:** reviewed and approved for 36 roster-attached eligible players on
   top-six contenders; three confirmed free agents remain in eligibility history only.
 - **Live formula status:** the six-role `rfm-live-v1` formulas and thresholds are approved.
-- **Why scoring remains blocked:** the 11-player hand-calculation and threshold-sensitivity report
-  is generated but remains pending reviewer approval; the live adapter is not wired.
+- **Formula validation status:** the 11-player hand-calculation and threshold-sensitivity gate is
+  approved.
+- **Live adapter status:** the PBPStats adapter validation package was approved on 2026-08-22.
+- **Why scoring remains blocked:** the approved adapter is not wired into the live pipeline and an
+  end-to-end dry run has not been completed.
 - **Output interpretation:** all names, teams, and scores in the generated dashboard are synthetic.
 
 ## Eligibility review package
@@ -102,6 +105,31 @@ The current package matches all 11 locked calculations. A 10% threshold-band shi
 maximum 10-point change; two players cross one adjacent descriptive band. These bands are review
 aids, not categorical player labels.
 
+## PBPStats live-adapter review gate
+
+The review-only adapter is `scripts/role_fulfillment_matrix/pbpstats_adapter.py`. It normalizes the
+raw PBPStats player and team game logs to the canonical player-game contract while preserving the
+live execution block.
+
+Generate its review package:
+
+```bash
+python3 scripts/build_role_fulfillment_live_adapter_validation.py
+```
+
+Outputs are confined to `data/review/live_adapter_validation/`:
+
+- `pbpstats_field_mapping.csv`;
+- `pbpstats_data_quality_checks.csv`;
+- `live_v1_11_player_adapter_parity.csv`;
+- `role_fulfillment_matrix_live_adapter_validation.md`.
+
+Only allowlisted additive counts use zero-omitted filling. Identity, dates, game ids, affiliation,
+minutes, and team-game possessions are never imputed. Offensive or defensive possessions may be
+filled with zero only after participation is established, and total possessions must reconcile.
+The package was approved by Krystal Beasley on 2026-08-22; that approval authorizes the wiring
+gate only and leaves live output disabled.
+
 ## Outputs
 
 ```text
@@ -134,6 +162,9 @@ Do not switch to live mode by changing the config string alone. Promotion requir
 4. reviewed role formulas and thresholds; **complete as `rfm-live-v1`**;
 5. a shared-cutoff decision for lagging impact context;
 6. reviewer approval of the generated 11-player hand-calculation and sensitivity package;
-7. reviewed live-source adapter and freshness/coverage checks.
+   **complete**;
+7. reviewer approval of the live-source adapter freshness, zero-omission, coverage, and parity
+   package; **current gate**;
+8. deliberate adapter wiring with live output still disabled.
 
 Until those are complete, `live_config.template.json` fails before any live table is read.
