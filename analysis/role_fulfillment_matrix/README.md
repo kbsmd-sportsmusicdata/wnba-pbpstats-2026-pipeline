@@ -8,9 +8,32 @@ playoff forecast dashboard.
 
 - **Prototype mode:** synthetic fixtures only.
 - **Live scoring:** blocked.
-- **Why blocked:** the GitHub repository does not yet contain a reviewed age/experience eligibility
-  table or reviewed player-role assignments.
+- **Real eligibility data:** generated for 227 PBPStats players and pending human review.
+- **Why scoring remains blocked:** eligibility rows are not yet approved, and the repository does
+  not yet contain reviewed player-role assignments or reviewed live role thresholds.
 - **Output interpretation:** all names, teams, and scores in the generated dashboard are synthetic.
+
+## Eligibility review package
+
+The review-stage package uses the committed ESPN player-core snapshot and the PBPStats player-game
+layer through August 20, 2026. It applies the approved rule `experience_years <= 3`, but deliberately
+sets every row to `review_status = pending`.
+
+```bash
+python3 scripts/build_role_fulfillment_eligibility.py \
+  --player-core analysis/role_fulfillment_matrix/data/live_inputs/player_core_2026.csv \
+  --player-game data/processed/wnba_pbpstats_player_game/season=2026/player_game.parquet \
+  --cutoff-date 2026-08-20 \
+  --source-as-of 2026-08-22 \
+  --output-dir analysis/role_fulfillment_matrix/data/review
+```
+
+Review outputs:
+
+- `player_eligibility_2026.pending.csv`: 227 pending eligibility decisions;
+- `player_identity_crosswalk_2026.csv`: 227 matched identities plus five source-only records;
+- `eligibility_build_manifest_2026.json`: rule, cutoff, source hash, coverage, and output hashes;
+- `README.md`: reviewer checklist and promotion boundary.
 
 ## Build
 
