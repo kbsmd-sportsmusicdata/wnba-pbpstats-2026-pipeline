@@ -34,8 +34,9 @@ REQUIRED_COLUMNS = {
 def require_fixture_mode(config: Mapping[str, Any]) -> None:
     if config.get("mode") != "fixture":
         raise LiveScoringBlocked(
-            "Live scoring is blocked until a reviewed age/experience eligibility table and "
-            "reviewed player-role assignments are added. Use the fixture config for this prototype."
+            "Live scoring remains blocked until reviewed player-role assignments and reviewed "
+            "live role thresholds are added. Eligibility is approved; use the fixture config "
+            "until the remaining governance gates are complete."
         )
 
 

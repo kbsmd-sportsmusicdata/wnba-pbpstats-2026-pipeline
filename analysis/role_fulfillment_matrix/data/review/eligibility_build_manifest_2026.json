@@ -8,11 +8,19 @@
     "threshold": 3,
     "eligibility_type": "experience_le_3"
   },
-  "source": {
-    "system": "ESPN",
-    "path": "analysis/role_fulfillment_matrix/data/live_inputs/player_core_2026.csv",
-    "sha256": "e5b1f81f0caf215ee0996544f095f7cfbde50f22f6c81e8519af9eb2fae09c26",
-    "rows": 232
+  "sources": {
+    "player_core": {
+      "system": "ESPN",
+      "path": "analysis/role_fulfillment_matrix/data/live_inputs/player_core_2026.csv",
+      "sha256": "e5b1f81f0caf215ee0996544f095f7cfbde50f22f6c81e8519af9eb2fae09c26",
+      "rows": 232
+    },
+    "player_game": {
+      "path": "data/processed/wnba_pbpstats_player_game/season=2026/player_game.parquet",
+      "sha256": "ad3e17f45c46c09624f4387eaef8f8125005f9be38f09c0fb55c53b68e84e387",
+      "rows": 5425,
+      "rows_on_or_before_cutoff": 5365
+    }
   },
   "pbpstats_players": 227,
   "matched_players": 227,

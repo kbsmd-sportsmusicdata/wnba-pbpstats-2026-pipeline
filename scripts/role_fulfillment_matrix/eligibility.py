@@ -92,6 +92,8 @@ def build_eligibility_package(
     source_as_of: str,
     source_path: str,
     source_sha256: str,
+    player_game_path: str,
+    player_game_sha256: str,
     experience_max: int = 3,
 ) -> EligibilityPackage:
     """Return pending eligibility rows plus a complete ESPN/PBPStats crosswalk."""
@@ -100,6 +102,7 @@ def build_eligibility_package(
     if experience_max < 0:
         raise EligibilityBuildError("experience_max must be non-negative")
     source_digest = _validate_sha256(source_sha256)
+    player_game_digest = _validate_sha256(player_game_sha256)
 
     cutoff = pd.to_datetime(cutoff_date, errors="coerce")
     as_of = pd.to_datetime(source_as_of, errors="coerce")
@@ -293,11 +296,19 @@ def build_eligibility_package(
             "threshold": int(experience_max),
             "eligibility_type": f"experience_le_{experience_max}",
         },
-        "source": {
-            "system": "ESPN",
-            "path": str(source_path),
-            "sha256": source_digest,
-            "rows": int(len(core)),
+        "sources": {
+            "player_core": {
+                "system": "ESPN",
+                "path": str(source_path),
+                "sha256": source_digest,
+                "rows": int(len(core)),
+            },
+            "player_game": {
+                "path": str(player_game_path),
+                "sha256": player_game_digest,
+                "rows": int(len(player_game)),
+                "rows_on_or_before_cutoff": int(len(games)),
+            },
         },
         "pbpstats_players": pbpstats_players,
         "matched_players": matched_players,

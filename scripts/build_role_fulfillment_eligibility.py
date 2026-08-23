@@ -55,6 +55,8 @@ def main() -> None:
         source_as_of=args.source_as_of,
         source_path=str(player_core_path),
         source_sha256=sha256_file(player_core_path),
+        player_game_path=str(player_game_path),
+        player_game_sha256=sha256_file(player_game_path),
         experience_max=args.experience_max,
     )
     outputs = write_eligibility_package(package, Path(args.output_dir))

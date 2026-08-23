@@ -23,6 +23,30 @@ APPROVAL_MANIFEST = (
     / "review"
     / "eligibility_approval_manifest_2026.json"
 )
+PENDING_ELIGIBILITY = (
+    ROOT
+    / "analysis"
+    / "role_fulfillment_matrix"
+    / "data"
+    / "review"
+    / "player_eligibility_2026.pending.csv"
+)
+CROSSWALK = (
+    ROOT
+    / "analysis"
+    / "role_fulfillment_matrix"
+    / "data"
+    / "review"
+    / "player_identity_crosswalk_2026.csv"
+)
+BUILD_MANIFEST = (
+    ROOT
+    / "analysis"
+    / "role_fulfillment_matrix"
+    / "data"
+    / "review"
+    / "eligibility_build_manifest_2026.json"
+)
 
 
 def eligibility_api():
@@ -126,6 +150,8 @@ class EligibilityBuilderTest(unittest.TestCase):
             source_as_of="2026-08-22",
             source_path="analysis/role_fulfillment_matrix/data/live_inputs/player_core_2026.csv",
             source_sha256="a" * 64,
+            player_game_path="data/processed/player_game.parquet",
+            player_game_sha256="b" * 64,
         )
 
         eligibility = package.eligibility.set_index("player_id")
@@ -162,6 +188,12 @@ class EligibilityBuilderTest(unittest.TestCase):
         self.assertEqual(package.manifest["eligible_players"], 2)
         self.assertEqual(package.manifest["review_status"], "pending")
         self.assertEqual(package.manifest["live_scoring_status"], "blocked")
+        self.assertEqual(package.manifest["sources"]["player_game"], {
+            "path": "data/processed/player_game.parquet",
+            "sha256": "b" * 64,
+            "rows": 4,
+            "rows_on_or_before_cutoff": 4,
+        })
 
     def test_rejects_duplicate_normalized_source_names(self):
         error, build, _ = eligibility_api()
@@ -178,6 +210,8 @@ class EligibilityBuilderTest(unittest.TestCase):
                 source_as_of="2026-08-22",
                 source_path="player_core.csv",
                 source_sha256="a" * 64,
+                player_game_path="player_game.parquet",
+                player_game_sha256="b" * 64,
             )
 
     def test_rejects_incomplete_pbpstats_coverage(self):
@@ -201,6 +235,8 @@ class EligibilityBuilderTest(unittest.TestCase):
                 source_as_of="2026-08-22",
                 source_path="player_core.csv",
                 source_sha256="a" * 64,
+                player_game_path="player_game.parquet",
+                player_game_sha256="b" * 64,
             )
 
     def test_rejects_missing_or_invalid_experience(self):
@@ -216,6 +252,8 @@ class EligibilityBuilderTest(unittest.TestCase):
                 source_as_of="2026-08-22",
                 source_path="player_core.csv",
                 source_sha256="a" * 64,
+                player_game_path="player_game.parquet",
+                player_game_sha256="b" * 64,
             )
 
     def test_writes_separate_outputs_with_source_and_output_hashes(self):
@@ -227,6 +265,8 @@ class EligibilityBuilderTest(unittest.TestCase):
             source_as_of="2026-08-22",
             source_path="player_core.csv",
             source_sha256="a" * 64,
+            player_game_path="player_game.parquet",
+            player_game_sha256="b" * 64,
         )
 
         with tempfile.TemporaryDirectory() as tmp:
@@ -301,6 +341,18 @@ class ApprovedEligibilityArtifactTest(unittest.TestCase):
         self.assertEqual(set(eligibility["reviewed_by"]), {"Krystal Beasley"})
         self.assertEqual(set(eligibility["reviewed_at"]), {"2026-08-22"})
 
+        pending = pd.read_csv(PENDING_ELIGIBILITY)
+        review_fields = ["review_status", "reviewed_by", "reviewed_at"]
+        pd.testing.assert_frame_equal(
+            pending.drop(columns=review_fields),
+            eligibility.drop(columns=review_fields),
+            check_dtype=False,
+        )
+
+        crosswalk = pd.read_csv(CROSSWALK)
+        matched_ids = set(crosswalk.loc[crosswalk["match_status"] == "matched", "player_id"])
+        self.assertEqual(set(eligibility["player_id"]), matched_ids)
+
     def test_approval_manifest_hashes_promoted_table_and_keeps_scoring_blocked(self):
         self.assertTrue(APPROVAL_MANIFEST.exists(), "eligibility approval manifest is missing")
         manifest = json.loads(APPROVAL_MANIFEST.read_text(encoding="utf-8"))
@@ -314,6 +366,18 @@ class ApprovedEligibilityArtifactTest(unittest.TestCase):
         self.assertEqual(
             manifest["approved_output"]["sha256"],
             hashlib.sha256(APPROVED_ELIGIBILITY.read_bytes()).hexdigest(),
+        )
+        self.assertEqual(
+            manifest["pending_input"]["sha256"],
+            hashlib.sha256(PENDING_ELIGIBILITY.read_bytes()).hexdigest(),
+        )
+        self.assertEqual(
+            manifest["crosswalk"]["sha256"],
+            hashlib.sha256(CROSSWALK.read_bytes()).hexdigest(),
+        )
+        self.assertEqual(
+            manifest["build_manifest"]["sha256"],
+            hashlib.sha256(BUILD_MANIFEST.read_bytes()).hexdigest(),
         )
 
     def test_live_config_references_approved_eligibility_without_unblocking_scoring(self):

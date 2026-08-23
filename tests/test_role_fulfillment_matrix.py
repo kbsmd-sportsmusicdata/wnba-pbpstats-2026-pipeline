@@ -33,7 +33,7 @@ class DataContractTest(unittest.TestCase):
         config = load_config(LIVE_CONFIG)
         with self.assertRaisesRegex(
             LiveScoringBlocked,
-            "reviewed age/experience eligibility table.*reviewed player-role assignments",
+            "reviewed player-role assignments.*reviewed live role thresholds",
         ):
             load_sources(config)
 
