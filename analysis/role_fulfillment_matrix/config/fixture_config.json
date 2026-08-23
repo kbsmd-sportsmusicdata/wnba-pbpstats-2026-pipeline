@@ -17,7 +17,11 @@
     "recent_start": "2026-08-18",
     "recent_end": "2026-08-20"
   },
-  "minimums": {"recent_games": 3, "recent_off_poss": 100},
+  "minimums": {
+    "recent_games": 3,
+    "recent_off_poss": 100,
+    "season_off_poss_fallback": 500
+  },
   "opportunity": {
     "minutes_per_game": {"floor": 10, "target": 30, "weight": 0.30},
     "possession_share": {"floor": 0.20, "target": 0.70, "weight": 0.40},

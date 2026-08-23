@@ -1,0 +1,49 @@
+{
+  "season": 2026,
+  "review_status": "reviewed",
+  "approved_by": "Krystal Beasley",
+  "approved_at": "2026-08-22",
+  "assignment_policy": {
+    "primary_role": "required_and_scored_after_threshold_approval",
+    "secondary_role": "optional_and_unscored",
+    "taxonomy_role_count": 6
+  },
+  "reviewed_assignment_rows": 36,
+  "reviewed_team_counts": {
+    "ATL": 8,
+    "GSV": 6,
+    "IND": 5,
+    "LVA": 3,
+    "MIN": 8,
+    "NYL": 6
+  },
+  "reviewed_primary_role_counts": {
+    "downhill_pressure_wing": 5,
+    "interior_finisher_rim_runner": 6,
+    "interior_hub_rebounder": 4,
+    "lead_creator": 2,
+    "perimeter_scorer_spacer": 11,
+    "secondary_creator_connector": 8
+  },
+  "excluded_free_agents": [
+    "Alex Fowler",
+    "Julie Vanloo",
+    "Ndjakalenga Mwenentanda"
+  ],
+  "reviewed_output": {
+    "path": "analysis/role_fulfillment_matrix/config/player_role_assignments_2026.csv",
+    "sha256": "4ad06269d902f645a5de03e8c012e6439e4e997cd0b607d9416c4d1bd66bdbd1"
+  },
+  "sample_policy": {
+    "recent_games_min": 3,
+    "recent_off_poss_min": 100,
+    "season_off_poss_fallback_min": 500,
+    "season_fallback_score_status": "season_context_only",
+    "season_fallback_scores_calculated": false,
+    "inactive_score_status": "inactive_suppressed"
+  },
+  "live_scoring_status": "blocked",
+  "remaining_blockers": [
+    "reviewed_live_role_thresholds"
+  ]
+}

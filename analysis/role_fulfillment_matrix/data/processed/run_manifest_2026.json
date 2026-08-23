@@ -1,5 +1,5 @@
 {
-  "config_hash": "ed086276608dbf80d9ecc3664f7d5333b9fa181c8b750aac3b68518c557f56dc",
+  "config_hash": "6a5112f6d4cd533c9140de4e7c3d60d8cad3658722fb660e8baae4f00196a71c",
   "config_path": "analysis/role_fulfillment_matrix/config/fixture_config.json",
   "formula_version": "rfm-fixture-v1",
   "funnel_counts": {
@@ -10,10 +10,9 @@
     "players_considered": 5,
     "players_scored": 2
   },
-  "generated_at_utc": "2026-08-22T01:41:56+00:00",
+  "generated_at_utc": "2026-08-23T03:19:39+00:00",
   "live_scoring_blockers": [
-    "reviewed age/experience eligibility table",
-    "reviewed player-role assignments"
+    "reviewed live role thresholds"
   ],
   "live_scoring_status": "blocked",
   "mode": "fixture",
@@ -26,7 +25,7 @@
   "season": 2026,
   "source_manifest": {
     "eligibility": {
-      "columns": 10,
+      "columns": 12,
       "path": "tests/fixtures/role_fulfillment_matrix/player_eligibility.csv",
       "rows": 5,
       "status": "synthetic_fixture"

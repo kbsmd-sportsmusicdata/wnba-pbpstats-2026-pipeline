@@ -288,6 +288,39 @@ class EligibilityBuilderTest(unittest.TestCase):
                 hashlib.sha256(crosswalk_path.read_bytes()).hexdigest(),
             )
 
+    def test_refuses_to_overwrite_directory_with_approved_review_evidence(self):
+        error, build, write = eligibility_api()
+        package = build(
+            player_core_frame(),
+            player_game_frame(),
+            cutoff_date="2026-08-20",
+            source_as_of="2026-08-22",
+            source_path="player_core.csv",
+            source_sha256="a" * 64,
+            player_game_path="player_game.parquet",
+            player_game_sha256="b" * 64,
+        )
+
+        with tempfile.TemporaryDirectory() as tmp:
+            output_dir = Path(tmp)
+            pending_path = output_dir / "player_eligibility_2026.pending.csv"
+            pending_path.write_text("approved evidence\n", encoding="utf-8")
+            (output_dir / "eligibility_approval_manifest_2026.json").write_text(
+                '{"review_status":"reviewed"}\n',
+                encoding="utf-8",
+            )
+
+            with self.assertRaisesRegex(
+                error,
+                "approved review evidence.*fresh output directory",
+            ):
+                write(package, output_dir)
+
+            self.assertEqual(
+                pending_path.read_text(encoding="utf-8"),
+                "approved evidence\n",
+            )
+
     def test_cli_builds_review_package_from_configurable_paths(self):
         script = ROOT / "scripts" / "build_role_fulfillment_eligibility.py"
         with tempfile.TemporaryDirectory() as tmp:

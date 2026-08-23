@@ -324,6 +324,12 @@ def build_eligibility_package(
 
 def write_eligibility_package(package: EligibilityPackage, output_dir: Path) -> Dict[str, str]:
     output = Path(output_dir)
+    approval_manifest = output / "eligibility_approval_manifest_2026.json"
+    if approval_manifest.exists():
+        raise EligibilityBuildError(
+            "output directory contains approved review evidence; use a fresh output directory "
+            f"instead of overwriting {output}"
+        )
     output.mkdir(parents=True, exist_ok=True)
     eligibility_path = output / "player_eligibility_2026.pending.csv"
     crosswalk_path = output / "player_identity_crosswalk_2026.csv"

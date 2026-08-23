@@ -9,8 +9,9 @@ playoff forecast dashboard.
 - **Prototype mode:** synthetic fixtures only.
 - **Live scoring:** blocked.
 - **Real eligibility data:** reviewed and approved for all 227 PBPStats players.
-- **Why scoring remains blocked:** the repository does not yet contain reviewed player-role
-  assignments or reviewed live role thresholds.
+- **Real role assignments:** reviewed and approved for 36 roster-attached eligible players on
+  top-six contenders; three confirmed free agents remain in eligibility history only.
+- **Why scoring remains blocked:** reviewed live role formulas and thresholds are not yet approved.
 - **Output interpretation:** all names, teams, and scores in the generated dashboard are synthetic.
 
 ## Eligibility review package
@@ -26,8 +27,12 @@ python3 scripts/build_role_fulfillment_eligibility.py \
   --player-game data/processed/wnba_pbpstats_player_game/season=2026/player_game.parquet \
   --cutoff-date 2026-08-20 \
   --source-as-of 2026-08-22 \
-  --output-dir analysis/role_fulfillment_matrix/data/review
+  --output-dir analysis/role_fulfillment_matrix/data/review/runs/2026-08-23T000000Z
 ```
+
+The builder refuses to write into a directory containing
+`eligibility_approval_manifest_2026.json`. Use a fresh run directory for rebuilds so the approved
+pending table, crosswalk, and build manifest remain immutable.
 
 Review outputs:
 
@@ -54,6 +59,21 @@ analysis/role_fulfillment_matrix/deliverables/role_fulfillment_matrix/index.html
 ```
 
 The page embeds its payload, so it works when opened directly without a local web server.
+
+## Reviewed role and sample safeguards
+
+The reviewed registry is `config/player_role_assignments_2026.csv`. It stores one scored primary
+role, an optional unscored secondary role, assignment confidence, and approval metadata. Roster
+and sample status remain separate from role approval:
+
+- free agents are excluded as `not_currently_rostered` without deleting eligibility history;
+- inactive rostered players retain their role with `score_status = inactive_suppressed`;
+- recent scoring requires at least three games and 100 offensive possessions in the approved
+  recent window;
+- a player with at least 500 season offensive possessions may remain visible with
+  `score_status = season_context_only` when the recent gate fails;
+- season-context fallback rows carry separate season, recent-game, and recent-possession flags and
+  do not receive Fulfillment, Opportunity, or Stability scores.
 
 ## Outputs
 
@@ -82,9 +102,9 @@ The dashboard answers three different questions without collapsing them into an 
 Do not switch to live mode by changing the config string alone. Promotion requires:
 
 1. a unique, source-cited eligibility row for every candidate;
-2. a reviewed player-role assignment for every candidate;
+2. a reviewed player-role assignment for every roster-attached candidate; **complete**;
 3. coverage, duplicate, and unknown-role checks;
-4. reviewed role formulas and thresholds;
+4. reviewed role formulas and thresholds; **remaining blocker**;
 5. a shared-cutoff decision for lagging impact context;
 6. fixture parity tests against a hand-calculated review set.
 

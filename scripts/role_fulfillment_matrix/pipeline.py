@@ -44,11 +44,20 @@ def build_analysis(config: Dict[str, Any]) -> AnalysisResult:
     evidence_rows = []
     for _, candidate in included.iterrows():
         role = sources.role_definitions[candidate["role_code"]]
-        fulfillment_score, fulfillment_detail = fulfillment(candidate, role)
-        opportunity_score, opportunity_detail = opportunity(candidate, config)
-        stability_score, stability_detail = stability(candidate, config)
-        values = [fulfillment_score, opportunity_score, stability_score]
-        status = "fixture_only" if all(pd.notna(value) for value in values) else "unavailable"
+        if bool(candidate.get("inactive_rostered")):
+            fulfillment_score = opportunity_score = stability_score = float("nan")
+            fulfillment_detail = opportunity_detail = stability_detail = []
+            status = "inactive_suppressed"
+        elif not bool(candidate.get("score_eligible")):
+            fulfillment_score = opportunity_score = stability_score = float("nan")
+            fulfillment_detail = opportunity_detail = stability_detail = []
+            status = "season_context_only"
+        else:
+            fulfillment_score, fulfillment_detail = fulfillment(candidate, role)
+            opportunity_score, opportunity_detail = opportunity(candidate, config)
+            stability_score, stability_detail = stability(candidate, config)
+            values = [fulfillment_score, opportunity_score, stability_score]
+            status = "fixture_only" if all(pd.notna(value) for value in values) else "unavailable"
         record = candidate.to_dict()
         record.update({
             "role_label": role["label"],
@@ -61,30 +70,30 @@ def build_analysis(config: Dict[str, Any]) -> AnalysisResult:
             "analysis_mode": "fixture",
         })
         score_rows.append(record)
-        evidence_rows.extend(build_evidence_rows(
-            record,
-            {
-                "fulfillment": fulfillment_detail,
-                "opportunity": opportunity_detail,
-                "stability": stability_detail,
-            },
-            config,
-        ))
+        if status in {"fixture_only", "unavailable"}:
+            evidence_rows.extend(build_evidence_rows(
+                record,
+                {
+                    "fulfillment": fulfillment_detail,
+                    "opportunity": opportunity_detail,
+                    "stability": stability_detail,
+                },
+                config,
+            ))
 
     scores = pd.DataFrame(score_rows)
     if not scores.empty:
         scores = scores.sort_values(["fulfillment_score", "player_name"], ascending=[False, True]).reset_index(drop=True)
     evidence = pd.DataFrame(evidence_rows)
     counts = _funnel_counts(funnel)
-    players_scored = int((scores.get("score_status") != "unavailable").sum()) if not scores.empty else 0
+    players_scored = int((scores.get("score_status") == "fixture_only").sum()) if not scores.empty else 0
     counts["players_scored"] = players_scored
     manifest = {
         "season": int(config["season"]),
         "mode": "fixture",
         "live_scoring_status": "blocked",
         "live_scoring_blockers": [
-            "reviewed age/experience eligibility table",
-            "reviewed player-role assignments",
+            "reviewed live role thresholds",
         ],
         "formula_version": config["formula_version"],
         "players_scored": players_scored,

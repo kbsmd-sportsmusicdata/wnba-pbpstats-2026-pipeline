@@ -44,7 +44,36 @@ def build_candidate_funnel(
     max_rank = float(config["contender"]["current_rank_max"])
     min_games = int(config["minimums"]["recent_games"])
     min_poss = float(config["minimums"]["recent_off_poss"])
+    season_fallback_poss = float(config["minimums"]["season_off_poss_fallback"])
     valid_roles = set(sources.role_definitions)
+
+    recent_games = pd.to_numeric(frame.get("recent_games"), errors="coerce").fillna(0)
+    recent_poss = pd.to_numeric(frame.get("recent_off_poss"), errors="coerce").fillna(0)
+    season_poss = pd.to_numeric(frame.get("season_off_poss"), errors="coerce").fillna(0)
+    status_type = frame["status_type"].astype("string").str.strip().str.lower()
+    active = frame["active"].map(_as_bool)
+
+    frame["recent_games_met"] = recent_games.ge(min_games)
+    frame["recent_possessions_met"] = recent_poss.ge(min_poss)
+    frame["insufficient_recent_games"] = ~frame["recent_games_met"]
+    frame["insufficient_recent_possessions"] = ~frame["recent_possessions_met"]
+    frame["season_possessions_met"] = season_poss.ge(season_fallback_poss)
+    frame["recent_sample_met"] = (
+        frame["recent_games_met"] & frame["recent_possessions_met"]
+    )
+    frame["inactive_rostered"] = status_type.eq("inactive")
+    frame["currently_rostered"] = ~status_type.eq("free-agent")
+    frame["score_eligible"] = active & frame["recent_sample_met"]
+    frame["sample_status"] = "insufficient_recent_sample"
+    frame.loc[
+        frame["recent_games_met"] & ~frame["recent_possessions_met"],
+        "sample_status",
+    ] = "insufficient_recent_possessions"
+    frame.loc[
+        frame["season_possessions_met"] & ~frame["recent_sample_met"],
+        "sample_status",
+    ] = "season_volume_met_recent_sample_insufficient"
+    frame.loc[frame["recent_sample_met"], "sample_status"] = "recent_sample_met"
 
     reasons = []
     for row in frame.to_dict("records"):
@@ -54,13 +83,21 @@ def build_candidate_funnel(
             reason = "eligibility_not_reviewed"
         elif not _as_bool(row.get("eligible_flag")):
             reason = "not_age_experience_eligible"
+        elif str(row.get("status_type", "")).strip().lower() == "free-agent":
+            reason = "not_currently_rostered"
         elif row.get("assignment_review_status") != "reviewed":
             reason = "role_assignment_not_reviewed"
         elif row.get("role_code") not in valid_roles:
             reason = "role_assignment_invalid"
-        elif pd.isna(row.get("recent_games")) or float(row["recent_games"]) < min_games:
+        elif _as_bool(row.get("inactive_rostered")):
+            reason = ""
+        elif _as_bool(row.get("recent_sample_met")):
+            reason = ""
+        elif _as_bool(row.get("season_possessions_met")):
+            reason = ""
+        elif not _as_bool(row.get("recent_games_met")):
             reason = "insufficient_recent_sample"
-        elif pd.isna(row.get("recent_off_poss")) or float(row["recent_off_poss"]) < min_poss:
+        elif not _as_bool(row.get("recent_possessions_met")):
             reason = "insufficient_recent_possessions"
         else:
             reason = ""

@@ -4,6 +4,8 @@ import tempfile
 import unittest
 from pathlib import Path
 
+import pandas as pd
+
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
@@ -15,6 +17,13 @@ from role_fulfillment_matrix.pipeline import build_analysis  # noqa: E402
 
 FIXTURE_CONFIG = ROOT / "analysis" / "role_fulfillment_matrix" / "config" / "fixture_config.json"
 LIVE_CONFIG = ROOT / "analysis" / "role_fulfillment_matrix" / "config" / "live_config.template.json"
+REVIEWED_ASSIGNMENTS = (
+    ROOT
+    / "analysis"
+    / "role_fulfillment_matrix"
+    / "config"
+    / "player_role_assignments_2026.csv"
+)
 
 
 class DataContractTest(unittest.TestCase):
@@ -31,11 +40,37 @@ class DataContractTest(unittest.TestCase):
 
     def test_live_mode_fails_closed_before_loading_player_data(self):
         config = load_config(LIVE_CONFIG)
-        with self.assertRaisesRegex(
-            LiveScoringBlocked,
-            "reviewed player-role assignments.*reviewed live role thresholds",
-        ):
+        with self.assertRaises(LiveScoringBlocked) as raised:
             load_sources(config)
+        message = str(raised.exception)
+        self.assertIn("reviewed live role thresholds", message)
+        self.assertNotIn("until reviewed player-role assignments", message)
+        self.assertIn("player-role assignments are approved", message)
+
+    def test_reviewed_assignment_registry_covers_rostered_pool_only(self):
+        self.assertTrue(REVIEWED_ASSIGNMENTS.exists(), "reviewed assignment registry is missing")
+        assignments = pd.read_csv(REVIEWED_ASSIGNMENTS, dtype={"player_id": "string"})
+        allowed_roles = {
+            "lead_creator",
+            "secondary_creator_connector",
+            "perimeter_scorer_spacer",
+            "downhill_pressure_wing",
+            "interior_hub_rebounder",
+            "interior_finisher_rim_runner",
+        }
+
+        self.assertEqual(len(assignments), 36)
+        self.assertEqual(assignments["player_id"].nunique(), 36)
+        self.assertEqual(set(assignments["review_status"]), {"reviewed"})
+        self.assertTrue(set(assignments["role_code"]).issubset(allowed_roles))
+        self.assertTrue(
+            set(assignments["secondary_role_code"].dropna()).issubset(allowed_roles)
+        )
+        self.assertTrue(
+            {"Alex Fowler", "Julie Vanloo", "Ndjakalenga Mwenentanda"}.isdisjoint(
+                assignments["player_name"]
+            )
+        )
 
     def test_schema_errors_name_the_source_and_missing_fields(self):
         config = load_config(FIXTURE_CONFIG)
@@ -60,6 +95,89 @@ class FunnelAndScoringTest(unittest.TestCase):
         self.assertEqual(funnel.loc["FX-003", "exclusion_reason"], "non_contender_team")
         self.assertEqual(funnel.loc["FX-004", "exclusion_reason"], "eligibility_not_reviewed")
         self.assertEqual(funnel.loc["FX-005", "exclusion_reason"], "insufficient_recent_sample")
+
+    def _build_with_eligibility_status(self, player_id, *, active, status_type):
+        config = load_config(FIXTURE_CONFIG)
+        with tempfile.TemporaryDirectory() as tmp:
+            eligibility = pd.read_csv(config["sources"]["eligibility"])
+            eligibility["active"] = True
+            eligibility["status_type"] = "active"
+            eligibility.loc[eligibility["player_id"] == player_id, "active"] = active
+            eligibility.loc[
+                eligibility["player_id"] == player_id, "status_type"
+            ] = status_type
+            path = Path(tmp) / "eligibility.csv"
+            eligibility.to_csv(path, index=False)
+            config["sources"] = dict(config["sources"])
+            config["sources"]["eligibility"] = str(path)
+            return build_analysis(config)
+
+    def test_free_agent_is_excluded_before_role_and_sample_gates(self):
+        result = self._build_with_eligibility_status(
+            "FX-001", active=False, status_type="free-agent"
+        )
+        player = result.funnel.set_index("player_id").loc["FX-001"]
+
+        self.assertEqual(player["funnel_status"], "excluded")
+        self.assertEqual(player["exclusion_reason"], "not_currently_rostered")
+
+    def test_inactive_rostered_player_keeps_role_but_has_no_score(self):
+        result = self._build_with_eligibility_status(
+            "FX-001", active=False, status_type="inactive"
+        )
+        player = result.funnel.set_index("player_id").loc["FX-001"]
+
+        self.assertEqual(player["funnel_status"], "included")
+        self.assertIn("score_eligible", result.funnel.columns)
+        self.assertFalse(player["score_eligible"])
+        score = result.scores.set_index("player_id").loc["FX-001"]
+        self.assertEqual(score["score_status"], "inactive_suppressed")
+        self.assertTrue(pd.isna(score["fulfillment_score"]))
+
+    def test_500_season_possessions_keep_role_visible_without_recent_score(self):
+        config = load_config(FIXTURE_CONFIG)
+        with tempfile.TemporaryDirectory() as tmp:
+            player_game = pd.read_csv(config["sources"]["player_game"])
+            baseline = (
+                (player_game["player_id"] == "FX-005")
+                & (player_game["game_date"] < "2026-08-18")
+            )
+            player_game.loc[baseline, "off_poss"] = 235
+            player_game.loc[baseline, "team_possessions"] = 240
+            path = Path(tmp) / "player_game.csv"
+            player_game.to_csv(path, index=False)
+            config["sources"] = dict(config["sources"])
+            config["sources"]["player_game"] = str(path)
+            config["minimums"] = dict(config["minimums"])
+            config["minimums"]["season_off_poss_fallback"] = 500
+
+            result = build_analysis(config)
+
+        player = result.funnel.set_index("player_id").loc["FX-005"]
+        self.assertTrue(
+            {
+                "season_off_poss",
+                "season_possessions_met",
+                "recent_games_met",
+                "recent_possessions_met",
+                "sample_status",
+                "score_eligible",
+            }.issubset(result.funnel.columns)
+        )
+        self.assertEqual(player["season_off_poss"], 500)
+        self.assertTrue(player["season_possessions_met"])
+        self.assertFalse(player["recent_games_met"])
+        self.assertFalse(player["recent_possessions_met"])
+        self.assertEqual(
+            player["sample_status"],
+            "season_volume_met_recent_sample_insufficient",
+        )
+        self.assertEqual(player["funnel_status"], "included")
+        self.assertFalse(player["score_eligible"])
+        self.assertIn("FX-005", set(result.scores["player_id"]))
+        score = result.scores.set_index("player_id").loc["FX-005"]
+        self.assertEqual(score["score_status"], "season_context_only")
+        self.assertTrue(pd.isna(score["fulfillment_score"]))
 
     def test_empty_baseline_window_flows_to_unavailable_scores(self):
         config = load_config(FIXTURE_CONFIG)

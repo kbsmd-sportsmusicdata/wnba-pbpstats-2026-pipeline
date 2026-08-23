@@ -31,7 +31,6 @@
   "live_eligibility_status": "approved",
   "live_scoring_status": "blocked",
   "remaining_blockers": [
-    "reviewed_player_role_assignments",
     "reviewed_live_role_thresholds"
   ]
 }

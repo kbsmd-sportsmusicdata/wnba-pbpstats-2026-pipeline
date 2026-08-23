@@ -23,7 +23,8 @@ REQUIRED_COLUMNS = {
         "fga", "fgm", "fta", "ftm", "at_rim_fga", "at_rim_fgm",
     },
     "eligibility": {
-        "player_id", "player_name", "eligibility_type", "eligible_flag", "review_status",
+        "player_id", "player_name", "eligibility_type", "eligible_flag", "active",
+        "status_type", "review_status",
     },
     "role_assignments": {
         "player_id", "player_name", "role_code", "assignment_confidence", "review_status",
@@ -34,9 +35,9 @@ REQUIRED_COLUMNS = {
 def require_fixture_mode(config: Mapping[str, Any]) -> None:
     if config.get("mode") != "fixture":
         raise LiveScoringBlocked(
-            "Live scoring remains blocked until reviewed player-role assignments and reviewed "
-            "live role thresholds are added. Eligibility is approved; use the fixture config "
-            "until the remaining governance gates are complete."
+            "Live scoring remains blocked until reviewed live role thresholds are added. "
+            "Eligibility and player-role assignments are approved; use the fixture config "
+            "until the final governance gate is complete."
         )
 
 
