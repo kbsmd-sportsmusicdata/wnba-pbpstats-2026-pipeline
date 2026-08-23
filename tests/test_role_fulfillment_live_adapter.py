@@ -164,6 +164,10 @@ class PBPStatsAdapterTest(unittest.TestCase):
         self.assertEqual(manifest["candidate_coverage"], {"matched": 36, "expected": 36})
         self.assertEqual(manifest["parity_players"], 11)
         self.assertEqual(manifest["parity_matches"], 11)
+        self.assertEqual(
+            manifest["locked_parity_windows"]["recent_end"],
+            "2026-08-20",
+        )
         self.assertFalse(manifest["live_output_enabled"])
         self.assertIn("Review status: **approved**", report)
         self.assertIn("Approved by: **Krystal Beasley**", report)

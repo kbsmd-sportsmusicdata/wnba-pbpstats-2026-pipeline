@@ -413,7 +413,7 @@ class ApprovedEligibilityArtifactTest(unittest.TestCase):
             hashlib.sha256(BUILD_MANIFEST.read_bytes()).hexdigest(),
         )
 
-    def test_live_config_references_approved_eligibility_without_unblocking_scoring(self):
+    def test_dry_run_config_references_approved_eligibility_without_enabling_output(self):
         live_config_path = (
             ROOT
             / "analysis"
@@ -427,7 +427,8 @@ class ApprovedEligibilityArtifactTest(unittest.TestCase):
             config["sources"]["eligibility"],
             "analysis/role_fulfillment_matrix/config/player_eligibility_2026.csv",
         )
-        self.assertEqual(config["mode"], "live")
+        self.assertEqual(config["mode"], "live_dry_run")
+        self.assertFalse(config["live_output_enabled"])
 
 
 if __name__ == "__main__":

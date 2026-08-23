@@ -1,4 +1,4 @@
-# Role Fulfillment Matrix — Fixture Vertical Slice
+# Role Fulfillment Matrix — Standalone Vertical Slice
 
 This directory is a standalone experiment for identifying young/emerging contributors on
 contending teams and diagnosing role fit. It is intentionally separate from the standings and
@@ -6,18 +6,22 @@ playoff forecast dashboard.
 
 ## Current status
 
-- **Prototype mode:** synthetic fixtures only.
-- **Live scoring:** blocked.
-- **Real eligibility data:** reviewed and approved for all 227 PBPStats players.
+- **Fixture mode:** retained for deterministic regression tests.
+- **Live-data mode:** approved sources are wired into an isolated `live_dry_run` path.
+- **Live publishing:** blocked; `live_output_enabled` remains false.
+- **Real eligibility data:** reviewed and approved for all 227 current PBPStats players. New
+  PBPStats identities fail closed, while newer ESPN roster-only identities appear explicitly as
+  `eligibility_not_reviewed` funnel blockers.
 - **Real role assignments:** reviewed and approved for 36 roster-attached eligible players on
   top-six contenders; three confirmed free agents remain in eligibility history only.
 - **Live formula status:** the six-role `rfm-live-v1` formulas and thresholds are approved.
 - **Formula validation status:** the 11-player hand-calculation and threshold-sensitivity gate is
   approved.
 - **Live adapter status:** the PBPStats adapter validation package was approved on 2026-08-22.
-- **Why scoring remains blocked:** the approved adapter is not wired into the live pipeline and an
-  end-to-end dry run has not been completed.
-- **Output interpretation:** all names, teams, and scores in the generated dashboard are synthetic.
+- **Current gate:** review the generated end-to-end dry-run report, candidate affiliations, sample
+  statuses, scores, and evidence before explicit live-output enablement.
+- **Output interpretation:** the fixture dashboard remains synthetic; the dry-run dashboard uses
+  reviewed real sources and is labeled `DRY RUN` throughout.
 
 ## Eligibility review package
 
@@ -64,6 +68,16 @@ analysis/role_fulfillment_matrix/deliverables/role_fulfillment_matrix/index.html
 ```
 
 The page embeds its payload, so it works when opened directly without a local web server.
+
+Build the isolated real-data review package without publishing:
+
+```bash
+python3 scripts/build_role_fulfillment_live_dry_run.py
+```
+
+Dry-run outputs are confined to `data/review/live_dry_run/`. They include the funnel, score table,
+evidence, run manifest, standalone dashboard, and
+`role_fulfillment_matrix_live_dry_run_validation.md`.
 
 ## Reviewed role and sample safeguards
 
@@ -127,6 +141,11 @@ Outputs are confined to `data/review/live_adapter_validation/`:
 Only allowlisted additive counts use zero-omitted filling. Identity, dates, game ids, affiliation,
 minutes, and team-game possessions are never imputed. Offensive or defensive possessions may be
 filled with zero only after participation is established, and total possessions must reconcile.
+The locked 11-player parity fixture remains tied to its explicit August 7-20 validation window;
+the cutoff-derived recent window advances independently for dry-run scoring. Both windows are
+recorded in the run manifest so a routine data refresh cannot be mistaken for an adapter change.
+Every live dry run requires both the locked parity input file and its explicit fixed windows before
+any live source is read.
 The package was approved by Krystal Beasley on 2026-08-22; that approval authorizes the wiring
 gate only and leaves live output disabled.
 
@@ -152,7 +171,7 @@ The dashboard answers three different questions without collapsing them into an 
 - **Stability:** How much confidence should we place in the observation based on sample, opportunity
   consistency, and assignment confidence?
 
-## Promotion gate
+## Final promotion gate
 
 Do not switch to live mode by changing the config string alone. Promotion requires:
 
@@ -164,7 +183,10 @@ Do not switch to live mode by changing the config string alone. Promotion requir
 6. reviewer approval of the generated 11-player hand-calculation and sensitivity package;
    **complete**;
 7. reviewer approval of the live-source adapter freshness, zero-omission, coverage, and parity
-   package; **current gate**;
-8. deliberate adapter wiring with live output still disabled.
+   package; **complete**;
+8. deliberate adapter wiring with live output still disabled; **complete as `live_dry_run`**;
+9. reviewer approval of the end-to-end dry-run package; **current gate**;
+10. explicit `live_output_enabled = true` change and one manual production run before scheduling.
 
-Until those are complete, `live_config.template.json` fails before any live table is read.
+The dry-run may read reviewed live sources, but `live` publishing continues to fail before source
+loading until the final gate is approved.

@@ -1,6 +1,10 @@
 {
+  "adapter_audit": {},
+  "analysis_cutoff_date": null,
   "config_hash": "6a5112f6d4cd533c9140de4e7c3d60d8cad3658722fb660e8baae4f00196a71c",
   "config_path": "analysis/role_fulfillment_matrix/config/fixture_config.json",
+  "dry_run_gate_blockers": [],
+  "dry_run_gate_status": "not_applicable",
   "formula_version": "rfm-fixture-v1",
   "funnel_counts": {
     "candidates_included": 2,
@@ -10,7 +14,8 @@
     "players_considered": 5,
     "players_scored": 2
   },
-  "generated_at_utc": "2026-08-23T04:43:04+00:00",
+  "generated_at_utc": "2026-08-23T06:01:47+00:00",
+  "live_output_enabled": false,
   "live_scoring_blockers": [
     "deliberate live adapter wiring and end-to-end dry run"
   ],
@@ -54,5 +59,11 @@
       "rows": 2,
       "status": "synthetic_fixture"
     }
+  },
+  "windows": {
+    "baseline_end": "2026-08-17",
+    "baseline_start": "2026-08-01",
+    "recent_end": "2026-08-20",
+    "recent_start": "2026-08-18"
   }
 }

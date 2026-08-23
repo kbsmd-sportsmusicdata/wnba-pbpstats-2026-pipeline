@@ -4,6 +4,7 @@
   const payload = JSON.parse(document.getElementById("rfm-data").textContent);
   const candidates = payload.candidates;
   const evidence = payload.evidence;
+  const isFixture = payload.meta.mode === "fixture";
   const {
     formatEvidenceValue,
     formatScore,
@@ -25,7 +26,7 @@
       ["Roster pool", counts.players_considered],
       ["Contender gate", counts.players_considered - (counts.excluded_non_contender_team || 0)],
       ["Reviewed eligibility", counts.players_considered - (counts.excluded_non_contender_team || 0) - (counts.excluded_eligibility_not_reviewed || 0)],
-      ["Scored fixtures", counts.players_scored],
+      [isFixture ? "Scored fixtures" : "Dry-run scores", counts.players_scored],
     ];
     items.forEach(([label, value], index) => {
       const card = node("article", "funnel-card");
@@ -58,7 +59,7 @@
       const identity = node("div");
       identity.append(node("p", "team-tag", `${candidate.team_abbreviation} · ${candidate.role_label}`));
       identity.append(node("h3", null, candidate.player_name));
-      top.append(identity, node("span", "fixture-tag", "FIXTURE"));
+      top.append(identity, node("span", "fixture-tag", isFixture ? "FIXTURE" : "DRY RUN"));
       card.append(top);
       card.append(metricBar("Fulfillment", candidate.fulfillment_score, "ful"));
       card.append(metricBar("Opportunity", candidate.opportunity_score, "opp"));
@@ -155,7 +156,13 @@
       });
       content.append(section);
     });
-    const safeguard = node("p", "safeguard", "Safeguard: fixture-only; rates recomputed from additive counts. No composite score.");
+    const safeguard = node(
+      "p",
+      "safeguard",
+      isFixture
+        ? "Safeguard: fixture-only; rates recomputed from additive counts. No composite score."
+        : "Safeguard: live dry run only; reviewed sources, additive counts, no composite score, and no publishing."
+    );
     content.append(safeguard);
     dialog.showModal();
   }

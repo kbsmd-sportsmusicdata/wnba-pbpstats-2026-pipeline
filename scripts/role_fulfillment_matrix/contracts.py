@@ -32,14 +32,26 @@ REQUIRED_COLUMNS = {
 }
 
 
-def require_fixture_mode(config: Mapping[str, Any]) -> None:
-    if config.get("mode") != "fixture":
-        raise LiveScoringBlocked(
-            "rfm-live-v1 formulas are approved, and the PBPStats live adapter is approved, "
-            "but the adapter is not yet wired and live output remains disabled pending an "
-            "end-to-end dry run. "
-            "Use the fixture config until that implementation gate is complete."
+def authorize_execution(config: Mapping[str, Any]) -> None:
+    """Permit fixtures and approved dry runs while keeping live publishing fail-closed."""
+    mode = config.get("mode")
+    if mode == "fixture":
+        return
+    if mode == "live_dry_run":
+        approved = (
+            config.get("validation_status") == "approved_11_player_review"
+            and config.get("live_adapter_status") == "approved_review"
+            and config.get("live_output_enabled") is False
         )
+        if approved:
+            return
+        raise LiveScoringBlocked(
+            "live dry run requires approved formula validation, approved adapter review, "
+            "and live_output_enabled=false"
+        )
+    raise LiveScoringBlocked(
+        "live publishing remains disabled pending review of the end-to-end dry-run report"
+    )
 
 
 def validate_frame(name: str, frame: pd.DataFrame) -> None:

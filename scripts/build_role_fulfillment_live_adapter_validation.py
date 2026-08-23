@@ -11,6 +11,14 @@ from typing import Any, Dict
 import pandas as pd
 
 from role_fulfillment_matrix.metrics import build_window_metrics
+from role_fulfillment_matrix.live_policy import (
+    derive_analysis_windows,
+    validate_locked_parity_windows,
+)
+from role_fulfillment_matrix.adapter_parity import (
+    PARITY_FIELDS,
+    build_adapter_parity,
+)
 from role_fulfillment_matrix.pbpstats_adapter import (
     AdapterResult,
     adapt_pbpstats_player_game,
@@ -46,24 +54,6 @@ DEFAULT_OUTPUT = (
     / "live_adapter_validation"
 )
 
-PARITY_FIELDS = [
-    "recent_games",
-    "recent_off_poss",
-    "recent_total_poss",
-    "recent_fga",
-    "recent_true_shooting_attempts",
-    "recent_at_rim_fga",
-    "recent_assists_per_75",
-    "recent_true_shooting_pct",
-    "recent_turnover_rate",
-    "recent_three_point_fga_share",
-    "recent_fta_rate",
-    "recent_rim_fga_share",
-    "recent_rim_fg_pct",
-    "recent_rebounds_per_75_total_possessions",
-    "recent_offensive_rebounds_per_75_off_poss",
-]
-
 FIELD_MAPPING = [
     ("Date", "game_date", "parse ISO date", "never fill"),
     ("GameId", "game_id", "string identity", "never fill"),
@@ -89,45 +79,6 @@ FIELD_MAPPING = [
     ("Rebounds", "rebounds", "numeric", "zero-omitted count"),
     ("OffRebounds", "off_rebounds", "numeric", "zero-omitted count"),
 ]
-
-
-def _parity_table(metrics: pd.DataFrame, locked: pd.DataFrame) -> pd.DataFrame:
-    metric_rows = metrics.copy()
-    metric_rows["player_id"] = metric_rows["player_id"].astype(str)
-    expected = locked.copy()
-    expected["player_id"] = expected["player_id"].astype(str)
-    metric_rows = metric_rows[metric_rows["player_id"].isin(set(expected["player_id"]))]
-    merged = expected[["player_id", "player_name", "role_code"] + PARITY_FIELDS].merge(
-        metric_rows[["player_id"] + PARITY_FIELDS],
-        on="player_id",
-        how="left",
-        suffixes=("_locked", "_adapted"),
-        validate="one_to_one",
-    )
-    rows = []
-    for record in merged.to_dict("records"):
-        differences = []
-        missing_fields = []
-        for field in PARITY_FIELDS:
-            locked_value = record[f"{field}_locked"]
-            adapted_value = record[f"{field}_adapted"]
-            if pd.isna(adapted_value):
-                missing_fields.append(field)
-            else:
-                differences.append(abs(float(adapted_value) - float(locked_value)))
-        maximum = max(differences) if differences else float("nan")
-        rows.append(
-            {
-                "player_id": record["player_id"],
-                "player_name": record["player_name"],
-                "role_code": record["role_code"],
-                "fields_compared": len(PARITY_FIELDS),
-                "missing_fields": ";".join(missing_fields),
-                "max_abs_difference": maximum,
-                "parity_match": not missing_fields and maximum <= 0.000001,
-            }
-        )
-    return pd.DataFrame(rows)
 
 
 def _quality_checks(result: AdapterResult, audit: Dict[str, Any], parity: pd.DataFrame) -> pd.DataFrame:
@@ -199,6 +150,9 @@ def _render_report(
         f"- Global refresh failures: {audit['global_refresh_failures']}",
         f"- Locked parity matches: {int(parity['parity_match'].sum())} of {len(parity)}",
         f"- Maximum locked-field difference: {parity['max_abs_difference'].max():.9f}",
+        "- Locked parity window: "
+        f"{audit['locked_parity_windows']['recent_start']} through "
+        f"{audit['locked_parity_windows']['recent_end']}",
         "",
         "Warnings:",
     ]
@@ -262,15 +216,24 @@ def build(output_dir: Path = DEFAULT_OUTPUT) -> Dict[str, Any]:
     locked = pd.read_csv(LOCKED_INPUTS, dtype={"player_id": str})
 
     result = adapt_pbpstats_player_game(player_raw, team_raw)
+    scoring_windows = config.get("windows") or derive_analysis_windows(
+        manifest["coverage_through"],
+        recent_days=int(config["window_policy"]["recent_days"]),
+        baseline_days=int(config["window_policy"]["baseline_days"]),
+        lag_days=int(config["window_policy"]["lag_days"]),
+    )
     audit = audit_live_adapter(
         result,
         assignments=assignments,
         manifest=manifest,
         failures=failures,
-        recent_end=config["windows"]["recent_end"],
+        recent_end=scoring_windows["recent_end"],
     )
-    metrics = build_window_metrics(result.player_game, config)
-    parity = _parity_table(metrics, locked)
+    parity_windows = validate_locked_parity_windows(config.get("locked_parity_windows"))
+    audit["locked_parity_windows"] = parity_windows
+    metrics_config = dict(config, windows=parity_windows)
+    metrics = build_window_metrics(result.player_game, metrics_config)
+    parity = build_adapter_parity(metrics, locked)
     checks = _quality_checks(result, audit, parity)
     report = _render_report(result, audit, parity, checks)
 
@@ -287,6 +250,8 @@ def build(output_dir: Path = DEFAULT_OUTPUT) -> Dict[str, Any]:
         "candidate_coverage": audit["candidate_coverage"],
         "parity_players": int(len(parity)),
         "parity_matches": int(parity["parity_match"].sum()),
+        "scoring_windows": scoring_windows,
+        "locked_parity_windows": parity_windows,
         "global_refresh_failures": audit["global_refresh_failures"],
         "candidate_refresh_failures": len(audit["candidate_refresh_failures"]),
         "live_output_enabled": False,
