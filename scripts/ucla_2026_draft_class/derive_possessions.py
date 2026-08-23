@@ -95,7 +95,11 @@ def game_crosswalk(e: pd.DataFrame, tg: pd.DataFrame) -> pd.DataFrame:
 
 def player_crosswalk() -> dict[int, int]:
     """ESPN athlete_id -> pbpstats player_id, from the repo's existing crosswalk."""
-    xw = pd.read_csv(CROSSWALK).dropna(subset=["espn_athlete_id", "player_id"])
+    xw = pd.read_csv(CROSSWALK)
+    # rows for players with no pbpstats game record carry a placeholder id
+    # ("espn:4790263"), so coerce and drop rather than casting blind
+    xw["player_id"] = pd.to_numeric(xw.player_id, errors="coerce")
+    xw = xw.dropna(subset=["espn_athlete_id", "player_id"])
     return {int(a): int(p) for a, p in zip(xw.espn_athlete_id, xw.player_id)}
 
 

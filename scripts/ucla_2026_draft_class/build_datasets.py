@@ -32,6 +32,8 @@ def load_cohorts() -> pd.DataFrame:
     """Bio + draft metadata for every 2026 player, with pbpstats ids attached."""
     core = pd.read_csv(PLAYER_CORE)
     xw = pd.read_csv(CROSSWALK)
+    # placeholder ids ("espn:4790263") mark players with no pbpstats game record
+    xw["player_id"] = pd.to_numeric(xw.player_id, errors="coerce")
     bio = core.merge(
         xw[["espn_athlete_id", "player_id", "pbpstats_player_name", "team_abbreviation"]],
         left_on="athlete_id",
