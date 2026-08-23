@@ -88,7 +88,7 @@ class StandaloneBundleTest(unittest.TestCase):
         ]
         self.assertTrue(all(not Path(path).is_absolute() for path in source_paths))
 
-    def test_workflow_is_manual_fixture_only_and_cannot_commit(self):
+    def test_workflow_is_manual_fixture_and_live_dry_run_only_and_cannot_commit(self):
         workflow = (ROOT / ".github" / "workflows" / "role-fulfillment-matrix.yml").read_text(
             encoding="utf-8"
         )
@@ -97,6 +97,9 @@ class StandaloneBundleTest(unittest.TestCase):
         self.assertNotIn("git commit", workflow)
         self.assertNotIn("git push", workflow)
         self.assertIn("fixture_config.json", workflow)
+        self.assertIn("live-dry-run-review:", workflow)
+        self.assertIn("build_role_fulfillment_live_dry_run.py", workflow)
+        self.assertIn("analysis/role_fulfillment_matrix/data/review/live_dry_run", workflow)
         self.assertIn("upload-artifact@v4", workflow)
 
 

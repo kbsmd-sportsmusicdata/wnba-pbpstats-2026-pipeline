@@ -38,16 +38,15 @@ class DataContractTest(unittest.TestCase):
         self.assertEqual(len(sources.player_game), 27)
         self.assertTrue(sources.eligibility["player_id"].str.startswith("FX-").all())
 
-    def test_live_mode_fails_closed_before_loading_player_data(self):
+    def test_live_publish_mode_fails_closed_before_loading_player_data(self):
         config = load_config(LIVE_CONFIG)
+        config["mode"] = "live"
+        config["live_output_enabled"] = True
         with self.assertRaises(LiveScoringBlocked) as raised:
             load_sources(config)
         message = str(raised.exception)
-        self.assertIn("rfm-live-v1 formulas are approved", message)
-        self.assertIn("adapter is approved", message)
-        self.assertIn("not yet wired", message)
-        self.assertIn("live output remains disabled", message)
-        self.assertNotIn("until reviewed player-role assignments", message)
+        self.assertIn("live publishing remains disabled", message)
+        self.assertIn("dry-run report", message)
 
     def test_reviewed_assignment_registry_covers_rostered_pool_only(self):
         self.assertTrue(REVIEWED_ASSIGNMENTS.exists(), "reviewed assignment registry is missing")

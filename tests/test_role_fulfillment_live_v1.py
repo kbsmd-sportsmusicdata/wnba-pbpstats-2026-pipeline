@@ -11,8 +11,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 
 from role_fulfillment_matrix.contracts import (  # noqa: E402
-    LiveScoringBlocked,
-    require_fixture_mode,
+    authorize_execution,
     validate_role_definitions,
 )
 from role_fulfillment_matrix.scoring import fulfillment  # noqa: E402
@@ -124,19 +123,16 @@ class LiveV1FormulaTest(unittest.TestCase):
             },
         )
 
-    def test_live_config_names_v1_but_remains_blocked_for_adapter_wiring(self):
+    def test_live_config_names_v1_and_authorizes_only_the_dry_run(self):
         raw = json.loads(LIVE_CONFIG.read_text())
         self.assertEqual(raw["formula_version"], "rfm-live-v1")
-        self.assertEqual(raw["windows"]["baseline_start"], "2026-07-24")
-        self.assertEqual(raw["windows"]["baseline_end"], "2026-08-06")
+        self.assertEqual(raw["mode"], "live_dry_run")
+        self.assertEqual(raw["window_policy"]["recent_days"], 14)
+        self.assertEqual(raw["window_policy"]["baseline_days"], 14)
         self.assertEqual(raw["validation_status"], "approved_11_player_review")
         self.assertEqual(raw["live_adapter_status"], "approved_review")
         self.assertFalse(raw["live_output_enabled"])
-        with self.assertRaises(LiveScoringBlocked) as caught:
-            require_fixture_mode(raw)
-        self.assertIn("adapter is approved", str(caught.exception))
-        self.assertIn("not yet wired", str(caught.exception))
-        self.assertIn("live output remains disabled", str(caught.exception))
+        authorize_execution(raw)
 
     def test_fixture_manifest_reports_the_current_validation_blocker(self):
         result = build_analysis(load_config(FIXTURE_CONFIG))

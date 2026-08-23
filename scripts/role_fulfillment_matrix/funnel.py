@@ -16,15 +16,18 @@ def _as_bool(value: Any) -> bool:
 def build_candidate_funnel(
     sources: LoadedSources, metrics: pd.DataFrame, config: Dict[str, Any]
 ) -> pd.DataFrame:
-    players = (
-        sources.player_game.sort_values("game_date")
-        .drop_duplicates("player_id", keep="last")
-        [["player_id", "player_name", "team_abbreviation"]]
-    )
+    players = sources.roster_status[
+        ["player_id", "player_name", "team_abbreviation", "active", "status_type"]
+    ].copy()
+    if players["player_id"].duplicated().any():
+        raise ValueError("roster status contains duplicate player ids")
     standings = sources.standings[["team_abbreviation", "current_rank"]]
     eligibility = sources.eligibility.rename(columns={
         "review_status": "eligibility_review_status",
         "player_name": "eligibility_player_name",
+        "team_abbreviation": "eligibility_team_abbreviation",
+        "active": "eligibility_snapshot_active",
+        "status_type": "eligibility_snapshot_status_type",
         "reviewed_by": "eligibility_reviewed_by",
         "reviewed_at": "eligibility_reviewed_at",
         "source_url": "eligibility_source_url",
@@ -32,14 +35,20 @@ def build_candidate_funnel(
     assignments = sources.role_assignments.rename(columns={
         "review_status": "assignment_review_status",
         "player_name": "assignment_player_name",
+        "team_abbreviation": "assignment_team_abbreviation",
         "reviewed_by": "assignment_reviewed_by",
         "reviewed_at": "assignment_reviewed_at",
     })
     frame = players.merge(standings, on="team_abbreviation", how="left")
     frame = frame.merge(eligibility, on="player_id", how="left")
     frame = frame.merge(assignments, on="player_id", how="left")
-    metric_columns = [c for c in metrics.columns if c not in {"player_name", "team_abbreviation"}]
-    frame = frame.merge(metrics[metric_columns], on="player_id", how="left")
+    metric_columns = [c for c in metrics.columns if c != "player_name"]
+    frame = frame.merge(
+        metrics[metric_columns],
+        on=["player_id", "team_abbreviation"],
+        how="left",
+        validate="one_to_one",
+    )
 
     max_rank = float(config["contender"]["current_rank_max"])
     min_games = int(config["minimums"]["recent_games"])
@@ -87,6 +96,12 @@ def build_candidate_funnel(
             reason = "not_currently_rostered"
         elif row.get("assignment_review_status") != "reviewed":
             reason = "role_assignment_not_reviewed"
+        elif (
+            pd.notna(row.get("assignment_team_abbreviation"))
+            and str(row.get("assignment_team_abbreviation")).strip()
+            and row.get("assignment_team_abbreviation") != row.get("team_abbreviation")
+        ):
+            reason = "role_assignment_team_mismatch"
         elif row.get("role_code") not in valid_roles:
             reason = "role_assignment_invalid"
         elif _as_bool(row.get("inactive_rostered")):

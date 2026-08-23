@@ -1,4 +1,4 @@
-"""Render the static, directly-openable fixture dashboard bundle."""
+"""Render a static, directly-openable RFM dashboard bundle."""
 
 from __future__ import annotations
 
@@ -18,7 +18,30 @@ def render_dashboard(payload: Dict[str, Any], template_root: Path, bundle_root: 
     html = (template_root / "index.html").read_text(encoding="utf-8")
     if "__RFM_PAYLOAD__" not in html:
         raise ValueError("dashboard template is missing __RFM_PAYLOAD__ marker")
-    html = html.replace("__RFM_PAYLOAD__", embedded)
+    mode = payload["meta"]["mode"]
+    fixture = mode == "fixture"
+    replacements = {
+        "__RFM_PAYLOAD__": embedded,
+        "__RFM_META_DESCRIPTION__": (
+            "Fixture-only Role Fulfillment Matrix experiment"
+            if fixture
+            else "Live-data Role Fulfillment Matrix dry-run review"
+        ),
+        "__RFM_PAGE_TITLE__": (
+            "Role Fulfillment Matrix · Fixture Prototype"
+            if fixture
+            else "Role Fulfillment Matrix · Live Dry Run"
+        ),
+        "__RFM_STATUS_TITLE__": "Fixture-only prototype" if fixture else "Live-data dry run",
+        "__RFM_STATUS_DETAIL__": (
+            "Synthetic players and teams. Live scoring is blocked pending reviewed gates."
+            if fixture
+            else "Reviewed real sources and formulas. Publishing remains disabled pending final approval."
+        ),
+        "__RFM_LIVE_STATUS__": "BLOCKED" if fixture else "DRY RUN ONLY",
+    }
+    for marker, value in replacements.items():
+        html = html.replace(marker, value)
 
     _atomic_text(bundle_root / "index.html", html)
     _atomic_text(bundle_root / "data" / "role_fulfillment_payload.json", serialized + "\n")
