@@ -9,7 +9,9 @@ playoff forecast dashboard.
 - **Fixture mode:** retained for deterministic regression tests.
 - **Live-data mode:** approved sources are wired into an isolated `live_dry_run` path.
 - **Live publishing:** blocked; `live_output_enabled` remains false.
-- **Real eligibility data:** reviewed and approved for all 227 PBPStats players.
+- **Real eligibility data:** reviewed and approved for all 227 current PBPStats players. New
+  PBPStats identities fail closed, while newer ESPN roster-only identities appear explicitly as
+  `eligibility_not_reviewed` funnel blockers.
 - **Real role assignments:** reviewed and approved for 36 roster-attached eligible players on
   top-six contenders; three confirmed free agents remain in eligibility history only.
 - **Live formula status:** the six-role `rfm-live-v1` formulas and thresholds are approved.
@@ -142,6 +144,8 @@ filled with zero only after participation is established, and total possessions 
 The locked 11-player parity fixture remains tied to its explicit August 7-20 validation window;
 the cutoff-derived recent window advances independently for dry-run scoring. Both windows are
 recorded in the run manifest so a routine data refresh cannot be mistaken for an adapter change.
+Every live dry run requires both the locked parity input file and its explicit fixed windows before
+any live source is read.
 The package was approved by Krystal Beasley on 2026-08-22; that approval authorizes the wiring
 gate only and leaves live output disabled.
 

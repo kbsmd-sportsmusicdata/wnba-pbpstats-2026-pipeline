@@ -11,10 +11,15 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 
 from role_fulfillment_matrix.contracts import (  # noqa: E402
+    ContractError,
     LiveScoringBlocked,
     authorize_execution,
 )
-from role_fulfillment_matrix.data_sources import LoadedSources, load_sources  # noqa: E402
+from role_fulfillment_matrix.data_sources import (  # noqa: E402
+    LoadedSources,
+    load_sources,
+    require_pbp_eligibility_coverage,
+)
 from role_fulfillment_matrix.funnel import build_candidate_funnel  # noqa: E402
 from role_fulfillment_matrix.live_policy import (  # noqa: E402
     derive_analysis_windows,
@@ -197,9 +202,58 @@ class LiveSourceAdapterTest(unittest.TestCase):
         self.assertEqual(roster.loc["p2", "status_type"], "inactive")
         self.assertEqual(result.quality["reviewed_players_matched"], 2)
 
+    def test_roster_adapter_surfaces_current_players_missing_eligibility_review(self):
+        player_core = pd.DataFrame(
+            [
+                {
+                    "athlete_id": "1001",
+                    "full_name": "Reviewed Player",
+                    "current_team_id": "17",
+                    "active": True,
+                    "status_type": "active",
+                },
+                {
+                    "athlete_id": "1002",
+                    "full_name": "New Roster Player",
+                    "current_team_id": "17",
+                    "active": True,
+                    "status_type": "active",
+                },
+            ]
+        )
+        eligibility = pd.DataFrame(
+            [
+                {
+                    "player_id": "p1",
+                    "player_name": "Reviewed Player",
+                    "espn_athlete_id": "1001",
+                    "review_status": "reviewed",
+                }
+            ]
+        )
+        result = adapt_espn_roster(
+            player_core,
+            pd.DataFrame(eligibility),
+            pd.DataFrame([{"team_id": 17, "team_abbreviation": "LV"}]),
+            source_as_of="2026-08-22",
+            cutoff_date="2026-08-21",
+        )
+
+        roster = result.roster.set_index("player_name")
+        self.assertEqual(roster.loc["New Roster Player", "player_id"], "espn:1002")
+        self.assertEqual(
+            roster.loc["New Roster Player", "eligibility_coverage_status"],
+            "missing",
+        )
+        self.assertEqual(result.quality["eligibility_players_unmatched"], 1)
+        self.assertEqual(
+            result.quality["unmatched_eligibility_players"],
+            ["New Roster Player"],
+        )
+
     def test_roster_adapter_rejects_a_snapshot_older_than_the_cutoff(self):
         player_core = pd.DataFrame(
-            [{"athlete_id": "1001", "current_team_id": "17", "active": True, "status_type": "active"}]
+            [{"athlete_id": "1001", "full_name": "Player", "current_team_id": "17", "active": True, "status_type": "active"}]
         )
         eligibility = pd.DataFrame(
             [{"player_id": "p1", "player_name": "Player", "espn_athlete_id": "1001", "review_status": "reviewed"}]
@@ -226,6 +280,7 @@ class LiveSourceAdapterTest(unittest.TestCase):
             player_core_path = root / "player_core.csv"
             eligibility_path = root / "eligibility.csv"
             assignments_path = root / "assignments.csv"
+            parity_path = root / "locked_parity.csv"
 
             pd.DataFrame(
                 [{"team_id": 17, "team_abbreviation": "LV", "current_rank": 1}]
@@ -240,10 +295,11 @@ class LiveSourceAdapterTest(unittest.TestCase):
             )
             failures_path.write_text("[]")
             pd.DataFrame(
-                [{"athlete_id": "1001", "current_team_id": "17", "active": True, "status_type": "active"}]
+                [{"athlete_id": "1001", "full_name": "Player One", "current_team_id": "17", "active": True, "status_type": "active"}]
             ).to_csv(player_core_path, index=False)
             pd.DataFrame([self._eligibility_row()]).to_csv(eligibility_path, index=False)
             pd.DataFrame([self._assignment_row()]).to_csv(assignments_path, index=False)
+            pd.DataFrame([self._locked_parity_row()]).to_csv(parity_path, index=False)
 
             config = self._live_config(
                 standings_path=standings_path,
@@ -255,6 +311,7 @@ class LiveSourceAdapterTest(unittest.TestCase):
                 player_core_path=player_core_path,
                 eligibility_path=eligibility_path,
                 assignments_path=assignments_path,
+                parity_path=parity_path,
             )
             sources = load_sources(config)
             analysis = build_analysis(config)
@@ -312,35 +369,11 @@ class LiveSourceAdapterTest(unittest.TestCase):
             )
             failures_path.write_text("[]")
             pd.DataFrame(
-                [{"athlete_id": "1001", "current_team_id": "17", "active": True, "status_type": "active"}]
+                [{"athlete_id": "1001", "full_name": "Player One", "current_team_id": "17", "active": True, "status_type": "active"}]
             ).to_csv(player_core_path, index=False)
             pd.DataFrame([self._eligibility_row()]).to_csv(eligibility_path, index=False)
             pd.DataFrame([self._assignment_row()]).to_csv(assignments_path, index=False)
-            pd.DataFrame(
-                [
-                    {
-                        "player_id": "p1",
-                        "player_name": "Player One",
-                        "role_code": "lead_creator",
-                        "assignment_confidence": 0.9,
-                        "recent_games": 1,
-                        "recent_off_poss": 40,
-                        "recent_total_poss": 81,
-                        "recent_fga": 8,
-                        "recent_true_shooting_attempts": 8.88,
-                        "recent_at_rim_fga": 3,
-                        "recent_assists_per_75": 9.375,
-                        "recent_true_shooting_pct": 12 / 17.76,
-                        "recent_turnover_rate": 0.05,
-                        "recent_three_point_fga_share": 0.375,
-                        "recent_fta_rate": 0.25,
-                        "recent_rim_fga_share": 0.375,
-                        "recent_rim_fg_pct": 2 / 3,
-                        "recent_rebounds_per_75_total_possessions": 300 / 81,
-                        "recent_offensive_rebounds_per_75_off_poss": 1.875,
-                    }
-                ]
-            ).to_csv(parity_path, index=False)
+            pd.DataFrame([self._locked_parity_row()]).to_csv(parity_path, index=False)
 
             config = self._live_config(
                 standings_path=standings_path,
@@ -352,15 +385,9 @@ class LiveSourceAdapterTest(unittest.TestCase):
                 player_core_path=player_core_path,
                 eligibility_path=eligibility_path,
                 assignments_path=assignments_path,
+                parity_path=parity_path,
             )
-            config["sources"]["locked_parity_inputs"] = str(parity_path)
             config["sources"]["roster_source_as_of"] = "2026-08-23"
-            config["locked_parity_windows"] = {
-                "baseline_start": "2026-07-24",
-                "baseline_end": "2026-08-06",
-                "recent_start": "2026-08-07",
-                "recent_end": "2026-08-20",
-            }
             sources = load_sources(config)
 
         self.assertEqual(sources.effective_config["windows"]["recent_end"], "2026-08-22")
@@ -369,6 +396,29 @@ class LiveSourceAdapterTest(unittest.TestCase):
             sources.adapter_audit["locked_parity_windows"],
             config["locked_parity_windows"],
         )
+
+    def test_live_loader_rejects_missing_parity_before_reading_live_sources(self):
+        config = json.loads(LIVE_CONFIG.read_text())
+        config["sources"].pop("locked_parity_inputs")
+        config["sources"]["standings"] = "does/not/exist.csv"
+        with self.assertRaisesRegex(ContractError, "requires locked_parity_inputs"):
+            load_sources(config)
+
+    def test_pbp_population_requires_reviewed_eligibility_coverage(self):
+        player_game = pd.DataFrame(
+            [
+                {"player_id": "p1", "player_name": "Reviewed Player"},
+                {"player_id": "p2", "player_name": "New PBP Player"},
+            ]
+        )
+        eligibility = pd.DataFrame(
+            [{"player_id": "p1", "review_status": "reviewed"}]
+        )
+        with self.assertRaisesRegex(
+            ContractError,
+            r"New PBP Player \(p2\)",
+        ):
+            require_pbp_eligibility_coverage(player_game, eligibility)
 
     @staticmethod
     def _raw_player_row():
@@ -423,6 +473,30 @@ class LiveSourceAdapterTest(unittest.TestCase):
         }
 
     @staticmethod
+    def _locked_parity_row():
+        return {
+            "player_id": "p1",
+            "player_name": "Player One",
+            "role_code": "lead_creator",
+            "assignment_confidence": 0.9,
+            "recent_games": 1,
+            "recent_off_poss": 40,
+            "recent_total_poss": 81,
+            "recent_fga": 8,
+            "recent_true_shooting_attempts": 8.88,
+            "recent_at_rim_fga": 3,
+            "recent_assists_per_75": 9.375,
+            "recent_true_shooting_pct": 12 / 17.76,
+            "recent_turnover_rate": 0.05,
+            "recent_three_point_fga_share": 0.375,
+            "recent_fta_rate": 0.25,
+            "recent_rim_fga_share": 0.375,
+            "recent_rim_fg_pct": 2 / 3,
+            "recent_rebounds_per_75_total_possessions": 300 / 81,
+            "recent_offensive_rebounds_per_75_off_poss": 1.875,
+        }
+
+    @staticmethod
     def _live_config(**paths):
         return {
             "season": 2026,
@@ -436,6 +510,7 @@ class LiveSourceAdapterTest(unittest.TestCase):
                 "pbpstats_team_game": str(paths["team_path"]),
                 "pbpstats_manifest": str(paths["ingest_manifest_path"]),
                 "pbpstats_failures": str(paths["failures_path"]),
+                "locked_parity_inputs": str(paths["parity_path"]),
                 "roster": str(paths["player_core_path"]),
                 "roster_source_as_of": "2026-08-22",
                 "eligibility": str(paths["eligibility_path"]),
@@ -449,6 +524,12 @@ class LiveSourceAdapterTest(unittest.TestCase):
                 ),
             },
             "window_policy": {"recent_days": 14, "baseline_days": 14, "lag_days": 1},
+            "locked_parity_windows": {
+                "baseline_start": "2026-07-24",
+                "baseline_end": "2026-08-06",
+                "recent_start": "2026-08-07",
+                "recent_end": "2026-08-20",
+            },
             "contender": {"current_rank_max": 6},
             "minimums": {
                 "recent_games": 3,
@@ -626,14 +707,24 @@ class LiveDryRunOutputTest(unittest.TestCase):
         self.assertEqual(manifest["dry_run_gate_status"], "blocked")
         self.assertEqual(
             manifest["dry_run_gate_blockers"],
-            ["current contender candidates without reviewed role assignments: 1"],
+            [
+                "current contender roster players without reviewed eligibility: 2",
+                "current contender candidates without reviewed role assignments: 1",
+            ],
         )
-        self.assertGreater(manifest["funnel_counts"]["players_considered"], 200)
+        self.assertEqual(manifest["funnel_counts"]["players_considered"], 232)
+        self.assertEqual(
+            manifest["funnel_counts"]["excluded_eligibility_not_reviewed"],
+            2,
+        )
         self.assertGreater(manifest["funnel_counts"]["candidates_included"], 0)
         self.assertIn("Review status: **pending reviewer approval**", report)
         self.assertIn("Live output remains disabled", report)
         self.assertIn("Chloe Bibby", report)
         self.assertIn("role assignment", report)
+        self.assertIn("Janiah Barker", report)
+        self.assertIn("Iliana Rupert", report)
+        self.assertIn("reviewed eligibility row required", report)
         self.assertIn("Locked 11-player parity: 11 of 11", report)
         self.assertIn("Zero-omitted cells filled:", report)
         self.assertIn("Live-data dry run", html)

@@ -39,8 +39,14 @@ def adapt_espn_roster(
     source_as_of: str,
     cutoff_date: str,
 ) -> RosterAdapterResult:
-    """Join reviewed ESPN identities to current status without changing eligibility facts."""
-    core_required = {"athlete_id", "current_team_id", "active", "status_type"}
+    """Build the current ESPN roster universe and annotate eligibility coverage."""
+    core_required = {
+        "athlete_id",
+        "full_name",
+        "current_team_id",
+        "active",
+        "status_type",
+    }
     eligibility_required = {
         "player_id",
         "player_name",
@@ -85,18 +91,40 @@ def adapt_espn_roster(
     if teams["_current_team_id"].duplicated().any():
         raise RosterAdapterError("standings contains duplicate team_id values")
 
-    joined = reviewed.merge(
-        core[["_espn_athlete_id", "current_team_id", "active", "status_type"]],
+    missing_reviewed = reviewed.loc[
+        ~reviewed["_espn_athlete_id"].isin(set(core["_espn_athlete_id"])),
+        "player_name",
+    ].tolist()
+    if missing_reviewed:
+        raise RosterAdapterError(
+            "reviewed ESPN identities missing from player core: "
+            + ", ".join(missing_reviewed)
+        )
+
+    joined = core[
+        [
+            "_espn_athlete_id",
+            "full_name",
+            "current_team_id",
+            "active",
+            "status_type",
+        ]
+    ].merge(
+        reviewed,
         on="_espn_athlete_id",
         how="left",
         validate="one_to_one",
         indicator=True,
     )
-    if not joined["_merge"].eq("both").all():
-        missing_players = joined.loc[joined["_merge"] != "both", "player_name"].tolist()
-        raise RosterAdapterError(
-            "reviewed ESPN identities missing from player core: " + ", ".join(missing_players)
-        )
+    eligibility_missing = joined["_merge"].eq("left_only")
+    joined["eligibility_coverage_status"] = "reviewed"
+    joined.loc[eligibility_missing, "eligibility_coverage_status"] = "missing"
+    joined.loc[eligibility_missing, "player_id"] = (
+        "espn:" + joined.loc[eligibility_missing, "_espn_athlete_id"]
+    )
+    joined.loc[eligibility_missing, "player_name"] = joined.loc[
+        eligibility_missing, "full_name"
+    ]
     joined["_current_team_id"] = joined["current_team_id"].map(_identity)
     joined = joined.merge(
         teams[["_current_team_id", "_team_abbreviation"]],
@@ -114,14 +142,26 @@ def adapt_espn_roster(
         )
 
     roster = joined[
-        ["player_id", "player_name", "_team_abbreviation", "active", "status_type"]
+        [
+            "player_id",
+            "player_name",
+            "_team_abbreviation",
+            "active",
+            "status_type",
+            "eligibility_coverage_status",
+        ]
     ].rename(columns={"_team_abbreviation": "team_abbreviation"})
     roster["player_id"] = roster["player_id"].astype(str)
     roster["source_as_of"] = source_date.date().isoformat()
     return RosterAdapterResult(
         roster=roster,
         quality={
-            "reviewed_players_matched": int(len(roster)),
+            "current_core_players": int(len(roster)),
+            "reviewed_players_matched": int((~eligibility_missing).sum()),
+            "eligibility_players_unmatched": int(eligibility_missing.sum()),
+            "unmatched_eligibility_players": sorted(
+                joined.loc[eligibility_missing, "player_name"].tolist()
+            ),
             "active_players": int(roster["active"].sum()),
             "inactive_players": int((roster["status_type"] == "inactive").sum()),
             "free_agents": int((roster["status_type"] == "free-agent").sum()),

@@ -79,6 +79,30 @@ def _read_json(path: Path) -> Any:
         return json.load(handle)
 
 
+def require_pbp_eligibility_coverage(
+    player_game: pd.DataFrame, eligibility: pd.DataFrame
+) -> None:
+    """Reject new PBPStats player identities until their eligibility rows are reviewed."""
+    covered_ids = set(eligibility["player_id"].astype(str))
+    missing = (
+        player_game.loc[
+            ~player_game["player_id"].astype(str).isin(covered_ids),
+            ["player_id", "player_name"],
+        ]
+        .drop_duplicates("player_id")
+        .sort_values(["player_name", "player_id"])
+    )
+    if not missing.empty:
+        labels = [
+            f"{row.player_name} ({row.player_id})"
+            for row in missing.itertuples(index=False)
+        ]
+        raise ContractError(
+            "PBPStats player population missing reviewed eligibility rows: "
+            + ", ".join(labels)
+        )
+
+
 def _load_role_definitions(configured: Dict[str, Any]) -> tuple[Dict[str, Any], Path]:
     role_path = resolve_path(configured.get("role_definitions", ""))
     with role_path.open(encoding="utf-8") as handle:
@@ -155,6 +179,14 @@ def _load_fixture(config: Dict[str, Any]) -> LoadedSources:
 
 def _load_live_dry_run(config: Dict[str, Any]) -> LoadedSources:
     configured = config.get("sources", {})
+    if not configured.get("locked_parity_inputs"):
+        raise ContractError("live_dry_run requires locked_parity_inputs")
+    try:
+        parity_windows = validate_locked_parity_windows(
+            config.get("locked_parity_windows")
+        )
+    except ValueError as exc:
+        raise ContractError(str(exc)) from exc
     paths = {key: resolve_path(value) for key, value in configured.items() if key != "roster_source_as_of"}
 
     raw_standings = _read_table(paths["standings"])
@@ -182,6 +214,7 @@ def _load_live_dry_run(config: Dict[str, Any]) -> LoadedSources:
     player_raw = _read_table(paths["pbpstats_player_game"])
     team_raw = _read_table(paths["pbpstats_team_game"])
     adapter_result = adapt_pbpstats_player_game(player_raw, team_raw)
+    require_pbp_eligibility_coverage(adapter_result.player_game, eligibility)
     ingest_manifest = _read_json(paths["pbpstats_manifest"])
     failures = _read_json(paths["pbpstats_failures"])
     if not isinstance(failures, list):
@@ -195,34 +228,27 @@ def _load_live_dry_run(config: Dict[str, Any]) -> LoadedSources:
     )
     if adapter_audit["status"] != "review_ready":
         raise ContractError("live adapter audit blocked: " + "; ".join(adapter_audit["blockers"]))
-    parity_path = paths.get("locked_parity_inputs")
-    if parity_path is not None:
-        try:
-            parity_windows = validate_locked_parity_windows(
-                config.get("locked_parity_windows")
-            )
-        except ValueError as exc:
-            raise ContractError(str(exc)) from exc
-        parity_config = deepcopy(effective_config)
-        parity_config["windows"] = parity_windows
-        parity = build_adapter_parity(
-            build_window_metrics(adapter_result.player_game, parity_config),
-            _read_table(parity_path),
+    parity_path = paths["locked_parity_inputs"]
+    parity_config = deepcopy(effective_config)
+    parity_config["windows"] = parity_windows
+    parity = build_adapter_parity(
+        build_window_metrics(adapter_result.player_game, parity_config),
+        _read_table(parity_path),
+    )
+    parity_matches = int(parity["parity_match"].sum())
+    parity_maximum = float(parity["max_abs_difference"].max())
+    adapter_audit.update(
+        {
+            "locked_parity_players": int(len(parity)),
+            "locked_parity_matches": parity_matches,
+            "locked_parity_max_abs_difference": parity_maximum,
+            "locked_parity_windows": parity_windows,
+        }
+    )
+    if parity_matches != len(parity):
+        raise ContractError(
+            f"live adapter locked parity failed for {len(parity) - parity_matches} players"
         )
-        parity_matches = int(parity["parity_match"].sum())
-        parity_maximum = float(parity["max_abs_difference"].max())
-        adapter_audit.update(
-            {
-                "locked_parity_players": int(len(parity)),
-                "locked_parity_matches": parity_matches,
-                "locked_parity_max_abs_difference": parity_maximum,
-                "locked_parity_windows": parity_windows,
-            }
-        )
-        if parity_matches != len(parity):
-            raise ContractError(
-                f"live adapter locked parity failed for {len(parity) - parity_matches} players"
-            )
 
     roster_result = adapt_espn_roster(
         _read_table(paths["roster"]),
@@ -275,7 +301,7 @@ def _load_live_dry_run(config: Dict[str, Any]) -> LoadedSources:
             "path": portable_path(paths["roster"]),
             "rows": int(len(roster_result.roster)),
             "columns": int(len(roster_result.roster.columns)),
-            "status": "reviewed_identity_live_overlay",
+            "status": "current_roster_with_eligibility_coverage",
             "quality": roster_result.quality,
         },
         "role_definitions": {

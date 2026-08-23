@@ -11,7 +11,7 @@ Live output remains disabled. This package exercises the approved real-data path
 - Analysis cutoff: 2026-08-21
 - Baseline window: 2026-07-24 through 2026-08-06
 - Recent window: 2026-08-07 through 2026-08-20
-- Players considered: 227
+- Players considered: 232
 - Candidates included: 19
 - Players with all three scores: 11
 - End-to-end gate status: `blocked`
@@ -30,8 +30,10 @@ Live output remains disabled. This package exercises the approved real-data path
 Warnings:
 - 4 unrelated player refresh failures do not affect reviewed-role coverage
 
-## Current-candidate role blockers
+## Current-candidate review blockers
 
+- Iliana Rupert (GSV): reviewed eligibility row required.
+- Janiah Barker (LVA): reviewed eligibility row required.
 - Chloe Bibby (MIN): reviewed primary role assignment required.
 
 ## Remaining gate

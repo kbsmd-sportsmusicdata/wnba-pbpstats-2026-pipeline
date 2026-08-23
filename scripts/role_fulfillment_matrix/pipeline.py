@@ -110,8 +110,13 @@ def build_analysis(config: Dict[str, Any]) -> AnalysisResult:
     players_scored = int((scores.get("score_status") == scored_status).sum()) if not scores.empty else 0
     counts["players_scored"] = players_scored
     dry_run_gate_blockers = []
+    missing_eligibility = counts.get("excluded_eligibility_not_reviewed", 0)
     missing_roles = counts.get("excluded_role_assignment_not_reviewed", 0)
     assignment_mismatches = counts.get("excluded_role_assignment_team_mismatch", 0)
+    if mode == "live_dry_run" and missing_eligibility:
+        dry_run_gate_blockers.append(
+            f"current contender roster players without reviewed eligibility: {missing_eligibility}"
+        )
     if mode == "live_dry_run" and missing_roles:
         dry_run_gate_blockers.append(
             f"current contender candidates without reviewed role assignments: {missing_roles}"

@@ -30,22 +30,24 @@
   "config_hash": "fd62a10d83921c5c34afe207d4f84e438bcf0c18066b43a4f37ad821d69bb988",
   "config_path": "analysis/role_fulfillment_matrix/config/live_config.template.json",
   "dry_run_gate_blockers": [
+    "current contender roster players without reviewed eligibility: 2",
     "current contender candidates without reviewed role assignments: 1"
   ],
   "dry_run_gate_status": "blocked",
   "formula_version": "rfm-live-v1",
   "funnel_counts": {
     "candidates_included": 19,
+    "excluded_eligibility_not_reviewed": 2,
     "excluded_insufficient_recent_possessions": 5,
     "excluded_insufficient_recent_sample": 11,
-    "excluded_non_contender_team": 137,
+    "excluded_non_contender_team": 140,
     "excluded_not_age_experience_eligible": 51,
     "excluded_not_currently_rostered": 3,
     "excluded_role_assignment_not_reviewed": 1,
-    "players_considered": 227,
+    "players_considered": 232,
     "players_scored": 11
   },
-  "generated_at_utc": "2026-08-23T07:11:59+00:00",
+  "generated_at_utc": "2026-08-23T22:27:25+00:00",
   "live_output_enabled": false,
   "live_scoring_blockers": [
     "final reviewer approval and explicit live-output enablement"
@@ -53,7 +55,7 @@
   "live_scoring_status": "dry_run_only",
   "mode": "live_dry_run",
   "output_rows": {
-    "candidate_funnel_2026.csv": 227,
+    "candidate_funnel_2026.csv": 232,
     "role_fulfillment_evidence_2026.json": 113,
     "role_fulfillment_matrix_2026.csv": 19
   },
@@ -145,17 +147,26 @@
       "status": "approved_live_configuration"
     },
     "roster_status": {
-      "columns": 6,
+      "columns": 7,
       "path": "analysis/role_fulfillment_matrix/data/live_inputs/player_core_2026.csv",
       "quality": {
-        "active_players": 205,
-        "free_agents": 18,
-        "inactive_players": 4,
+        "active_players": 207,
+        "current_core_players": 232,
+        "eligibility_players_unmatched": 5,
+        "free_agents": 20,
+        "inactive_players": 5,
         "reviewed_players_matched": 227,
-        "source_as_of": "2026-08-22"
+        "source_as_of": "2026-08-22",
+        "unmatched_eligibility_players": [
+          "Dulcy Fankam Mendjiadeu",
+          "Iliana Rupert",
+          "Janiah Barker",
+          "Kara Dunn",
+          "Shey Peddy"
+        ]
       },
-      "rows": 227,
-      "status": "reviewed_identity_live_overlay"
+      "rows": 232,
+      "status": "current_roster_with_eligibility_coverage"
     },
     "standings": {
       "columns": 4,

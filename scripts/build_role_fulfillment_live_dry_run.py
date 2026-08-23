@@ -60,14 +60,25 @@ def _render_report(manifest: Dict[str, Any], funnel: pd.DataFrame) -> str:
     ]
     if audit["warnings"]:
         lines.extend(["", "Warnings:"] + [f"- {item}" for item in audit["warnings"]])
+    missing_eligibility = funnel[
+        funnel["exclusion_reason"] == "eligibility_not_reviewed"
+    ]
     missing_roles = funnel[
         funnel["exclusion_reason"] == "role_assignment_not_reviewed"
     ]
     assignment_mismatches = funnel[
         funnel["exclusion_reason"] == "role_assignment_team_mismatch"
     ]
-    if not missing_roles.empty or not assignment_mismatches.empty:
-        lines.extend(["", "## Current-candidate role blockers", ""])
+    if (
+        not missing_eligibility.empty
+        or not missing_roles.empty
+        or not assignment_mismatches.empty
+    ):
+        lines.extend(["", "## Current-candidate review blockers", ""])
+        for row in missing_eligibility.to_dict("records"):
+            lines.append(
+                f"- {row['player_name']} ({row['team_abbreviation']}): reviewed eligibility row required."
+            )
         for row in missing_roles.to_dict("records"):
             lines.append(
                 f"- {row['player_name']} ({row['team_abbreviation']}): reviewed primary role assignment required."
