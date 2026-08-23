@@ -1,0 +1,11 @@
+{
+  "sources": [
+    "player_game.parquet",
+    "team_game.parquet"
+  ],
+  "cohort_membership_only": "player_core_2026.csv",
+  "games": 274,
+  "through": "2026-08-21",
+  "league_drtg": 108.133,
+  "teammate_pairs_scored": 663
+}
