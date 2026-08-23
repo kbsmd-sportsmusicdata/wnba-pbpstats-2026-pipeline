@@ -12,6 +12,18 @@ import pandas as pd
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 
+APPROVED_ELIGIBILITY = (
+    ROOT / "analysis" / "role_fulfillment_matrix" / "config" / "player_eligibility_2026.csv"
+)
+APPROVAL_MANIFEST = (
+    ROOT
+    / "analysis"
+    / "role_fulfillment_matrix"
+    / "data"
+    / "review"
+    / "eligibility_approval_manifest_2026.json"
+)
+
 
 def eligibility_api():
     try:
@@ -274,6 +286,51 @@ class EligibilityBuilderTest(unittest.TestCase):
             self.assertEqual(summary["coverage_pct"], 100.0)
             self.assertEqual(summary["live_scoring_status"], "blocked")
             self.assertTrue((output_dir / "player_eligibility_2026.pending.csv").exists())
+
+
+class ApprovedEligibilityArtifactTest(unittest.TestCase):
+    def test_approved_table_preserves_rule_and_records_human_review(self):
+        self.assertTrue(APPROVED_ELIGIBILITY.exists(), "approved eligibility table is missing")
+        eligibility = pd.read_csv(APPROVED_ELIGIBILITY)
+
+        self.assertEqual(len(eligibility), 227)
+        self.assertEqual(eligibility["player_id"].nunique(), 227)
+        self.assertEqual(eligibility["espn_athlete_id"].nunique(), 227)
+        self.assertTrue((eligibility["eligible_flag"] == (eligibility["experience_years"] <= 3)).all())
+        self.assertEqual(set(eligibility["review_status"]), {"reviewed"})
+        self.assertEqual(set(eligibility["reviewed_by"]), {"Krystal Beasley"})
+        self.assertEqual(set(eligibility["reviewed_at"]), {"2026-08-22"})
+
+    def test_approval_manifest_hashes_promoted_table_and_keeps_scoring_blocked(self):
+        self.assertTrue(APPROVAL_MANIFEST.exists(), "eligibility approval manifest is missing")
+        manifest = json.loads(APPROVAL_MANIFEST.read_text(encoding="utf-8"))
+
+        self.assertEqual(manifest["review_status"], "reviewed")
+        self.assertEqual(manifest["approved_by"], "Krystal Beasley")
+        self.assertEqual(manifest["approved_at"], "2026-08-22")
+        self.assertEqual(manifest["approved_rows"], 227)
+        self.assertEqual(manifest["live_eligibility_status"], "approved")
+        self.assertEqual(manifest["live_scoring_status"], "blocked")
+        self.assertEqual(
+            manifest["approved_output"]["sha256"],
+            hashlib.sha256(APPROVED_ELIGIBILITY.read_bytes()).hexdigest(),
+        )
+
+    def test_live_config_references_approved_eligibility_without_unblocking_scoring(self):
+        live_config_path = (
+            ROOT
+            / "analysis"
+            / "role_fulfillment_matrix"
+            / "config"
+            / "live_config.template.json"
+        )
+        config = json.loads(live_config_path.read_text(encoding="utf-8"))
+
+        self.assertEqual(
+            config["sources"]["eligibility"],
+            "analysis/role_fulfillment_matrix/config/player_eligibility_2026.csv",
+        )
+        self.assertEqual(config["mode"], "live")
 
 
 if __name__ == "__main__":

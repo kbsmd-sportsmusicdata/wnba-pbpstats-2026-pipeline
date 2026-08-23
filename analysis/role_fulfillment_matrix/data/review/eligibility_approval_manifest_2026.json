@@ -1,0 +1,29 @@
+{
+  "season": 2026,
+  "eligibility_rule": {
+    "field": "experience_years",
+    "operator": "<=",
+    "threshold": 3,
+    "eligibility_type": "experience_le_3"
+  },
+  "review_status": "reviewed",
+  "approved_by": "Krystal Beasley",
+  "approved_at": "2026-08-22",
+  "approved_rows": 227,
+  "eligible_players": 120,
+  "ineligible_players": 107,
+  "pending_input": {
+    "path": "analysis/role_fulfillment_matrix/data/review/player_eligibility_2026.pending.csv",
+    "sha256": "9f0133f7497f876c119ead5544ce94f061bbf9e4539cbc5e04e5dd87cde0db1e"
+  },
+  "approved_output": {
+    "path": "analysis/role_fulfillment_matrix/config/player_eligibility_2026.csv",
+    "sha256": "52ee4e1232668a5436bfe56c1ef77442fb0ea41155a7d39f8bbcdf3713d96a00"
+  },
+  "live_eligibility_status": "approved",
+  "live_scoring_status": "blocked",
+  "remaining_blockers": [
+    "reviewed_player_role_assignments",
+    "reviewed_live_role_thresholds"
+  ]
+}

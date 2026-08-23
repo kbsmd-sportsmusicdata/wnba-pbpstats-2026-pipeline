@@ -17,7 +17,7 @@ contender requirement
 | Requirement | Prototype fields | Status | Live-source disposition |
 |---|---|---|---|
 | Contender identification | `team_abbreviation`, `current_rank`, `cutoff_date` | Available | Direct from validated current standings; carry cutoff. |
-| Age/experience eligibility | `eligibility_type`, `age_on_cutoff`, `experience_years`, `eligible_flag`, review metadata | Real data / pending review | ESPN player core covers all 227 PBPStats players; the deterministic `experience_years <= 3` output remains blocked until human approval. |
+| Age/experience eligibility | `eligibility_type`, `age_on_cutoff`, `experience_years`, `eligible_flag`, review metadata | Available / reviewed | ESPN player core covers all 227 PBPStats players; the deterministic `experience_years <= 3` decisions were reviewed on 2026-08-22. |
 | Player identity | `player_id`, `player_name`, `team_abbreviation` | Available | PBPStats key is canonical. ESPN identity requires a reviewed crosswalk. |
 | Opportunity level | `minutes`, `off_poss`, `team_possessions`, games | Available / derivable | Recompute MPG and possession share from player-game counts. |
 | Opportunity change | recent and baseline possession share | Derivable | Recent minus baseline; keep both windows and denominators. |
@@ -88,7 +88,7 @@ high Stability with low Fulfillment is valid and covered by a regression test.
 
 | Blocker | Why it matters | Required remediation |
 |---|---|---|
-| Eligibility table pending review | The requested population is source-backed but not yet approved for scoring. | Review the 227 decisions and identity crosswalk, then add reviewer and timestamp metadata without changing the deterministic eligibility rule. |
+| Eligibility promotion completed | The requested population now has source-backed, reviewed decisions. | Retain the pending snapshot, approval manifest, and one-to-one crosswalk as immutable review evidence. |
 | No reviewed player-role assignments | Strong production does not prove that a team need was fulfilled. | Add role code, evidence, assignment source, reviewer, date, and confidence. |
 | ESPN/PBPStats identity mismatch | Direct numeric joins drop players because the namespaces differ. | Add and test an explicit one-to-one crosswalk before using roster/DNP context. |
 | Impact feed lags player-game feed | Recent opportunity and stale impact are not comparable on one clock. | Rebuild to a shared cutoff or keep impact evidence-only with lag labels. |

@@ -6,7 +6,7 @@
   "sources": {
     "standings": "analysis/role_fulfillment_matrix/data/live_inputs/current_standings.csv",
     "player_game": "data/processed/wnba_pbpstats_player_game/season=2026/player_game.parquet",
-    "eligibility": "analysis/role_fulfillment_matrix/config/player_eligibility_2026.template.csv",
+    "eligibility": "analysis/role_fulfillment_matrix/config/player_eligibility_2026.csv",
     "role_assignments": "analysis/role_fulfillment_matrix/config/player_role_assignments_2026.template.csv",
     "role_definitions": "analysis/role_fulfillment_matrix/config/role_definitions.json"
   }

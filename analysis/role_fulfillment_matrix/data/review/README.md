@@ -1,7 +1,7 @@
 # Eligibility Review Package
 
-This directory contains real 2026 identity and experience data, but it is not an approved live
-scoring input yet.
+This directory preserves the real 2026 identity and experience review evidence. The approved
+eligibility table is `../../config/player_eligibility_2026.csv`.
 
 ## Review summary
 
@@ -11,7 +11,7 @@ scoring input yet.
 - Eligible under `experience_years <= 3`: 120
 - Ineligible: 107
 - ESPN source-only records without a PBPStats game: 5
-- Eligibility review status: pending
+- Eligibility review status: reviewed on 2026-08-22 by Krystal Beasley
 - Live scoring status: blocked
 
 ## Reviewer checklist
@@ -23,8 +23,8 @@ scoring input yet.
    the cutoff.
 4. Confirm the ESPN experience convention is acceptable for the approved `<= 3` rule.
 5. Do not change `eligible_flag` manually. Correct source facts and rebuild if a value is wrong.
-6. After review, populate `reviewed_by` and `reviewed_at`, and change `review_status` from `pending`
-   to `reviewed` only for verified rows.
+6. The reviewed promotion and its hash are recorded in
+   `eligibility_approval_manifest_2026.json`; do not overwrite the pending snapshot.
 
-Approving this table resolves only the experience/eligibility blocker. Reviewed player-role
-assignments and reviewed live role thresholds remain required before live scoring can be enabled.
+This approval resolves only the experience/eligibility blocker. Reviewed player-role assignments
+and reviewed live role thresholds remain required before live scoring can be enabled.
