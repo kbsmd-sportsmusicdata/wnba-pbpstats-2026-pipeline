@@ -1,0 +1,45 @@
+{
+  "season": 2026,
+  "cutoff_date": "2026-08-20",
+  "source_as_of": "2026-08-22",
+  "eligibility_rule": {
+    "field": "experience_years",
+    "operator": "<=",
+    "threshold": 3,
+    "eligibility_type": "experience_le_3"
+  },
+  "sources": {
+    "player_core": {
+      "system": "ESPN",
+      "path": "analysis/role_fulfillment_matrix/data/live_inputs/player_core_2026.csv",
+      "sha256": "e5b1f81f0caf215ee0996544f095f7cfbde50f22f6c81e8519af9eb2fae09c26",
+      "rows": 232
+    },
+    "player_game": {
+      "path": "data/processed/wnba_pbpstats_player_game/season=2026/player_game.parquet",
+      "sha256": "ad3e17f45c46c09624f4387eaef8f8125005f9be38f09c0fb55c53b68e84e387",
+      "rows": 5425,
+      "rows_on_or_before_cutoff": 5365
+    }
+  },
+  "pbpstats_players": 227,
+  "matched_players": 227,
+  "source_only_players": 5,
+  "coverage_pct": 100.0,
+  "eligible_players": 120,
+  "ineligible_players": 107,
+  "review_status": "pending",
+  "live_scoring_status": "blocked",
+  "outputs": {
+    "eligibility": {
+      "path": "analysis/role_fulfillment_matrix/data/review/player_eligibility_2026.pending.csv",
+      "rows": 227,
+      "sha256": "9f0133f7497f876c119ead5544ce94f061bbf9e4539cbc5e04e5dd87cde0db1e"
+    },
+    "crosswalk": {
+      "path": "analysis/role_fulfillment_matrix/data/review/player_identity_crosswalk_2026.csv",
+      "rows": 232,
+      "sha256": "9c6e1c5397b7f29079901d8c3dab77a488a517546fa6df2b3c145e956f3e2aab"
+    }
+  }
+}

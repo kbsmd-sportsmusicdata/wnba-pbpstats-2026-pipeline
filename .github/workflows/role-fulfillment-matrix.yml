@@ -23,8 +23,8 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Run fixture-only contract and web tests
-        run: python -m unittest tests/test_role_fulfillment_matrix.py tests/test_role_fulfillment_matrix_web.py
+      - name: Run eligibility, fixture contract, and web tests
+        run: python -m unittest tests/test_role_fulfillment_eligibility.py tests/test_role_fulfillment_matrix.py tests/test_role_fulfillment_matrix_web.py
 
       - name: Run fixture-only client display tests
         run: node --test tests/test_role_fulfillment_matrix_client.js

@@ -84,7 +84,12 @@ def build_window_metrics(player_game: pd.DataFrame, config: Dict[str, Any]) -> p
     recent = player_game[
         dates.between(pd.Timestamp(windows["recent_start"]), pd.Timestamp(windows["recent_end"]))
     ]
+    season = player_game[dates.le(pd.Timestamp(windows["recent_end"]))]
     recent_agg = aggregate_window(recent, "recent")
     baseline_agg = aggregate_window(baseline, "baseline")
+    season_agg = aggregate_window(season, "season")
     identity = ["player_id", "player_name", "team_abbreviation"]
-    return recent_agg.merge(baseline_agg, on=identity, how="outer")
+    return (
+        recent_agg.merge(baseline_agg, on=identity, how="outer")
+        .merge(season_agg, on=identity, how="outer")
+    )

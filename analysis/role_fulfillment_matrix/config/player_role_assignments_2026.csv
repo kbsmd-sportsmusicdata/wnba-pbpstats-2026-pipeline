@@ -1,0 +1,37 @@
+player_id,player_name,team_abbreviation,role_code,secondary_role_code,assignment_confidence,review_status,reviewed_by,reviewed_at,assignment_notes
+1643426,Olivia Miles,MIN,lead_creator,perimeter_scorer_spacer,0.95,reviewed,Krystal Beasley,2026-08-22,Reviewed six-role taxonomy assignment
+1641657,Dorka Juhasz,MIN,perimeter_scorer_spacer,interior_hub_rebounder,0.90,reviewed,Krystal Beasley,2026-08-22,Reviewed six-role taxonomy assignment
+1643489,Antonia Delaere,MIN,perimeter_scorer_spacer,secondary_creator_connector,0.90,reviewed,Krystal Beasley,2026-08-22,Reviewed six-role taxonomy assignment
+1642797,Anastasiia Olairi Kosu,MIN,interior_finisher_rim_runner,interior_hub_rebounder,0.90,reviewed,Krystal Beasley,2026-08-22,Reviewed six-role taxonomy assignment
+1642820,Liatu King,MIN,interior_hub_rebounder,interior_finisher_rim_runner,0.70,reviewed,Krystal Beasley,2026-08-22,Reviewed with limited-opportunity safeguard
+1643490,Eliska Joklova,MIN,secondary_creator_connector,downhill_pressure_wing,0.75,reviewed,Krystal Beasley,2026-08-22,Reviewed with limited-opportunity safeguard
+1643488,Emma Cechova,MIN,interior_finisher_rim_runner,interior_hub_rebounder,0.60,reviewed,Krystal Beasley,2026-08-22,Reviewed with inactive and insufficient-evidence safeguards
+1629581,Emese Hof,MIN,interior_hub_rebounder,interior_finisher_rim_runner,0.45,reviewed,Krystal Beasley,2026-08-22,Reviewed with inactive and insufficient-evidence safeguards
+1642767,Janelle Salaun,GSV,perimeter_scorer_spacer,secondary_creator_connector,0.90,reviewed,Krystal Beasley,2026-08-22,Reviewed six-role taxonomy assignment
+1642822,Kaitlyn Chen,GSV,secondary_creator_connector,perimeter_scorer_spacer,0.90,reviewed,Krystal Beasley,2026-08-22,Reviewed six-role taxonomy assignment
+1642794,Juste Jocyte,GSV,perimeter_scorer_spacer,secondary_creator_connector,0.70,reviewed,Krystal Beasley,2026-08-22,Reviewed with recent-sample safeguard
+1641695,Ashten Prechtel,GSV,perimeter_scorer_spacer,interior_hub_rebounder,0.55,reviewed,Krystal Beasley,2026-08-22,Reviewed with insufficient-evidence safeguard
+1631039,Miela Sowah,GSV,perimeter_scorer_spacer,,0.30,reviewed,Krystal Beasley,2026-08-22,Reviewed low-confidence hypothesis with score suppressed
+1643686,Nadia Fingall,GSV,interior_finisher_rim_runner,interior_hub_rebounder,0.30,reviewed,Krystal Beasley,2026-08-22,Reviewed low-confidence hypothesis with score suppressed
+1642769,Mai Yamamoto,LVA,secondary_creator_connector,perimeter_scorer_spacer,0.90,reviewed,Krystal Beasley,2026-08-22,Reviewed six-role taxonomy assignment
+1643495,Justine Pissott,LVA,perimeter_scorer_spacer,,0.80,reviewed,Krystal Beasley,2026-08-22,Reviewed with recent-sample safeguard
+1643444,Ta'Niya Latson,LVA,downhill_pressure_wing,secondary_creator_connector,0.80,reviewed,Krystal Beasley,2026-08-22,Reviewed with recent-possession safeguard
+1642286,Caitlin Clark,IND,lead_creator,perimeter_scorer_spacer,0.95,reviewed,Krystal Beasley,2026-08-22,Reviewed six-role taxonomy assignment
+1642815,Makayla Timpson,IND,interior_finisher_rim_runner,interior_hub_rebounder,0.95,reviewed,Krystal Beasley,2026-08-22,Reviewed six-role taxonomy assignment
+1643433,Raven Johnson,IND,secondary_creator_connector,perimeter_scorer_spacer,0.90,reviewed,Krystal Beasley,2026-08-22,Reviewed with season-volume fallback flag
+1642788,Bree Hall,IND,perimeter_scorer_spacer,,0.30,reviewed,Krystal Beasley,2026-08-22,Reviewed low-confidence hypothesis with score suppressed
+1643453,Grace VanSlooten,IND,downhill_pressure_wing,interior_finisher_rim_runner,0.75,reviewed,Krystal Beasley,2026-08-22,Reviewed with insufficient-evidence safeguard
+1642291,Angel Reese,ATL,interior_hub_rebounder,interior_finisher_rim_runner,0.95,reviewed,Krystal Beasley,2026-08-22,Reviewed six-role taxonomy assignment
+1642302,Isobel Borlase,ATL,downhill_pressure_wing,perimeter_scorer_spacer,0.80,reviewed,Krystal Beasley,2026-08-22,Reviewed six-role taxonomy assignment
+1643431,Madina Okot,ATL,interior_finisher_rim_runner,interior_hub_rebounder,0.90,reviewed,Krystal Beasley,2026-08-22,Reviewed six-role taxonomy assignment
+1642804,Te-Hina Paopao,ATL,secondary_creator_connector,perimeter_scorer_spacer,0.85,reviewed,Krystal Beasley,2026-08-22,Reviewed with season-volume fallback flag
+1642320,Jaylyn Sherrod,ATL,secondary_creator_connector,downhill_pressure_wing,0.80,reviewed,Krystal Beasley,2026-08-22,Reviewed with recent-possession safeguard
+1643469,Indya Nivar,ATL,downhill_pressure_wing,secondary_creator_connector,0.80,reviewed,Krystal Beasley,2026-08-22,Reviewed with insufficient-recent-sample safeguard
+1642801,Aaliyah Nye,ATL,perimeter_scorer_spacer,,0.65,reviewed,Krystal Beasley,2026-08-22,Reviewed with insufficient-evidence safeguard
+1629539,Amy Okonkwo,ATL,perimeter_scorer_spacer,,0.20,reviewed,Krystal Beasley,2026-08-22,Reviewed low-confidence hypothesis with score suppressed
+1631136,Pauline Astier,NYL,secondary_creator_connector,downhill_pressure_wing,0.90,reviewed,Krystal Beasley,2026-08-22,Reviewed six-role taxonomy assignment
+1630469,Marine Fauthoux,NYL,secondary_creator_connector,downhill_pressure_wing,0.85,reviewed,Krystal Beasley,2026-08-22,Reviewed six-role taxonomy assignment
+1630142,Leonie Fiebich,NYL,perimeter_scorer_spacer,secondary_creator_connector,0.95,reviewed,Krystal Beasley,2026-08-22,Reviewed with season-volume fallback flag
+1630993,Anneli Maley,NYL,interior_hub_rebounder,perimeter_scorer_spacer,0.70,reviewed,Krystal Beasley,2026-08-22,Reviewed with insufficient-recent-sample safeguard
+1630384,Raquel Carrera,NYL,interior_finisher_rim_runner,interior_hub_rebounder,0.85,reviewed,Krystal Beasley,2026-08-22,Reviewed with recent-possession safeguard
+1642826,Aubrey Griffin,NYL,downhill_pressure_wing,,0.25,reviewed,Krystal Beasley,2026-08-22,Reviewed low-confidence hypothesis with inactive score suppression

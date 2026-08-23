@@ -17,11 +17,11 @@ contender requirement
 | Requirement | Prototype fields | Status | Live-source disposition |
 |---|---|---|---|
 | Contender identification | `team_abbreviation`, `current_rank`, `cutoff_date` | Available | Direct from validated current standings; carry cutoff. |
-| Age/experience eligibility | `eligibility_type`, `age_on_cutoff`, `experience_years`, `eligible_flag`, review metadata | Fixture only / live blocked | No age, birth, draft, rookie, or experience source is committed. |
+| Age/experience eligibility | `eligibility_type`, `age_on_cutoff`, `experience_years`, `eligible_flag`, review metadata | Available / reviewed | ESPN player core covers all 227 PBPStats players; the deterministic `experience_years <= 3` decisions were reviewed on 2026-08-22. |
 | Player identity | `player_id`, `player_name`, `team_abbreviation` | Available | PBPStats key is canonical. ESPN identity requires a reviewed crosswalk. |
 | Opportunity level | `minutes`, `off_poss`, `team_possessions`, games | Available / derivable | Recompute MPG and possession share from player-game counts. |
 | Opportunity change | recent and baseline possession share | Derivable | Recent minus baseline; keep both windows and denominators. |
-| Role assignment | `role_code`, `assignment_confidence`, reviewer metadata | Fixture only / live blocked | Existing generic archetypes are an unreviewed proxy, not assignments. |
+| Role assignment | `role_code`, optional `secondary_role_code`, `assignment_confidence`, reviewer metadata | Available / reviewed | Thirty-six roster-attached eligible players on top-six contenders have reviewed six-role assignments. Three confirmed free agents are excluded from the current assignment pool. |
 | Creator behavior | assists, offensive possessions | Available / derivable | `75 * assists / off_poss`. |
 | Rim behavior | rim attempts, total FGA | Available / derivable | Rim-attempt share and rim accuracy. |
 | Efficiency | points, FGA, FTA; rim makes/attempts | Available / derivable | Recompute TS% and role-specific accuracy from counts. |
@@ -76,20 +76,26 @@ high Stability with low Fulfillment is valid and covered by a regression test.
 5. The contender rule and date windows are config-versioned.
 6. Eligibility and assignment review status are hard funnel gates.
 7. Role codes must exist in the role registry.
-8. Minimum recent games and offensive possessions are hard sample gates.
-9. Stability describes confidence, not direction or quality of performance.
-10. Every score row carries `score_status`, `coverage_pct`, `formula_version`, and `analysis_mode`.
-11. Every evidence row carries source, window, denominator, and safeguard text.
-12. Fixture output is labeled in the page, payload, processed tables, and manifest.
-13. Lagging RAPM/on-court context is excluded from headline fixture scores.
-14. Output paths are confined to `analysis/role_fulfillment_matrix/`.
+8. Recent scoring requires at least three games and 100 offensive possessions in the approved window.
+9. Players with at least 500 season offensive possessions may remain visible as
+   `season_context_only` when the recent gate fails; no recent-form score is calculated.
+10. `season_possessions_met`, `recent_games_met`, and `recent_possessions_met` remain separate
+    flags so season volume never masquerades as recent evidence.
+11. Free agents are excluded without deleting eligibility history; inactive rostered players keep
+    their role with `inactive_suppressed` scoring status.
+12. Stability describes confidence, not direction or quality of performance.
+13. Every score row carries `score_status`, `coverage_pct`, `formula_version`, and `analysis_mode`.
+14. Every evidence row carries source, window, denominator, and safeguard text.
+15. Fixture output is labeled in the page, payload, processed tables, and manifest.
+16. Lagging RAPM/on-court context is excluded from headline fixture scores.
+17. Output paths are confined to `analysis/role_fulfillment_matrix/`.
 
 ## Blockers to live scoring
 
 | Blocker | Why it matters | Required remediation |
 |---|---|---|
-| No reviewed age/experience table | The requested population cannot be identified authoritatively. | Add source URL/as-of, eligibility basis, reviewer, and unique PBPStats ID coverage. |
-| No reviewed player-role assignments | Strong production does not prove that a team need was fulfilled. | Add role code, evidence, assignment source, reviewer, date, and confidence. |
+| Eligibility promotion completed | The requested population now has source-backed, reviewed decisions. | Retain the pending snapshot, approval manifest, and one-to-one crosswalk as immutable review evidence. |
+| Player-role assignments completed | Thirty-six roster-attached candidates have reviewed primary roles; optional secondary roles remain unscored. | Preserve the reviewed registry and approval manifest. |
 | ESPN/PBPStats identity mismatch | Direct numeric joins drop players because the namespaces differ. | Add and test an explicit one-to-one crosswalk before using roster/DNP context. |
 | Impact feed lags player-game feed | Recent opportunity and stale impact are not comparable on one clock. | Rebuild to a shared cutoff or keep impact evidence-only with lag labels. |
 | True player on/off not materialized | On-court net rating is not on-minus-off impact. | Validate a separate possession/lineup pipeline after the prototype is approved. |
@@ -100,7 +106,7 @@ high Stability with low Fulfillment is valid and covered by a regression test.
 | Layer | Covered now | Promotion additions |
 |---|---|---|
 | Contracts | Missing columns, missing sources, fixture-only mode, live block | Duplicate eligibility IDs, incomplete candidate coverage, source-citation format. |
-| Funnel | Contender, reviewed eligibility, valid assignment, games, possessions | Boundary ranks, trades, two-team players, cutoff mismatch. |
+| Funnel | Contender, reviewed eligibility, valid assignment, affiliation status, inactive suppression, recent sample, and 500-possession season fallback | Boundary ranks, trades, two-team players, cutoff mismatch. |
 | Metrics | Recompute rates from counts, recent/baseline separation | Zero denominators, overtime, traded-player team windows. |
 | Scores | Independent dimensions, formula version, stability/performance separation | Hand-calculated reviewer set, role thresholds, sensitivity analysis. |
 | Evidence | Source, windows, denominators, safeguards | Cross-source lag and crosswalk quality labels. |
