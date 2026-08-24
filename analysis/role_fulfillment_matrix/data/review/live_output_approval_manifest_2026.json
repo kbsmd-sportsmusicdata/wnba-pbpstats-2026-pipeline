@@ -1,0 +1,62 @@
+{
+  "season": 2026,
+  "review_status": "approved",
+  "approved_by": "Krystal Beasley",
+  "approved_at": "2026-08-23",
+  "formula_version": "rfm-live-v1",
+  "approved_config_sha256": "a013dbd8ca8387f3d84a5b9280228592fbf416a70c49f548f40aff7bb01aa782",
+  "end_to_end_review_status": "approved_19_player_review",
+  "approved_result_counts": {
+    "live_scored": 11,
+    "season_context_only": 5,
+    "inactive_suppressed": 3
+  },
+  "approved_dry_run_artifacts": [
+    {
+      "path": "analysis/role_fulfillment_matrix/data/review/live_dry_run/data/processed/run_manifest_2026.json",
+      "sha256": "4e82441a439c88a64648ce64daf0a03c68d9c8ebc552418add9b0f52945ae7d3"
+    },
+    {
+      "path": "analysis/role_fulfillment_matrix/data/review/live_dry_run/data/processed/role_fulfillment_matrix_2026.csv",
+      "sha256": "ad08a5513de407082bed804a2c208e489e98fdde5cf3922b1c603b53c88165d7"
+    },
+    {
+      "path": "analysis/role_fulfillment_matrix/data/review/live_dry_run/data/processed/role_fulfillment_evidence_2026.json",
+      "sha256": "9ae14d95340af33b59a92dc1f616269554cc5ecf472fb9a0f2b54ea94743ad2b"
+    }
+  ],
+  "evidence_provenance_status": "reviewed_live_sources_only",
+  "execution_mode": "manual_only",
+  "scheduling_enabled": false,
+  "manual_live_run_status": "completed",
+  "manual_live_run": {
+    "generated_at_utc": "2026-08-23T23:37:49+00:00",
+    "live_scoring_status": "live_enabled",
+    "live_output_enabled": true,
+    "execution_mode": "manual_only",
+    "scheduling_enabled": false,
+    "result_counts": {
+      "live_scored": 11,
+      "season_context_only": 5,
+      "inactive_suppressed": 3
+    },
+    "artifacts": [
+      {
+        "path": "analysis/role_fulfillment_matrix/live/data/processed/run_manifest_2026.json",
+        "sha256": "3c2dd2844e65153d6d4ff4c9eae04ecd382ba41da2fb5134a33ebe569709e1ec"
+      },
+      {
+        "path": "analysis/role_fulfillment_matrix/live/data/processed/role_fulfillment_matrix_2026.csv",
+        "sha256": "8014b0cf61ec6b983244f4d1ebb99c7edba6b5b7b1b1e90a9ad2928b11139270"
+      },
+      {
+        "path": "analysis/role_fulfillment_matrix/live/data/processed/role_fulfillment_evidence_2026.json",
+        "sha256": "524c591de48c180971fca5812d6f7aa868cb45854cdc31626afc0ef6bd99cf98"
+      },
+      {
+        "path": "analysis/role_fulfillment_matrix/live/deliverables/role_fulfillment_matrix/index.html",
+        "sha256": "9897b6212162dfe265d13f399835233fc8df8084ad62898faa5e2bd2fdc96574"
+      }
+    ]
+  }
+}

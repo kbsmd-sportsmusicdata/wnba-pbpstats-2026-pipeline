@@ -1,0 +1,54 @@
+{
+  "season": 2026,
+  "mode": "live",
+  "formula_version": "rfm-live-v1",
+  "output_root": "analysis/role_fulfillment_matrix/live",
+  "sources": {
+    "standings": "analysis/standings_playoff_forecast/data/processed/season=2026/latest/current_standings.csv",
+    "standings_manifest": "analysis/standings_playoff_forecast/data/processed/season=2026/latest/run_manifest.json",
+    "pbpstats_player_game": "data/pbpstats_2026_player_game_logs/player_game_logs_wnba_2026_regular_season.csv",
+    "pbpstats_team_game": "data/pbpstats_2026_player_game_logs/team_game_logs_wnba_2026_regular_season.csv",
+    "pbpstats_manifest": "data/pbpstats_2026_player_game_logs/ingest_manifest.json",
+    "pbpstats_failures": "data/pbpstats_2026_player_game_logs/player_game_logs_failures.json",
+    "locked_parity_inputs": "tests/fixtures/role_fulfillment_matrix/live_v1_11_player_inputs.csv",
+    "roster": "analysis/role_fulfillment_matrix/data/live_inputs/player_core_2026.csv",
+    "roster_source_as_of": "2026-08-22",
+    "eligibility": "analysis/role_fulfillment_matrix/config/player_eligibility_2026.csv",
+    "role_assignments": "analysis/role_fulfillment_matrix/config/player_role_assignments_2026.csv",
+    "role_definitions": "analysis/role_fulfillment_matrix/config/role_definitions_live_v1.json"
+  },
+  "contender": {"current_rank_max": 6},
+  "window_policy": {"recent_days": 14, "baseline_days": 14, "lag_days": 1},
+  "locked_parity_windows": {
+    "baseline_start": "2026-07-24",
+    "baseline_end": "2026-08-06",
+    "recent_start": "2026-08-07",
+    "recent_end": "2026-08-20"
+  },
+  "minimums": {
+    "recent_games": 3,
+    "recent_off_poss": 100,
+    "season_off_poss_fallback": 500,
+    "assignment_confidence_score": 0.50
+  },
+  "opportunity": {
+    "minutes_per_game": {"floor": 10, "target": 30, "weight": 0.30},
+    "possession_share": {"floor": 0.20, "target": 0.70, "weight": 0.40},
+    "possession_share_delta": {"floor": -0.10, "target": 0.20, "weight": 0.30}
+  },
+  "stability": {
+    "recent_games_target": 6,
+    "recent_off_poss_target": 300,
+    "possession_share_sd_ceiling": 0.15,
+    "weights": {"games": 0.20, "possessions": 0.30, "consistency": 0.30, "assignment_confidence": 0.20}
+  },
+  "validation_status": "approved_11_player_review",
+  "live_adapter_status": "approved_review",
+  "end_to_end_review_status": "approved_19_player_review",
+  "live_output_approved_by": "Krystal Beasley",
+  "live_output_approved_at": "2026-08-23",
+  "live_output_approval_manifest": "analysis/role_fulfillment_matrix/data/review/live_output_approval_manifest_2026.json",
+  "execution_mode": "manual_only",
+  "scheduling_enabled": false,
+  "live_output_enabled": true
+}

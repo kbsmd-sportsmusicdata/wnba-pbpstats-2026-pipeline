@@ -124,8 +124,8 @@ def _fixture_roster(player_game: pd.DataFrame, eligibility: pd.DataFrame) -> pd.
 def load_sources(config: Dict[str, Any]) -> LoadedSources:
     # Authorization is deliberately before path resolution so unapproved runs touch no live data.
     authorize_execution(config)
-    if config.get("mode") == "live_dry_run":
-        return _load_live_dry_run(config)
+    if config.get("mode") in {"live_dry_run", "live"}:
+        return _load_reviewed_live(config)
     return _load_fixture(config)
 
 
@@ -177,10 +177,10 @@ def _load_fixture(config: Dict[str, Any]) -> LoadedSources:
     )
 
 
-def _load_live_dry_run(config: Dict[str, Any]) -> LoadedSources:
+def _load_reviewed_live(config: Dict[str, Any]) -> LoadedSources:
     configured = config.get("sources", {})
     if not configured.get("locked_parity_inputs"):
-        raise ContractError("live_dry_run requires locked_parity_inputs")
+        raise ContractError("reviewed live execution requires locked_parity_inputs")
     try:
         parity_windows = validate_locked_parity_windows(
             config.get("locked_parity_windows")
