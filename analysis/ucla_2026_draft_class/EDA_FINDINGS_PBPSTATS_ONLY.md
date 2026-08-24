@@ -4,8 +4,9 @@ A second pass at the 2026 UCLA draft class built **exclusively on the pbpstats
 game layer**. Nothing here depends on a source that stops in mid-July.
 
 > **Coverage:** figures were regenerated against the refreshed pipeline —
-> **277 games through 2026-08-22**. Headline numbers barely moved from the
-> 274-game version; the two exceptions are noted in §5 of
+> **281 games through 2026-08-23**. Rate and role measurements held; several
+> small-sample on/off differentials moved materially, including one correction
+> to §1 below. The vintage-by-vintage comparison is in §5 of
 > [`DERIVED_POSSESSIONS.md`](./DERIVED_POSSESSIONS.md).
 
 Companion documents: [`EDA_FINDINGS.md`](./EDA_FINDINGS.md) (the full pass,
@@ -41,7 +42,8 @@ stronger than the versions they replace.
 
 ## 1. Kiki Rice's return was a minutes restriction — and it rewrites the on/off story
 
-This was the open question from the first pass: Rice's on/off said +11.4, but
+This was the open question from the first pass: Rice's on/off said +11.4 (now
++7.8 on refreshed data), but
 Toronto's team-level series said the club got *worse* after she came back. The
 answer is that her return had two distinct phases, and blending them produced
 a number that describes neither.
@@ -69,16 +71,16 @@ back-to-back (29.9 on Aug 18, 24.5 on Aug 19).
 
 | Metric | Pre-injury | Return 1–5 | Return 6–10 |
 |---|---:|---:|---:|
-| Points / 75 | 18.11 | **11.96** | 19.68 |
-| True shooting | .670 | **.460** | .640 |
-| eFG | .593 | **.371** | .587 |
-| Shot quality | .563 | .471 | .514 |
-| eFG − shot quality | +.030 | **−.100** | +.073 |
-| Turnovers / 75 | 1.85 | **4.35** | 1.00 |
-| Fouls / 75 | 3.96 | **6.75** | 4.24 |
-| FTA / 75 | 6.42 | **3.99** | 5.48 |
-| Rim share | .467 | .290 | .308 |
-| Rim accuracy | .714 | .556 | **.938** |
+| Points / 75 | 18.11 | **11.96** | 19.48 |
+| True shooting | .670 | **.460** | .614 |
+| eFG | .593 | **.371** | .568 |
+| Shot quality | .563 | .471 | .490 |
+| eFG − shot quality | +.030 | **−.100** | +.079 |
+| Turnovers / 75 | 1.85 | **4.35** | 1.05 |
+| Fouls / 75 | 3.96 | **6.75** | 3.57 |
+| FTA / 75 | 6.42 | **3.99** | 4.61 |
+| Rim share | .467 | .290 | .273 |
+| Rim accuracy | .714 | .556 | **.944** |
 
 Every axis moves the same direction and then comes back. The most telling pair
 is rim share and free-throw rate: she stopped driving. Rim share fell from .467
@@ -88,9 +90,9 @@ quality dropped 9 points of expected eFG, and she then converted 10 points
 *below* even that reduced expectation. Turnovers more than doubled and fouls
 rose 70%.
 
-By games 6–10 back it is all recovered or better: .640 TS, +.073 over
-expectation, 1.00 turnovers per 75 (her best of the season), 5.73 assists per
-75 (also her best), and 15 of 16 at the rim.
+By games 6–10 back it is all recovered or better: .614 TS, +.079 over
+expectation, 1.05 turnovers per 75 (her best of the season), 5.87 assists per
+75 (also her best), and 17 of 18 at the rim.
 
 ### Which resolves the contradiction
 
@@ -99,20 +101,27 @@ expectation, 1.00 turnovers per 75 (her best of the season), 5.73 assists per
 | Pre-injury (g1–10) | 10 | 5 | 111.70 | 111.55 | **+0.15** | **+20.6** |
 | Rice OUT (g11–26) | 16 | 5 | 108.69 | 116.23 | −7.54 | — |
 | Return 1–5 (g27–31) | 5 | **0** | 103.29 | 120.74 | **−17.45** | **−15.2** |
-| Return 6–10 (g32–36) | 5 | 1 | 109.14 | 116.46 | −7.33 | **+18.1** |
+| Return 6–10 (g32+) | 6 | 1 | 108.11 | 116.36 | −8.25 | **+2.6** |
 
 The "Toronto got worse after Rice returned" result is a five-game artifact. It
 sits entirely in the re-integration window, where a restricted, rusty Rice
-played 21.5 minutes a night on a team that went 0–5. Take the
-two windows in which she was actually herself and her on/off swing is **+20.6**
-and **+18.1** — consistent with each other, and both far above the season-long
-+11.4 that averages the ramp-up in.
+played 21.5 minutes a night on a team that went 0–5.
 
-**The honest statement is narrower and stronger than either earlier version:**
-when healthy, Toronto is roughly 18–21 points per 100 possessions better with
-Rice on the floor, across 827 on-court offensive possessions in two separated
-stretches. The season-long +11.4 understates her because it charges her for a
-five-game injury ramp. Follow-up #1 from the first document is closed.
+**Correction against the previous vintage.** At 277 games this document said
+her two healthy windows were +20.6 and +18.1, "consistent with each other." One
+additional game dropped the second window to **+2.6**. The two healthy windows
+do *not* agree, and the earlier "+18 to +21 when healthy" framing was resting on
+a five-game sample that could not support it. The pre-injury +20.6 is
+undisturbed; the post-return figure is not reliable at this sample size.
+
+**What survives, stated narrowly:** the five-game re-integration window is
+real, distinct and measurable — restricted minutes, collapsed efficiency, an
+0–5 team record — and the season-long on/off is dragged down by it. What does
+*not* survive is a specific number for healthy-Rice impact. Her pre-injury
+window is +20.6 over 526 possessions and her post-return window is +2.6 over
+358; those are not two readings of one quantity, they are two small samples.
+Quote the ramp, quote the recovery in her per-possession rates, and leave the
+healthy-Rice on/off as directionally positive and imprecisely measured.
 
 One caveat that does not go away: Toronto has the league's worst defense
 (115.60 DRtg, 15th of 15), so her off-court comparison group is unusually bad,
@@ -230,11 +239,10 @@ What this test cannot recover is the actual on-court net rating of the
 Betts + Austin pairing. That has since been settled by rebuilding the
 possession layer from play-by-play — see
 [`DERIVED_POSSESSIONS.md`](./DERIVED_POSSESSIONS.md). The short version: over
-the full season the pairing is **−0.1 per 100 across 400 possessions** while
-Austin without Betts is **+2.4 across 1,609**, so the "Washington is leaving
-points on the floor" claim is **not supported and should not be published**.
-Replaying the frozen parquet's own 202 games gives −1.6 where it reported
-+1.6 — the original number was noise around zero.
+across four vintages of the data the pairing reads +1.6, −1.6, −0.1 and
+**+4.7** — the sign changes twice and the spread is 6.3 points per 100. The
+"Washington is leaving points on the floor" claim is **not supported and should
+not be published in either direction**; the sample cannot resolve it.
 
 ---
 
@@ -280,8 +288,9 @@ Betts–Dugalic pairing problem gained a second, independent line of support.
 **Withdrawn pending data, then resolved.** The duo net ratings have since been
 rebuilt for the full season from play-by-play
 ([`DERIVED_POSSESSIONS.md`](./DERIVED_POSSESSIONS.md)). Betts + Austin is
-dead as a story; Betts + Dugalic is confirmed and worse than the game-level
-proxy suggested (−16.8 per 100 against +4.1 for Washington's other minutes).
+dead as a story — it swings 6.3 points across data vintages. Betts + Dugalic is
+confirmed, worse than the game-level proxy suggested (−16.8 per 100 against
++2.9 for Washington's other minutes), and stable across vintages.
 Still withdrawn: all opponent shot-profile splits and all RAPM/BPM/WAR
 figures, which depend on sources that remain frozen in mid-July.
 

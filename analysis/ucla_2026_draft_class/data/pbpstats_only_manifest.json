@@ -4,8 +4,8 @@
     "team_game.parquet"
   ],
   "cohort_membership_only": "player_core_2026.csv",
-  "games": 277,
-  "through": "2026-08-22",
-  "league_drtg": 108.155,
+  "games": 281,
+  "through": "2026-08-23",
+  "league_drtg": 108.221,
   "teammate_pairs_scored": 663
 }
