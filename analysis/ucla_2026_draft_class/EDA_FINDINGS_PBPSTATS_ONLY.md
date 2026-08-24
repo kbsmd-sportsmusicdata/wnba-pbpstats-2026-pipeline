@@ -1,8 +1,12 @@
 # The UCLA Six — pbpstats-only findings
 
 A second pass at the 2026 UCLA draft class built **exclusively on the pbpstats
-game layer**, which runs through **2026-08-21** (274 games, all 15 teams,
-36–38 games each). Nothing here depends on a source that stops in mid-July.
+game layer**. Nothing here depends on a source that stops in mid-July.
+
+> **Coverage:** figures were regenerated against the refreshed pipeline —
+> **277 games through 2026-08-22**. Headline numbers barely moved from the
+> 274-game version; the two exceptions are noted in §5 of
+> [`DERIVED_POSSESSIONS.md`](./DERIVED_POSSESSIONS.md).
 
 Companion documents: [`EDA_FINDINGS.md`](./EDA_FINDINGS.md) (the full pass,
 including partial-season sources) and
@@ -222,11 +226,15 @@ Three findings, all full-season:
    −13.0 per 100 when both play and roughly break-even otherwise, this is the
    clearest role-construction problem in the cohort.
 
-What this test **cannot** recover: the actual on-court net rating of the
-Betts + Austin pairing. The mid-July possession sample had it at +1.6 per 100
-over 200 possessions, which was the basis for "Washington is leaving points on
-the floor." **That claim is not supported by full-season data and should not
-be carried into the story** until the possessions layer is extended.
+What this test cannot recover is the actual on-court net rating of the
+Betts + Austin pairing. That has since been settled by rebuilding the
+possession layer from play-by-play — see
+[`DERIVED_POSSESSIONS.md`](./DERIVED_POSSESSIONS.md). The short version: over
+the full season the pairing is **−0.1 per 100 across 400 possessions** while
+Austin without Betts is **+2.4 across 1,609**, so the "Washington is leaving
+points on the floor" claim is **not supported and should not be published**.
+Replaying the frozen parquet's own 202 games gives −1.6 where it reported
++1.6 — the original number was noise around zero.
 
 ---
 
@@ -269,14 +277,16 @@ negligible.
 rests on all 36 games instead of a mid-July possession sample (§3), and the
 Betts–Dugalic pairing problem gained a second, independent line of support.
 
-**Withdrawn pending data.** The Betts + Austin two-big net rating (+1.6/100)
-and every other duo net rating, all opponent shot-profile splits, and all
-RAPM/BPM/WAR figures. These were never wrong, but they describe the first two
-thirds of the season and cannot be verified against the rest of it.
+**Withdrawn pending data, then resolved.** The duo net ratings have since been
+rebuilt for the full season from play-by-play
+([`DERIVED_POSSESSIONS.md`](./DERIVED_POSSESSIONS.md)). Betts + Austin is
+dead as a story; Betts + Dugalic is confirmed and worse than the game-level
+proxy suggested (−16.8 per 100 against +4.1 for Washington's other minutes).
+Still withdrawn: all opponent shot-profile splits and all RAPM/BPM/WAR
+figures, which depend on sources that remain frozen in mid-July.
 
-**Still open**, in priority order: extend the possessions and impact layers past
-mid-July (this alone would restore §3's missing piece and re-test Jaquez, whose
-entire decline sits in the uncovered window); Betts's shot chart from
+**Still open**, in priority order: extend the *impact* layer (RAPM/BPM/WAR)
+past mid-July — the possessions half of this is now done; Betts's shot chart from
 `shots_2026.parquet`, particularly the long twos; a foul taxonomy for Rice and
 Kneepkens; Dugalic's three-point sample against her college baseline; a
 draftee-only rookie pool; and a league-wide test of whether the second-half

@@ -1,8 +1,8 @@
 {
   "season": 2026,
   "season_type": "Regular Season",
-  "games_through": "2026-08-21",
-  "games_in_spine": 274,
+  "games_through": "2026-08-22",
+  "games_in_spine": 277,
   "league_pool_size": 149,
   "league_pool_min_minutes": 250,
   "rookie_pool_size": 37,
@@ -16,11 +16,21 @@
     "tov_75"
   ],
   "files": [
+    "story_derived_onoff_full_season.csv",
+    "story_duo_splits_full_season.csv",
     "story_league_pool_250min.csv",
     "story_metric_percentiles_long.csv",
     "story_monthly_development.csv",
+    "story_opponent_adjusted_scoring.csv",
+    "story_rice_blocks_derived.csv",
+    "story_rice_return_blocks_onoff.csv",
+    "story_rice_return_blocks_player.csv",
+    "story_rice_return_blocks_team.csv",
+    "story_rice_timeline.csv",
     "story_rookie_pool_150min.csv",
     "story_team_context.csv",
+    "story_team_defense_strength.csv",
+    "story_teammate_minute_correlations.csv",
     "story_ucla_six_game_logs.csv",
     "story_ucla_six_season_profile.csv"
   ]
