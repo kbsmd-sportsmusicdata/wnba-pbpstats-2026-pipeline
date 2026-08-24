@@ -55,7 +55,8 @@ These are implementation fixtures, not reviewed live role definitions.
 Creator, Secondary Creator / Connector, Perimeter Scorer / Spacer, Downhill Pressure Wing,
 Interior Finisher / Rim Runner, and Interior Hub / Rebounder. Every component declares its source
 denominator and a minimum denominator. The two-role fixture registry remains for regression tests;
-the approved six-role registry is used only by the isolated `live_dry_run` path until final review.
+the approved six-role registry is used by the isolated `live_dry_run` path and the explicitly
+approved manual `live` path.
 
 ## Formula contract
 
@@ -79,7 +80,9 @@ high Stability with low Fulfillment is valid and covered by a regression test.
 ## Scoring safeguards
 
 1. No composite score is calculated or exported.
-2. Only fixture and approved `live_dry_run` modes may load sources; `live` publishing fails closed.
+2. Fixture, approved `live_dry_run`, and explicitly approved `live` modes may load sources. Live
+   publishing requires the committed approval manifest, its reviewed configuration hash,
+   `execution_mode = manual_only`, and `scheduling_enabled = false`; otherwise it fails closed.
 3. Missing required evidence produces `unavailable`; it is never replaced by zero, 50, or league
    average.
 4. Rates are recomputed from summed numerators and denominators, not averaged from per-game rates.
@@ -118,12 +121,15 @@ high Stability with low Fulfillment is valid and covered by a regression test.
     no older than the standings cutoff.
 27. Player metrics remain at player-team grain and join the funnel on both player and current team;
     an assignment for a prior team is excluded as `role_assignment_team_mismatch`.
-28. Every real-data score is labeled `live_dry_run` / `dry_run_scored`; fixture labels are forbidden
-    in the dry-run payload and dashboard.
+28. Real-data provenance follows the authorized mode: dry runs use `live_dry_run` /
+    `dry_run_scored`, while approved manual live runs use `live` / `live_scored`. Fixture labels are
+    forbidden in both real-data output paths.
+29. The approved first live run remains immutable; subsequent manual live runs write to unique
+    `live/runs/<UTC-run-id>/` directories and refuse to overwrite an existing run.
 
-## Blockers to live scoring
+## Live-scoring promotion record and remaining limitations
 
-| Blocker | Why it matters | Required remediation |
+| Gate or limitation | Current status / why it matters | Preservation or remediation |
 |---|---|---|
 | Eligibility promotion completed | The requested population now has source-backed, reviewed decisions. | Retain the pending snapshot, approval manifest, and one-to-one crosswalk as immutable review evidence. |
 | Player-role assignments completed | Thirty-seven roster-attached candidates have reviewed primary roles; optional secondary roles remain unscored. | Preserve the reviewed registry and approval manifest. |
@@ -131,7 +137,7 @@ high Stability with low Fulfillment is valid and covered by a regression test.
 | Impact feed lags player-game feed | Recent opportunity and stale impact are not comparable on one clock. | Rebuild to a shared cutoff or keep impact evidence-only with lag labels. |
 | True player on/off not materialized | On-court net rating is not on-minus-off impact. | Validate a separate possession/lineup pipeline after the prototype is approved. |
 | Live-v1 validation completed | All 11 production calculations match the locked expected values; sensitivity movement is at most 10 points, with two adjacent-band crossings. | Preserve the approved report and locked expected table. |
-| Live adapter review completed | The adapter passes freshness, zero-omission, 37-player coverage, team-join, and 11-player parity checks. | Preserve these checks on every dry run. |
+| Live adapter review completed | The adapter passes freshness, zero-omission, 37-player coverage, team-join, and 11-player parity checks. | Preserve these checks on every real-data run. |
 | End-to-end dry-run review | Real contender, roster, window, funnel, score, evidence, and UI paths passed review, including corrected live provenance labels. | Preserve the approved dry-run artifacts and hashes in `data/review/live_output_approval_manifest_2026.json`. |
 | Manual live run completed | The standalone live path produced 11 scored, five season-context-only, and three inactive-suppressed results with live provenance. | Keep scheduling disabled until a separate scheduling review. |
 
@@ -143,7 +149,7 @@ high Stability with low Fulfillment is valid and covered by a regression test.
 | Funnel | Contender, eligibility, assignment, current affiliation, inactive suppression, sample fallback, trades, and two-team players | Final reviewer inspection of the current real cohort. |
 | Metrics | Counts, recent/baseline separation, zero denominators, and current-team windows | Preserve parity after future source refreshes. |
 | Scores | Independent dimensions, formula version, stability/performance separation, 11-player hand calculations, threshold sensitivity | Approved; preserve regression coverage. |
-| PBPStats adapter | Zero-omitted counts, participation gate, unique keys, possession identity, team-game joins, candidate failures, freshness, 11-player parity | Preserve on every dry run. |
+| PBPStats adapter | Zero-omitted counts, participation gate, unique keys, possession identity, team-game joins, candidate failures, freshness, 11-player parity | Preserve on every real-data run. |
 | Evidence | Source, windows, denominators, safeguards | Cross-source lag and crosswalk quality labels. |
 | Web | Exact bundle, direct-file payload, null-safe score formatting, unavailable-point omission, safe text rendering, accessible dialog | Browser keyboard, contrast, and print QA. |
 | Workflow | Manual-only fixture, dry-run, and live jobs; separate artifacts; no RFM schedule | Add scheduling only after a separate post-run approval. |
