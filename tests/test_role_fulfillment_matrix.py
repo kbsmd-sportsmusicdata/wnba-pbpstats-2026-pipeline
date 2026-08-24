@@ -3,7 +3,9 @@ import json
 import sys
 import tempfile
 import unittest
+from copy import deepcopy
 from pathlib import Path
+from unittest.mock import patch
 
 import pandas as pd
 
@@ -47,15 +49,16 @@ class DataContractTest(unittest.TestCase):
         self.assertEqual(len(sources.player_game), 27)
         self.assertTrue(sources.eligibility["player_id"].str.startswith("FX-").all())
 
-    def test_live_publish_mode_fails_closed_before_loading_player_data(self):
+    def test_unapproved_live_publish_mode_fails_closed_before_loading_player_data(self):
         config = load_config(LIVE_CONFIG)
         config["mode"] = "live"
         config["live_output_enabled"] = True
         with self.assertRaises(LiveScoringBlocked) as raised:
             load_sources(config)
         message = str(raised.exception)
-        self.assertIn("live publishing remains disabled", message)
-        self.assertIn("dry-run report", message)
+        self.assertIn("approved formula, adapter, and 19-player reviews", message)
+        self.assertIn("execution_mode=manual_only", message)
+        self.assertIn("scheduling_enabled=false", message)
 
     def test_reviewed_assignment_registry_covers_rostered_pool_only(self):
         self.assertTrue(REVIEWED_ASSIGNMENTS.exists(), "reviewed assignment registry is missing")
@@ -96,6 +99,8 @@ class DataContractTest(unittest.TestCase):
             12,
         )
         self.assertEqual(manifest["last_updated_at"], "2026-08-23")
+        self.assertEqual(manifest["live_scoring_status"], "enabled_manual_only")
+        self.assertEqual(manifest["remaining_blockers"], [])
         self.assertEqual(
             manifest["assignment_policy"]["inactive_without_role"],
             "deferred_until_active",
@@ -210,6 +215,21 @@ class FunnelAndScoringTest(unittest.TestCase):
         self.assertEqual(deferred["exclusion_reason"], "inactive_role_review_deferred")
         self.assertEqual(deferred["funnel_status"], "excluded")
         self.assertEqual(reactivated["exclusion_reason"], "role_assignment_not_reviewed")
+
+    def test_live_mode_blocks_a_reviewed_assignment_with_an_invalid_role(self):
+        sources = deepcopy(self.result.sources)
+        sources.effective_config = dict(sources.effective_config, mode="live")
+        sources.eligibility["review_status"] = "reviewed"
+        sources.role_assignments.loc[
+            sources.role_assignments["player_id"] == "FX-001", "role_code"
+        ] = "removed_role"
+
+        with patch("role_fulfillment_matrix.pipeline.load_sources", return_value=sources):
+            with self.assertRaisesRegex(
+                LiveScoringBlocked,
+                "invalid reviewed role assignments: 1",
+            ):
+                build_analysis(sources.effective_config)
 
     def test_500_season_possessions_keep_role_visible_without_recent_score(self):
         config = load_config(FIXTURE_CONFIG)

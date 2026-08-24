@@ -415,7 +415,7 @@ class ApprovedEligibilityArtifactTest(unittest.TestCase):
         covered_ids = set(crosswalk.loc[crosswalk["player_id"].notna(), "player_id"])
         self.assertEqual(set(eligibility["player_id"]), covered_ids)
 
-    def test_approval_manifest_hashes_promoted_table_and_keeps_scoring_blocked(self):
+    def test_approval_manifest_hashes_promoted_table_and_records_manual_live_enablement(self):
         self.assertTrue(APPROVAL_MANIFEST.exists(), "eligibility approval manifest is missing")
         manifest = json.loads(APPROVAL_MANIFEST.read_text(encoding="utf-8"))
 
@@ -427,7 +427,8 @@ class ApprovedEligibilityArtifactTest(unittest.TestCase):
         self.assertEqual(manifest["eligible_players"], 121)
         self.assertEqual(manifest["ineligible_players"], 108)
         self.assertEqual(manifest["live_eligibility_status"], "approved")
-        self.assertEqual(manifest["live_scoring_status"], "blocked")
+        self.assertEqual(manifest["live_scoring_status"], "enabled_manual_only")
+        self.assertEqual(manifest["remaining_blockers"], [])
         self.assertEqual(
             manifest["approved_output"]["sha256"],
             hashlib.sha256(APPROVED_ELIGIBILITY.read_bytes()).hexdigest(),

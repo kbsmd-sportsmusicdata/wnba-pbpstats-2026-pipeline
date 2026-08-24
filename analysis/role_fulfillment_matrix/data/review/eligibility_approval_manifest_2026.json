@@ -40,8 +40,6 @@
     }
   ],
   "live_eligibility_status": "approved",
-  "live_scoring_status": "blocked",
-  "remaining_blockers": [
-    "reviewed_live_role_thresholds"
-  ]
+  "live_scoring_status": "enabled_manual_only",
+  "remaining_blockers": []
 }
