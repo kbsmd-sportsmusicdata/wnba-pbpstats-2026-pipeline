@@ -7,6 +7,7 @@ from typing import Any, Dict
 
 import pandas as pd
 
+from .contracts import LiveScoringBlocked
 from .data_sources import LoadedSources, load_sources
 from .evidence import build_evidence_rows
 from .funnel import build_candidate_funnel
@@ -38,7 +39,11 @@ def build_analysis(config: Dict[str, Any]) -> AnalysisResult:
     sources = load_sources(config)
     effective_config = sources.effective_config
     mode = effective_config["mode"]
-    scored_status = "fixture_only" if mode == "fixture" else "dry_run_scored"
+    scored_status = {
+        "fixture": "fixture_only",
+        "live_dry_run": "dry_run_scored",
+        "live": "live_scored",
+    }[mode]
     metrics = build_window_metrics(sources.player_game, effective_config)
     funnel = build_candidate_funnel(sources, metrics, effective_config)
     included = funnel[funnel["funnel_status"] == "included"].copy()
@@ -113,28 +118,40 @@ def build_analysis(config: Dict[str, Any]) -> AnalysisResult:
     missing_eligibility = counts.get("excluded_eligibility_not_reviewed", 0)
     missing_roles = counts.get("excluded_role_assignment_not_reviewed", 0)
     assignment_mismatches = counts.get("excluded_role_assignment_team_mismatch", 0)
-    if mode == "live_dry_run" and missing_eligibility:
+    if mode in {"live_dry_run", "live"} and missing_eligibility:
         dry_run_gate_blockers.append(
             f"current contender roster players without reviewed eligibility: {missing_eligibility}"
         )
-    if mode == "live_dry_run" and missing_roles:
+    if mode in {"live_dry_run", "live"} and missing_roles:
         dry_run_gate_blockers.append(
             f"current contender candidates without reviewed role assignments: {missing_roles}"
         )
-    if mode == "live_dry_run" and assignment_mismatches:
+    if mode in {"live_dry_run", "live"} and assignment_mismatches:
         dry_run_gate_blockers.append(
             f"current contender candidates with stale team-role assignments: {assignment_mismatches}"
         )
+    if mode == "live" and dry_run_gate_blockers:
+        raise LiveScoringBlocked(
+            "live candidate gate blocked: " + "; ".join(dry_run_gate_blockers)
+        )
+    live_scoring_status = {
+        "fixture": "blocked",
+        "live_dry_run": "dry_run_only",
+        "live": "live_enabled",
+    }[mode]
+    live_scoring_blockers = {
+        "fixture": ["deliberate live adapter wiring and end-to-end dry run"],
+        "live_dry_run": ["final reviewer approval and explicit live-output enablement"],
+        "live": [],
+    }[mode]
     manifest = {
         "season": int(effective_config["season"]),
         "mode": mode,
-        "live_scoring_status": "blocked" if mode == "fixture" else "dry_run_only",
-        "live_scoring_blockers": (
-            ["deliberate live adapter wiring and end-to-end dry run"]
-            if mode == "fixture"
-            else ["final reviewer approval and explicit live-output enablement"]
-        ),
+        "live_scoring_status": live_scoring_status,
+        "live_scoring_blockers": live_scoring_blockers,
         "live_output_enabled": bool(effective_config.get("live_output_enabled", False)),
+        "execution_mode": effective_config.get("execution_mode"),
+        "scheduling_enabled": bool(effective_config.get("scheduling_enabled", False)),
         "formula_version": effective_config["formula_version"],
         "analysis_cutoff_date": effective_config.get("analysis_cutoff_date"),
         "windows": effective_config.get("windows"),

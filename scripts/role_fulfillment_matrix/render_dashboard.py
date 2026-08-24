@@ -20,25 +20,44 @@ def render_dashboard(payload: Dict[str, Any], template_root: Path, bundle_root: 
         raise ValueError("dashboard template is missing __RFM_PAYLOAD__ marker")
     mode = payload["meta"]["mode"]
     fixture = mode == "fixture"
+    live = mode == "live"
     replacements = {
         "__RFM_PAYLOAD__": embedded,
         "__RFM_META_DESCRIPTION__": (
             "Fixture-only Role Fulfillment Matrix experiment"
             if fixture
-            else "Live-data Role Fulfillment Matrix dry-run review"
+            else (
+                "Live Role Fulfillment Matrix"
+                if live
+                else "Live-data Role Fulfillment Matrix dry-run review"
+            )
         ),
         "__RFM_PAGE_TITLE__": (
             "Role Fulfillment Matrix · Fixture Prototype"
             if fixture
-            else "Role Fulfillment Matrix · Live Dry Run"
+            else (
+                "Role Fulfillment Matrix · Live"
+                if live
+                else "Role Fulfillment Matrix · Live Dry Run"
+            )
         ),
-        "__RFM_STATUS_TITLE__": "Fixture-only prototype" if fixture else "Live-data dry run",
+        "__RFM_STATUS_TITLE__": (
+            "Fixture-only prototype"
+            if fixture
+            else ("Live output enabled" if live else "Live-data dry run")
+        ),
         "__RFM_STATUS_DETAIL__": (
             "Synthetic players and teams. Live scoring is blocked pending reviewed gates."
             if fixture
-            else "Reviewed real sources and formulas. Publishing remains disabled pending final approval."
+            else (
+                "Reviewed real sources and formulas. Manual execution is enabled; scheduling remains disabled."
+                if live
+                else "Reviewed real sources and formulas. Publishing remains disabled pending final approval."
+            )
         ),
-        "__RFM_LIVE_STATUS__": "BLOCKED" if fixture else "DRY RUN ONLY",
+        "__RFM_LIVE_STATUS__": (
+            "BLOCKED" if fixture else ("ENABLED" if live else "DRY RUN ONLY")
+        ),
     }
     for marker, value in replacements.items():
         html = html.replace(marker, value)

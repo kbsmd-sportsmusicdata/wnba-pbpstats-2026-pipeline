@@ -47,15 +47,16 @@ class DataContractTest(unittest.TestCase):
         self.assertEqual(len(sources.player_game), 27)
         self.assertTrue(sources.eligibility["player_id"].str.startswith("FX-").all())
 
-    def test_live_publish_mode_fails_closed_before_loading_player_data(self):
+    def test_unapproved_live_publish_mode_fails_closed_before_loading_player_data(self):
         config = load_config(LIVE_CONFIG)
         config["mode"] = "live"
         config["live_output_enabled"] = True
         with self.assertRaises(LiveScoringBlocked) as raised:
             load_sources(config)
         message = str(raised.exception)
-        self.assertIn("live publishing remains disabled", message)
-        self.assertIn("dry-run report", message)
+        self.assertIn("approved formula, adapter, and 19-player reviews", message)
+        self.assertIn("execution_mode=manual_only", message)
+        self.assertIn("scheduling_enabled=false", message)
 
     def test_reviewed_assignment_registry_covers_rostered_pool_only(self):
         self.assertTrue(REVIEWED_ASSIGNMENTS.exists(), "reviewed assignment registry is missing")
@@ -96,6 +97,8 @@ class DataContractTest(unittest.TestCase):
             12,
         )
         self.assertEqual(manifest["last_updated_at"], "2026-08-23")
+        self.assertEqual(manifest["live_scoring_status"], "enabled_manual_only")
+        self.assertEqual(manifest["remaining_blockers"], [])
         self.assertEqual(
             manifest["assignment_policy"]["inactive_without_role"],
             "deferred_until_active",

@@ -7,8 +7,9 @@ playoff forecast dashboard.
 ## Current status
 
 - **Fixture mode:** retained for deterministic regression tests.
-- **Live-data mode:** approved sources are wired into an isolated `live_dry_run` path.
-- **Live publishing:** blocked; `live_output_enabled` remains false.
+- **Live-data mode:** approved sources support both the isolated `live_dry_run` review path and
+  the standalone manual `live` path.
+- **Live output:** enabled for manual execution only; scheduling remains disabled.
 - **Real eligibility data:** reviewed and approved for all 227 current PBPStats players plus two
   ESPN roster-only identities. Roster-only rows use reviewed `espn:<athlete_id>` placeholders;
   a later PBPStats appearance fails closed pending a reviewed identity crosswalk.
@@ -18,10 +19,11 @@ playoff forecast dashboard.
 - **Formula validation status:** the 11-player hand-calculation and threshold-sensitivity gate is
   approved.
 - **Live adapter status:** the PBPStats adapter validation package was approved on 2026-08-22.
-- **Current gate:** review the generated end-to-end dry-run report, candidate affiliations, sample
-  statuses, scores, and evidence before explicit live-output enablement.
+- **Current gate:** the first manual live run completed on 2026-08-23; review that run before any
+  separate scheduling decision.
 - **Output interpretation:** the fixture dashboard remains synthetic; the dry-run dashboard uses
-  reviewed real sources and is labeled `DRY RUN` throughout.
+  reviewed real sources and is labeled `DRY RUN`, while the manual live dashboard is labeled
+  `LIVE`.
 
 ## Eligibility review package
 
@@ -79,6 +81,16 @@ python3 scripts/build_role_fulfillment_live_dry_run.py
 Dry-run outputs are confined to `data/review/live_dry_run/`. They include the funnel, score table,
 evidence, run manifest, standalone dashboard, and
 `role_fulfillment_matrix_live_dry_run_validation.md`.
+
+Run the explicitly approved live build manually:
+
+```bash
+python3 scripts/build_role_fulfillment_live.py
+```
+
+Live outputs are confined to `analysis/role_fulfillment_matrix/live/`. The approved configuration
+requires `execution_mode = manual_only` and `scheduling_enabled = false`; no GitHub workflow invokes
+the live builder.
 
 ## Reviewed role and sample safeguards
 
@@ -188,8 +200,8 @@ Do not switch to live mode by changing the config string alone. Promotion requir
 7. reviewer approval of the live-source adapter freshness, zero-omission, coverage, and parity
    package; **complete**;
 8. deliberate adapter wiring with live output still disabled; **complete as `live_dry_run`**;
-9. reviewer approval of the end-to-end dry-run package; **current gate**;
-10. explicit `live_output_enabled = true` change and one manual production run before scheduling.
+9. reviewer approval of the end-to-end dry-run package; **complete**;
+10. explicit `live_output_enabled = true` change and one manual production run; **complete on
+    2026-08-23**.
 
-The dry-run may read reviewed live sources, but `live` publishing continues to fail before source
-loading until the final gate is approved.
+Scheduling remains disabled and requires a separate future decision after review of the manual run.

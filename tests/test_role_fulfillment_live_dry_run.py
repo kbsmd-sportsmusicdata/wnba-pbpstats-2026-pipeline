@@ -101,14 +101,42 @@ class LiveDryRunGovernanceTest(unittest.TestCase):
                 }
             )
 
-    def test_approved_dry_run_is_allowed_but_live_publish_stays_blocked(self):
+    def test_approved_dry_run_and_explicit_manual_live_publish_are_allowed(self):
         config = json.loads(LIVE_CONFIG.read_text())
         config["mode"] = "live_dry_run"
         authorize_execution(config)
 
-        publish = dict(config, mode="live", live_output_enabled=True)
-        with self.assertRaises(LiveScoringBlocked):
-            authorize_execution(publish)
+        publish = dict(
+            config,
+            mode="live",
+            live_output_enabled=True,
+            end_to_end_review_status="approved_19_player_review",
+            execution_mode="manual_only",
+            scheduling_enabled=False,
+        )
+        authorize_execution(publish)
+
+    def test_live_publish_requires_every_explicit_enablement_control(self):
+        config = json.loads(LIVE_CONFIG.read_text())
+        approved = dict(
+            config,
+            mode="live",
+            live_output_enabled=True,
+            end_to_end_review_status="approved_19_player_review",
+            execution_mode="manual_only",
+            scheduling_enabled=False,
+        )
+        invalid = (
+            dict(approved, validation_status="pending_review"),
+            dict(approved, live_adapter_status="pending_review"),
+            dict(approved, end_to_end_review_status="pending_review"),
+            dict(approved, live_output_enabled=False),
+            dict(approved, execution_mode="scheduled"),
+            dict(approved, scheduling_enabled=True),
+        )
+        for candidate in invalid:
+            with self.subTest(candidate=candidate), self.assertRaises(LiveScoringBlocked):
+                authorize_execution(candidate)
 
     def test_dry_run_requires_approved_gates_and_disabled_output(self):
         base = json.loads(LIVE_CONFIG.read_text())
@@ -739,6 +767,26 @@ class LiveDryRunOutputTest(unittest.TestCase):
         self.assertEqual(payload["meta"]["mode"], "live_dry_run")
         self.assertTrue(
             all(row["analysis_mode"] == "live_dry_run" for row in payload["candidates"])
+        )
+        self.assertEqual(
+            {row["source_name"] for row in payload["evidence"]},
+            {
+                "pbpstats_player_game_reviewed_adapter",
+                "reviewed_player_role_assignments_2026",
+            },
+        )
+        self.assertEqual(
+            {row["safeguard"] for row in payload["evidence"]},
+            {
+                "live_dry_run_only; rates_recomputed_from_additive_counts",
+                "live_dry_run_only; reviewed_role_assignment",
+            },
+        )
+        self.assertFalse(
+            any(
+                "fixture" in row["source_name"] or "fixture" in row["safeguard"]
+                for row in payload["evidence"]
+            )
         )
         self.assertNotIn(
             "fixture_only",

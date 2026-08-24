@@ -5,12 +5,36 @@ from __future__ import annotations
 from typing import Any, Dict, Iterable
 
 
+def _provenance_for_mode(mode: str) -> Dict[str, str]:
+    provenance = {
+        "fixture": {
+            "player_game_source": "synthetic_fixture_player_game",
+            "role_assignment_source": "synthetic_fixture_role_assignments",
+            "safeguard_scope": "fixture_only",
+        },
+        "live_dry_run": {
+            "player_game_source": "pbpstats_player_game_reviewed_adapter",
+            "role_assignment_source": "reviewed_player_role_assignments_2026",
+            "safeguard_scope": "live_dry_run_only",
+        },
+        "live": {
+            "player_game_source": "pbpstats_player_game_reviewed_adapter",
+            "role_assignment_source": "reviewed_player_role_assignments_2026",
+            "safeguard_scope": "live_output",
+        },
+    }
+    if mode not in provenance:
+        raise ValueError(f"unsupported evidence provenance mode: {mode}")
+    return provenance[mode]
+
+
 def build_evidence_rows(
     row: Dict[str, Any],
     families: Dict[str, Iterable[Dict[str, Any]]],
     config: Dict[str, Any],
 ) -> list[Dict[str, Any]]:
     windows = config["windows"]
+    provenance = _provenance_for_mode(config["mode"])
     denominators = {
         "off_poss": row.get("recent_off_poss"),
         "true_shooting_attempts": row.get("recent_true_shooting_attempts"),
@@ -38,13 +62,16 @@ def build_evidence_rows(
                     denominator_name = "team_possessions"
             denominator = denominators.get(denominator_name, row.get("recent_games"))
             metadata = {
-                "source_name": "synthetic_fixture_player_game",
+                "source_name": provenance["player_game_source"],
                 "window_scope": "recent",
                 "window_start": windows["recent_start"],
                 "window_end": windows["recent_end"],
                 "baseline_denominator": None,
                 "recent_denominator": denominator,
-                "safeguard": "fixture_only; rates_recomputed_from_additive_counts",
+                "safeguard": (
+                    f"{provenance['safeguard_scope']}; "
+                    "rates_recomputed_from_additive_counts"
+                ),
             }
             if family == "stability":
                 denominator = stability_denominators[code]
@@ -59,13 +86,15 @@ def build_evidence_rows(
             elif code == "assignment_confidence":
                 reviewed_at = row.get("assignment_reviewed_at")
                 metadata.update({
-                    "source_name": "synthetic_fixture_role_assignments",
+                    "source_name": provenance["role_assignment_source"],
                     "window_scope": "assignment_review",
                     "window_start": reviewed_at,
                     "window_end": reviewed_at,
                     "baseline_denominator": None,
                     "recent_denominator": None,
-                    "safeguard": "fixture_only; reviewed_role_assignment",
+                    "safeguard": (
+                        f"{provenance['safeguard_scope']}; reviewed_role_assignment"
+                    ),
                 })
             records.append({
                 "player_id": row["player_id"],

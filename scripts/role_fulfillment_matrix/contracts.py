@@ -33,7 +33,7 @@ REQUIRED_COLUMNS = {
 
 
 def authorize_execution(config: Mapping[str, Any]) -> None:
-    """Permit fixtures and approved dry runs while keeping live publishing fail-closed."""
+    """Permit fixtures, approved dry runs, and explicitly approved manual live runs."""
     mode = config.get("mode")
     if mode == "fixture":
         return
@@ -49,8 +49,24 @@ def authorize_execution(config: Mapping[str, Any]) -> None:
             "live dry run requires approved formula validation, approved adapter review, "
             "and live_output_enabled=false"
         )
+    if mode == "live":
+        approved = (
+            config.get("validation_status") == "approved_11_player_review"
+            and config.get("live_adapter_status") == "approved_review"
+            and config.get("end_to_end_review_status") == "approved_19_player_review"
+            and config.get("live_output_enabled") is True
+            and config.get("execution_mode") == "manual_only"
+            and config.get("scheduling_enabled") is False
+        )
+        if approved:
+            return
+        raise LiveScoringBlocked(
+            "live execution requires approved formula, adapter, and 19-player reviews; "
+            "live_output_enabled=true; execution_mode=manual_only; and "
+            "scheduling_enabled=false"
+        )
     raise LiveScoringBlocked(
-        "live publishing remains disabled pending review of the end-to-end dry-run report"
+        f"unsupported Role Fulfillment Matrix execution mode: {mode}"
     )
 
 
