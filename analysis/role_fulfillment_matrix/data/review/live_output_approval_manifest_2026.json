@@ -4,6 +4,7 @@
   "approved_by": "Krystal Beasley",
   "approved_at": "2026-08-23",
   "formula_version": "rfm-live-v1",
+  "approved_config_sha256": "a013dbd8ca8387f3d84a5b9280228592fbf416a70c49f548f40aff7bb01aa782",
   "end_to_end_review_status": "approved_19_player_review",
   "approved_result_counts": {
     "live_scored": 11,

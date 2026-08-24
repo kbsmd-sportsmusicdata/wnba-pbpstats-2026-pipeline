@@ -3,7 +3,9 @@ import json
 import sys
 import tempfile
 import unittest
+from copy import deepcopy
 from pathlib import Path
+from unittest.mock import patch
 
 import pandas as pd
 
@@ -213,6 +215,21 @@ class FunnelAndScoringTest(unittest.TestCase):
         self.assertEqual(deferred["exclusion_reason"], "inactive_role_review_deferred")
         self.assertEqual(deferred["funnel_status"], "excluded")
         self.assertEqual(reactivated["exclusion_reason"], "role_assignment_not_reviewed")
+
+    def test_live_mode_blocks_a_reviewed_assignment_with_an_invalid_role(self):
+        sources = deepcopy(self.result.sources)
+        sources.effective_config = dict(sources.effective_config, mode="live")
+        sources.eligibility["review_status"] = "reviewed"
+        sources.role_assignments.loc[
+            sources.role_assignments["player_id"] == "FX-001", "role_code"
+        ] = "removed_role"
+
+        with patch("role_fulfillment_matrix.pipeline.load_sources", return_value=sources):
+            with self.assertRaisesRegex(
+                LiveScoringBlocked,
+                "invalid reviewed role assignments: 1",
+            ):
+                build_analysis(sources.effective_config)
 
     def test_500_season_possessions_keep_role_visible_without_recent_score(self):
         config = load_config(FIXTURE_CONFIG)

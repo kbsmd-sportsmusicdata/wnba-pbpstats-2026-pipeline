@@ -39,6 +39,9 @@ from role_fulfillment_matrix.standings_adapter import (  # noqa: E402
 LIVE_CONFIG = (
     ROOT / "analysis" / "role_fulfillment_matrix" / "config" / "live_config.template.json"
 )
+LIVE_ENABLED_CONFIG = (
+    ROOT / "analysis" / "role_fulfillment_matrix" / "config" / "live_config.json"
+)
 
 
 class LiveDryRunGovernanceTest(unittest.TestCase):
@@ -106,14 +109,7 @@ class LiveDryRunGovernanceTest(unittest.TestCase):
         config["mode"] = "live_dry_run"
         authorize_execution(config)
 
-        publish = dict(
-            config,
-            mode="live",
-            live_output_enabled=True,
-            end_to_end_review_status="approved_19_player_review",
-            execution_mode="manual_only",
-            scheduling_enabled=False,
-        )
+        publish = json.loads(LIVE_ENABLED_CONFIG.read_text())
         authorize_execution(publish)
 
     def test_live_publish_requires_every_explicit_enablement_control(self):

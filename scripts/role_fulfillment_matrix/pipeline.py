@@ -118,6 +118,7 @@ def build_analysis(config: Dict[str, Any]) -> AnalysisResult:
     missing_eligibility = counts.get("excluded_eligibility_not_reviewed", 0)
     missing_roles = counts.get("excluded_role_assignment_not_reviewed", 0)
     assignment_mismatches = counts.get("excluded_role_assignment_team_mismatch", 0)
+    invalid_roles = counts.get("excluded_role_assignment_invalid", 0)
     if mode in {"live_dry_run", "live"} and missing_eligibility:
         dry_run_gate_blockers.append(
             f"current contender roster players without reviewed eligibility: {missing_eligibility}"
@@ -129,6 +130,10 @@ def build_analysis(config: Dict[str, Any]) -> AnalysisResult:
     if mode in {"live_dry_run", "live"} and assignment_mismatches:
         dry_run_gate_blockers.append(
             f"current contender candidates with stale team-role assignments: {assignment_mismatches}"
+        )
+    if mode in {"live_dry_run", "live"} and invalid_roles:
+        dry_run_gate_blockers.append(
+            f"current contender candidates with invalid reviewed role assignments: {invalid_roles}"
         )
     if mode == "live" and dry_run_gate_blockers:
         raise LiveScoringBlocked(
@@ -152,6 +157,7 @@ def build_analysis(config: Dict[str, Any]) -> AnalysisResult:
         "live_output_enabled": bool(effective_config.get("live_output_enabled", False)),
         "execution_mode": effective_config.get("execution_mode"),
         "scheduling_enabled": bool(effective_config.get("scheduling_enabled", False)),
+        "manual_run_id": effective_config.get("manual_run_id"),
         "formula_version": effective_config["formula_version"],
         "analysis_cutoff_date": effective_config.get("analysis_cutoff_date"),
         "windows": effective_config.get("windows"),

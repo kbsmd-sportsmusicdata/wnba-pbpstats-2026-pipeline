@@ -12,7 +12,11 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 
 from build_role_fulfillment_live import build  # noqa: E402
-from role_fulfillment_matrix.contracts import authorize_execution  # noqa: E402
+from role_fulfillment_matrix.contracts import (  # noqa: E402
+    LiveScoringBlocked,
+    authorize_execution,
+    live_config_fingerprint,
+)
 
 
 LIVE_CONFIG = (
@@ -59,6 +63,10 @@ class LiveEnablementConfigTest(unittest.TestCase):
         })
         self.assertEqual(approval["execution_mode"], "manual_only")
         self.assertFalse(approval["scheduling_enabled"])
+        self.assertEqual(
+            approval["approved_config_sha256"],
+            live_config_fingerprint(config),
+        )
         for item in approval["approved_dry_run_artifacts"]:
             path = ROOT / item["path"]
             self.assertEqual(item["sha256"], hashlib.sha256(path.read_bytes()).hexdigest())
@@ -71,6 +79,28 @@ class LiveEnablementConfigTest(unittest.TestCase):
             path = ROOT / item["path"]
             self.assertEqual(item["sha256"], hashlib.sha256(path.read_bytes()).hexdigest())
 
+    def test_live_authorization_rejects_changes_to_reviewed_inputs_or_formulas(self):
+        approved = json.loads(LIVE_CONFIG.read_text())
+        mutations = []
+        changed_source = json.loads(json.dumps(approved))
+        changed_source["sources"]["pbpstats_player_game"] = "unreviewed/player_game.csv"
+        mutations.append(changed_source)
+        changed_roles = json.loads(json.dumps(approved))
+        changed_roles["sources"]["role_definitions"] = "unreviewed/roles.json"
+        mutations.append(changed_roles)
+        changed_threshold = json.loads(json.dumps(approved))
+        changed_threshold["minimums"]["recent_off_poss"] = 1
+        mutations.append(changed_threshold)
+        changed_formula = dict(approved, formula_version="rfm-unreviewed")
+        mutations.append(changed_formula)
+
+        for config in mutations:
+            with self.subTest(config=config), self.assertRaisesRegex(
+                LiveScoringBlocked,
+                "reviewed configuration hash",
+            ):
+                authorize_execution(config)
+
     def test_no_github_workflow_schedules_the_role_fulfillment_live_builder(self):
         workflows = ROOT / ".github" / "workflows"
         contents = "\n".join(
@@ -81,9 +111,16 @@ class LiveEnablementConfigTest(unittest.TestCase):
 
 class ManualLiveOutputTest(unittest.TestCase):
     def test_manual_live_run_writes_isolated_enabled_output(self):
+        approval = json.loads(LIVE_OUTPUT_APPROVAL.read_text())
+        approved_paths = [ROOT / item["path"] for item in approval["manual_live_run"]["artifacts"]]
+        approved_hashes_before = {
+            path: hashlib.sha256(path.read_bytes()).hexdigest() for path in approved_paths
+        }
         with tempfile.TemporaryDirectory() as tmp:
-            output_root = Path(tmp) / "live"
-            manifest = build(output_root=output_root)
+            runs_root = Path(tmp) / "live"
+            run_id = "2026-08-24T010000Z"
+            output_root = runs_root / "runs" / run_id
+            manifest = build(runs_root=runs_root, run_id=run_id)
             scores = pd.read_csv(
                 output_root / "data" / "processed" / "role_fulfillment_matrix_2026.csv"
             )
@@ -102,7 +139,15 @@ class ManualLiveOutputTest(unittest.TestCase):
                 / "index.html"
             ).read_text()
 
+            with self.assertRaises(FileExistsError):
+                build(runs_root=runs_root, run_id=run_id)
+
+        approved_hashes_after = {
+            path: hashlib.sha256(path.read_bytes()).hexdigest() for path in approved_paths
+        }
+
         self.assertEqual(manifest["mode"], "live")
+        self.assertEqual(manifest["manual_run_id"], run_id)
         self.assertEqual(manifest["live_scoring_status"], "live_enabled")
         self.assertEqual(manifest["live_scoring_blockers"], [])
         self.assertTrue(manifest["live_output_enabled"])
@@ -134,6 +179,13 @@ class ManualLiveOutputTest(unittest.TestCase):
         self.assertIn("Live output enabled", html)
         self.assertIn("Live scoring: <b>ENABLED</b>", html)
         self.assertNotIn("DRY RUN", html)
+        self.assertEqual(approved_hashes_after, approved_hashes_before)
+
+    def test_manual_run_id_rejects_paths_and_non_timestamp_values(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            for run_id in ("../approved", "latest", "2026-08-24"):
+                with self.subTest(run_id=run_id), self.assertRaises(ValueError):
+                    build(runs_root=Path(tmp), run_id=run_id)
 
 
 if __name__ == "__main__":

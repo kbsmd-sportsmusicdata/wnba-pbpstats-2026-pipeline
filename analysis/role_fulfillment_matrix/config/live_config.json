@@ -47,6 +47,7 @@
   "end_to_end_review_status": "approved_19_player_review",
   "live_output_approved_by": "Krystal Beasley",
   "live_output_approved_at": "2026-08-23",
+  "live_output_approval_manifest": "analysis/role_fulfillment_matrix/data/review/live_output_approval_manifest_2026.json",
   "execution_mode": "manual_only",
   "scheduling_enabled": false,
   "live_output_enabled": true

@@ -88,9 +88,11 @@ Run the explicitly approved live build manually:
 python3 scripts/build_role_fulfillment_live.py
 ```
 
-Live outputs are confined to `analysis/role_fulfillment_matrix/live/`. The approved configuration
-requires `execution_mode = manual_only` and `scheduling_enabled = false`; no GitHub workflow invokes
-the live builder.
+The approved first run remains immutable at `analysis/role_fulfillment_matrix/live/`. Every later
+manual invocation writes to a unique
+`analysis/role_fulfillment_matrix/live/runs/<UTC-run-id>/` directory and refuses to overwrite an
+existing run. The approved configuration requires `execution_mode = manual_only` and
+`scheduling_enabled = false`; no GitHub workflow invokes the live builder.
 
 ## Reviewed role and sample safeguards
 
