@@ -15,7 +15,7 @@ eligibility table is `../../config/player_eligibility_2026.csv`.
 - ESPN source-only records without a PBPStats game: 5
 - Eligibility review status: original review approved on 2026-08-22; two-row roster-only addendum
   approved on 2026-08-23 by Krystal Beasley
-- Live scoring status: blocked
+- Live scoring status: enabled for approved manual execution; scheduling remains disabled
 
 ## Reviewer checklist
 
@@ -29,7 +29,8 @@ eligibility table is `../../config/player_eligibility_2026.csv`.
 6. The reviewed promotion, two-row addendum, and their hashes are recorded in
    `eligibility_approval_manifest_2026.json`; do not overwrite the pending snapshot.
 
-The experience/eligibility, original player-role review, formula, 11-player validation, and
-PBPStats live-adapter review gates are complete. The adapter now runs only in the isolated
-`live_dry_run` path. Live publishing remains disabled pending review of that report and a reviewed
-primary role for every current contender candidate.
+The experience/eligibility, player-role, formula, 11-player validation, PBPStats live-adapter, and
+end-to-end dry-run gates are complete. The first approved manual live run completed on 2026-08-23;
+its post-run evidence review and scheduling boundary are recorded in
+`manual_live_run_post_review_2026-08-23.md`. Live execution remains manual-only, and no recurring
+workflow is approved or enabled.
