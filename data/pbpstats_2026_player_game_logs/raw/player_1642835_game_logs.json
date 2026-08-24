@@ -1,0 +1,40 @@
+{
+  "single_row_table_data": {
+    "Name": "Morgan Maly",
+    "ShortName": "Morgan Maly",
+    "TeamAbbreviation": "CHI",
+    "SecondsPlayed": 66.0,
+    "GamesPlayed": 1,
+    "Minutes": 1,
+    "PlusMinus": -1,
+    "OffPoss": 2,
+    "DefPoss": 2,
+    "PenaltyOffPoss": 2,
+    "PenaltyDefPoss": 2,
+    "TotalPoss": 4,
+    "OpponentPoints": 3,
+    "PenaltyOffPossExcludingTakeFouls": 2,
+    "OnOffRtg": 100.0,
+    "OnDefRtg": 150.0,
+    "PenaltyOffPossPct": 1.0
+  },
+  "multi_row_table_data": [
+    {
+      "Minutes": "01:06",
+      "PlusMinus": -1,
+      "OffPoss": 2,
+      "DefPoss": 2,
+      "PenaltyOffPoss": 2,
+      "PenaltyDefPoss": 2,
+      "TotalPoss": 4,
+      "PenaltyOffPossExcludingTakeFouls": 2,
+      "OnOffRtg": 100.0,
+      "OnDefRtg": 150.0,
+      "PenaltyOffPossPct": 1.0,
+      "Date": "2026-08-23",
+      "GameId": "1022600279",
+      "Team": "CHI",
+      "Opponent": "IND"
+    }
+  ]
+}

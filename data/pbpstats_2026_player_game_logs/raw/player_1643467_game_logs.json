@@ -3,16 +3,16 @@
     "Name": "Cassandre Prosper",
     "ShortName": "Cassandre Prosper",
     "TeamAbbreviation": "WAS",
-    "SecondsPlayed": 20598.600000000006,
-    "GamesPlayed": 32,
+    "SecondsPlayed": 20602.700000000004,
+    "GamesPlayed": 33,
     "Minutes": 343,
     "PlusMinus": -53,
-    "OffPoss": 667,
+    "OffPoss": 668,
     "DefPoss": 684,
-    "PenaltyOffPoss": 245,
+    "PenaltyOffPoss": 246,
     "PenaltyDefPoss": 261,
-    "SecondChanceOffPoss": 96,
-    "TotalPoss": 1351,
+    "SecondChanceOffPoss": 97,
+    "TotalPoss": 1352,
     "AtRimFGM": 20,
     "AtRimFGA": 35,
     "SecondChanceAtRimFGM": 5,
@@ -104,7 +104,7 @@
     "RecoveredBlocks": 1,
     "FirstChancePoints": 60,
     "PenaltyPointsExcludingTakeFouls": 28,
-    "PenaltyOffPossExcludingTakeFouls": 245,
+    "PenaltyOffPossExcludingTakeFouls": 246,
     "NonShootingPenaltyNonTakeFouls": 15,
     "NonShootingPenaltyNonTakeFoulsDrawn": 1,
     "Period1Fouls2Minutes": 2,
@@ -116,7 +116,7 @@
     "Period4Fouls5Minutes": 3,
     "PeriodOTFouls4Minutes": 2,
     "PeriodOTFouls5Minutes": 7,
-    "OnOffRtg": 98.95052473763118,
+    "OnOffRtg": 98.80239520958084,
     "OnDefRtg": 104.23976608187135,
     "Assisted2sPct": 0.5909090909090909,
     "NonPutbacksAssisted2sPct": 0.6842105263157895,
@@ -139,7 +139,7 @@
     "AtRimPctBlocked": 0.17142857142857143,
     "ShortMidRangePctBlocked": 0.23076923076923078,
     "LongMidRangePctBlocked": 0.14285714285714285,
-    "Usage": 15.404040404040405,
+    "Usage": 15.384615384615385,
     "LiveBallTurnoverPct": 0.7,
     "DefFTReboundPct": 0.07142857142857142,
     "DefTwoPtReboundPct": 0.046511627906976744,
@@ -204,7 +204,7 @@
     "ShortMidRangeOffReboundedPct": 0.46153846153846156,
     "LongMidRangeOffReboundedPct": 0.6,
     "ThreePtOffReboundedPct": 0.375,
-    "PenaltyOffPossPct": 0.36731634182908546
+    "PenaltyOffPossPct": 0.36826347305389223
   },
   "multi_row_table_data": [
     {
@@ -2072,6 +2072,19 @@
       "GameId": "1022600272",
       "Team": "WAS",
       "Opponent": "MIN"
+    },
+    {
+      "Minutes": "00:04",
+      "OffPoss": 1,
+      "PenaltyOffPoss": 1,
+      "SecondChanceOffPoss": 1,
+      "TotalPoss": 1,
+      "PenaltyOffPossExcludingTakeFouls": 1,
+      "PenaltyOffPossPct": 1.0,
+      "Date": "2026-08-23",
+      "GameId": "1022600280",
+      "Team": "WAS",
+      "Opponent": "PDX"
     }
   ]
 }
