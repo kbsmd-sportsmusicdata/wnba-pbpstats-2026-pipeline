@@ -23,8 +23,8 @@ holds the exploratory analysis and the filtered, design-ready data behind it.
   2026-08-21). States which first-pass claims do not survive the restriction,
   rebuilds two of them from full-season data, and resolves the Kiki Rice
   on/off contradiction: her return was a five-game minutes restriction, and
-  healthy-Rice on/off is +18 to +21, not +11.4. **Use this one for anything
-  going into print.**
+  and her per-possession rates collapse and recover with it. **Use this one for
+  anything going into print.**
 - **[`DERIVED_POSSESSIONS.md`](./DERIVED_POSSESSIONS.md)** — rebuilds the
   frozen possession layer for the full season from ESPN play-by-play, with the
   validation report and the duo findings it settles. Read this before quoting
@@ -53,7 +53,7 @@ All are small enough to inline into an HTML artifact.
 | `story_teammate_minute_correlations.csv` | 663 | Every rotation-teammate pair league-wide, minutes correlation and percentile |
 | `story_opponent_adjusted_scoring.csv` | 6 | Schedule strength faced and opponent-adjusted scoring rate |
 | `story_team_defense_strength.csv` | 15 | Team defensive rating and distance from league average |
-| `derived_possessions_2026.parquet` | 44,986 | Full-season possession layer: both five-player lineups, points, calibration weight. Drop-in replacement for the frozen `wnba_possessions_2026.parquet` |
+| `derived_possessions_2026.parquet` | 45,643 | Full-season possession layer: both five-player lineups, points, calibration weight. Drop-in replacement for the frozen `wnba_possessions_2026.parquet` |
 | `story_duo_splits_full_season.csv` | 24 | Every duo state (both on / one on / neither) with ORtg, DRtg, net |
 | `story_derived_onoff_full_season.csv` | 6 | Possession-level on/off for the six |
 | `story_rice_blocks_derived.csv` | 4 | Rice's return windows on the derived layer |
@@ -94,9 +94,13 @@ Charts the data is already shaped for, roughly in order of how much they carry:
    `story_rice_timeline.csv`. The step between game 5 and game 6 back is
    visible without any annotation.
 
-Two things to carry into the copy: the possessions, lineups and RAPM layers stop
-in **mid-July** while the pbpstats layer runs through **2026-08-21**, and Rice
-(20 games) and Kneepkens (215 minutes) are below any normal stability threshold.
+Three things to carry into the copy. The RAPM/BPM/WAR impact layer still stops
+in **mid-July** while everything else runs through **2026-08-23** (281 games).
+Rice (21 games) and Kneepkens (~230 minutes) are below any normal stability
+threshold. And per §5 of `DERIVED_POSSESSIONS.md`, small-sample on/off
+differentials move by several points per 100 on a handful of new games, while
+minutes, shooting splits and shot diet reproduce across every vintage — prefer
+the latter for anything stated as a fact.
 
 Claims to leave out: all opponent shot-profile splits and all RAPM/BPM/WAR
 figures, whose sources are still frozen in mid-July. The duo numbers are no

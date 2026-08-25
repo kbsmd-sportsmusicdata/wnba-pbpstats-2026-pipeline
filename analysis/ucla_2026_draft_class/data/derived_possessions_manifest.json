@@ -1,33 +1,33 @@
 {
   "noise": {
     "all_players": {
-      "n": 185,
-      "corr": 0.855889269442642,
-      "mae": 3.7237791237700426
+      "n": 187,
+      "corr": 0.8393476350920809,
+      "mae": 3.881853733965503
     },
     "ever_present": {
-      "n": 58,
-      "corr": 0.9069828094211416,
-      "mae": 2.467774609597668,
-      "sd": 3.1312001314065703
+      "n": 57,
+      "corr": 0.9055773241320397,
+      "mae": 2.539982600495002,
+      "sd": 3.1904825668199615
     },
     "note": "The all-players gap is mostly a definition difference, not error: pbpstats on/off is computed only within games a player appeared in, while the derived layer's off-court pool also contains games she missed. Restricting to players who appeared in 95%+ of team games isolates true reconstruction noise."
   },
   "source": "espn_pbp_2026.parquet replayed into possessions + lineups",
-  "games": 277,
-  "possessions": 44986,
-  "through": "2026-08-22",
+  "games": 281,
+  "possessions": 45643,
+  "through": "2026-08-23",
   "validation": {
-    "team_games": 554,
-    "poss_corr": 0.9711284888397832,
-    "poss_mean_diff": 1.203971119133574,
-    "poss_mae": 1.315884476534296,
+    "team_games": 562,
+    "poss_corr": 0.9711837197266392,
+    "poss_mean_diff": 1.204626334519573,
+    "poss_mae": 1.3149466192170818,
     "pts_exact_match_pct": 100.0,
     "pts_mae": 0.0,
-    "player_games": 5479,
-    "player_poss_corr": 0.9972544211797234,
-    "player_poss_mean_pct_err": 2.4659453218522596,
-    "player_poss_mae": 1.1934659609417777
+    "player_games": 5562,
+    "player_poss_corr": 0.9972469167180101,
+    "player_poss_mean_pct_err": 2.484910472459718,
+    "player_poss_mae": 1.1948939230492628
   },
   "replaces": "wnba_possessions_2026.parquet (frozen at 202 games)"
 }

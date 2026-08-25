@@ -1,7 +1,7 @@
 athlete_id,player_id,display_name,position_abbreviation,display_height,weight,age,jersey,current_team_id,team_abbreviation,draft_round,draft_selection,college_id,box_games,games_started,dnp
-5105737,1643427.0,Lauren Betts,C,"6' 7""",,22,51,16,WAS,1.0,4.0,26.0,36,1,0
-4858656,1643447.0,Gabriela Jaquez,G,"6' 0""",,22,11,19,CHI,1.0,5.0,26.0,37,15,4
-4565505,1643445.0,Kiki Rice,G,"5' 11""",,22,1,131935,TOR,1.0,6.0,26.0,36,12,16
-4433411,1643455.0,Angela Dugalic,F,"6' 4""",,24,32,16,WAS,1.0,9.0,26.0,36,3,5
+5105737,1643427.0,Lauren Betts,C,"6' 7""",,22,51,16,WAS,1.0,4.0,26.0,37,1,0
+4858656,1643447.0,Gabriela Jaquez,G,"6' 0""",,22,11,19,CHI,1.0,5.0,26.0,38,15,5
+4565505,1643445.0,Kiki Rice,G,"5' 11""",,22,1,131935,TOR,1.0,6.0,26.0,37,13,16
+4433411,1643455.0,Angela Dugalic,F,"6' 4""",,24,32,16,WAS,1.0,9.0,26.0,37,3,5
 4898898,1643429.0,Gianna Kneepkens,G,"5' 11""",,23,5,18,CON,1.0,15.0,26.0,36,4,8
 4703609,1643449.0,Charlisse Leger-Walker,G,"5' 10""",,24,4,18,CON,2.0,18.0,26.0,36,24,0

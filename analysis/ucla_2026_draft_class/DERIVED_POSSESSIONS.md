@@ -97,8 +97,8 @@ The gap between those last two rows is **a definition difference, not error**.
 pbpstats computes on/off only within games a player appeared in; the derived
 layer's off-court pool also contains games she missed entirely. For Kiki Rice —
 16 games missed — the two answer genuinely different questions, and the
-pbpstats version (+11.4) is the one to quote, because the derived version
-(+3.2) charges her off-court baseline with 16 games she had nothing to do with.
+pbpstats version (+7.8) is the one to quote, because the derived version
+(+1.6) charges her off-court baseline with 16 games she had nothing to do with.
 
 **So the two layers have different jobs.** pbpstats stays the source of truth
 for single-player on/off, where it is exact arithmetic. The derived layer is
@@ -116,45 +116,49 @@ That threshold decides both findings below.
 
 ## 4. What it changed
 
-### The two-big claim is dead, and was never alive
+### The two-big number is unpublishable, and four vintages prove it
 
-Full season, 277 games:
+Full season, 281 games:
 
 | WAS state | Off poss | ORtg | DRtg | Net |
 |---|---:|---:|---:|---:|
-| Austin without Betts | 1,609 | 105.8 | 103.4 | **+2.4** |
-| Betts + Austin | 400 | 103.4 | 103.5 | **−0.1** |
-| Betts without Austin | 787 | 98.4 | 106.0 | −7.6 |
+| Austin without Betts | 1,661 | 105.8 | 104.5 | **+1.3** |
+| Betts + Austin | 421 | 106.5 | 101.8 | **+4.7** |
+| Betts without Austin | 799 | 98.8 | 106.2 | −7.4 |
 | Neither | 53 | 115.8 | 151.4 | −35.6 |
 
-The pairing is neutral, and Austin without Betts is marginally better — a
-2.5-point gap, well inside the error bar. There is no evidence Washington is
-leaving points on the floor by not stacking them.
+Read in isolation this looks like support for the two-big pairing. It is not.
+Track the same quantity across every vintage of the data we have:
 
-Replaying **the frozen parquet's own 202 games** through the derived layer
-explains where the original number came from:
-
-| | Betts + Austin |
+| Source and window | Betts + Austin |
 |---|---|
-| Frozen sportsdataverse parquet | +1.6 over 200 poss |
-| Derived layer, same 202 games | **−1.6 over 218 poss** |
-| Derived layer, all 277 games | −0.1 over 400 poss |
+| Frozen sportsdataverse parquet, 202 games | **+1.6** over 200 poss |
+| Derived layer, same 202 games | **−1.6** over 218 poss |
+| Derived layer, 277 games | **−0.1** over 400 poss |
+| Derived layer, 281 games | **+4.7** over 421 poss |
 
-Two independent reconstructions of the same games land 3.2 points apart on a
-~200-possession sample. That is exactly what noise around zero looks like. The
-+1.6 was never a signal, and withholding it was the right call.
+Four estimates of one pairing spanning **6.3 points per 100**, with the sign
+changing twice. The last step is the most damning: **four extra team games
+added 21 possessions to this split and moved it 4.8 points.** An estimate that
+mobile is not measuring a property of the pairing, it is measuring noise.
+
+The conclusion from the previous pass is unchanged and now better evidenced:
+**do not publish a Betts + Austin number in either direction.** The honest
+statement is that this sample cannot resolve whether the pairing helps.
 
 ### Betts + Dugalic is confirmed and worse than estimated
 
 | WAS state | Off poss | ORtg | DRtg | Net |
 |---|---:|---:|---:|---:|
-| Neither | 1,275 | 108.6 | 104.4 | **+4.1** |
-| Betts without Dugalic | 955 | 100.2 | 102.4 | −2.2 |
-| Dugalic without Betts | 387 | 98.1 | 106.5 | −8.4 |
+| Neither | 1,326 | 108.6 | 105.7 | **+2.9** |
+| Betts without Dugalic | 989 | 101.9 | 102.0 | −0.1 |
+| Dugalic without Betts | 388 | 97.9 | 106.7 | −8.9 |
 | **Betts + Dugalic** | 232 | 99.7 | **116.5** | **−16.8** |
 
-A 21-point gap between the pairing and Washington's other minutes, comfortably
-past the threshold. The game-level proxy in the first document put it at −13.0;
+A 20-point gap between the pairing and Washington's other minutes, comfortably
+past the threshold — and, unlike Betts + Austin, **stable across vintages**:
+the pairing sat at −16.8 at 277 games and −16.8 at 281. That stability is the
+reason this one is publishable and the other is not. The game-level proxy in the first document put it at −13.0;
 at possession level it is −16.8, and the damage is almost entirely defensive
 (116.5 allowed, 12 points worse than the team's other lineups). Washington's
 two UCLA rookies sharing the floor is the clearest role-construction problem in
@@ -165,8 +169,8 @@ the cohort, and it now has possession-level evidence across the full season.
 | Pair | Together | Best available state | Gap | Verdict |
 |---|---:|---|---:|---|
 | Leger-Walker + Kneepkens (CON) | −16.4 (267) | Leger-Walker alone −8.9 | 7.5 | Suggestive, inside noise |
-| Rice + Allemand (TOR) | −11.0 (289) | Rice alone −3.9 | 7.1 | Suggestive, inside noise |
-| Jaquez + Cloud (CHI) | −3.5 (688) | Neither +7.0 | 10.5 | Suggestive, inside noise |
+| Rice + Allemand (TOR) | −11.8 (306) | Rice alone −5.3 | 6.5 | Suggestive, inside noise |
+| Jaquez + Cloud (CHI) | −3.5 (688) | Neither +5.3 | 8.8 | Suggestive, inside noise |
 
 All three point the same direction as the earlier partial-season reads, none
 clears the bar for a published claim. The Rice + Allemand split is still worth
@@ -176,24 +180,41 @@ finding (4.7th percentile of substitution) through a second route.
 
 ### Betts's solo-five minutes remain the real issue
 
-Betts without Austin: **−7.6 over 787 possessions**, against +2.4 for Austin
+Betts without Austin: **−7.4 over 799 possessions**, against +1.3 for Austin
 without Betts. That is the largest well-sampled split involving her and it
 survives every check. It is a bench-unit effect, not a Betts effect — but it is
 where her minutes actually go.
 
 ---
 
-## 5. Data refresh note
+## 5. Data vintages, and what moves between them
 
-The pipeline refreshed while this work was in progress. Coverage moved from
-**274 games / 2026-08-21** to **277 games / 2026-08-22**, and all exports have
-been regenerated. Headline figures barely moved. Two worth flagging:
+The pipeline refreshes daily, and rebuilding on each new vintage has turned
+into the most useful robustness check in this project. Coverage history:
+**274 games / 08-21 → 277 / 08-22 → 281 / 08-23**, with every export
+regenerated each time.
 
-- **Gabriela Jaquez** net swing −7.21 → **−9.29**; her decline continued.
-- **Gianna Kneepkens** net swing −2.06 → **+0.53**, a sign flip on one extra
-  game. A useful reminder of how unstable a 480-possession on/off is.
+What four extra games (277 → 281) did to published figures:
 
-Everything else changed in the third decimal or not at all.
+| Figure | 277 games | 281 games | Verdict |
+|---|---:|---:|---|
+| Betts + Dugalic net/100 | −16.8 | **−16.8** | stable |
+| Rice pre-injury on/off swing | +20.6 | **+20.6** | stable |
+| Rice minutes, return 1–5 / 6–10 | 21.5 / 29.5 | **21.5 / 29.6** | stable |
+| Betts + Austin net/100 | −0.1 | **+4.7** | unstable |
+| Rice on/off swing, return block g32+ | +18.1 | **+2.6** | unstable |
+| Rice season on/off swing | +11.4 | **+7.8** | drifting |
+| Betts season on/off swing | −4.8 | **−1.7** | drifting |
+
+The pattern is clean and worth stating in the piece: **rate and role
+measurements are stable; small-sample on/off differentials are not.** Minutes,
+shooting splits, shot diet and the large well-sampled pairing all reproduce.
+Anything resting on a few hundred possessions moves by several points per 100
+on a handful of games.
+
+Two earlier vintage notes, retained: Jaquez's net swing fell −7.21 → −9.29 at
+277 games as her decline continued, and Kneepkens flipped −2.06 → +0.53 on one
+extra game.
 
 ## 6. Reproducing
 
@@ -202,7 +223,7 @@ python3 scripts/ucla_2026_draft_class/run_derived_possessions.py
 ```
 
 Builds and calibrates the layer, prints the full validation report, and writes
-`derived_possessions_2026.parquet` (44,986 possessions, 277 games) plus
+`derived_possessions_2026.parquet` (45,643 possessions, 281 games) plus
 `story_duo_splits_full_season.csv`, `story_derived_onoff_full_season.csv`,
 `story_rice_blocks_derived.csv`, `derived_vs_exact_onoff.csv` and
 `derived_stale_window_replication.csv`.
