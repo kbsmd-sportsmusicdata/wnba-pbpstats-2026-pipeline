@@ -1,7 +1,7 @@
 season,entity_id_feature,entity_name_feature,sample_size_flag,detected_zone_fga_total,efg_pct_feature,ts_pct_feature,shotquality_pbp_feature,shot_making_over_shotquality_pbp,specialized_shooter_label,shot_diet_profile_label
 2026,203828,Stefanie Dolson,Low,90.0,0.5611111111111111,0.6,0.5132077777777777,0.04790333333333341,Low-Volume Efficient Shooter,Modern Shot Diet
 2026,1629488,Brianna Turner,Low,45.0,0.6222222222222222,0.6304347826086957,0.53308,0.08914222222222223,Low-Volume Efficient Shooter,Unavailable Shot Diet
-2026,1643489,Antonia Delaere,Low,83.0,0.608433734939759,0.6235294117647059,0.510824074074074,0.09760966086568501,Low-Volume Efficient Shooter,Modern Shot Diet
+2026,1643489,Antonia Delaere,Low,85.0,0.5941176470588235,0.6091954022988506,0.5111078313253012,0.08300981573352229,Low-Volume Efficient Shooter,Modern Shot Diet
 2026,1627701,Temi Fagbenle,Low,88.0,0.5738636363636364,0.5707070707070707,0.5372517241379311,0.036611912225705256,Low-Volume Efficient Shooter,Modern Shot Diet
 2026,1642307,Mackenzie Holmes,Low,43.0,0.6046511627906976,0.63,0.5138313953488373,0.09081976744186038,Low-Volume Efficient Shooter,Modern Shot Diet
 2026,1630149,Satou Sabally,Low,98.0,0.5612244897959183,0.6136363636363636,0.5328664948453607,0.028357994950557575,Low-Volume Efficient Shooter,Modern Shot Diet
@@ -9,10 +9,10 @@ season,entity_id_feature,entity_name_feature,sample_size_flag,detected_zone_fga_
 2026,1642769,Mai Yamamoto,Low,40.0,0.575,0.6136363636363636,0.4792675,0.09573249999999994,Low-Volume Efficient Shooter,Perimeter-Leaning
 2026,1630384,Raquel Carrera,Low,19.0,0.631578947368421,0.62,0.5367157894736841,0.09486315789473687,Low-Volume Efficient Shooter,Paint-Oriented
 2026,1628242,Emma Cannon,Low,36.0,0.6388888888888888,0.6630434782608695,0.5427388888888889,0.09614999999999996,Low-Volume Efficient Shooter,Modern Shot Diet
+2026,1643439,Tonie Morgan,Low,22.0,0.5681818181818182,0.6086956521739131,0.5412666666666667,0.02691515151515156,Low-Volume Efficient Shooter,Unavailable Shot Diet
 2026,1643453,Grace VanSlooten,Low,12.0,0.8333333333333334,0.78125,0.5895083333333333,0.24382500000000007,Low-Volume Efficient Shooter,Paint-Oriented
 2026,1642210,Julie Vanloo,Low,17.0,0.7352941176470589,0.7631578947368421,0.5047941176470588,0.23050000000000004,Low-Volume Efficient Shooter,Unavailable Shot Diet
 2026,1643706,Ornella Bankole,Low,14.0,0.6428571428571429,0.6666666666666666,0.5110142857142858,0.13184285714285715,Low-Volume Efficient Shooter,Modern Shot Diet
-2026,1643439,Tonie Morgan,Low,17.0,0.7352941176470589,0.7777777777777778,0.5689235294117647,0.16637058823529416,Low-Volume Efficient Shooter,Unavailable Shot Diet
 2026,1642820,Liatu King,Low,16.0,0.625,0.5714285714285714,0.538696875,0.08630312500000004,Low-Volume Efficient Shooter,Modern Shot Diet
 2026,1641650,Haley Jones,Low,18.0,0.6111111111111112,0.6363636363636364,0.4710277777777778,0.14008333333333334,Low-Volume Efficient Shooter,Balanced Shot Diet
 2026,1643488,Emma Cechova,Low,16.0,0.625,0.625,0.580834375,0.044165624999999986,Low-Volume Efficient Shooter,Unavailable Shot Diet
