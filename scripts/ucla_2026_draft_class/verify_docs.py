@@ -68,6 +68,48 @@ def checks(t: dict) -> list[tuple[str, str, str]]:
     ]
 
 
+def row_count_check() -> list[str]:
+    """Every row count quoted in the README's artifact table must be real.
+
+    Hand-picked checks only catch the figures someone thought to list, and the
+    per-export row counts grow on exactly the refreshes this script exists to
+    police. So rather than enumerate them, parse the table and compare each
+    claim against the file it names.
+    """
+    md = (DOCS / "README.md").read_text()
+    claims = re.findall(r"^\|\s*`([^`]+\.(?:csv|parquet))`\s*\|\s*([\d,]+)\s*\|", md, re.M)
+    if not claims:
+        return ["README.md: no artifact table rows found to verify — has the table moved?"]
+    bad = []
+    for name, claimed in claims:
+        path = DATA / name
+        if not path.exists():
+            bad.append(f"README.md names {name}, which does not exist in data/")
+            continue
+        actual = (len(pd.read_parquet(path)) if name.endswith(".parquet")
+                  else len(pd.read_csv(path)))
+        if int(claimed.replace(",", "")) != actual:
+            bad.append(f"README.md says {name} has {claimed} rows; it has {actual:,}")
+    return bad
+
+
+# prose that describes the open Rice window as a fixed range. The window grows
+# on every refresh, so a chart built to these words silently drops her latest
+# games -- which is exactly what happened once already.
+CLOSED_WINDOW_PROSE = re.compile(r"return\s*6\s*[-\u2013]\s*10|g32\s*[-\u2013]\s*36|ten post-injury games",
+                                 re.I)
+
+
+def prose_check(text: dict[str, str]) -> list[str]:
+    """No document may describe the open-ended return window as a closed range."""
+    bad = []
+    for f, body in text.items():
+        for m in CLOSED_WINDOW_PROSE.finditer(body):
+            line = body[:m.start()].count("\n") + 1
+            bad.append(f"{f}:{line} describes the open return window as closed: {m.group(0)!r}")
+    return bad
+
+
 def label_check() -> list[str]:
     """The Rice return window is open-ended; no export may imply a closed range."""
     bad = []
@@ -91,6 +133,12 @@ def main() -> int:
     failures = [f"{f}: missing {desc} (expected /{pat}/)"
                 for f, pat, desc in checks(t) if not re.search(pat, text[f])]
     failures += label_check()
+    failures += prose_check(text)
+    row_failures = row_count_check()
+    failures += row_failures
+
+    n_rows = len(re.findall(r"^\|\s*`[^`]+\.(?:csv|parquet)`\s*\|\s*[\d,]+\s*\|",
+                            text["README.md"], re.M))
 
     print(f"data: {t['games']} games through {t['through']}, {t['players']} players, "
           f"{t['possessions']:,} possessions")
@@ -99,7 +147,8 @@ def main() -> int:
         for f in failures:
             print(f"  - {f}")
         return 1
-    print(f"all {len(checks(t)) + 4} doc/data consistency checks pass")
+    print(f"all {len(checks(t)) + 5 + n_rows} doc/data consistency checks pass "
+          f"({n_rows} of them per-export row counts)")
     return 0
 
 

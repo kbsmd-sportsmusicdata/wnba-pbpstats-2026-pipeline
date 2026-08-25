@@ -54,7 +54,7 @@ a number that describes neither.
 |---|---:|---:|---:|---:|---:|
 | Pre-injury (team games 1–10) | 10 | 26.7 | 17.6 | 35.0 | 6.4 |
 | **Return games 1–5** (g27–31) | 5 | **21.5** | 17.1 | **26.8** | 4.1 |
-| **Return games 6–10** (g32–36) | 5 | **29.5** | **24.5** | 31.8 | 2.9 |
+| **Return games 6+** (g32+) | 6 | **29.6** | **24.5** | 31.8 | 2.6 |
 
 Game by game: **17.1, 23.0, 26.8, 22.9, 17.6** — then **30.1, 31.4, 29.9, 24.5,
 31.8**. The two windows barely overlap. The ceiling across the first five back
@@ -69,7 +69,7 @@ back-to-back (29.9 on Aug 18, 24.5 on Aug 19).
 
 ### It was not only minutes — the per-possession game went with it
 
-| Metric | Pre-injury | Return 1–5 | Return 6–10 |
+| Metric | Pre-injury | Return 1–5 | Return 6+ |
 |---|---:|---:|---:|
 | Points / 75 | 18.11 | **11.96** | 19.48 |
 | True shooting | .670 | **.460** | .614 |
@@ -90,7 +90,7 @@ quality dropped 9 points of expected eFG, and she then converted 10 points
 *below* even that reduced expectation. Turnovers more than doubled and fouls
 rose 70%.
 
-By games 6–10 back it is all recovered or better: .614 TS, +.079 over
+By games 6 onward it is all recovered or better: .614 TS, +.079 over
 expectation, 1.05 turnovers per 75 (her best of the season), 5.87 assists per
 75 (also her best), and 17 of 18 at the rim.
 
@@ -101,7 +101,7 @@ expectation, 1.05 turnovers per 75 (her best of the season), 5.87 assists per
 | Pre-injury (g1–10) | 10 | 5 | 111.70 | 111.55 | **+0.15** | **+20.6** |
 | Rice OUT (g11–26) | 16 | 5 | 108.69 | 116.23 | −7.54 | — |
 | Return 1–5 (g27–31) | 5 | **0** | 103.29 | 120.74 | **−17.45** | **−15.2** |
-| Return 6–10 (g32+) | 6 | 1 | 108.11 | 116.36 | −8.25 | **+2.6** |
+| Return 6+ (g32+) | 6 | 1 | 108.11 | 116.36 | −8.25 | **+2.6** |
 
 The "Toronto got worse after Rice returned" result is a five-game artifact. It
 sits entirely in the re-integration window, where a restricted, rusty Rice

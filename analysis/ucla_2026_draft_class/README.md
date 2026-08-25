@@ -42,13 +42,13 @@ All are small enough to inline into an HTML artifact.
 |---|---|---|
 | `story_ucla_six_season_profile.csv` | 6 | Full season profile per player, every metric plus league and rookie percentiles/ranks |
 | `story_metric_percentiles_long.csv` | 204 | Long/tidy `player × metric` — value, both percentiles, rookie rank, both pool medians, `lower_is_better` flag. Bind radars and bar charts to this |
-| `story_ucla_six_game_logs.csv` | 181 | Per-game logs, trimmed to chart-relevant columns, with `game_no` for trend lines |
+| `story_ucla_six_game_logs.csv` | 187 | Per-game logs, trimmed to chart-relevant columns, with `game_no` for trend lines |
 | `story_monthly_development.csv` | 24 | Monthly arcs — mpg, usage, pts/75, TS, ast/75, tov/75, foul/75, shot shares, on-court net |
 | `story_rookie_pool_150min.csv` | 37 | Rookie reference pool, full metric set — for distribution and beeswarm plots |
 | `story_league_pool_250min.csv` | 149 | League reference pool, same columns |
 | `story_team_context.csv` | 15 | Team ratings, records and ranks; `has_ucla_rookie` flags the four employers |
 | `story_manifest.json` | — | Pool sizes, thresholds, coverage dates, `lower_is_better` list |
-| `story_rice_timeline.csv` | 36 | Every Toronto game in order with Rice's line, availability status and rest days |
+| `story_rice_timeline.csv` | 37 | Every Toronto game in order with Rice's line, availability status and rest days |
 | `story_rice_return_blocks_{player,team,onoff}.csv` | 3–4 | Pre-injury / out / return 1–5 / return 6+ splits (the last window is open-ended and grows each refresh) |
 | `story_teammate_minute_correlations.csv` | 663 | Every rotation-teammate pair league-wide, minutes correlation and percentile |
 | `story_opponent_adjusted_scoring.csv` | 6 | Schedule strength faced and opponent-adjusted scoring rate |
@@ -101,12 +101,17 @@ Charts the data is already shaped for, roughly in order of how much they carry:
    break 3, with the positional median as a reference rule.
 6. **Toronto with/without Rice** — use the four-block series in §1 of
    `EDA_FINDINGS_PBPSTATS_ONLY.md` (pre-injury / out / return 1–5 / return
-   6–10), not the three-block version in the first document. The five-game
-   return ramp is the whole story and a chart that hides it misleads.
-7. **Rice's return minutes** — a simple bar of her ten post-injury games
-   (17.1, 23.0, 26.8, 22.9, 17.6 → 30.1, 31.4, 29.9, 24.5, 31.8) from
-   `story_rice_timeline.csv`. The step between game 5 and game 6 back is
-   visible without any annotation.
+   6+), not the three-block version in the first document. The five-game
+   return ramp is the whole story and a chart that hides it misleads. The
+   final block is open-ended and grows on every refresh, so label it "6+" and
+   never as a fixed range.
+7. **Rice's return minutes** — a simple bar of every post-injury game from
+   `story_rice_timeline.csv`, filtered to `tgn >= 27` and `status == "played"`
+   rather than to a fixed count, since the tail grows each refresh. As of the
+   281-game vintage that is eleven games: the five-game ramp (17.1, 23.0,
+   26.8, 22.9, 17.6) followed by everything after (30.1, 31.4, 29.9, 24.5,
+   31.8, 29.8). The step between game 5 and game 6 back is visible without any
+   annotation.
 
 Three things to carry into the copy. The RAPM/BPM/WAR impact layer still stops
 in **mid-July** while everything else runs through **2026-08-23** (281 games).
