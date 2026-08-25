@@ -1,0 +1,92 @@
+{
+  "built_from": "derived_possessions_2026.parquet",
+  "games": 281,
+  "possessions": 45643,
+  "players": 229,
+  "players_without_crosswalk_name": 2,
+  "ridge_alpha": 4000,
+  "cv_curve_weighted_mse": {
+    "500": 14181.54,
+    "1000": 14168.47,
+    "2000": 14162.34,
+    "4000": 14161.47,
+    "8000": 14164.37,
+    "16000": 14169.26,
+    "32000": 14174.11
+  },
+  "rapm_poss_weighted_mean": -0.0002,
+  "league_waa_total": 0.0,
+  "league_war_total": 150.56,
+  "rapm_sd_raw": 1.009,
+  "rapm_sd_scaled": 1.552,
+  "attenuation_offense": 0.647,
+  "attenuation_defense": 0.654,
+  "split_half_reliability": {
+    "200+_poss": {
+      "n": 179,
+      "half_r": 0.467,
+      "full_season_reliability": 0.637
+    },
+    "500+_poss": {
+      "n": 149,
+      "half_r": 0.471,
+      "full_season_reliability": 0.64
+    },
+    "1000+_poss": {
+      "n": 102,
+      "half_r": 0.517,
+      "full_season_reliability": 0.682
+    }
+  },
+  "team_additivity": {
+    "raw_ridge": {
+      "offense": {
+        "r": 0.995,
+        "attenuation": 0.647
+      },
+      "defense": {
+        "r": 0.993,
+        "attenuation": 0.654
+      },
+      "net": {
+        "teams": 15,
+        "r": 0.995,
+        "mae": 2.16,
+        "attenuation": 0.64
+      }
+    },
+    "calibrated": {
+      "offense": {
+        "r": 0.995,
+        "attenuation": 1.0
+      },
+      "defense": {
+        "r": 0.993,
+        "attenuation": 1.0
+      },
+      "net": {
+        "teams": 15,
+        "r": 0.995,
+        "mae": 0.49,
+        "attenuation": 0.985
+      }
+    }
+  },
+  "points_per_win": {
+    "points_per_win": 29.866,
+    "win_pct_on_mov_slope": 0.0335,
+    "intercept": 0.5003,
+    "r2": 0.9185,
+    "teams": 15
+  },
+  "replacement_rapm": -2.0,
+  "implied_replacement_win_pct": 0.232,
+  "ucla_six_total_war_by_replacement_level": {
+    "-1.0": -1.4,
+    "-1.5": -0.34,
+    "-2.0": 0.72,
+    "-2.5": 1.78,
+    "-3.0": 2.84
+  },
+  "bpm": "not built - see IMPACT_LAYER.md; box-score-to-RAPM regression cross-validates at R2 = -0.09 on a single season"
+}

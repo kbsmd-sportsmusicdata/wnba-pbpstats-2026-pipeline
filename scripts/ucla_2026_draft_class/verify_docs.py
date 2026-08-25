@@ -29,6 +29,7 @@ def load_truth() -> dict:
     story = json.loads((DATA / "story_manifest.json").read_text())
     derived = json.loads((DATA / "derived_possessions_manifest.json").read_text())
     noise = derived["noise"]
+    impact = json.loads((DATA / "impact_manifest.json").read_text())
     sdv = ROOT / "data/raw/sportsdataverse/wnba_2026"
     frozen_poss = pd.read_parquet(sdv / "wnba_possessions_2026.parquet", columns=["game_id"])
     frozen_lineups = pd.read_parquet(sdv / "wnba_lineups_2026.parquet", columns=["game_id"])
@@ -48,6 +49,15 @@ def load_truth() -> dict:
         "rookie_population": int(story["rookie_population"]),
         "noise_all_n": int(noise["all_players"]["n"]),
         "noise_ever_n": int(noise["ever_present"]["n"]),
+        "ridge_alpha": int(impact["ridge_alpha"]),
+        "attenuation_off": impact["attenuation_offense"],
+        "attenuation_def": impact["attenuation_defense"],
+        "points_per_win": impact["points_per_win"]["points_per_win"],
+        "ppw_r2": impact["points_per_win"]["r2"],
+        "replacement": impact["replacement_rapm"],
+        "impact_players": int(impact["players"]),
+        "reliability_1000": impact["split_half_reliability"]["1000+_poss"]["full_season_reliability"],
+        "implied_repl_win_pct": impact["implied_replacement_win_pct"],
     }
 
 
@@ -72,6 +82,26 @@ def checks(t: dict) -> list[tuple[str, str, str]]:
         ("METRIC_FRAMEWORK.md", rf"{t['rookie_pool']} rookies", "rookie pool"),
         ("README.md", rf"{g} games, through", "readme coverage"),
         ("README.md", rf"\|\s*{p:,}\s*\|", "readme possession count"),
+        # the impact layer quotes its own diagnostics; each must match the manifest
+        ("IMPACT_LAYER.md", rf"\b{g} games\b", "impact coverage"),
+        # prose wraps, so allow a newline between a figure and its unit
+        ("IMPACT_LAYER.md", rf"{p:,}\s+possessions", "impact possession count"),
+        # the penalty may be written with or without a thousands separator
+        ("IMPACT_LAYER.md", rf"\u03bb = {t['ridge_alpha']:,}|\u03bb = {t['ridge_alpha']}",
+         "cross-validated ridge penalty"),
+        ("IMPACT_LAYER.md", re.escape(f"{t['attenuation_off']:.3f}"),
+         "offensive ridge attenuation"),
+        ("IMPACT_LAYER.md", re.escape(f"{t['attenuation_def']:.3f}"),
+         "defensive ridge attenuation"),
+        ("IMPACT_LAYER.md", re.escape(f"{t['points_per_win']:.2f}"), "points per win"),
+        ("IMPACT_LAYER.md", re.escape(f"{t['ppw_r2']:.3f}"), "points-per-win fit quality"),
+        # the documents use a typographic minus; accept either character
+        ("IMPACT_LAYER.md", rf"[-\u2212]{abs(t['replacement']):.1f} points per 100",
+         "replacement level"),
+        ("IMPACT_LAYER.md", re.escape(f"{t['reliability_1000']:.3f}"), "split-half reliability"),
+        ("IMPACT_LAYER.md", re.escape(f"{t['implied_repl_win_pct'] * 100:.1f}%"),
+         "implied replacement win rate"),
+        ("IMPACT_LAYER.md", rf"\b{t['impact_players']} players\b", "impact player count"),
     ]
 
 
@@ -188,7 +218,7 @@ def main() -> int:
     t = load_truth()
     text = {f: (DOCS / f).read_text() for f in
             ("EDA_FINDINGS_PBPSTATS_ONLY.md", "DERIVED_POSSESSIONS.md",
-             "METRIC_FRAMEWORK.md", "README.md")}
+             "METRIC_FRAMEWORK.md", "README.md", "IMPACT_LAYER.md")}
     failures = [f"{f}: missing {desc} (expected /{pat}/)"
                 for f, pat, desc in checks(t) if not re.search(pat, text[f])]
     failures += label_check()
