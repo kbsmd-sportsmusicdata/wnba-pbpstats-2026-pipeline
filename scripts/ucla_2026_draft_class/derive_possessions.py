@@ -120,13 +120,27 @@ def replay_game(ev: pd.DataFrame, home_id: int, away_id: int,
     pts = 0
     period = int(ev.period_number.iloc[0])
 
+    # Lineups as they stood when the current possession opened. `flush()` must
+    # read these rather than `on`, because a possession is not flushed until the
+    # ball changes hands -- and substitutions are logged at dead balls, which is
+    # exactly the gap between a possession's last event and the opponent's next
+    # one. Reading `on` at flush time attributed the trip to the lineup that
+    # replaced the one which actually played it.
+    played: dict[int, tuple[int, ...]] | None = None
+
+    def snapshot():
+        nonlocal played
+        played = {home_id: tuple(sorted(on[home_id])),
+                  away_id: tuple(sorted(on[away_id]))}
+
     def flush():
         nonlocal pts, off_team
-        if off_team is not None:
+        if off_team is not None and played is not None:
             rows.append(dict(period=period, off_team=off_team, def_team=other[off_team],
-                             points=pts, valid=len(on[home_id]) == 5 and len(on[away_id]) == 5,
-                             off_lineup=tuple(sorted(on[off_team])),
-                             def_lineup=tuple(sorted(on[other[off_team]]))))
+                             points=pts,
+                             valid=len(played[home_id]) == 5 and len(played[away_id]) == 5,
+                             off_lineup=played[off_team],
+                             def_lineup=played[other[off_team]]))
         pts = 0
 
     for row in ev.itertuples():
@@ -156,13 +170,16 @@ def replay_game(ev: pd.DataFrame, home_id: int, away_id: int,
         if t == "Defensive Rebound":
             if off_team is None:
                 off_team = other[tid]
+                snapshot()
             ball = tid
 
         if off_team is None:
             off_team = ball
+            snapshot()
         elif ball != off_team:
             flush()
             off_team = ball
+            snapshot()
 
         if row.scoring_play and tid == off_team:
             pts += int(row.score_value or 0)
@@ -189,6 +206,76 @@ def build(limit_games: int | None = None) -> pd.DataFrame:
             rec.update(game_id=gid, pbp_game_id=m.pbp_game_id, game_date=m.date)
             out.append(rec)
     return pd.DataFrame(out)
+
+
+def season_rating_check(poss: pd.DataFrame, min_poss: int = 250) -> dict:
+    """Compare season on-court ratings against pbpstats, possession-weighted.
+
+    This table lived in DERIVED_POSSESSIONS.md for several vintages without any
+    script producing it, so it could not be regenerated and quietly went stale.
+    Computing it here puts it in the manifest where `verify_docs.py` can hold
+    the document to it.
+
+    Both sides are possession-weighted season aggregates. Averaging per-game
+    rates instead would be an average of averages and is wrong for any rate
+    whose denominator varies by game.
+    """
+    pg = pd.read_parquet(PBP_PLAYER)
+    pg["player_id"] = pg.player_id.astype(int)
+    esp2pbp = {v: k for k, v in player_crosswalk().items()}
+
+    parts = []
+    for side, lin in (("off", "off_lineup"), ("def", "def_lineup")):
+        ex = poss[[lin, "points", "poss_weight"]].explode(lin).rename(columns={lin: "espn_id"})
+        ex["side"] = side
+        parts.append(ex)
+    ex = pd.concat(parts)
+    ex["espn_id"] = pd.to_numeric(ex.espn_id, errors="coerce")
+    ex["wpts"] = ex.points * ex.poss_weight
+    g = ex.groupby(["espn_id", "side"], as_index=False).agg(
+        poss=("poss_weight", "sum"), pts=("wpts", "sum"))
+    piv = g.pivot(index="espn_id", columns="side", values=["poss", "pts"])
+    piv.columns = [f"{a}_{b}" for a, b in piv.columns]
+    piv = piv.reset_index()
+    piv["d_ortg"] = piv.pts_off / piv.poss_off * 100
+    piv["d_net"] = piv.d_ortg - piv.pts_def / piv.poss_def * 100
+
+    ref = pg.groupby("player_id").apply(lambda d: pd.Series({
+        "ortg": (d.on_off_rtg / 100 * d.off_poss).sum() / d.off_poss.sum() * 100,
+        "drtg": (d.on_def_rtg / 100 * d.def_poss).sum() / d.def_poss.sum() * 100,
+    }), include_groups=False).reset_index()
+    ref["net"] = ref.ortg - ref.drtg
+    ref["espn_id"] = ref.player_id.map(esp2pbp)
+
+    j = piv.merge(ref.dropna(subset=["espn_id"]), on="espn_id", how="inner")
+    j = j[j.poss_off >= min_poss]
+    return dict(min_poss=min_poss, players=len(j),
+                ortg_r=round(float(j.d_ortg.corr(j.ortg)), 3),
+                ortg_mae=round(float((j.d_ortg - j.ortg).abs().mean()), 2),
+                net_r=round(float(j.d_net.corr(j.net)), 3),
+                net_mae=round(float((j.d_net - j.net).abs().mean()), 2))
+
+
+def lineup_audit(poss: pd.DataFrame) -> dict:
+    """Assert every possession carries exactly five players a side.
+
+    This is the check that should have existed from the start. The lineup
+    dimension has no convenient scalar to compare against pbpstats -- team
+    possession counts and points are insensitive to *which* five were on the
+    floor -- so it went unvalidated, and a substitution-ordering bug attributed
+    7.3% of possessions to the lineup that replaced the one which played them.
+    An internal invariant needs no external reference at all.
+
+    `replay_game` snapshots at the possession's opening event, so a lineup can
+    only be wrong here if the substitution stream itself is incomplete, which
+    shows up as a side holding other than five players.
+    """
+    off_bad = poss[poss.off_lineup.map(len) != 5]
+    def_bad = poss[poss.def_lineup.map(len) != 5]
+    return dict(possessions=len(poss),
+                off_lineups_not_five=len(off_bad),
+                def_lineups_not_five=len(def_bad),
+                clean=bool(len(off_bad) == 0 and len(def_bad) == 0))
 
 
 def validate(poss: pd.DataFrame) -> dict:

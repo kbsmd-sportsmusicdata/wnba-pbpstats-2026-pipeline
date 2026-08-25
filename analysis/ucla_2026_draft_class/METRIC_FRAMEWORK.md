@@ -1,20 +1,20 @@
 # Metric framework — UCLA 2026 draft class
 
-Scope: 2026 WNBA regular season through **2026-08-23** (281 team games in the
+Scope: 2026 WNBA regular season through **2026-08-24** (283 team games in the
 pbpstats spine, 15 teams, 37–39 games played per club).
 
 ## 1. Which source layer to trust for what
 
 | Layer | Path | Coverage | Use it for |
 |---|---|---|---|
-| **pbpstats player-game** | `data/processed/wnba_pbpstats_player_game/season=2026/player_game.parquet` | **281 games, full season**, 229 players, 252 cols | Primary. Everything individual + on-court team rating |
-| **pbpstats team-game** | `data/processed/wnba_pbpstats_team_game/season=2026/team_game.parquet` | 281 games, 562 rows | Team denominators, on/off arithmetic, team style |
+| **pbpstats player-game** | `data/processed/wnba_pbpstats_player_game/season=2026/player_game.parquet` | **283 games, full season**, 229 players, 252 cols | Primary. Everything individual + on-court team rating |
+| **pbpstats team-game** | `data/processed/wnba_pbpstats_team_game/season=2026/team_game.parquet` | 283 games, 566 rows | Team denominators, on/off arithmetic, team style |
 | pbpstats season features | `data/pbpstats_wnba_2026/features_latest/2026/player_totals_features_latest.csv` | Full season, 311 cols | Pre-built shot-diet shares, shot-quality, percentiles, labels |
 | Derived team-game | `data/processed/wnba_team_game/season=2026/team_game.parquet` | Full season | Four Factors, pace, rest days, back-to-backs, record-to-date |
 | ESPN bio / draft | `analysis/role_fulfillment_matrix/data/live_inputs/player_core_2026.csv` | 232 players | **The only source of `college_id`, `draft_year`, `draft_round`, `draft_selection`, `experience_years`** |
 | ESPN player box | `data/raw/sportsdataverse/wnba_2026/player_box_2026.parquet` | Full season | **`starter` flag and DNPs — pbpstats has neither** |
-| Possessions | `data/raw/sportsdataverse/wnba_2026/wnba_possessions_2026.parquet` | ⚠ **202 of 281 games (through mid-July)** | Lineup co-presence, opponent shot profile on/off |
-| Lineups | `data/raw/sportsdataverse/wnba_2026/wnba_lineups_2026.parquet` | ⚠ 195 of 281 games | Stint construction |
+| Possessions | `data/raw/sportsdataverse/wnba_2026/wnba_possessions_2026.parquet` | ⚠ **202 of 283 games (through mid-July)** | Lineup co-presence, opponent shot profile on/off |
+| Lineups | `data/raw/sportsdataverse/wnba_2026/wnba_lineups_2026.parquet` | ⚠ 195 of 283 games | Stint construction |
 | Player impact | `data/raw/sportsdataverse/wnba_2026/wnba_player_impact_2026.parquet` | ⚠ **gp ≤ 29 (through mid-July)** | RAPM, WAR — secondary only |
 
 **Identity crosswalk.** pbpstats `player_id` (e.g. `1643427`) and ESPN
@@ -52,7 +52,7 @@ scores in) · `recovered_blocks ÷ blocks` (blocks your team keeps) ·
 ### Tier 3 — impact
 
 **Use the in-repo layer**, not the frozen parquet: `rapm`, `rapm_scaled`, `waa`
-and `war` from `impact_rapm_war_2026.csv`, rebuilt on all 281 games from the
+and `war` from `impact_rapm_war_2026.csv`, rebuilt on all 283 games from the
 derived possessions. Read ranks and tiers — split-half reliability is 0.64.
 Quote `waa` in preference to `war`, which carries a replacement convention. Use
 `rapm` for ordering and `rapm_scaled` for magnitudes; they differ by the 0.64
@@ -91,7 +91,7 @@ net_swing       = (on_ortg − on_drtg) − (off_ortg − off_drtg)
 
 Validated: summing on-court points across a team's players and dividing by
 five reproduces the team's game total exactly. This matters because it gives a
-**full-season** on/off (281 games) where the possessions parquet would cap you
+**full-season** on/off (283 games) where the possessions parquet would cap you
 at 202. Implementation: `scripts/ucla_2026_draft_class/onoff.py`.
 
 **Possession-weighted season rates.** Every rate is rebuilt from summed

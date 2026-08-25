@@ -44,6 +44,11 @@ def load_truth() -> dict:
         "through": str(pd.to_datetime(pg.game_date).max().date()),
         "possessions": int(derived["possessions"]),
         "team_games_validated": int(derived["validation"]["team_games"]),
+        "player_poss_r": float(derived["validation"]["player_poss_corr"]),
+        "season_ortg_r": float(derived["validation"]["season_ratings"]["ortg_r"]),
+        "season_ortg_mae": float(derived["validation"]["season_ratings"]["ortg_mae"]),
+        "season_net_r": float(derived["validation"]["season_ratings"]["net_r"]),
+        "season_net_mae": float(derived["validation"]["season_ratings"]["net_mae"]),
         "league_pool": int(story["league_pool_size"]),
         "rookie_pool": int(story["rookie_pool_size"]),
         "rookie_population": int(story["rookie_population"]),
@@ -71,6 +76,13 @@ def checks(t: dict) -> list[tuple[str, str, str]]:
         ("EDA_FINDINGS_PBPSTATS_ONLY.md", rf"202/{g} games", "frozen-possessions ratio"),
         ("EDA_FINDINGS_PBPSTATS_ONLY.md", re.escape(t["through"]), "coverage date"),
         ("DERIVED_POSSESSIONS.md", rf"{t['team_games_validated']} team-games", "validated team-games"),
+        # this table sat in the document for several vintages with no script
+        # producing it, so it could not be regenerated and went stale unnoticed
+        ("DERIVED_POSSESSIONS.md", rf"{t['season_ortg_r']:.3f}, MAE {t['season_ortg_mae']:.2f}",
+         "season on-court ORtg check"),
+        ("DERIVED_POSSESSIONS.md", rf"{t['season_net_r']:.3f}, MAE {t['season_net_mae']:.2f}",
+         "season on-court NET check"),
+        ("DERIVED_POSSESSIONS.md", rf"\br = {t['player_poss_r']:.4f}\b", "player-game possession check"),
         ("DERIVED_POSSESSIONS.md", rf"{p:,} possessions", "possession count"),
         ("DERIVED_POSSESSIONS.md", rf"\|\s*{t['noise_all_n']}\s*\|", "all-players noise sample"),
         ("DERIVED_POSSESSIONS.md", rf"\|\s*{t['noise_ever_n']}\s*\|", "ever-present noise sample"),
@@ -223,7 +235,19 @@ def _plain(body: str) -> str:
 
 
 def prose_check(text: dict[str, str]) -> list[str]:
-    """No document may describe the open-ended return window as a closed range."""
+    """Best-effort lint for the closed-range *forms* that have appeared so far.
+
+    Deliberately not a guarantee, and the docstring said otherwise for five
+    rounds of review. It matches digits, cardinal number words and g-ranges
+    after markdown normalisation; English has unbounded other ways to write a
+    fixed count ("a dozen", "a handful of", "half a dozen"), so prose can always
+    be phrased around it. Claiming a guarantee here is what made four
+    "confirmed and fixed" replies sound conclusive when each had only closed one
+    lexical hole.
+
+    The enforceable check is `label_check`, which reads the exports' actual
+    block labels rather than commentary about them.
+    """
     bad = []
     for f, raw in text.items():
         body = _plain(raw)

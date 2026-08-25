@@ -173,12 +173,12 @@ grep for the concept before implementing it would have caught both.
 
 ---
 
-## 5. Replay correctness and overclaimed interface (2 findings, both open)
+## 5. Replay correctness and overclaimed interface (2 findings)
 
 | # | Finding | Status |
 |---|---|---|
-| #40-1 **(P1)** | In `replay_game()`, a `Substitution` mutates `on[tid]` immediately, but the preceding possession has not yet been flushed — `flush()` fires only when the ball changes hands or the period ends, and it reads `on[off_team]` *at flush time*. Any substitution logged between a possession's last event and the opponent's next informative event is therefore attributed backwards into the completed possession. | **Open and confirmed.** Measured: **3,354 of 45,643 possessions (7.3%) carry a contaminated lineup** — 4.6% offensive, 4.8% defensive — covering **8.7% of all points**. Substitutions cluster at dead balls, which is precisely after made baskets and fouls, so this is common rather than incidental. It feeds every duo split and the RAPM design matrix. |
-| #40-2 | `DERIVED_POSSESSIONS.md` calls the layer "a drop-in replacement for `wnba_possessions_2026.parquet` … so it can feed any analysis the frozen file used to." It emits `off_team`/`def_team` and list-valued `off_lineup`/`def_lineup`; `run_possessions.py` requires `count_as_possession`, `offense_team_id`, `defense_team_id`, and `off_player_1`…`def_player_5`. | **Open and confirmed.** Substituting the file raises missing-column errors immediately. |
+| #40-1 **(P1)** | In `replay_game()`, a `Substitution` mutates `on[tid]` immediately, but the preceding possession has not yet been flushed — `flush()` fires only when the ball changes hands or the period ends, and it reads `on[off_team]` *at flush time*. Any substitution logged between a possession's last event and the opponent's next informative event is therefore attributed backwards into the completed possession. | **Confirmed, then fixed.** Measured first: **3,354 of 45,643 possessions (7.3%) carried a contaminated lineup** — 4.6% offensive, 4.8% defensive — covering **8.7% of all points**. Substitutions cluster at dead balls, which is precisely after made baskets and fouls, so this was common rather than incidental. `replay_game()` now snapshots both lineups when a possession opens and `flush()` reads that snapshot. See §10 for what it moved. |
+| #40-2 | `DERIVED_POSSESSIONS.md` calls the layer "a drop-in replacement for `wnba_possessions_2026.parquet` … so it can feed any analysis the frozen file used to." It emits `off_team`/`def_team` and list-valued `off_lineup`/`def_lineup`; `run_possessions.py` requires `count_as_possession`, `offense_team_id`, `defense_team_id`, and `off_player_1`…`def_player_5`. | **Open and confirmed.** Substituting the file raises missing-column errors immediately. Still open: the claim needs narrowing or the schema needs emitting. |
 
 **Why my checks missed #40-1.** The validation suite compared reconstructed
 possessions against pbpstats at two levels: team-game possession and point totals
@@ -416,3 +416,64 @@ measure of how durable a blind spot is once it has been named out loud, in
 writing, by the person holding it. That is not an argument against writing the
 retrospective. It is an argument for sending it through the same review as the
 code, and for treating every bug report as a sample rather than a specification.
+
+---
+
+## 10. The P1 fix, and what it moved
+
+`replay_game()` now snapshots both lineups at the possession's opening event;
+`flush()` reads that snapshot instead of live state. Three conventions were
+scored against pbpstats player on-court possessions before choosing — lineup at
+flush (the bug), at the possession's first event, and at its last:
+
+| Convention | Player-poss MAE | corr | Mean bias |
+|---|---:|---:|---:|
+| At flush (the bug) | 1.194 | 0.99726 | +2.60% |
+| **At possession start (chosen)** | **0.962** | **0.99830** | **+1.57%** |
+| At possession's last event | 0.925 | 0.99833 | +2.09% |
+
+`last` edges it on MAE and loses on bias; `start` is also the standard
+convention, so it wins on both grounds that matter.
+
+**Effect on the impact layer**, fitted on both layers with data otherwise
+identical:
+
+| | Buggy | Fixed |
+|---|---:|---:|
+| Ridge penalty λ | 4,000 | **2,000** |
+| Attenuation, offence / defence | 0.650 / 0.659 | **0.789 / 0.803** |
+| Team additivity MAE, raw ridge | 2.14 | **1.36** |
+| RAPM standard deviation | 1.007 | **1.650** |
+| Split-half reliability, 200+ poss | 0.643 | 0.586 |
+
+Every validity measure improved sharply and the one stability measure got
+worse, which is the honest shape of this trade: correcting the lineups halved
+the cross-validated penalty, and less shrinkage always costs split-half
+reliability. Attenuation and additivity say whether the estimate is aimed at
+the right thing; reliability says how repeatably you can hit it.
+
+Player RAPM moved by 0.66 on average and 2.96 at most, with Spearman rank
+correlation 0.905 between the two versions. The league picture survived; the
+ordering *within* the six did not. `IMPACT_LAYER.md` previously said Jaquez
+graded best of the six and Leger-Walker worst — both now wrong. Six players
+inside a 1.5-point band was never resolvable at reliability 0.59, which the
+document's own caveat 1 already said and this reshuffle demonstrates.
+
+Betts + Dugalic, the one pairing finding called publishable, moved from −16.8
+to −20.0 and held its sign and rough magnitude. Every *other* duo gap shrank,
+which is the direction to expect: the bug blended adjacent lineups, and
+blending exaggerates a split whenever the two states differ.
+
+**Two checks were added rather than one fix shipped**, because rules 15–17 were
+written about exactly this gap:
+
+- `lineup_audit()` — asserts every possession carries five players a side, and
+  the runner now aborts if it does not. An internal invariant needing no
+  external reference; twenty lines, and it would have caught this on day one.
+- `season_rating_check()` — the season on-court ORtg/NET comparison table had
+  lived in `DERIVED_POSSESSIONS.md` for several vintages *with no script
+  producing it*, so it could not be regenerated and had gone stale unnoticed.
+  It is now computed into the manifest and held by three `verify_docs` checks.
+
+That second one is its own small lesson: an unreproducible number in a
+validation table is worse than no number, because it looks like evidence.
