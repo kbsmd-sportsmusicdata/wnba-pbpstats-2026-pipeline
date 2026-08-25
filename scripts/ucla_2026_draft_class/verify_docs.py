@@ -199,13 +199,27 @@ CLOSED_WINDOW_PROSE = re.compile(
     re.I)
 
 
+# Markdown emphasis, in every form these documents use. Underscore is special:
+# it is emphasis only at a word edge, so "_thirteen_" is stripped while the
+# underscores in "off_player_1" are left alone. No alternative can match a
+# newline, so line numbers derived from the result still point at the right
+# source line.
+_EMPHASIS = re.compile(
+    r"</?[A-Za-z][^>\n]*>"      # inline HTML: <b>, </em>
+    r"|[*`~]+"                  # bold/italic, code, strikethrough
+    r"|(?<!\w)_+|_+(?!\w)"      # underscore emphasis, never intraword
+)
+
+
 def _plain(body: str) -> str:
     """Strip markdown emphasis so "**thirteen** games" reads as a count.
 
-    Only characters that can never be newlines are removed, so line numbers
-    derived from the result still point at the right source line.
+    Matching a count against raw markdown is what let two stale-count shapes
+    through already: the marker sits between the number and the noun, so the
+    pattern never sees them adjacent. Normalise once here rather than teaching
+    the count pattern about markup.
     """
-    return re.sub(r"[*`]+", "", body)
+    return _EMPHASIS.sub("", body)
 
 
 def prose_check(text: dict[str, str]) -> list[str]:

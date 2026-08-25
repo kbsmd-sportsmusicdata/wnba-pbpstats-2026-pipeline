@@ -301,42 +301,45 @@ Ordered by leverage, for this module and for sibling analysis modules.
 5. Reject obsolete values; do not merely confirm a fresh one is present somewhere.
 6. Negative-test every check by reintroducing the bug it targets, and assert the
    file actually changed before trusting the result.
-7. Re-read each docstring against its implementation: does the pattern cover the
+7. Test the *space*, not the reported case. A finding is a sample: enumerate the
+   dimensions it came from (every emphasis form × every count shape) and test the
+   cross-product. Fixing the named example is how one finding becomes four.
+8. Re-read each docstring against its implementation: does the pattern cover the
    class the sentence promises, or only the instance you last saw?
-8. Make exemption lists self-checking, so a stale exemption is itself reported.
+9. Make exemption lists self-checking, so a stale exemption is itself reported.
 
 **Modelling**
-9. Every term gets its own exposure. Offensive coefficients take offensive
+10. Every term gets its own exposure. Offensive coefficients take offensive
    possessions; defensive take defensive; net quantities take the mean.
-10. Cross-validation folds go at the grain correlation lives at — by game, never
+11. Cross-validation folds go at the grain correlation lives at — by game, never
     by row.
-11. Calibrate each side against its own aggregate, not a combined one through a
+12. Calibrate each side against its own aggregate, not a combined one through a
     single side's lineups.
-12. Include the nuisance controls the design demands (home court), unpenalised.
-13. Write at least one check at the *unit* grain — per player, per possession —
+13. Include the nuisance controls the design demands (home court), unpenalised.
+14. Write at least one check at the *unit* grain — per player, per possession —
     because aggregate invariants cannot see errors that cancel.
-14. Before concluding a dimension is unverifiable, check whether a superseded or
+15. Before concluding a dimension is unverifiable, check whether a superseded or
     partial-coverage dataset can still validate it over the overlap. A file you
     are replacing is still a reference for the range it does cover — being framed
     as the problem is what makes it invisible as a resource.
-15. Failing that, check the dimension internally. Absence of an external
+16. Failing that, check the dimension internally. Absence of an external
     reference is not absence of a testable property, and an internal invariant
     (snapshot at start, assert at end) often needs no reference at all.
-16. Be suspicious when the dimensions you validated are exactly the ones that
+17. Be suspicious when the dimensions you validated are exactly the ones that
     were convenient to validate. That correlation is usually the explanation,
     not a coincidence.
 
 **Documentation**
-17. Regenerate prose after the last code change, not before it.
-18. When you hedge a claim, do not write past the hedge in the next clause.
+18. Regenerate prose after the last code change, not before it.
+19. When you hedge a claim, do not write past the hedge in the next clause.
 
 ---
 
 ## 9. Postscript: this document drew two findings of its own
 
-Codex reviewed the PR that added this file three times and raised three P2s.
-All were real. One is the document's own thesis landing on the document, and one
-is that thesis landing on the fix for the first.
+Codex reviewed the PR that added this file four times and raised four P2s. All
+were real. One is the document's own thesis landing on the document; the other
+three are that thesis landing, repeatedly, on the fixes for it.
 
 **The enumerate-don't-derive bug had recurred inside the fix that named it.**
 The #45-4 repair generalised the *range* half of `CLOSED_WINDOW_PROSE` properly
@@ -378,13 +381,38 @@ reported line number survived the markdown stripping (per rule 6): `thirteen`,
 **The co-presence diagnosis in §5 was wrong**, and wrong in a self-serving
 direction: I had written that the dimension went unchecked because no external
 reference existed. One did, for two thirds of the season. §5 now records the
-real reason, which is a worse one, and rules 14–16 replace the comfortable
+real reason, which is a worse one, and rules 15–17 replace the comfortable
 lesson I had drawn from the false version.
+
+**Round four: the normalisation was a third done.** Codex's round-three comment
+asked me to "normalize Markdown and recognize actual numeric/count phrases." I
+did the second half properly and the first half partially — `_plain()` stripped
+`*` and backticks and stopped there. So `_thirteen_ post-injury games` still
+evaded the check, because `_` is a regex word character and kills the `\b` the
+count pattern depends on. Probing the rest of the space before fixing it turned
+up two more shapes Codex had not named: `~~thirteen~~` and `<b>thirteen</b>`
+evaded it too.
+
+The fix normalises every emphasis form these documents use, with underscore
+handled at word edges only so `off_player_1` survives. Tested as a cross-product
+this time — 11 wrappers × 17 phrases = 187 cases, plus 6 end-to-end and a
+line-number check — rather than as the cases that happened to be named.
+
+That difference is the actual lesson of rounds two through four. Each of my three
+fixes addressed the example in front of me: `twelve` → extend past twelve;
+`**bold**` → strip asterisks. Each was a correct patch for the instance and left
+the class open, which is the same enumerate-don't-derive failure the document was
+written to record, committed three more times *while recording it*. The move that
+finally worked was to stop fixing the reported case and enumerate the space the
+reports were samples from.
+
+---
 
 The general shape is worth keeping. A retrospective is written by the same person
 whose judgement produced the errors, using the same judgement, and it will
 reproduce the same blind spots — in the act of describing them, and then again in
-the act of fixing that. Three rounds on one regex is the honest measure of how
-durable a blind spot is once it has been named out loud. That is not an argument
-against writing the retrospective. It is an argument for sending it through the
-same review as the code.
+each successive attempt to fix that. Four rounds on one regex is the honest
+measure of how durable a blind spot is once it has been named out loud, in
+writing, by the person holding it. That is not an argument against writing the
+retrospective. It is an argument for sending it through the same review as the
+code, and for treating every bug report as a sample rather than a specification.
