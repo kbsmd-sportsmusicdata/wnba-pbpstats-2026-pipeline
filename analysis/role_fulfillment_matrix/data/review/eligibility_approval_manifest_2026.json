@@ -9,9 +9,9 @@
   "review_status": "reviewed",
   "approved_by": "Krystal Beasley",
   "approved_at": "2026-08-22",
-  "last_updated_at": "2026-08-23",
-  "approved_rows": 229,
-  "eligible_players": 121,
+  "last_updated_at": "2026-08-24",
+  "approved_rows": 231,
+  "eligible_players": 123,
   "ineligible_players": 108,
   "pending_input": {
     "path": "analysis/role_fulfillment_matrix/data/review/player_eligibility_2026.pending.csv",
@@ -19,7 +19,7 @@
   },
   "crosswalk": {
     "path": "analysis/role_fulfillment_matrix/data/review/player_identity_crosswalk_2026.csv",
-    "sha256": "1f80e0b5ae7a41bfaf31114fdd91836866d64f4fefbc2152a27c5563cfca399e"
+    "sha256": "9ecd8a30f5c25ad0601ef1de35b9d1407830f52817682393f9dce74288c96799"
   },
   "build_manifest": {
     "path": "analysis/role_fulfillment_matrix/data/review/eligibility_build_manifest_2026.json",
@@ -27,7 +27,7 @@
   },
   "approved_output": {
     "path": "analysis/role_fulfillment_matrix/config/player_eligibility_2026.csv",
-    "sha256": "76306c71c1407addc927f3570fe2f6fb07fad83d3e9e3798d2913ee1520635de"
+    "sha256": "7066d68a182e511487f8d290bc474a51d40ea1049ea2aec1940d37273cb3ad2b"
   },
   "supplemental_reviews": [
     {
@@ -37,6 +37,16 @@
       "path": "analysis/role_fulfillment_matrix/data/review/eligibility_addendum_2026-08-23.csv",
       "sha256": "2b27123a1dc983d7e1028526fddaf07593ecb9613edabdf7f0e94810fd8e27c9",
       "identity_scope": "ESPN roster-only players without current PBPStats game records"
+    },
+    {
+      "reviewed_at": "2026-08-24",
+      "reviewed_by": "Krystal Beasley",
+      "rows": 2,
+      "path": "analysis/role_fulfillment_matrix/data/review/eligibility_coverage_addendum_2026-08-24.csv",
+      "sha256": "c3035a135d5bdf29ff1a40b1e4fe4b068607c298ead76be566d2e087426f057a",
+      "player_core_path": "analysis/role_fulfillment_matrix/data/review/player_core_coverage_addendum_2026-08-24.csv",
+      "player_core_sha256": "7cf12a1c7da752f4b9bf257f4253d533a15d455d6f67bfc4541dca5a9ceeac6a",
+      "identity_scope": "New PBPStats identities with WNBA rookie experience evidence; Michelle Onyiah alias manually reviewed"
     }
   ],
   "live_eligibility_status": "approved",

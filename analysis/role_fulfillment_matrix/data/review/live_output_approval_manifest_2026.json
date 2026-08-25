@@ -4,8 +4,15 @@
   "approved_by": "Krystal Beasley",
   "approved_at": "2026-08-23",
   "formula_version": "rfm-live-v1",
-  "approved_config_sha256": "a013dbd8ca8387f3d84a5b9280228592fbf416a70c49f548f40aff7bb01aa782",
+  "approved_config_sha256": "4abbb630ad5dafec63317fe8dae7a22890e8525aba659efd4f9dd7c009ee33c6",
   "end_to_end_review_status": "approved_19_player_review",
+  "eligibility_coverage_update": {
+    "review_status": "approved",
+    "reviewed_by": "Krystal Beasley",
+    "reviewed_at": "2026-08-24",
+    "eligibility_approval_manifest": "analysis/role_fulfillment_matrix/data/review/eligibility_approval_manifest_2026.json",
+    "next_live_gate": "michelle_onyiah_role_assignment_review"
+  },
   "approved_result_counts": {
     "live_scored": 11,
     "season_context_only": 5,

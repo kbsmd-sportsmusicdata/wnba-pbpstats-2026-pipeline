@@ -12,7 +12,10 @@
     "pbpstats_failures": "data/pbpstats_2026_player_game_logs/player_game_logs_failures.json",
     "locked_parity_inputs": "tests/fixtures/role_fulfillment_matrix/live_v1_11_player_inputs.csv",
     "roster": "analysis/role_fulfillment_matrix/data/live_inputs/player_core_2026.csv",
-    "roster_source_as_of": "2026-08-22",
+    "roster_addenda": [
+      "analysis/role_fulfillment_matrix/data/review/player_core_coverage_addendum_2026-08-24.csv"
+    ],
+    "roster_source_as_of": "2026-08-24",
     "eligibility": "analysis/role_fulfillment_matrix/config/player_eligibility_2026.csv",
     "role_assignments": "analysis/role_fulfillment_matrix/config/player_role_assignments_2026.csv",
     "role_definitions": "analysis/role_fulfillment_matrix/config/role_definitions_live_v1.json"

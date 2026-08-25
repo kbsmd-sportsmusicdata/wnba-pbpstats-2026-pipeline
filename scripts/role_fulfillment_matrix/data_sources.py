@@ -195,7 +195,17 @@ def _load_reviewed_live(config: Dict[str, Any]) -> LoadedSources:
         )
     except ValueError as exc:
         raise ContractError(str(exc)) from exc
-    paths = {key: resolve_path(value) for key, value in configured.items() if key != "roster_source_as_of"}
+    roster_addenda = configured.get("roster_addenda", [])
+    if not isinstance(roster_addenda, list) or not all(
+        isinstance(value, str) and value.strip() for value in roster_addenda
+    ):
+        raise ContractError("sources.roster_addenda must be a list of non-empty paths")
+    paths = {
+        key: resolve_path(value)
+        for key, value in configured.items()
+        if key not in {"roster_source_as_of", "roster_addenda"}
+    }
+    roster_addendum_paths = [resolve_path(value) for value in roster_addenda]
 
     raw_standings = _read_table(paths["standings"])
     standings_manifest = _read_json(paths["standings_manifest"])
@@ -258,8 +268,10 @@ def _load_reviewed_live(config: Dict[str, Any]) -> LoadedSources:
             f"live adapter locked parity failed for {len(parity) - parity_matches} players"
         )
 
+    roster_frames = [_read_table(paths["roster"])]
+    roster_frames.extend(_read_table(path) for path in roster_addendum_paths)
     roster_result = adapt_espn_roster(
-        _read_table(paths["roster"]),
+        pd.concat(roster_frames, ignore_index=True, sort=False),
         eligibility,
         raw_standings,
         source_as_of=str(configured.get("roster_source_as_of", "")),
@@ -307,6 +319,7 @@ def _load_reviewed_live(config: Dict[str, Any]) -> LoadedSources:
         },
         "roster_status": {
             "path": portable_path(paths["roster"]),
+            "addenda": [portable_path(path) for path in roster_addendum_paths],
             "rows": int(len(roster_result.roster)),
             "columns": int(len(roster_result.roster.columns)),
             "status": "current_roster_with_eligibility_coverage",

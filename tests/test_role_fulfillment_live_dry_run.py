@@ -346,6 +346,7 @@ class LiveSourceAdapterTest(unittest.TestCase):
             ingest_manifest_path = root / "ingest_manifest.json"
             failures_path = root / "failures.json"
             player_core_path = root / "player_core.csv"
+            player_core_addendum_path = root / "player_core_addendum.csv"
             eligibility_path = root / "eligibility.csv"
             assignments_path = root / "assignments.csv"
             parity_path = root / "locked_parity.csv"
@@ -365,7 +366,18 @@ class LiveSourceAdapterTest(unittest.TestCase):
             pd.DataFrame(
                 [{"athlete_id": "1001", "full_name": "Player One", "current_team_id": "17", "position_name": "Guard", "position_abbreviation": "G", "active": True, "status_type": "active"}]
             ).to_csv(player_core_path, index=False)
-            pd.DataFrame([self._eligibility_row()]).to_csv(eligibility_path, index=False)
+            pd.DataFrame(
+                [{"athlete_id": "1002", "full_name": "Player Two", "current_team_id": "17", "position_name": "Forward", "position_abbreviation": "F", "active": True, "status_type": "developmental"}]
+            ).to_csv(player_core_addendum_path, index=False)
+            pd.DataFrame([
+                self._eligibility_row(),
+                dict(
+                    self._eligibility_row(),
+                    player_id="p2",
+                    player_name="Player Two",
+                    espn_athlete_id="1002",
+                ),
+            ]).to_csv(eligibility_path, index=False)
             pd.DataFrame([self._assignment_row()]).to_csv(assignments_path, index=False)
             pd.DataFrame([self._locked_parity_row()]).to_csv(parity_path, index=False)
 
@@ -381,6 +393,7 @@ class LiveSourceAdapterTest(unittest.TestCase):
                 assignments_path=assignments_path,
                 parity_path=parity_path,
             )
+            config["sources"]["roster_addenda"] = [str(player_core_addendum_path)]
             sources = load_sources(config)
             analysis = build_analysis(config)
 
@@ -398,6 +411,11 @@ class LiveSourceAdapterTest(unittest.TestCase):
         self.assertEqual(sources.source_manifest["player_game"]["status"], "reviewed_live_adapter")
         self.assertEqual(sources.roster_status.loc[0, "team_abbreviation"], "LVA")
         self.assertEqual(sources.roster_status.loc[0, "position_abbreviation"], "G")
+        self.assertEqual(len(sources.roster_status), 2)
+        self.assertEqual(
+            sources.source_manifest["roster_status"]["addenda"],
+            [str(player_core_addendum_path.resolve())],
+        )
         self.assertEqual(analysis.funnel.loc[0, "position_name"], "Guard")
         self.assertEqual(sources.standings.loc[0, "cutoff_date"], "2026-08-21")
         self.assertEqual(analysis.manifest["mode"], "live_dry_run")
@@ -774,19 +792,19 @@ class LiveDryRunOutputTest(unittest.TestCase):
             manifest["adapter_audit"]["locked_parity_max_abs_difference"],
             0.000001,
         )
-        self.assertEqual(manifest["dry_run_gate_status"], "review_ready")
+        self.assertEqual(manifest["dry_run_gate_status"], "blocked")
         self.assertEqual(
             manifest["dry_run_gate_blockers"],
-            [],
+            ["current contender candidates without reviewed role assignments: 1"],
         )
-        self.assertEqual(manifest["funnel_counts"]["players_considered"], 232)
+        self.assertEqual(manifest["funnel_counts"]["players_considered"], 234)
         self.assertEqual(
             manifest["funnel_counts"].get("excluded_eligibility_not_reviewed", 0),
             0,
         )
         self.assertEqual(
             manifest["funnel_counts"].get("excluded_role_assignment_not_reviewed", 0),
-            0,
+            1,
         )
         self.assertEqual(
             manifest["funnel_counts"]["excluded_inactive_role_review_deferred"],
@@ -801,6 +819,8 @@ class LiveDryRunOutputTest(unittest.TestCase):
         self.assertIn("deferred while inactive", report)
         self.assertNotIn("Iliana Rupert", report)
         self.assertNotIn("reviewed eligibility row required", report)
+        self.assertIn("Michelle Onyiah (IND)", report)
+        self.assertIn("reviewed primary role assignment required", report)
         self.assertIn("Locked 11-player parity: 11 of 11", report)
         self.assertIn("Zero-omitted cells filled:", report)
         self.assertIn("Live-data dry run", html)

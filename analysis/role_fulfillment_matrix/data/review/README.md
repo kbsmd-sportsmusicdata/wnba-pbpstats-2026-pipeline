@@ -34,3 +34,8 @@ end-to-end dry-run gates are complete. The first manual live run completed on 20
 post-run review was explicitly approved on 2026-08-24; its approval and scheduling boundary are
 recorded in `manual_live_run_post_review_2026-08-23.md`. Live execution remains manual-only, and no
 recurring workflow is approved or enabled.
+
+Two newly visible PBPStats identities, Michelle Onyiah and Morgan Maly, were approved and promoted
+on 2026-08-24, including the Michelle Onyiah / Ugonne Onyiah alias match. The reviewed eligibility
+table now contains 231 rows, and the immutable base player-core snapshot is supplemented by the
+reviewed two-row player-core addendum.

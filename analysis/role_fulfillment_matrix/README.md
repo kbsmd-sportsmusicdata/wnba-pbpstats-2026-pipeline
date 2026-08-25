@@ -53,6 +53,8 @@ Review outputs:
 - `eligibility_build_manifest_2026.json`: rule, cutoff, source hash, coverage, and output hashes;
 - `eligibility_approval_manifest_2026.json`: reviewer, approval date, and promoted-table hash;
 - `eligibility_addendum_2026-08-23.csv`: reviewed Janiah Barker and Iliana Rupert roster-only rows;
+- `eligibility_coverage_addendum_2026-08-24.csv`: reviewed Michelle Onyiah and Morgan Maly rows;
+- `player_core_coverage_addendum_2026-08-24.csv`: reviewed roster context for those two identities;
 - `README.md`: reviewer checklist and promotion boundary.
 
 ## Build
