@@ -50,7 +50,8 @@ def load_truth() -> dict:
         "noise_all_n": int(noise["all_players"]["n"]),
         "noise_ever_n": int(noise["ever_present"]["n"]),
         "ridge_alpha": int(impact["ridge_alpha"]),
-        "attenuation": impact["attenuation"],
+        "attenuation_off": impact["attenuation_offense"],
+        "attenuation_def": impact["attenuation_defense"],
         "points_per_win": impact["points_per_win"]["points_per_win"],
         "ppw_r2": impact["points_per_win"]["r2"],
         "replacement": impact["replacement_rapm"],
@@ -88,7 +89,10 @@ def checks(t: dict) -> list[tuple[str, str, str]]:
         # the penalty may be written with or without a thousands separator
         ("IMPACT_LAYER.md", rf"\u03bb = {t['ridge_alpha']:,}|\u03bb = {t['ridge_alpha']}",
          "cross-validated ridge penalty"),
-        ("IMPACT_LAYER.md", rf"{round(t['attenuation'] * 100)}%", "ridge attenuation"),
+        ("IMPACT_LAYER.md", re.escape(f"{t['attenuation_off']:.3f}"),
+         "offensive ridge attenuation"),
+        ("IMPACT_LAYER.md", re.escape(f"{t['attenuation_def']:.3f}"),
+         "defensive ridge attenuation"),
         ("IMPACT_LAYER.md", re.escape(f"{t['points_per_win']:.2f}"), "points per win"),
         ("IMPACT_LAYER.md", re.escape(f"{t['ppw_r2']:.3f}"), "points-per-win fit quality"),
         # the documents use a typographic minus; accept either character

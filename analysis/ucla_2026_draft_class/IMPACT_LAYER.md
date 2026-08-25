@@ -43,9 +43,16 @@ calibration in `derive_possessions.py`, so everything sits on the pbpstats
 scale.
 
 The penalty is **chosen by 5-fold cross-validation, not assumed** — λ = 4000
-minimises weighted out-of-sample MSE across the grid 500–32,000.
+minimises weighted out-of-sample MSE across the grid 500–32,000. Folds are
+assigned **by game, not by row**: possessions within a game share lineups and
+context, so a random row split leaks them across the boundary and the curve
+stops describing out-of-game performance. `scripts/possession_impact/rapm.py`
+already established that convention in this repo, so its `game_folds` helper is
+reused rather than reimplemented.
 
-Two details are easy to get wrong and both were caught by the checks in §3:
+Three details are easy to get wrong. Each is a place where a player's two
+possession counts, or the two coefficient blocks, cannot be used
+interchangeably:
 
 **Centring.** Ridge fixes only the *sum* of the offensive and defensive blocks
 against the intercept, not where league average sits within each. Left alone
@@ -55,14 +62,27 @@ possession-weighted mean of zero, so league-average impact is exactly zero and
 league-wide wins-above-average sums to zero.
 
 **Scale.** Ridge deliberately shrinks. Aggregating the fitted coefficients back
-to team level reproduces team net rating ordering almost perfectly (r = 0.995)
-but spans only **64%** of the real spread. That is the bias half of the
-bias-variance trade, and it matters the moment you convert to wins: a
-replacement level of −2.0 is expressed in *real* points per 100, so applying it
-to shrunk coefficients would compare two different scales. The table therefore
-carries both `rapm` (raw estimator, for ranking) and `rapm_scaled` (divided by
-the 0.64 attenuation, for magnitudes), and **WAR is computed from the scaled
-column**.
+to team level reproduces team rating ordering almost perfectly (r = 0.995 on
+offence, 0.993 on defence) but spans only about **65%** of the real spread —
+0.647 on offence and 0.654 on defence, estimated separately because the two
+need not shrink alike. That is the bias half of the bias-variance trade, and it
+matters the moment you convert to wins: a replacement level of −2.0 is
+expressed in *real* points per 100, so applying it to shrunk coefficients would
+compare two different scales. The table therefore carries both `rapm` (raw
+estimator, for ranking) and `rapm_scaled` (each side divided by its own
+attenuation, for magnitudes), and **WAR is computed from the scaled columns**.
+
+Each side is aggregated through its own lineups and its own possession counts.
+A team's offensive exposure is not its defensive exposure, so pushing the
+combined coefficient through the offensive lineup alone would measure something
+that is not the additive model's attenuation.
+
+**Exposure.** A player's offensive and defensive possession counts differ —
+substitutions land between possessions and periods end unevenly. The median gap
+is small (about 1.5%) but it is not zero, so each coefficient is charged
+against its own count: WAA is `o_rapm_scaled × off_poss + d_rapm_scaled ×
+def_poss`, and the replacement rate, being a net quantity, is charged against
+the mean of the two.
 
 ## 3. Validation
 
@@ -70,8 +90,9 @@ column**.
 |---|---|
 | Possession-weighted mean RAPM | **0.0000** (centred by construction) |
 | League-wide WAA | **0.00** (sums to zero, as it must) |
-| Team additivity, raw ridge | r = 0.995, MAE 2.16, attenuation 0.64 |
-| Team additivity, calibrated | r = 0.995, **MAE 0.47** |
+| Team additivity, raw ridge (net) | r = 0.995, MAE 2.16, attenuation 0.64 |
+| Team additivity, raw ridge (per side) | offence r = 0.995 / 0.647; defence r = 0.993 / 0.654 |
+| Team additivity, calibrated (net) | r = 0.995, **MAE 0.49** |
 | o_rapm + d_rapm = rapm | max residual 4.4e-16 |
 | vs. the frozen sportsdataverse RAPM | r = 0.654 over different windows (n = 144) |
 
@@ -110,7 +131,7 @@ Sensitivity of the UCLA six's combined WAR to the choice:
 
 | Replacement | −1.0 | −1.5 | **−2.0** | −2.5 | −3.0 |
 |---|---:|---:|---:|---:|---:|
-| Six combined WAR | −1.43 | −0.37 | **+0.70** | +1.76 | +2.82 |
+| Six combined WAR | −1.40 | −0.34 | **+0.72** | +1.78 | +2.84 |
 
 The sign flips inside the plausible range. **Prefer WAA** — it needs no
 convention at all — and quote WAR only with the replacement level stated.
@@ -121,16 +142,16 @@ League leaders, 1000+ possessions:
 
 | Player | Team | Poss | O | D | RAPM | Scaled | WAR |
 |---|:--:|---:|---:|---:|---:|---:|---:|
-| Jackie Young | LVA | 2,447 | +2.17 | +1.17 | **+3.35** | +5.23 | 5.92 |
-| Natasha Howard | MIN | 2,210 | +1.72 | +1.19 | **+2.91** | +4.54 | 4.84 |
-| Olivia Miles | MIN | 2,213 | +1.62 | +0.92 | **+2.54** | +3.96 | 4.42 |
-| A'ja Wilson | LVA | 2,287 | +2.24 | +0.18 | **+2.42** | +3.79 | 4.43 |
-| Angel Reese | ATL | 2,266 | +0.19 | +2.02 | **+2.21** | +3.46 | 4.14 |
-| Veronica Burton | GSV | 1,895 | +0.64 | +1.50 | **+2.14** | +3.35 | 3.39 |
-| Kelsey Mitchell | IND | 2,617 | +2.40 | −0.33 | **+2.07** | +3.24 | 4.59 |
-| Kayla Thornton | GSV | 1,637 | +0.34 | +1.56 | **+1.90** | +2.96 | 2.72 |
-| Jordin Canada | ATL | 2,255 | +1.24 | +0.65 | **+1.89** | +2.95 | 3.74 |
-| Kayla McBride | MIN | 2,468 | +1.67 | +0.19 | **+1.86** | +2.91 | 4.06 |
+| Jackie Young | LVA | 2,447 | +2.17 | +1.17 | **+3.35** | +5.14 | 5.89 |
+| Natasha Howard | MIN | 2,210 | +1.72 | +1.19 | **+2.91** | +4.47 | 4.81 |
+| Olivia Miles | MIN | 2,213 | +1.62 | +0.92 | **+2.54** | +3.91 | 4.39 |
+| A'ja Wilson | LVA | 2,287 | +2.24 | +0.18 | **+2.42** | +3.74 | 4.41 |
+| Angel Reese | ATL | 2,266 | +0.19 | +2.02 | **+2.21** | +3.38 | 4.10 |
+| Veronica Burton | GSV | 1,895 | +0.64 | +1.50 | **+2.14** | +3.28 | 3.36 |
+| Kelsey Mitchell | IND | 2,617 | +2.40 | −0.33 | **+2.07** | +3.21 | 4.57 |
+| Kayla Thornton | GSV | 1,637 | +0.34 | +1.56 | **+1.90** | +2.91 | 2.70 |
+| Jordin Canada | ATL | 2,255 | +1.24 | +0.65 | **+1.89** | +2.91 | 3.72 |
+| Kayla McBride | MIN | 2,468 | +1.67 | +0.19 | **+1.86** | +2.88 | 4.04 |
 
 Olivia Miles is the only rookie in the top ten — worth noting given she went
 second in the same draft as the six.
@@ -139,12 +160,12 @@ second in the same draft as the six.
 
 | Player | Team | Poss | O | D | RAPM | Pctile | WAA | WAR |
 |---|:--:|---:|---:|---:|---:|---:|---:|---:|
-| Gabriela Jaquez | CHI | 1,258 | −0.85 | +0.66 | **−0.19** | 56 | −0.13 | +0.72 |
-| Kiki Rice | TOR | 1,088 | +0.08 | −0.84 | **−0.76** | 35 | −0.43 | +0.29 |
-| Lauren Betts | WAS | 1,220 | −1.44 | +0.63 | **−0.81** | 32 | −0.52 | +0.30 |
-| Gianna Kneepkens | CON | 483 | −1.16 | +0.07 | **−1.10** | 20 | −0.28 | +0.05 |
-| Angela Dugalic | WAS | 620 | −1.26 | −0.53 | **−1.79** | 7 | −0.58 | −0.16 |
-| Charlisse Leger-Walker | CON | 1,673 | −1.55 | −0.30 | **−1.85** | 5 | −1.62 | −0.50 |
+| Gabriela Jaquez | CHI | 1,258 | −0.85 | +0.66 | **−0.19** | 56 | −0.13 | +0.71 |
+| Kiki Rice | TOR | 1,088 | +0.08 | −0.84 | **−0.76** | 35 | −0.43 | +0.30 |
+| Lauren Betts | WAS | 1,220 | −1.44 | +0.63 | **−0.81** | 32 | −0.52 | +0.29 |
+| Gianna Kneepkens | CON | 483 | −1.16 | +0.07 | **−1.10** | 20 | −0.27 | +0.05 |
+| Angela Dugalic | WAS | 620 | −1.26 | −0.53 | **−1.79** | 7 | −0.57 | −0.16 |
+| Charlisse Leger-Walker | CON | 1,673 | −1.55 | −0.30 | **−1.85** | 5 | −1.60 | −0.48 |
 
 Percentile is against the 179 players with 200+ possessions.
 
@@ -171,12 +192,15 @@ was out there; on/off does not. Neither is decisive at this sample.
 1. **Reliability is 0.64.** Single-season RAPM. Ranks and tiers, not decimals.
 2. **Two scales exist on purpose.** `rapm` for ordering, `rapm_scaled` for
    magnitudes and wins. Do not mix them in one chart.
-3. **WAR carries a convention.** State the replacement level or quote WAA.
-4. **Two of 229 players have no crosswalk name.** They receive coefficients and
+3. **`off_poss` and `def_poss` are not interchangeable.** They differ by about
+   1.5% at the median. `poss` is retained as an alias for `off_poss` for
+   convenience, but wins are computed from both.
+4. **WAR carries a convention.** State the replacement level or quote WAA.
+5. **Two of 229 players have no crosswalk name.** They receive coefficients and
    are included in all league aggregates; only their label is missing.
-5. **Attenuation is estimated from 15 team-seasons.** The 0.64 factor is itself
-   a small-sample estimate.
-6. This does not replace the exact pbpstats on/off for single-player questions.
+6. **Attenuation is estimated from 15 team-seasons.** The 0.647 / 0.654
+   factors are themselves small-sample estimates.
+7. This does not replace the exact pbpstats on/off for single-player questions.
    RAPM answers a different question — impact adjusted for teammates and
    opponents — and the two disagreeing is information, not error.
 

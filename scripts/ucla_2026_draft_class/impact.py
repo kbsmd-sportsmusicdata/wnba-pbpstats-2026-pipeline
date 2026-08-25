@@ -48,11 +48,12 @@ import numpy as np
 import pandas as pd
 from scipy import sparse
 from sklearn.linear_model import Ridge
-from sklearn.model_selection import KFold
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts" / "ucla_2026_draft_class"))
+sys.path.insert(0, str(ROOT / "scripts" / "possession_impact"))
 import derive_possessions as dp  # noqa: E402
+from rapm import game_folds  # noqa: E402  (this repo's existing convention)
 
 OUT = ROOT / "analysis" / "ucla_2026_draft_class" / "data"
 POSS = OUT / "derived_possessions_2026.parquet"
@@ -96,13 +97,22 @@ def design_matrix(poss: pd.DataFrame):
     return X, y, w, players
 
 
-def fit_rapm(X, y, w, alphas=ALPHAS, seed=0):
-    """Choose the ridge penalty by cross-validation, then fit on everything."""
-    kf = KFold(5, shuffle=True, random_state=seed)
+def fit_rapm(X, y, w, game_ids, alphas=ALPHAS, seed=0, folds=5):
+    """Choose the ridge penalty by cross-validation, then fit on everything.
+
+    Folds are assigned by game, not by row. Possessions within a game share
+    lineups and game context, so splitting them at random leaks information
+    into the held-out set and the curve stops describing out-of-game
+    performance. `scripts/possession_impact/rapm.py` already established this
+    convention in the repo, so its helper is reused rather than reimplemented.
+    """
+    assignment = game_folds(game_ids, folds, seed)
     curve = {}
     for a in alphas:
         errs = []
-        for tr, te in kf.split(np.arange(X.shape[0])):
+        for k in range(folds):
+            tr = np.where(assignment != k)[0]
+            te = np.where(assignment == k)[0]
             m = Ridge(alpha=a, solver="sparse_cg", max_iter=2000)
             m.fit(X[tr], y[tr], sample_weight=w[tr])
             errs.append(np.average((y[te] - m.predict(X[te])) ** 2, weights=w[te]))
@@ -113,7 +123,8 @@ def fit_rapm(X, y, w, alphas=ALPHAS, seed=0):
     return model, best, curve
 
 
-def coefficients(model, players, weights: pd.Series | None = None) -> pd.DataFrame:
+def coefficients(model, players, off_w: pd.Series | None = None,
+                 def_w: pd.Series | None = None) -> pd.DataFrame:
     """Player coefficients, sign-aligned and centred.
 
     A defensive coefficient lowers opponent scoring, so its sign is flipped to
@@ -126,22 +137,35 @@ def coefficients(model, players, weights: pd.Series | None = None) -> pd.DataFra
     silently inflates (or deflates) every WAR. Each block is therefore centred
     to a possession-weighted mean of zero, which makes league-average impact
     exactly zero and league-wide wins-above-average sum to zero.
+
+    Each block is centred against *its own* exposure. Weighting the defensive
+    block by offensive possessions would leave a small residual, for the same
+    reason a player's two possession counts cannot be used interchangeably
+    anywhere else in this module.
     """
     n = len(players)
     df = pd.DataFrame({"espn_id": players, "o_rapm": model.coef_[:n],
                        "d_rapm": -model.coef_[n:]})
-    if weights is not None:
+    for col, weights in (("o_rapm", off_w), ("d_rapm", def_w if def_w is not None else off_w)):
+        if weights is None:
+            continue
         w = df.espn_id.map(weights).fillna(0).values
         if w.sum() > 0:
-            for c in ("o_rapm", "d_rapm"):
-                df[c] = df[c] - np.average(df[c], weights=w)
+            df[col] = df[col] - np.average(df[col], weights=w)
     df["rapm"] = df.o_rapm + df.d_rapm
     return df
 
 
-def possession_counts(poss: pd.DataFrame) -> pd.Series:
-    off = poss[["off_lineup", "poss_weight"]].explode("off_lineup")
-    return off.groupby("off_lineup").poss_weight.sum()
+def possession_counts(poss: pd.DataFrame, side: str = "off") -> pd.Series:
+    """Calibrated possessions a player was on the floor for, per side.
+
+    Offensive and defensive exposure are not identical -- substitutions land
+    between possessions and periods end unevenly -- so each coefficient has to
+    be charged against its own count rather than a single shared one.
+    """
+    col = f"{side}_lineup"
+    ex = poss[[col, "poss_weight"]].explode(col)
+    return ex.groupby(col).poss_weight.sum()
 
 
 def split_half_reliability(poss: pd.DataFrame, alpha: int) -> dict:
@@ -153,7 +177,8 @@ def split_half_reliability(poss: pd.DataFrame, alpha: int) -> dict:
         X, y, w, players = design_matrix(sub)
         m = Ridge(alpha=alpha, solver="sparse_cg", max_iter=5000)
         m.fit(X, y, sample_weight=w)
-        halves.append(coefficients(m, players, possession_counts(sub))
+        halves.append(coefficients(m, players, possession_counts(sub, "off"),
+                                   possession_counts(sub, "def"))
                       .set_index("espn_id").rapm)
     a, b = halves
     joined = pd.concat([a.rename("a"), b.rename("b")], axis=1).dropna()
@@ -188,36 +213,48 @@ def points_per_win(tg: pd.DataFrame) -> dict:
 
 
 def add_wins(rapm: pd.DataFrame, ppw: float,
-             replacement: float = REPLACEMENT_RAPM,
-             col: str = "rapm_scaled") -> pd.DataFrame:
+             replacement: float = REPLACEMENT_RAPM) -> pd.DataFrame:
     """Convert impact into wins.
 
-    Uses the calibrated column, not the raw ridge one. The replacement
-    convention is expressed in real points per 100 possessions, so applying it
-    to shrunk coefficients would compare quantities on two different scales and
-    silently compress every WAR toward the replacement line.
+    Two things this has to get right. It uses the calibrated columns, not the
+    raw ridge ones -- the replacement convention is expressed in real points
+    per 100, so applying it to shrunk coefficients would compare quantities on
+    two different scales. And it charges each component against its own
+    exposure: a player's offensive and defensive possession counts differ, so
+    multiplying the combined coefficient by one shared count would assign the
+    defensive rating the wrong workload.
     """
     d = rapm.copy()
-    d["marginal_pts_vs_average"] = d[col] * d.poss / 100
-    d["marginal_pts_vs_replacement"] = (d[col] - replacement) * d.poss / 100
+    d["marginal_pts_vs_average"] = (d.o_rapm_scaled * d.off_poss
+                                    + d.d_rapm_scaled * d.def_poss) / 100
+    # replacement is a net rate, so it is charged against time on the floor,
+    # taken as the mean of the two exposures
+    exposure = (d.off_poss + d.def_poss) / 2
+    d["marginal_pts_vs_replacement"] = (d.marginal_pts_vs_average
+                                        - replacement * exposure / 100)
     d["waa"] = d.marginal_pts_vs_average / ppw
     d["war"] = d.marginal_pts_vs_replacement / ppw
     return d
 
 
 def team_additivity_check(rapm: pd.DataFrame, poss: pd.DataFrame,
-                          tg: pd.DataFrame, col: str = "rapm") -> dict:
-    """Does the additive model reproduce team net ratings, and at what scale?
+                          tg: pd.DataFrame, suffix: str = "") -> dict:
+    """Does the additive model reproduce team ratings, and at what scale?
 
-    RAPM assumes a lineup's rating is the sum of its five players. Aggregated
-    over a season that implies sum(rapm_i * poss_i) / team_poss recovers the
-    team's net rating relative to league average.
+    RAPM assumes a lineup's rating is the sum of its five players, so aggregated
+    over a season the coefficients should recover each team's offensive and
+    defensive ratings relative to league average.
 
-    Two separate questions fall out, and they have very different answers here.
-    The *ordering* is reproduced almost exactly. The *magnitude* is not: ridge
-    shrinkage compresses the coefficients, so the aggregate spans a fraction of
-    the real spread between teams. Regressing predicted team net on actual
-    recovers that fraction, which is what `attenuation` reports.
+    Offence and defence are aggregated through their own lineups and their own
+    possession counts. A team's offensive exposure is not its defensive
+    exposure, so pushing the combined coefficient through `off_lineup` alone
+    would measure something that is not the additive model's attenuation -- and
+    every scaled coefficient and every WAR is divided by that number.
+
+    Ridge shrinks, so the *ordering* is reproduced closely while the *spread* is
+    compressed. Regressing predicted on actual recovers the compression, which
+    is what `attenuation` reports, separately per side because the two need not
+    shrink alike.
     """
     e = dp.load_pbp()
     tmap = pd.concat([
@@ -228,29 +265,40 @@ def team_additivity_check(rapm: pd.DataFrame, poss: pd.DataFrame,
     id2abbr = dict(zip(tmap.tid, tmap.abbr))
 
     p = poss.copy()
-    p["abbr"] = p.off_team.map(id2abbr)
-    # the true team possession count. Exploding by lineup multiplies the total
-    # by five, so using the exploded sum as the denominator would return the
-    # mean player rating instead of the five-player sum the model implies.
-    team_poss = p.groupby("abbr").poss_weight.sum()
+    p["off_abbr_"] = p.off_team.map(id2abbr)
+    p["def_abbr_"] = p.def_team.map(id2abbr)
 
-    off = p[["abbr", "off_lineup", "poss_weight"]].explode("off_lineup")
-    share = off.groupby(["abbr", "off_lineup"]).poss_weight.sum().reset_index()
-    share = share.merge(rapm[["espn_id", col]], left_on="off_lineup",
-                        right_on="espn_id", how="left").dropna(subset=[col])
-    pred = (share.assign(contrib=share[col] * share.poss_weight)
-                 .groupby("abbr").contrib.sum() / team_poss)
+    def side_pred(lineup_col, team_col, coef_col):
+        # true team possession totals; the lineup explosion multiplies by five
+        denom = p.groupby(team_col).poss_weight.sum()
+        ex = p[[team_col, lineup_col, "poss_weight"]].explode(lineup_col)
+        agg = ex.groupby([team_col, lineup_col]).poss_weight.sum().reset_index()
+        agg = agg.merge(rapm[["espn_id", coef_col]], left_on=lineup_col,
+                        right_on="espn_id", how="left").dropna(subset=[coef_col])
+        return (agg.assign(c=agg[coef_col] * agg.poss_weight)
+                   .groupby(team_col).c.sum() / denom)
+
+    pred_o = side_pred("off_lineup", "off_abbr_", f"o_rapm{suffix}")
+    pred_d = side_pred("def_lineup", "def_abbr_", f"d_rapm{suffix}")
 
     lg_o = tg.points.sum() / tg.off_poss.sum() * 100
     lg_d = tg.opponent_points.sum() / tg.def_poss.sum() * 100
-    actual = tg.groupby("team_abbreviation").apply(
-        lambda x: (x.points.sum() / x.off_poss.sum() * 100 - lg_o)
-                  - (x.opponent_points.sum() / x.def_poss.sum() * 100 - lg_d))
-    cmp_ = pd.concat([pred.rename("pred"), actual.rename("actual")], axis=1).dropna()
-    slope = float(np.polyfit(cmp_.actual, cmp_.pred, 1)[0])
-    return {"teams": int(len(cmp_)), "r": round(float(cmp_.pred.corr(cmp_.actual)), 3),
-            "mae": round(float((cmp_.pred - cmp_.actual).abs().mean()), 2),
-            "attenuation": round(slope, 3)}
+    grp = tg.groupby("team_abbreviation")
+    act_o = grp.apply(lambda x: x.points.sum() / x.off_poss.sum() * 100 - lg_o)
+    # positive means good defence, matching the sign convention on d_rapm
+    act_d = grp.apply(lambda x: -(x.opponent_points.sum() / x.def_poss.sum() * 100 - lg_d))
+
+    out = {}
+    for name, pred, act in (("offense", pred_o, act_o), ("defense", pred_d, act_d)):
+        c = pd.concat([pred.rename("p"), act.rename("a")], axis=1).dropna()
+        out[name] = {"r": round(float(c.p.corr(c.a)), 3),
+                     "attenuation": round(float(np.polyfit(c.a, c.p, 1)[0]), 3)}
+    net = pd.concat([(pred_o + pred_d).rename("p"), (act_o + act_d).rename("a")],
+                    axis=1).dropna()
+    out["net"] = {"teams": int(len(net)), "r": round(float(net.p.corr(net.a)), 3),
+                  "mae": round(float((net.p - net.a).abs().mean()), 2),
+                  "attenuation": round(float(np.polyfit(net.a, net.p, 1)[0]), 3)}
+    return out
 
 
 def main() -> None:
@@ -259,10 +307,13 @@ def main() -> None:
     tg = pd.read_parquet(dp.PBP_TEAM)
 
     X, y, w, players = design_matrix(poss)
-    model, alpha, curve = fit_rapm(X, y, w)
-    counts = possession_counts(poss)
-    rapm = coefficients(model, players, counts)
-    rapm["poss"] = rapm.espn_id.map(counts).fillna(0)
+    model, alpha, curve = fit_rapm(X, y, w, poss.pbp_game_id.values)
+    off_counts = possession_counts(poss, "off")
+    def_counts = possession_counts(poss, "def")
+    rapm = coefficients(model, players, off_counts, def_counts)
+    rapm["off_poss"] = rapm.espn_id.map(off_counts).fillna(0)
+    rapm["def_poss"] = rapm.espn_id.map(def_counts).fillna(0)
+    rapm["poss"] = rapm.off_poss
 
     xw = pd.read_csv(dp.CROSSWALK)
     xw["player_id"] = pd.to_numeric(xw.player_id, errors="coerce")
@@ -272,11 +323,14 @@ def main() -> None:
         .rename(columns={"espn_athlete_id": "espn_id", "pbpstats_player_name": "player_name"}),
         on="espn_id", how="left")
 
-    # calibrate to the observed team scale before converting to wins
-    raw_fit = team_additivity_check(rapm, poss, tg, col="rapm")
-    attenuation = raw_fit["attenuation"]
-    for c in ("o_rapm", "d_rapm", "rapm"):
-        rapm[f"{c}_scaled"] = rapm[c] / attenuation
+    # calibrate each side to its own observed team scale before converting to
+    # wins; offence and defence need not shrink by the same factor
+    raw_fit = team_additivity_check(rapm, poss, tg)
+    att_o = raw_fit["offense"]["attenuation"]
+    att_d = raw_fit["defense"]["attenuation"]
+    rapm["o_rapm_scaled"] = rapm.o_rapm / att_o
+    rapm["d_rapm_scaled"] = rapm.d_rapm / att_d
+    rapm["rapm_scaled"] = rapm.o_rapm_scaled + rapm.d_rapm_scaled
 
     ppw = points_per_win(tg)
     rapm = add_wins(rapm, ppw["points_per_win"])
@@ -284,7 +338,7 @@ def main() -> None:
 
     reliability = split_half_reliability(poss, alpha)
     additivity = {"raw_ridge": raw_fit,
-                  "calibrated": team_additivity_check(rapm, poss, tg, col="rapm_scaled")}
+                  "calibrated": team_additivity_check(rapm, poss, tg, suffix="_scaled")}
 
     rapm.to_csv(OUT / "impact_rapm_war_2026.csv", index=False)
     ucla = ["Lauren Betts", "Gabriela Jaquez", "Kiki Rice", "Angela Dugalic",
@@ -317,7 +371,8 @@ def main() -> None:
         "league_war_total": round(float(rapm.war.sum()), 2),
         "rapm_sd_raw": round(float(rapm.rapm.std()), 3),
         "rapm_sd_scaled": round(float(rapm.rapm_scaled.std()), 3),
-        "attenuation": attenuation,
+        "attenuation_offense": att_o,
+        "attenuation_defense": att_d,
         "split_half_reliability": reliability,
         "team_additivity": additivity,
         "points_per_win": {k: (round(v, 4) if isinstance(v, float) else v)
