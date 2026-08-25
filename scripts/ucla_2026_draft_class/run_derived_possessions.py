@@ -76,7 +76,7 @@ def main() -> None:
     rp["tgn"] = rp.pbp_game_id.map(gmap)
     rp["block"] = np.select(
         [rp.tgn <= 10, rp.tgn.between(11, 26), rp.tgn.between(27, 31)],
-        ["Pre-injury (g1-10)", "Rice OUT (g11-26)", "Return 1-5 (g27-31)"], "Return 6-10 (g32+)")
+        ["Pre-injury (g1-10)", "Rice OUT (g11-26)", "Return games 1-5 (g27-31)"], "Return games 6+ (g32+)")
     rid = int(eid["Kiki Rice"])
     out = []
     for b, g in rp.groupby("block"):

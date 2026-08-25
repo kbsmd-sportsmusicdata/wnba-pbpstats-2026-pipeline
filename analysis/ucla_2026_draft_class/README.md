@@ -19,8 +19,8 @@ holds the exploratory analysis and the filtered, design-ready data behind it.
   of what to dig into next. Uses every available source, including three that
   stop in mid-July.
 - **[`EDA_FINDINGS_PBPSTATS_ONLY.md`](./EDA_FINDINGS_PBPSTATS_ONLY.md)** — a
-  second pass built exclusively on the pbpstats game layer (274 games, through
-  2026-08-21). States which first-pass claims do not survive the restriction,
+  second pass built exclusively on the pbpstats game layer (281 games, through
+  2026-08-23). States which first-pass claims do not survive the restriction,
   rebuilds two of them from full-season data, and resolves the Kiki Rice
   on/off contradiction: her return was a five-game minutes restriction, and
   and her per-possession rates collapse and recover with it. **Use this one for
@@ -49,7 +49,7 @@ All are small enough to inline into an HTML artifact.
 | `story_team_context.csv` | 15 | Team ratings, records and ranks; `has_ucla_rookie` flags the four employers |
 | `story_manifest.json` | — | Pool sizes, thresholds, coverage dates, `lower_is_better` list |
 | `story_rice_timeline.csv` | 36 | Every Toronto game in order with Rice's line, availability status and rest days |
-| `story_rice_return_blocks_{player,team,onoff}.csv` | 3–4 | Pre-injury / out / return 1–5 / return 6–10 splits |
+| `story_rice_return_blocks_{player,team,onoff}.csv` | 3–4 | Pre-injury / out / return 1–5 / return 6+ splits (the last window is open-ended and grows each refresh) |
 | `story_teammate_minute_correlations.csv` | 663 | Every rotation-teammate pair league-wide, minutes correlation and percentile |
 | `story_opponent_adjusted_scoring.csv` | 6 | Schedule strength faced and opponent-adjusted scoring rate |
 | `story_team_defense_strength.csv` | 15 | Team defensive rating and distance from league average |
@@ -57,7 +57,7 @@ All are small enough to inline into an HTML artifact.
 | `story_duo_splits_full_season.csv` | 24 | Every duo state (both on / one on / neither) with ORtg, DRtg, net |
 | `story_derived_onoff_full_season.csv` | 6 | Possession-level on/off for the six |
 | `story_rice_blocks_derived.csv` | 4 | Rice's return windows on the derived layer |
-| `derived_vs_exact_onoff.csv` | 185 | Derived vs pbpstats-exact on/off, for error bars |
+| `derived_vs_exact_onoff.csv` | 187 | Derived vs pbpstats-exact on/off, for error bars |
 
 Supporting/intermediate: `on_off_all_players.csv` (exact full-season on/off for
 all 227 players), `possession_on_off_splits.csv` (possession-level splits,
@@ -66,6 +66,20 @@ partial season), `rookie_class_2026_metrics.csv`, `season_metrics_with_percentil
 **Percentile convention:** in `story_*` files, higher percentile always means
 better — the `lower_is_better` metrics listed in the manifest are already
 inverted.
+
+## Keeping the docs honest
+
+Coverage figures (game counts, pool sizes, validation samples) are quoted in
+prose across all four documents and go stale on every pipeline refresh. After
+any rebuild, run:
+
+```
+python3 scripts/ucla_2026_draft_class/verify_docs.py
+```
+
+It reads the regenerated manifests and fails, listing every mismatch, if a
+document still quotes an older vintage. It also refuses a closed label on the
+open-ended Rice return window.
 
 ## Notes for the editorial build
 

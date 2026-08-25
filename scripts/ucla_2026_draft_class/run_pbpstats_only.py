@@ -56,12 +56,16 @@ def rice_blocks(pg: pd.DataFrame, tg: pd.DataFrame) -> dict:
     tor["tgn"] = np.arange(1, len(tor) + 1)
     r = pg[pg.player_id == RICE].merge(tor[["game_id", "tgn"]], on="game_id")
 
-    labels = ["Pre-injury (g1-10)", "Return games 1-5 (g27-31)", "Return games 6-10 (g32-36)"]
+    # the final window is deliberately open-ended: it absorbs every game after
+    # the five-game ramp, so it grows on each data refresh. Label it g32+ rather
+    # than a fixed range so a consumer grouping by `block` cannot mistake a
+    # seven-game aggregate for a fixed five-game window.
+    labels = ["Pre-injury (g1-10)", "Return games 1-5 (g27-31)", "Return games 6+ (g32+)"]
     r["block"] = np.select([r.tgn <= 10, r.tgn.between(27, 31)], labels[:2], labels[2])
     tor["block"] = np.select(
         [tor.tgn <= 10, tor.tgn.between(11, 26), tor.tgn.between(27, 31)],
         ["Pre-injury (g1-10)", "Rice OUT (g11-26)", "Return games 1-5 (g27-31)"],
-        "Return games 6-10 (g32-36)")
+        "Return games 6+ (g32+)")
 
     player = pd.DataFrame([
         dict(block=b, **{k: v for k, v in derive(season_totals(g)).iloc[0].items()

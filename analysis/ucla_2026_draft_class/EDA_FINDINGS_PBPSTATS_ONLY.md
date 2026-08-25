@@ -15,8 +15,8 @@ including partial-season sources) and
 
 ## What this document is allowed to use
 
-**In:** `player_game.parquet` (274 games, 227 players, 252 columns) and
-`team_game.parquet` (274 games, 548 rows). Every number below is computed from
+**In:** `player_game.parquet` (281 games, 229 players, 252 columns) and
+`team_game.parquet` (281 games, 562 rows). Every number below is computed from
 those two files.
 
 **One exception, stated plainly:** pbpstats carries no college or draft
@@ -29,8 +29,8 @@ the mid-July sources are.
 
 | Dropped source | Coverage | Claims from `EDA_FINDINGS.md` that do not survive |
 |---|---|---|
-| `wnba_possessions_2026` | 202/274 games | Betts + Austin two-big net rating; Betts + Iriafen; Rice + Allemand; Kneepkens + Leger-Walker duo splits; all co-presence percentages; opponent shot-profile on/off |
-| `wnba_lineups_2026` | 195 games | Any stint-level construction |
+| `wnba_possessions_2026` | 202/281 games | Betts + Austin two-big net rating; Betts + Iriafen; Rice + Allemand; Kneepkens + Leger-Walker duo splits; all co-presence percentages; opponent shot-profile on/off |
+| `wnba_lineups_2026` | 195/281 games | Any stint-level construction |
 | `wnba_player_impact_2026` | gp ≤ 29 | RAPM, BPM, WAR, DARKO for all six |
 | `player_box_2026` (ESPN) | full season, but not pbpstats | Starts and DNP counts |
 
@@ -114,12 +114,17 @@ do *not* agree, and the earlier "+18 to +21 when healthy" framing was resting on
 a five-game sample that could not support it. The pre-injury +20.6 is
 undisturbed; the post-return figure is not reliable at this sample size.
 
+That final window is **open-ended by design** — it absorbs every game after the
+five-game ramp, so it grows on each data refresh, which is exactly why its
+on/off moved. Read it as "games 6 onward", never as a fixed five-game block.
+
 **What survives, stated narrowly:** the five-game re-integration window is
 real, distinct and measurable — restricted minutes, collapsed efficiency, an
 0–5 team record — and the season-long on/off is dragged down by it. What does
 *not* survive is a specific number for healthy-Rice impact. Her pre-injury
 window is +20.6 over 526 possessions and her post-return window is +2.6 over
-358; those are not two readings of one quantity, they are two small samples.
+358 and still growing; those are not two readings of one quantity, they are
+two small samples.
 Quote the ramp, quote the recovery in her per-possession rates, and leave the
 healthy-Rice on/off as directionally positive and imprecisely measured.
 
