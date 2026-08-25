@@ -15,8 +15,8 @@ including partial-season sources) and
 
 ## What this document is allowed to use
 
-**In:** `player_game.parquet` (274 games, 227 players, 252 columns) and
-`team_game.parquet` (274 games, 548 rows). Every number below is computed from
+**In:** `player_game.parquet` (281 games, 229 players, 252 columns) and
+`team_game.parquet` (281 games, 562 rows). Every number below is computed from
 those two files.
 
 **One exception, stated plainly:** pbpstats carries no college or draft
@@ -29,8 +29,8 @@ the mid-July sources are.
 
 | Dropped source | Coverage | Claims from `EDA_FINDINGS.md` that do not survive |
 |---|---|---|
-| `wnba_possessions_2026` | 202/274 games | Betts + Austin two-big net rating; Betts + Iriafen; Rice + Allemand; Kneepkens + Leger-Walker duo splits; all co-presence percentages; opponent shot-profile on/off |
-| `wnba_lineups_2026` | 195 games | Any stint-level construction |
+| `wnba_possessions_2026` | 202/281 games | Betts + Austin two-big net rating; Betts + Iriafen; Rice + Allemand; Kneepkens + Leger-Walker duo splits; all co-presence percentages; opponent shot-profile on/off |
+| `wnba_lineups_2026` | 195/281 games | Any stint-level construction |
 | `wnba_player_impact_2026` | gp ≤ 29 | RAPM, BPM, WAR, DARKO for all six |
 | `player_box_2026` (ESPN) | full season, but not pbpstats | Starts and DNP counts |
 
@@ -54,7 +54,7 @@ a number that describes neither.
 |---|---:|---:|---:|---:|---:|
 | Pre-injury (team games 1–10) | 10 | 26.7 | 17.6 | 35.0 | 6.4 |
 | **Return games 1–5** (g27–31) | 5 | **21.5** | 17.1 | **26.8** | 4.1 |
-| **Return games 6–10** (g32–36) | 5 | **29.5** | **24.5** | 31.8 | 2.9 |
+| **Return games 6+** (g32+) | 6 | **29.6** | **24.5** | 31.8 | 2.6 |
 
 Game by game: **17.1, 23.0, 26.8, 22.9, 17.6** — then **30.1, 31.4, 29.9, 24.5,
 31.8**. The two windows barely overlap. The ceiling across the first five back
@@ -69,7 +69,7 @@ back-to-back (29.9 on Aug 18, 24.5 on Aug 19).
 
 ### It was not only minutes — the per-possession game went with it
 
-| Metric | Pre-injury | Return 1–5 | Return 6–10 |
+| Metric | Pre-injury | Return 1–5 | Return 6+ |
 |---|---:|---:|---:|
 | Points / 75 | 18.11 | **11.96** | 19.48 |
 | True shooting | .670 | **.460** | .614 |
@@ -90,7 +90,7 @@ quality dropped 9 points of expected eFG, and she then converted 10 points
 *below* even that reduced expectation. Turnovers more than doubled and fouls
 rose 70%.
 
-By games 6–10 back it is all recovered or better: .614 TS, +.079 over
+By games 6 onward it is all recovered or better: .614 TS, +.079 over
 expectation, 1.05 turnovers per 75 (her best of the season), 5.87 assists per
 75 (also her best), and 17 of 18 at the rim.
 
@@ -101,7 +101,7 @@ expectation, 1.05 turnovers per 75 (her best of the season), 5.87 assists per
 | Pre-injury (g1–10) | 10 | 5 | 111.70 | 111.55 | **+0.15** | **+20.6** |
 | Rice OUT (g11–26) | 16 | 5 | 108.69 | 116.23 | −7.54 | — |
 | Return 1–5 (g27–31) | 5 | **0** | 103.29 | 120.74 | **−17.45** | **−15.2** |
-| Return 6–10 (g32+) | 6 | 1 | 108.11 | 116.36 | −8.25 | **+2.6** |
+| Return 6+ (g32+) | 6 | 1 | 108.11 | 116.36 | −8.25 | **+2.6** |
 
 The "Toronto got worse after Rice returned" result is a five-game artifact. It
 sits entirely in the re-integration window, where a restricted, rusty Rice
@@ -114,12 +114,17 @@ do *not* agree, and the earlier "+18 to +21 when healthy" framing was resting on
 a five-game sample that could not support it. The pre-injury +20.6 is
 undisturbed; the post-return figure is not reliable at this sample size.
 
+That final window is **open-ended by design** — it absorbs every game after the
+five-game ramp, so it grows on each data refresh, which is exactly why its
+on/off moved. Read it as "games 6 onward", never as a fixed five-game block.
+
 **What survives, stated narrowly:** the five-game re-integration window is
 real, distinct and measurable — restricted minutes, collapsed efficiency, an
 0–5 team record — and the season-long on/off is dragged down by it. What does
 *not* survive is a specific number for healthy-Rice impact. Her pre-injury
 window is +20.6 over 526 possessions and her post-return window is +2.6 over
-358; those are not two readings of one quantity, they are two small samples.
+358 and still growing; those are not two readings of one quantity, they are
+two small samples.
 Quote the ramp, quote the recovery in her per-possession rates, and leave the
 healthy-Rice on/off as directionally positive and imprecisely measured.
 

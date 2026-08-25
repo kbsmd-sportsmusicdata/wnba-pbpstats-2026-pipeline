@@ -32,11 +32,11 @@ exactly this data. There was nothing left in them to extract.
 
 ## 2. What could
 
-`espn_pbp_2026.parquet` covers the full season — 279 games including two
-all-star exhibitions, versus 202 in the frozen parquet — and carries **15,466
+`espn_pbp_2026.parquet` covers the full season — 283 games including two
+all-star exhibitions, versus 202 in the frozen parquet — and carries **15,854
 substitution events**, each naming both the entering and the exiting player,
 with no nulls on either. Combined with `game_rosters_2026.parquet` (exactly
-five flagged starters for all 554 game-teams), that is enough to replay every
+five flagged starters for all 566 game-teams), that is enough to replay every
 game and hold a five-player lineup per side.
 
 ### Event attribution, derived rather than assumed
@@ -72,11 +72,11 @@ every rate on the pbpstats scale without touching the lineup structure.
 
 | Check | Result |
 |---|---|
-| Team-game **points** | **Exact on 100% of 554 team-games**, MAE 0.00 |
-| Team-game possessions | r = 0.971, mean +1.20, MAE 1.32 on a base of ~80 |
-| Player-game on-court possessions | **r = 0.9973**, MAE 1.19, median error +0.5% |
-| Season on-court ORtg vs pbpstats (168 players, 250+ poss) | r = 0.975, MAE 1.03 |
-| Season on-court NET vs pbpstats | r = 0.972, MAE 1.63 |
+| Team-game **points** | **Exact on 100% of 562 team-games**, MAE 0.00 |
+| Team-game possessions | r = 0.971, mean +1.20, MAE 1.31 on a base of ~80 |
+| Player-game on-court possessions | **r = 0.9972**, MAE 1.19, median error +0.5% |
+| Season on-court ORtg vs pbpstats (169 players, 250+ poss) | r = 0.975, MAE 1.03 |
+| Season on-court NET vs pbpstats | r = 0.972, MAE 1.65 |
 
 Points reproducing exactly across every team-game means the scoring
 attribution is right. Player-game possessions correlating at 0.997 means the
@@ -89,9 +89,9 @@ Comparing the derived single-player on/off against the exact pbpstats version:
 
 | Pool | n | corr | MAE |
 |---|---:|---:|---:|
-| All players, 150+ poss | 185 | 0.856 | 3.72 |
-| **Players in 95%+ of team games** | 58 | **0.907** | **2.47** |
-| Players missing >5% of games | 127 | 0.844 | 4.30 |
+| All players, 150+ poss | 187 | 0.839 | 3.88 |
+| **Players in 95%+ of team games** | 57 | **0.906** | **2.54** |
+| Players missing >5% of games | 130 | 0.822 | 4.47 |
 
 The gap between those last two rows is **a definition difference, not error**.
 pbpstats computes on/off only within games a player appeared in; the derived
@@ -174,7 +174,7 @@ the cohort, and it now has possession-level evidence across the full season.
 
 All three point the same direction as the earlier partial-season reads, none
 clears the bar for a published claim. The Rice + Allemand split is still worth
-noting descriptively: Toronto plays them together for only 289 of Rice's 1,032
+noting descriptively: Toronto plays them together for only 306 of Rice's 1,088
 on-court possessions, which corroborates the full-season minutes-correlation
 finding (4.7th percentile of substitution) through a second route.
 

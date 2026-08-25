@@ -1,20 +1,20 @@
 # Metric framework — UCLA 2026 draft class
 
-Scope: 2026 WNBA regular season through **2026-08-21** (274 team games in the
-pbpstats spine, 15 teams, 36–38 games played per club).
+Scope: 2026 WNBA regular season through **2026-08-23** (281 team games in the
+pbpstats spine, 15 teams, 37–39 games played per club).
 
 ## 1. Which source layer to trust for what
 
 | Layer | Path | Coverage | Use it for |
 |---|---|---|---|
-| **pbpstats player-game** | `data/processed/wnba_pbpstats_player_game/season=2026/player_game.parquet` | **274 games, full season**, 227 players, 252 cols | Primary. Everything individual + on-court team rating |
-| **pbpstats team-game** | `data/processed/wnba_pbpstats_team_game/season=2026/team_game.parquet` | 274 games, 548 rows | Team denominators, on/off arithmetic, team style |
+| **pbpstats player-game** | `data/processed/wnba_pbpstats_player_game/season=2026/player_game.parquet` | **281 games, full season**, 229 players, 252 cols | Primary. Everything individual + on-court team rating |
+| **pbpstats team-game** | `data/processed/wnba_pbpstats_team_game/season=2026/team_game.parquet` | 281 games, 562 rows | Team denominators, on/off arithmetic, team style |
 | pbpstats season features | `data/pbpstats_wnba_2026/features_latest/2026/player_totals_features_latest.csv` | Full season, 311 cols | Pre-built shot-diet shares, shot-quality, percentiles, labels |
 | Derived team-game | `data/processed/wnba_team_game/season=2026/team_game.parquet` | Full season | Four Factors, pace, rest days, back-to-backs, record-to-date |
 | ESPN bio / draft | `analysis/role_fulfillment_matrix/data/live_inputs/player_core_2026.csv` | 232 players | **The only source of `college_id`, `draft_year`, `draft_round`, `draft_selection`, `experience_years`** |
 | ESPN player box | `data/raw/sportsdataverse/wnba_2026/player_box_2026.parquet` | Full season | **`starter` flag and DNPs — pbpstats has neither** |
-| Possessions | `data/raw/sportsdataverse/wnba_2026/wnba_possessions_2026.parquet` | ⚠ **202 of 274 games (through mid-July)** | Lineup co-presence, opponent shot profile on/off |
-| Lineups | `data/raw/sportsdataverse/wnba_2026/wnba_lineups_2026.parquet` | ⚠ 195 games | Stint construction |
+| Possessions | `data/raw/sportsdataverse/wnba_2026/wnba_possessions_2026.parquet` | ⚠ **202 of 281 games (through mid-July)** | Lineup co-presence, opponent shot profile on/off |
+| Lineups | `data/raw/sportsdataverse/wnba_2026/wnba_lineups_2026.parquet` | ⚠ 195 of 281 games | Stint construction |
 | Player impact | `data/raw/sportsdataverse/wnba_2026/wnba_player_impact_2026.parquet` | ⚠ **gp ≤ 29 (through mid-July)** | RAPM, WAR — secondary only |
 
 **Identity crosswalk.** pbpstats `player_id` (e.g. `1643427`) and ESPN
@@ -79,7 +79,7 @@ net_swing       = (on_ortg − on_drtg) − (off_ortg − off_drtg)
 
 Validated: summing on-court points across a team's players and dividing by
 five reproduces the team's game total exactly. This matters because it gives a
-**full-season** on/off (274 games) where the possessions parquet would cap you
+**full-season** on/off (281 games) where the possessions parquet would cap you
 at 202. Implementation: `scripts/ucla_2026_draft_class/onoff.py`.
 
 **Possession-weighted season rates.** Every rate is rebuilt from summed
@@ -108,12 +108,14 @@ percentile always means better** in the story data.
 
 ## 5. Known data limits to state in the piece
 
-1. Possession-, lineup- and impact-based numbers stop in mid-July. Every
-   finding drawn from them is a **first-two-thirds** finding, and at least one
-   player (Jaquez) changes sharply after that cutoff.
+1. The lineup and impact parquets stop in mid-July. The possession layer no
+   longer does — it is rebuilt from play-by-play for the full season (see
+   `DERIVED_POSSESSIONS.md`) — but RAPM/BPM/WAR still describe only the first
+   two thirds, and at least one player (Jaquez) changes sharply after that
+   cutoff.
 2. `wnba_stats_standings_2026.parquet` is stale (~27 games/team). Recompute
    standings from the team-game layer.
-3. Kiki Rice has 20 games; Gianna Kneepkens has 215 minutes. Neither clears a
+3. Kiki Rice has 21 games; Gianna Kneepkens has roughly 230 minutes. Neither clears a
    normal stability threshold for on/off or shooting splits.
 4. No player-tracking, matchup, or defensive-assignment data exists in this
    repo, so all defensive claims are on/off and box-derived proxies.
