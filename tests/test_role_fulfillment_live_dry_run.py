@@ -178,6 +178,8 @@ class LiveSourceAdapterTest(unittest.TestCase):
                     "athlete_id": "1001",
                     "full_name": "Current Player",
                     "current_team_id": "17",
+                    "position_name": "Guard",
+                    "position_abbreviation": "G",
                     "active": True,
                     "status_type": "active",
                 },
@@ -185,6 +187,8 @@ class LiveSourceAdapterTest(unittest.TestCase):
                     "athlete_id": "1002",
                     "full_name": "Inactive Player",
                     "current_team_id": "9",
+                    "position_name": "Forward",
+                    "position_abbreviation": "F",
                     "active": False,
                     "status_type": "inactive",
                 },
@@ -221,6 +225,8 @@ class LiveSourceAdapterTest(unittest.TestCase):
         )
         roster = result.roster.set_index("player_id")
         self.assertEqual(roster.loc["p1", "team_abbreviation"], "LVA")
+        self.assertEqual(roster.loc["p1", "position_name"], "Guard")
+        self.assertEqual(roster.loc["p1", "position_abbreviation"], "G")
         self.assertTrue(roster.loc["p1", "active"])
         self.assertEqual(roster.loc["p2", "team_abbreviation"], "NYL")
         self.assertEqual(roster.loc["p2", "status_type"], "inactive")
@@ -233,6 +239,8 @@ class LiveSourceAdapterTest(unittest.TestCase):
                     "athlete_id": "1001",
                     "full_name": "Reviewed Player",
                     "current_team_id": "17",
+                    "position_name": "Guard",
+                    "position_abbreviation": "G",
                     "active": True,
                     "status_type": "active",
                 },
@@ -240,6 +248,8 @@ class LiveSourceAdapterTest(unittest.TestCase):
                     "athlete_id": "1002",
                     "full_name": "New Roster Player",
                     "current_team_id": "17",
+                    "position_name": "Center",
+                    "position_abbreviation": "C",
                     "active": True,
                     "status_type": "active",
                 },
@@ -275,9 +285,43 @@ class LiveSourceAdapterTest(unittest.TestCase):
             ["New Roster Player"],
         )
 
-    def test_roster_adapter_rejects_a_snapshot_older_than_the_cutoff(self):
+    def test_roster_adapter_rejects_missing_position_context(self):
         player_core = pd.DataFrame(
             [{"athlete_id": "1001", "full_name": "Player", "current_team_id": "17", "active": True, "status_type": "active"}]
+        )
+        eligibility = pd.DataFrame(
+            [{"player_id": "p1", "player_name": "Player", "espn_athlete_id": "1001", "review_status": "reviewed"}]
+        )
+        standings = pd.DataFrame([{"team_id": 17, "team_abbreviation": "LV"}])
+        with self.assertRaisesRegex(RosterAdapterError, "position_abbreviation, position_name"):
+            adapt_espn_roster(
+                player_core,
+                eligibility,
+                standings,
+                source_as_of="2026-08-22",
+                cutoff_date="2026-08-21",
+            )
+
+    def test_roster_adapter_rejects_blank_position_context(self):
+        player_core = pd.DataFrame(
+            [{"athlete_id": "1001", "full_name": "Player", "current_team_id": "17", "position_name": "", "position_abbreviation": "", "active": True, "status_type": "active"}]
+        )
+        eligibility = pd.DataFrame(
+            [{"player_id": "p1", "player_name": "Player", "espn_athlete_id": "1001", "review_status": "reviewed"}]
+        )
+        standings = pd.DataFrame([{"team_id": 17, "team_abbreviation": "LV"}])
+        with self.assertRaisesRegex(RosterAdapterError, "missing position context: Player"):
+            adapt_espn_roster(
+                player_core,
+                eligibility,
+                standings,
+                source_as_of="2026-08-22",
+                cutoff_date="2026-08-21",
+            )
+
+    def test_roster_adapter_rejects_a_snapshot_older_than_the_cutoff(self):
+        player_core = pd.DataFrame(
+            [{"athlete_id": "1001", "full_name": "Player", "current_team_id": "17", "position_name": "Guard", "position_abbreviation": "G", "active": True, "status_type": "active"}]
         )
         eligibility = pd.DataFrame(
             [{"player_id": "p1", "player_name": "Player", "espn_athlete_id": "1001", "review_status": "reviewed"}]
@@ -319,7 +363,7 @@ class LiveSourceAdapterTest(unittest.TestCase):
             )
             failures_path.write_text("[]")
             pd.DataFrame(
-                [{"athlete_id": "1001", "full_name": "Player One", "current_team_id": "17", "active": True, "status_type": "active"}]
+                [{"athlete_id": "1001", "full_name": "Player One", "current_team_id": "17", "position_name": "Guard", "position_abbreviation": "G", "active": True, "status_type": "active"}]
             ).to_csv(player_core_path, index=False)
             pd.DataFrame([self._eligibility_row()]).to_csv(eligibility_path, index=False)
             pd.DataFrame([self._assignment_row()]).to_csv(assignments_path, index=False)
@@ -353,6 +397,8 @@ class LiveSourceAdapterTest(unittest.TestCase):
         self.assertEqual(sources.adapter_audit["status"], "review_ready")
         self.assertEqual(sources.source_manifest["player_game"]["status"], "reviewed_live_adapter")
         self.assertEqual(sources.roster_status.loc[0, "team_abbreviation"], "LVA")
+        self.assertEqual(sources.roster_status.loc[0, "position_abbreviation"], "G")
+        self.assertEqual(analysis.funnel.loc[0, "position_name"], "Guard")
         self.assertEqual(sources.standings.loc[0, "cutoff_date"], "2026-08-21")
         self.assertEqual(analysis.manifest["mode"], "live_dry_run")
         self.assertEqual(analysis.manifest["live_scoring_status"], "dry_run_only")
@@ -393,7 +439,7 @@ class LiveSourceAdapterTest(unittest.TestCase):
             )
             failures_path.write_text("[]")
             pd.DataFrame(
-                [{"athlete_id": "1001", "full_name": "Player One", "current_team_id": "17", "active": True, "status_type": "active"}]
+                [{"athlete_id": "1001", "full_name": "Player One", "current_team_id": "17", "position_name": "Guard", "position_abbreviation": "G", "active": True, "status_type": "active"}]
             ).to_csv(player_core_path, index=False)
             pd.DataFrame([self._eligibility_row()]).to_csv(eligibility_path, index=False)
             pd.DataFrame([self._assignment_row()]).to_csv(assignments_path, index=False)
@@ -666,7 +712,7 @@ class CurrentTeamSafeguardTest(unittest.TestCase):
             role_definitions=roles,
             source_manifest={},
             roster_status=pd.DataFrame(
-                [{"player_id": "p1", "player_name": "Player One", "team_abbreviation": "LVA", "active": True, "status_type": "active"}]
+                [{"player_id": "p1", "player_name": "Player One", "team_abbreviation": "LVA", "position_name": "Guard", "position_abbreviation": "G", "active": True, "status_type": "active"}]
             ),
             adapter_audit={},
             effective_config=config,

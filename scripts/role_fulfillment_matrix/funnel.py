@@ -17,7 +17,15 @@ def build_candidate_funnel(
     sources: LoadedSources, metrics: pd.DataFrame, config: Dict[str, Any]
 ) -> pd.DataFrame:
     players = sources.roster_status[
-        ["player_id", "player_name", "team_abbreviation", "active", "status_type"]
+        [
+            "player_id",
+            "player_name",
+            "team_abbreviation",
+            "position_name",
+            "position_abbreviation",
+            "active",
+            "status_type",
+        ]
     ].copy()
     if players["player_id"].duplicated().any():
         raise ValueError("roster status contains duplicate player ids")
@@ -26,6 +34,8 @@ def build_candidate_funnel(
         "review_status": "eligibility_review_status",
         "player_name": "eligibility_player_name",
         "team_abbreviation": "eligibility_team_abbreviation",
+        "position_name": "eligibility_snapshot_position_name",
+        "position_abbreviation": "eligibility_snapshot_position_abbreviation",
         "active": "eligibility_snapshot_active",
         "status_type": "eligibility_snapshot_status_type",
         "reviewed_by": "eligibility_reviewed_by",

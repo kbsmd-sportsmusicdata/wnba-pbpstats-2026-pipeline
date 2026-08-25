@@ -112,8 +112,19 @@ def build_window_metrics(player_game: pd.DataFrame, config: Dict[str, Any]) -> p
     recent_agg = aggregate_window(recent, "recent")
     baseline_agg = aggregate_window(baseline, "baseline")
     season_agg = aggregate_window(season, "season")
+    team_game_counts = []
+    for prefix, window in (("recent", recent), ("baseline", baseline), ("season", season)):
+        counts = (
+            window.groupby("team_abbreviation", as_index=False)["game_id"]
+            .nunique()
+            .rename(columns={"game_id": f"{prefix}_team_games"})
+        )
+        team_game_counts.append(counts)
     identity = ["player_id", "player_name", "team_abbreviation"]
-    return (
+    metrics = (
         recent_agg.merge(baseline_agg, on=identity, how="outer")
         .merge(season_agg, on=identity, how="outer")
     )
+    for counts in team_game_counts:
+        metrics = metrics.merge(counts, on="team_abbreviation", how="left", validate="many_to_one")
+    return metrics

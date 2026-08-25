@@ -61,6 +61,12 @@ class StandaloneBundleTest(unittest.TestCase):
         self.assertEqual(payload["meta"]["live_scoring_status"], "blocked")
         self.assertEqual(len(payload["candidates"]), 2)
         self.assertGreater(len(payload["evidence"]), 0)
+        avery = next(row for row in payload["candidates"] if row["player_id"] == "FX-001")
+        self.assertEqual(avery["position_name"], "Guard")
+        self.assertEqual(avery["position_abbreviation"], "G")
+        self.assertEqual(avery["recent_minutes_per_game"], 25.0)
+        self.assertEqual(avery["baseline_minutes_per_game"], 18.0)
+        self.assertEqual(avery["season_minutes_per_game"], 21.5)
 
     def test_client_uses_safe_text_rendering_and_accessible_dialog(self):
         app = (self.bundle / "assets" / "app.js").read_text(encoding="utf-8")
@@ -69,6 +75,8 @@ class StandaloneBundleTest(unittest.TestCase):
         self.assertIn("textContent", app)
         self.assertIn("showModal", app)
         self.assertIn('aria-labelledby="evidence-title"', html)
+        self.assertIn('id="evidence-window-context"', html)
+        self.assertIn('id="evidence-sample-context"', html)
         self.assertIn('aria-label="Role Fulfillment Matrix"', html)
 
     def test_manifest_reports_output_rows_and_fixture_governance(self):

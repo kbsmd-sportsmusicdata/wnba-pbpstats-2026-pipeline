@@ -1,6 +1,6 @@
-player_id,player_name,eligibility_type,age_on_cutoff,experience_years,eligible_flag,active,status_type,review_status,reviewed_by,reviewed_at,source_url
-FX-001,Avery Sample,age_or_experience,23,1,true,true,active,reviewed,fixture-reviewer,2026-08-20,fixture://eligibility/FX-001
-FX-002,Jordan Fixture,age_or_experience,24,2,true,true,active,reviewed,fixture-reviewer,2026-08-20,fixture://eligibility/FX-002
-FX-003,Morgan Example,age_or_experience,22,1,true,true,active,reviewed,fixture-reviewer,2026-08-20,fixture://eligibility/FX-003
-FX-004,Riley Pending,age_or_experience,23,1,true,true,active,pending,,,
-FX-005,Taylor Small Sample,age_or_experience,24,2,true,true,active,reviewed,fixture-reviewer,2026-08-20,fixture://eligibility/FX-005
+player_id,player_name,position_name,position_abbreviation,eligibility_type,age_on_cutoff,experience_years,eligible_flag,active,status_type,review_status,reviewed_by,reviewed_at,source_url
+FX-001,Avery Sample,Guard,G,age_or_experience,23,1,true,true,active,reviewed,fixture-reviewer,2026-08-20,fixture://eligibility/FX-001
+FX-002,Jordan Fixture,Forward,F,age_or_experience,24,2,true,true,active,reviewed,fixture-reviewer,2026-08-20,fixture://eligibility/FX-002
+FX-003,Morgan Example,Center,C,age_or_experience,22,1,true,true,active,reviewed,fixture-reviewer,2026-08-20,fixture://eligibility/FX-003
+FX-004,Riley Pending,Guard,G,age_or_experience,23,1,true,true,active,pending,,,
+FX-005,Taylor Small Sample,Guard,G,age_or_experience,24,2,true,true,active,reviewed,fixture-reviewer,2026-08-20,fixture://eligibility/FX-005
