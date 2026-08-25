@@ -63,14 +63,40 @@
       return {recent: candidate.assignment_confidence, baseline: null, season: null};
     }
     if (code === "possession_share_delta") {
-      const recent = candidate.recent_possession_share;
-      const baseline = candidate.baseline_possession_share;
-      const delta = isFiniteScore(recent) && isFiniteScore(baseline)
-        ? Number((recent - baseline).toFixed(12))
-        : null;
-      return {recent: delta, baseline: null, season: null};
+      return {
+        recent: candidate.recent_possession_share,
+        baseline: candidate.baseline_possession_share,
+        season: candidate.season_possession_share,
+      };
     }
     const key = contextKey(code);
+    return {
+      recent: candidate[`recent_${key}`],
+      baseline: candidate[`baseline_${key}`],
+      season: candidate[`season_${key}`],
+    };
+  }
+
+  const DENOMINATOR_KEYS = {
+    assists_per_75: "off_poss",
+    assist_turnover_ratio: "turnovers",
+    consistency: "games",
+    fta_rate: "fga",
+    minutes_per_game: "games",
+    offensive_rebounds_per_75_off_poss: "off_poss",
+    possession_share: "team_possessions",
+    possession_share_delta: "team_possessions",
+    rebounds_per_75_total_possessions: "total_poss",
+    rim_fg_pct: "at_rim_fga",
+    rim_fga_share: "fga",
+    three_point_fga_share: "fga",
+    true_shooting_pct: "true_shooting_attempts",
+    turnover_rate: "off_poss",
+  };
+
+  function buildMetricDenominators(candidate, code) {
+    const key = DENOMINATOR_KEYS[code];
+    if (!key) return {recent: null, baseline: null, season: null};
     return {
       recent: candidate[`recent_${key}`],
       baseline: candidate[`baseline_${key}`],
@@ -88,6 +114,7 @@
 
   return {
     buildMetricContext,
+    buildMetricDenominators,
     formatEvidenceValue,
     formatMetricChange,
     formatMetricValue,

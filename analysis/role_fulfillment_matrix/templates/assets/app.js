@@ -8,6 +8,7 @@
   const isLive = payload.meta.mode === "live";
   const {
     buildMetricContext,
+    buildMetricDenominators,
     formatEvidenceValue,
     formatMetricChange,
     formatMetricValue,
@@ -240,18 +241,24 @@
     const body = document.createElement("tbody");
     rows.forEach((item) => {
       const context = buildMetricContext(candidate, item.metric_code);
+      const denominators = buildMetricDenominators(candidate, item.metric_code);
+      const displayCode = item.metric_code === "possession_share_delta"
+        ? "possession_share"
+        : item.metric_code;
       const row = document.createElement("tr");
       const metric = node("td", "metric-name");
       metric.append(node("strong", null, metricLabel(item.metric_code)));
-      metric.append(node("small", null, `Denominator ${formatEvidenceValue(item.denominator, 1)}`));
       row.append(metric);
-      row.append(node("td", "numeric evidence-current", formatMetricValue(item.metric_code, context.recent)));
-      row.append(node("td", "numeric", formatMetricValue(item.metric_code, context.baseline)));
-      row.append(node("td", "numeric", formatMetricValue(item.metric_code, context.season)));
+      [["recent", "numeric evidence-current"], ["baseline", "numeric"], ["season", "numeric"]].forEach(([window, className]) => {
+        const cell = node("td", className);
+        cell.append(node("span", "evidence-value", formatMetricValue(displayCode, context[window])));
+        if (denominators[window] !== null && denominators[window] !== undefined) {
+          cell.append(node("small", "evidence-denominator", `n=${formatEvidenceValue(denominators[window], 1)}`));
+        }
+        row.append(cell);
+      });
       if (family === "opportunity") {
-        const change = item.metric_code === "possession_share_delta"
-          ? formatMetricValue(item.metric_code, context.recent)
-          : formatMetricChange(item.metric_code, context.recent, context.baseline);
+        const change = formatMetricChange(displayCode, context.recent, context.baseline);
         row.append(node("td", "numeric evidence-change", change));
       } else if (family === "fulfillment") {
         const pending = node("td", "benchmark-pending", "Pending adapter");

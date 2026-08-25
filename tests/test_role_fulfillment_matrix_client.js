@@ -3,7 +3,9 @@ const assert = require("node:assert/strict");
 
 const {
   buildMetricContext,
+  buildMetricDenominators,
   formatEvidenceValue,
+  formatMetricChange,
   formatMetricValue,
   formatScore,
   hasPlottableScores,
@@ -57,6 +59,7 @@ test("metric context reads recent prior and season fields without calculating ne
     season_true_shooting_pct: 0.603,
     recent_possession_share: 0.737,
     baseline_possession_share: 0.616,
+    season_possession_share: 0.681,
   };
   assert.deepEqual(buildMetricContext(candidate, "true_shooting_pct"), {
     recent: 0.625,
@@ -64,8 +67,34 @@ test("metric context reads recent prior and season fields without calculating ne
     season: 0.603,
   });
   assert.deepEqual(buildMetricContext(candidate, "possession_share_delta"), {
-    recent: 0.121,
-    baseline: null,
-    season: null,
+    recent: 0.737,
+    baseline: 0.616,
+    season: 0.681,
+  });
+  assert.equal(
+    formatMetricChange("possession_share", 0.737, 0.616),
+    "+12.1 pp",
+  );
+});
+
+
+test("each comparison window receives its own metric denominator", () => {
+  const candidate = {
+    recent_off_poss: 120,
+    baseline_off_poss: 90,
+    season_off_poss: 210,
+    recent_true_shooting_attempts: 28.96,
+    baseline_true_shooting_attempts: 26.64,
+    season_true_shooting_attempts: 55.6,
+  };
+  assert.deepEqual(buildMetricDenominators(candidate, "assists_per_75"), {
+    recent: 120,
+    baseline: 90,
+    season: 210,
+  });
+  assert.deepEqual(buildMetricDenominators(candidate, "true_shooting_pct"), {
+    recent: 28.96,
+    baseline: 26.64,
+    season: 55.6,
   });
 });
