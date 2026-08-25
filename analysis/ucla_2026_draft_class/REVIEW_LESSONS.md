@@ -294,7 +294,10 @@ Ordered by leverage, for this module and for sibling analysis modules.
 3. Before implementing any modelling primitive, grep the repo for it first.
 
 **Verifier design**
-4. Derive, never enumerate — parse the table, walk every occurrence.
+4. Derive, never enumerate — parse the table, walk every occurrence. Enumeration
+   is only safe over a *closed* class (English number words); over anything that
+   can grow (game counts, export rows, documents) it is a truncation that will
+   go stale, whatever the docstring says.
 5. Reject obsolete values; do not merely confirm a fresh one is present somewhere.
 6. Negative-test every check by reintroducing the bug it targets, and assert the
    file actually changed before trusting the result.
@@ -331,8 +334,9 @@ Ordered by leverage, for this module and for sibling analysis modules.
 
 ## 9. Postscript: this document drew two findings of its own
 
-Codex reviewed the PR that added this file and raised two P2s. Both were real,
-and one of them is the document's own thesis landing on the document.
+Codex reviewed the PR that added this file three times and raised three P2s.
+All were real. One is the document's own thesis landing on the document, and one
+is that thesis landing on the fix for the first.
 
 **The enumerate-don't-derive bug had recurred inside the fix that named it.**
 The #45-4 repair generalised the *range* half of `CLOSED_WINDOW_PROSE` properly
@@ -344,12 +348,32 @@ claiming the fix was the thing that would have kept anyone from looking. I wrote
 a paragraph criticising enumeration and shipped an enumeration in the sentence
 under it.
 
-Now derived: any leading token before `post-injury games` is treated as a count
-unless it appears in a short list of open determiners (`her`, `the`, `all`,
-`several`, …). Negative-tested across eight cases — `thirteen`, `twenty-one`,
-`13` and `eleven` rejected; `her`, `all`, `each of these` and `several` accepted
-— each with an assertion that the file actually changed before the result was
-trusted, per rule 6.
+My first repair was to blacklist the words that are *not* counts — treat any
+other leading token before `post-injury games` as a number. Codex rejected that
+on the next round, and correctly, because it fails in both directions at once:
+`all available post-injury games` matches at `available` after `all` is
+rejected (a false positive that blocks valid prose), and `**thirteen**
+post-injury games` matches nothing at all, because the regex wanted whitespace
+where markdown had put `**` (a false negative on precisely the stale count the
+check exists to catch — in a corpus that is entirely markdown).
+
+The working fix recognises an actual count instead of guessing from what a token
+isn't: strip markdown emphasis first, then match `\d+` or a spelled number built
+from a full grammar (`one`…`nineteen`, `twenty`…`ninety`, optionally hyphenated).
+
+That grammar is an enumeration too, which is worth sitting with, because it is
+the distinction rule 4 was missing. English number words are a **closed class** —
+the list is complete and will not grow — so enumerating them is a derivation.
+Game counts are an **open** quantity, so `one|…|twelve` was a truncation
+masquerading as one. Enumeration is not the bug. Enumerating something that can
+grow is the bug.
+
+Negative-tested over 20 cases at the pattern level and 7 end-to-end through the
+verifier, the latter each asserting the file actually changed and checking the
+reported line number survived the markdown stripping (per rule 6): `thirteen`,
+`nineteen`, `twenty-one`, `ninety-nine`, `13`, and their `**bold**` and
+`` `code` `` forms all rejected; `her`, `all`, `all available`, `the remaining`,
+`several` and `each of these` all accepted.
 
 **The co-presence diagnosis in §5 was wrong**, and wrong in a self-serving
 direction: I had written that the dimension went unchecked because no external
@@ -359,6 +383,8 @@ lesson I had drawn from the false version.
 
 The general shape is worth keeping. A retrospective is written by the same person
 whose judgement produced the errors, using the same judgement, and it will
-reproduce the same blind spots — including, evidently, in the act of describing
-them. That is not an argument against writing one. It is an argument for sending
-it through the same review as the code.
+reproduce the same blind spots — in the act of describing them, and then again in
+the act of fixing that. Three rounds on one regex is the honest measure of how
+durable a blind spot is once it has been named out loud. That is not an argument
+against writing the retrospective. It is an argument for sending it through the
+same review as the code.

@@ -179,28 +179,40 @@ def row_count_check() -> list[str]:
 # on every refresh, so a chart built to these words silently drops her latest
 # games -- which is exactly what happened once already.
 DASH = r"[-\u2013\u2014]"
-# determiners that leave the count open; anything else before "post-injury
-# games" is a fixed count and therefore the bug this check exists to reject
-OPEN_QUANTIFIER = (r"(?:her|his|their|its|the|all|any|some|these|those|each|every"
-                   r"|both|no|more|later|further|subsequent|remaining|other"
-                   r"|several|many|few)")
+# Recognise an actual count rather than blacklisting the words that are not one.
+# A blacklist fails both ways: "all available post-injury games" matches at
+# "available" once "all" is rejected, and any word not on the list is treated as
+# a number. English number words are a *closed* class, so spelling out the
+# grammar is complete -- unlike the earlier "one..twelve" list, which was a
+# truncation of an open-ended quantity and went stale as the window grew.
+_ONES = (r"one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve"
+         r"|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen")
+_TENS = r"twenty|thirty|forty|fifty|sixty|seventy|eighty|ninety"
+COUNT = rf"(?:\d+|(?:{_TENS})(?:[-\s](?:{_ONES}))?|(?:{_ONES}))"
 CLOSED_WINDOW_PROSE = re.compile(
     # any fixed endpoint, not just the 6-10 / g32-36 wording that was wrong once:
     # a future refresh is just as likely to write "return 6-11" or "g32-37".
     rf"return\s*(?:games\s*)?6\s*{DASH}\s*\d+"
     rf"|\bg\s*3\d\s*{DASH}\s*3\d\b"
-    # ...and any *count* of post-injury games. A spelled-out alternation is the
-    # same enumerate-don't-derive trap one level down: the first version stopped
-    # at "twelve" while the window kept growing, so "thirteen" would have passed.
-    # Match any leading token instead and exempt the words that are not counts.
-    rf"|\b(?!{OPEN_QUANTIFIER}\b)[\w-]+\s+post-injury games",
+    # ...and any *count* of post-injury games, however it is spelled.
+    rf"|\b{COUNT}\s+post-injury games",
     re.I)
+
+
+def _plain(body: str) -> str:
+    """Strip markdown emphasis so "**thirteen** games" reads as a count.
+
+    Only characters that can never be newlines are removed, so line numbers
+    derived from the result still point at the right source line.
+    """
+    return re.sub(r"[*`]+", "", body)
 
 
 def prose_check(text: dict[str, str]) -> list[str]:
     """No document may describe the open-ended return window as a closed range."""
     bad = []
-    for f, body in text.items():
+    for f, raw in text.items():
+        body = _plain(raw)
         for m in CLOSED_WINDOW_PROSE.finditer(body):
             line = body[:m.start()].count("\n") + 1
             bad.append(f"{f}:{line} describes the open return window as closed: {m.group(0)!r}")
