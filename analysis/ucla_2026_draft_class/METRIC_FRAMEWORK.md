@@ -49,13 +49,25 @@ league (Canada, Billings, Burke, Onyenwere, Gardner).
 scores in) · `recovered_blocks ÷ blocks` (blocks your team keeps) ·
 `self_oreb_pct`.
 
-### Tier 3 — context, use sparingly
+### Tier 3 — impact
 
-`rapm` (regularized, sd ≈ 0.85 — read ranks, not magnitudes), `war`,
-`bpm`. **Do not use** `adj_rapm` (sd 4.66, incoherent with `rapm`),
-`obpm`/`dbpm` (miscentered at −3.4 / +2.8), or `darko_filtered_skill`
-(correlation with `rapm` is exactly 1.000 — it is a duplicate column, not an
-independent DARKO estimate).
+**Use the in-repo layer**, not the frozen parquet: `rapm`, `rapm_scaled`, `waa`
+and `war` from `impact_rapm_war_2026.csv`, rebuilt on all 281 games from the
+derived possessions. Read ranks and tiers — split-half reliability is 0.64.
+Quote `waa` in preference to `war`, which carries a replacement convention. Use
+`rapm` for ordering and `rapm_scaled` for magnitudes; they differ by the 0.64
+ridge attenuation and must not be mixed in one chart. See
+[`IMPACT_LAYER.md`](./IMPACT_LAYER.md).
+
+**BPM is not available and should not be improvised.** It is a regression of
+box-score rates onto long-run RAPM; fitting it on one season cross-validates at
+R² = −0.09, worse than predicting the mean, and the published coefficients are
+NBA-derived.
+
+**Do not use anything from `wnba_player_impact_2026.parquet`.** Beyond being
+frozen at gp ≤ 29: `adj_rapm` has sd 4.66 against `rapm`'s 0.85, `obpm`/`dbpm`
+are miscentered at −3.4 / +2.8, and `darko_filtered_skill` correlates with
+`rapm` at exactly 1.000 — a duplicate column, not an independent estimate.
 
 ### Metrics deliberately *not* used
 
@@ -108,11 +120,10 @@ percentile always means better** in the story data.
 
 ## 5. Known data limits to state in the piece
 
-1. The lineup and impact parquets stop in mid-July. The possession layer no
-   longer does — it is rebuilt from play-by-play for the full season (see
-   `DERIVED_POSSESSIONS.md`) — but RAPM/BPM/WAR still describe only the first
-   two thirds, and at least one player (Jaquez) changes sharply after that
-   cutoff.
+1. The lineup parquet stops in mid-July. The possession layer no longer does
+   (`DERIVED_POSSESSIONS.md`) and neither does impact (`IMPACT_LAYER.md`);
+   both are rebuilt for the full season. Only stint-level construction still
+   depends on a frozen source.
 2. `wnba_stats_standings_2026.parquet` is stale (~27 games/team). Recompute
    standings from the team-game layer.
 3. Kiki Rice has 21 games; Gianna Kneepkens has roughly 230 minutes. Neither clears a

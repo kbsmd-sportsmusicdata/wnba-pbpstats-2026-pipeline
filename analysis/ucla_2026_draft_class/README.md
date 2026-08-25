@@ -25,6 +25,9 @@ holds the exploratory analysis and the filtered, design-ready data behind it.
   on/off contradiction: her return was a five-game minutes restriction, and
   and her per-possession rates collapse and recover with it. **Use this one for
   anything going into print.**
+- **[`IMPACT_LAYER.md`](./IMPACT_LAYER.md)** — RAPM and WAR computed in-repo
+  on the full season, with the validation, the reliability figure to quote
+  alongside them, and why BPM is deliberately absent.
 - **[`DERIVED_POSSESSIONS.md`](./DERIVED_POSSESSIONS.md)** — rebuilds the
   frozen possession layer for the full season from ESPN play-by-play, with the
   validation report and the duo findings it settles. Read this before quoting
@@ -58,6 +61,8 @@ All are small enough to inline into an HTML artifact.
 | `story_derived_onoff_full_season.csv` | 6 | Possession-level on/off for the six |
 | `story_rice_blocks_derived.csv` | 4 | Rice's return windows on the derived layer |
 | `derived_vs_exact_onoff.csv` | 187 | Derived vs pbpstats-exact on/off, for error bars |
+| `impact_rapm_war_2026.csv` | 229 | RAPM (raw and calibrated), WAA and WAR for every player |
+| `story_ucla_six_impact.csv` | 6 | The six, with percentile against the 200+ possession pool |
 
 Supporting/intermediate: `on_off_all_players.csv` (exact full-season on/off for
 all 227 players), `possession_on_off_splits.csv` (possession-level splits,
@@ -113,8 +118,10 @@ Charts the data is already shaped for, roughly in order of how much they carry:
    31.8, 29.8). The step between game 5 and game 6 back is visible without any
    annotation.
 
-Three things to carry into the copy. The RAPM/BPM/WAR impact layer still stops
-in **mid-July** while everything else runs through **2026-08-23** (281 games).
+Three things to carry into the copy. Impact is no longer stale — RAPM and WAR
+are rebuilt on all 281 games (`IMPACT_LAYER.md`); quote WAA rather than WAR
+unless you state the replacement level, and read RAPM as ranks, since
+split-half reliability is 0.64.
 Rice (21 games) and Kneepkens (~230 minutes) are below any normal stability
 threshold. And per §5 of `DERIVED_POSSESSIONS.md`, small-sample on/off
 differentials move by several points per 100 on a handful of new games, while
