@@ -4,8 +4,14 @@
   "approved_by": "Krystal Beasley",
   "approved_at": "2026-08-23",
   "formula_version": "rfm-live-v1",
-  "approved_config_sha256": "4abbb630ad5dafec63317fe8dae7a22890e8525aba659efd4f9dd7c009ee33c6",
+  "approved_config_sha256": "0d941684dc397c565c917fb3bfb2dac401d9602577df2b96cbd7d2dd253aa696",
   "end_to_end_review_status": "approved_19_player_review",
+  "roster_freshness_safeguard": {
+    "status": "implemented_from_pr_review",
+    "base_source_as_of": "2026-08-22",
+    "validation_basis": "oldest_contributing_snapshot",
+    "execution_status": "blocked_pending_base_roster_refresh"
+  },
   "eligibility_coverage_update": {
     "review_status": "approved",
     "reviewed_by": "Krystal Beasley",

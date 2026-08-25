@@ -32,8 +32,9 @@ explicitly approved.
 - Both promoted rows have `review_status = reviewed`, `reviewed_by = Krystal Beasley`, and
   `reviewed_at = 2026-08-24`.
 - Eligibility is calculated only from the approved threshold: `0 <= 3`.
-- Live scoring remains blocked because Michelle Onyiah is now a contender candidate without a
-  reviewed primary role assignment.
+- Michelle Onyiah is now a contender candidate without a reviewed primary role assignment.
+- A separate fail-closed freshness gate also blocks live execution because the unchanged base
+  roster remains dated 2026-08-22 while the standings cutoff has advanced to 2026-08-23.
 
 ## Completed promotion
 
@@ -41,6 +42,6 @@ explicitly approved.
 2. The eligibility rows are promoted into the 231-row reviewed table and identity crosswalk.
 3. The reviewed player-core addendum is configured alongside the immutable base snapshot.
 4. The eligibility approval manifest records the new row counts and immutable hashes.
-5. Eligibility, PBPStats coverage, and roster-adapter checks pass. The dry-run correctly identifies
-   Michelle Onyiah's primary role assignment as the next review gate and prevents a manual live run
-   from writing output until it is resolved.
+5. Eligibility and PBPStats coverage checks pass. Michelle Onyiah's primary role assignment remains
+   the next review decision; the roster adapter independently prevents a new manual live run until
+   the base roster snapshot is refreshed through the standings cutoff.

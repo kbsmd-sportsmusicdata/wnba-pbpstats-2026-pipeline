@@ -20,8 +20,10 @@ playoff forecast dashboard.
   approved.
 - **Live adapter status:** the PBPStats adapter validation package was approved on 2026-08-22.
 - **Current gate:** the first manual live run completed on 2026-08-23 and was accepted as the
-  immutable baseline on 2026-08-24. Scheduling remains disabled and requires a separate design and
-  approval gate.
+  immutable baseline on 2026-08-24. Michelle Onyiah's role assignment is the next review decision;
+  before another live execution, the August 22 base roster must also be refreshed to at least the
+  current standings cutoff. Scheduling remains disabled and requires a separate design and approval
+  gate.
 - **Output interpretation:** the fixture dashboard remains synthetic; the dry-run dashboard uses
   reviewed real sources and is labeled `DRY RUN`, while the manual live dashboard is labeled
   `LIVE`.
@@ -96,6 +98,10 @@ manual invocation writes to a unique
 `analysis/role_fulfillment_matrix/live/runs/<UTC-run-id>/` directory and refuses to overwrite an
 existing run. The approved configuration requires `execution_mode = manual_only` and
 `scheduling_enabled = false`; no GitHub workflow invokes the live builder.
+
+The base roster and each reviewed addendum retain separate `source_as_of` dates. The adapter stamps
+those dates onto the rows they contributed and compares the oldest contributing snapshot with the
+standings cutoff. A newer addendum therefore cannot make an unchanged base roster appear current.
 
 ## Reviewed role and sample safeguards
 

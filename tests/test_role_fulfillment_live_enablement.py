@@ -14,6 +14,7 @@ from role_fulfillment_matrix.contracts import (  # noqa: E402
     authorize_execution,
     live_config_fingerprint,
 )
+from role_fulfillment_matrix.roster_adapter import RosterAdapterError  # noqa: E402
 
 
 LIVE_CONFIG = (
@@ -47,6 +48,7 @@ class LiveEnablementConfigTest(unittest.TestCase):
             config["output_root"],
             "analysis/role_fulfillment_matrix/live",
         )
+        self.assertEqual(config["sources"]["roster_source_as_of"], "2026-08-22")
         authorize_execution(config)
 
         approval = json.loads(LIVE_OUTPUT_APPROVAL.read_text())
@@ -64,6 +66,12 @@ class LiveEnablementConfigTest(unittest.TestCase):
             approval["approved_config_sha256"],
             live_config_fingerprint(config),
         )
+        self.assertEqual(approval["roster_freshness_safeguard"], {
+            "status": "implemented_from_pr_review",
+            "base_source_as_of": "2026-08-22",
+            "validation_basis": "oldest_contributing_snapshot",
+            "execution_status": "blocked_pending_base_roster_refresh",
+        })
         self.assertEqual(approval["eligibility_coverage_update"], {
             "review_status": "approved",
             "reviewed_by": "Krystal Beasley",
@@ -127,7 +135,7 @@ class LiveEnablementConfigTest(unittest.TestCase):
 
 
 class ManualLiveOutputTest(unittest.TestCase):
-    def test_manual_live_run_blocks_before_writing_when_candidate_role_is_missing(self):
+    def test_manual_live_run_blocks_before_writing_when_base_roster_is_stale(self):
         approval = json.loads(LIVE_OUTPUT_APPROVAL.read_text())
         approved_paths = [ROOT / item["path"] for item in approval["manual_live_run"]["artifacts"]]
         approved_hashes_before = {
@@ -138,8 +146,8 @@ class ManualLiveOutputTest(unittest.TestCase):
             run_id = "2026-08-24T010000Z"
             output_root = runs_root / "runs" / run_id
             with self.assertRaisesRegex(
-                LiveScoringBlocked,
-                "current contender candidates without reviewed role assignments: 1",
+                RosterAdapterError,
+                "oldest contributing roster snapshot is older than the standings cutoff",
             ):
                 build(runs_root=runs_root, run_id=run_id)
             self.assertFalse(output_root.exists())
