@@ -66,6 +66,8 @@
   <dialog id="evidence-dialog" aria-labelledby="evidence-title">
     <div class="dialog-head"><div><p class="kicker">EVIDENCE DRAWER</p><h2 id="evidence-title"></h2></div><button id="close-evidence" type="button" aria-label="Close evidence">×</button></div>
     <p id="evidence-subtitle" class="dialog-subtitle"></p>
+    <div id="evidence-window-context" class="evidence-context-grid" aria-label="Analysis windows"></div>
+    <div id="evidence-sample-context" class="sample-context" aria-label="Sample context"></div>
     <div id="evidence-content"></div>
   </dialog>
 
@@ -99,6 +101,7 @@
       "baseline_possession_share_sd": 0.0,
       "baseline_rim_fg_pct": 0.5,
       "baseline_rim_fga_share": 0.25,
+      "baseline_team_games": 3,
       "baseline_team_possessions": 240,
       "baseline_true_shooting_attempts": 26.64,
       "baseline_true_shooting_pct": 0.5630630630630631,
@@ -112,6 +115,8 @@
       "eligibility_reviewed_at": "2026-08-20",
       "eligibility_reviewed_by": "fixture-reviewer",
       "eligibility_snapshot_active": true,
+      "eligibility_snapshot_position_abbreviation": "G",
+      "eligibility_snapshot_position_name": "Guard",
       "eligibility_snapshot_status_type": "active",
       "eligibility_source_url": "fixture://eligibility/FX-001",
       "eligibility_type": "age_or_experience",
@@ -127,6 +132,8 @@
       "opportunity_score": 69.0,
       "player_id": "FX-001",
       "player_name": "Avery Sample",
+      "position_abbreviation": "G",
+      "position_name": "Guard",
       "recent_assist_turnover_ratio": 1.6666666666666667,
       "recent_assists": 10,
       "recent_assists_per_75": 6.25,
@@ -148,6 +155,7 @@
       "recent_rim_fg_pct": 0.7,
       "recent_rim_fga_share": 0.4,
       "recent_sample_met": true,
+      "recent_team_games": 3,
       "recent_team_possessions": 240,
       "recent_true_shooting_attempts": 28.96,
       "recent_true_shooting_pct": 0.6388121546961326,
@@ -177,6 +185,7 @@
       "season_possessions_met": false,
       "season_rim_fg_pct": 0.625,
       "season_rim_fga_share": 0.32653061224489793,
+      "season_team_games": 6,
       "season_team_possessions": 480,
       "season_true_shooting_attempts": 55.6,
       "season_true_shooting_pct": 0.6025179856115108,
@@ -214,6 +223,7 @@
       "baseline_possession_share_sd": 0.0,
       "baseline_rim_fg_pct": 0.5,
       "baseline_rim_fga_share": 0.25,
+      "baseline_team_games": 3,
       "baseline_team_possessions": 240,
       "baseline_true_shooting_attempts": 26.64,
       "baseline_true_shooting_pct": 0.33783783783783783,
@@ -227,6 +237,8 @@
       "eligibility_reviewed_at": "2026-08-20",
       "eligibility_reviewed_by": "fixture-reviewer",
       "eligibility_snapshot_active": true,
+      "eligibility_snapshot_position_abbreviation": "F",
+      "eligibility_snapshot_position_name": "Forward",
       "eligibility_snapshot_status_type": "active",
       "eligibility_source_url": "fixture://eligibility/FX-002",
       "eligibility_type": "age_or_experience",
@@ -242,6 +254,8 @@
       "opportunity_score": 61.0,
       "player_id": "FX-002",
       "player_name": "Jordan Fixture",
+      "position_abbreviation": "F",
+      "position_name": "Forward",
       "recent_assist_turnover_ratio": 1.0,
       "recent_assists": 3,
       "recent_assists_per_75": 1.875,
@@ -263,6 +277,7 @@
       "recent_rim_fg_pct": 0.4,
       "recent_rim_fga_share": 0.20833333333333334,
       "recent_sample_met": true,
+      "recent_team_games": 3,
       "recent_team_possessions": 240,
       "recent_true_shooting_attempts": 26.64,
       "recent_true_shooting_pct": 0.33783783783783783,
@@ -292,6 +307,7 @@
       "season_possessions_met": false,
       "season_rim_fg_pct": 0.45454545454545453,
       "season_rim_fga_share": 0.22916666666666666,
+      "season_team_games": 6,
       "season_team_possessions": 480,
       "season_true_shooting_attempts": 53.28,
       "season_true_shooting_pct": 0.33783783783783783,
@@ -688,6 +704,7 @@
     "config_path": "analysis/role_fulfillment_matrix/config/fixture_config.json",
     "dry_run_gate_blockers": [],
     "dry_run_gate_status": "not_applicable",
+    "execution_mode": null,
     "formula_version": "rfm-fixture-v1",
     "funnel_counts": {
       "candidates_included": 2,
@@ -697,12 +714,13 @@
       "players_considered": 5,
       "players_scored": 2
     },
-    "generated_at_utc": "2026-08-23T06:01:47+00:00",
+    "generated_at_utc": "2026-08-25T05:43:30+00:00",
     "live_output_enabled": false,
     "live_scoring_blockers": [
       "deliberate live adapter wiring and end-to-end dry run"
     ],
     "live_scoring_status": "blocked",
+    "manual_run_id": null,
     "mode": "fixture",
     "output_rows": {
       "candidate_funnel_2026.csv": 5,
@@ -710,10 +728,11 @@
       "role_fulfillment_matrix_2026.csv": 2
     },
     "players_scored": 2,
+    "scheduling_enabled": false,
     "season": 2026,
     "source_manifest": {
       "eligibility": {
-        "columns": 12,
+        "columns": 14,
         "path": "tests/fixtures/role_fulfillment_matrix/player_eligibility.csv",
         "rows": 5,
         "status": "synthetic_fixture"

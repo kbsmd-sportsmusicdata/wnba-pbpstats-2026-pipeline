@@ -144,6 +144,14 @@ class FunnelAndScoringTest(unittest.TestCase):
         self.assertEqual(funnel.loc["FX-004", "exclusion_reason"], "eligibility_not_reviewed")
         self.assertEqual(funnel.loc["FX-005", "exclusion_reason"], "insufficient_recent_sample")
 
+    def test_window_context_distinguishes_team_schedule_from_player_games(self):
+        score = self.result.scores.set_index("player_id").loc["FX-001"]
+
+        self.assertEqual(score["recent_team_games"], 3)
+        self.assertEqual(score["recent_games"], 3)
+        self.assertEqual(score["baseline_team_games"], 3)
+        self.assertEqual(score["season_team_games"], 6)
+
     def _build_with_eligibility_status(self, player_id, *, active, status_type):
         config = load_config(FIXTURE_CONFIG)
         with tempfile.TemporaryDirectory() as tmp:

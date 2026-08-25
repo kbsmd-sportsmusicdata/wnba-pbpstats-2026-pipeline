@@ -44,6 +44,8 @@ def adapt_espn_roster(
         "athlete_id",
         "full_name",
         "current_team_id",
+        "position_name",
+        "position_abbreviation",
         "active",
         "status_type",
     }
@@ -73,6 +75,19 @@ def adapt_espn_roster(
         raise RosterAdapterError("eligibility contains rows that are not reviewed")
 
     core = player_core.copy()
+    missing_position = (
+        core["position_name"].isna()
+        | core["position_name"].astype(str).str.strip().eq("")
+        | core["position_abbreviation"].isna()
+        | core["position_abbreviation"].astype(str).str.strip().eq("")
+    )
+    if missing_position.any():
+        names = core.loc[missing_position, "full_name"].astype(str).tolist()
+        raise RosterAdapterError("player core missing position context: " + ", ".join(names))
+    core["position_name"] = core["position_name"].astype(str).str.strip()
+    core["position_abbreviation"] = (
+        core["position_abbreviation"].astype(str).str.strip().str.upper()
+    )
     core["_espn_athlete_id"] = core["athlete_id"].map(_identity)
     if core["_espn_athlete_id"].duplicated().any():
         raise RosterAdapterError("player core contains duplicate athlete_id values")
@@ -106,6 +121,8 @@ def adapt_espn_roster(
             "_espn_athlete_id",
             "full_name",
             "current_team_id",
+            "position_name",
+            "position_abbreviation",
             "active",
             "status_type",
         ]
@@ -146,6 +163,8 @@ def adapt_espn_roster(
             "player_id",
             "player_name",
             "_team_abbreviation",
+            "position_name",
+            "position_abbreviation",
             "active",
             "status_type",
             "eligibility_coverage_status",

@@ -5,6 +5,7 @@
   "config_path": "analysis/role_fulfillment_matrix/config/fixture_config.json",
   "dry_run_gate_blockers": [],
   "dry_run_gate_status": "not_applicable",
+  "execution_mode": null,
   "formula_version": "rfm-fixture-v1",
   "funnel_counts": {
     "candidates_included": 2,
@@ -14,12 +15,13 @@
     "players_considered": 5,
     "players_scored": 2
   },
-  "generated_at_utc": "2026-08-23T06:01:47+00:00",
+  "generated_at_utc": "2026-08-25T05:43:30+00:00",
   "live_output_enabled": false,
   "live_scoring_blockers": [
     "deliberate live adapter wiring and end-to-end dry run"
   ],
   "live_scoring_status": "blocked",
+  "manual_run_id": null,
   "mode": "fixture",
   "output_rows": {
     "candidate_funnel_2026.csv": 5,
@@ -27,10 +29,11 @@
     "role_fulfillment_matrix_2026.csv": 2
   },
   "players_scored": 2,
+  "scheduling_enabled": false,
   "season": 2026,
   "source_manifest": {
     "eligibility": {
-      "columns": 12,
+      "columns": 14,
       "path": "tests/fixtures/role_fulfillment_matrix/player_eligibility.csv",
       "rows": 5,
       "status": "synthetic_fixture"

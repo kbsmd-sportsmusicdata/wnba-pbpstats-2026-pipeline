@@ -117,7 +117,15 @@ def _fixture_roster(player_game: pd.DataFrame, eligibility: pd.DataFrame) -> pd.
         .drop_duplicates("player_id", keep="last")
         [["player_id", "player_name", "team_abbreviation"]]
     )
-    status = eligibility[["player_id", "active", "status_type"]]
+    status = eligibility[
+        [
+            "player_id",
+            "position_name",
+            "position_abbreviation",
+            "active",
+            "status_type",
+        ]
+    ]
     return teams.merge(status, on="player_id", how="left", validate="one_to_one")
 
 
