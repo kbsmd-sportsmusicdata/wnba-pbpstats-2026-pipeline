@@ -1,0 +1,47 @@
+{
+  "season": 2026,
+  "created_on": "2026-08-24",
+  "review_status": "reviewed",
+  "approved_by": "Krystal Beasley",
+  "approved_at": "2026-08-24",
+  "rows": 2,
+  "pbpstats_player_ids": [
+    "1642803",
+    "1642835"
+  ],
+  "eligible_players": 2,
+  "projected_approved_rows": 231,
+  "eligibility_rule": {
+    "field": "experience_years",
+    "operator": "<=",
+    "threshold": 3,
+    "eligibility_type": "experience_le_3"
+  },
+  "source_snapshot": {
+    "path": "analysis/role_fulfillment_matrix/data/review/eligibility_coverage_source_snapshot_2026-08-24.json",
+    "sha256": "c6c990885aa8f8edb94aa3f973cb7e85b2b2ff424018c4424813b2ce3d4a937f"
+  },
+  "output": {
+    "path": "analysis/role_fulfillment_matrix/data/review/eligibility_coverage_addendum_2026-08-24.pending.csv",
+    "sha256": "0565278fa7cf415afacf9a8ef0e728e90d007eb0c7e4399c7a5a110c633a8d88"
+  },
+  "player_core_output": {
+    "path": "analysis/role_fulfillment_matrix/data/review/player_core_coverage_addendum_2026-08-24.pending.csv",
+    "sha256": "7cf12a1c7da752f4b9bf257f4253d533a15d455d6f67bfc4541dca5a9ceeac6a"
+  },
+  "approved_output": {
+    "path": "analysis/role_fulfillment_matrix/data/review/eligibility_coverage_addendum_2026-08-24.csv",
+    "sha256": "c3035a135d5bdf29ff1a40b1e4fe4b068607c298ead76be566d2e087426f057a"
+  },
+  "approved_player_core_output": {
+    "path": "analysis/role_fulfillment_matrix/data/review/player_core_coverage_addendum_2026-08-24.csv",
+    "sha256": "7cf12a1c7da752f4b9bf257f4253d533a15d455d6f67bfc4541dca5a9ceeac6a"
+  },
+  "live_scoring_status": "eligibility_coverage_approved",
+  "promotion_completed": [
+    "Both eligibility rows record reviewed_by and reviewed_at.",
+    "The reviewed eligibility table and identity crosswalk include both PBPStats identities.",
+    "The live configuration references the reviewed player-core addendum.",
+    "Eligibility, roster-adapter, and live integration gates must pass before the next manual run."
+  ]
+}

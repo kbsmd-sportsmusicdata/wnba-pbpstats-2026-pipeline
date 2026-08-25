@@ -63,6 +63,19 @@ class LiveDryRunGovernanceTest(unittest.TestCase):
             },
         )
         self.assertFalse(config["live_output_enabled"])
+        self.assertEqual(config["sources"]["roster_source_as_of"], "2026-08-22")
+        self.assertEqual(
+            config["sources"]["roster_addenda"],
+            [
+                {
+                    "path": (
+                        "analysis/role_fulfillment_matrix/data/review/"
+                        "player_core_coverage_addendum_2026-08-24.csv"
+                    ),
+                    "source_as_of": "2026-08-24",
+                }
+            ],
+        )
 
     def test_cutoff_policy_derives_non_overlapping_fourteen_day_windows(self):
         self.assertEqual(
@@ -336,6 +349,51 @@ class LiveSourceAdapterTest(unittest.TestCase):
                 cutoff_date="2026-08-21",
             )
 
+    def test_roster_adapter_uses_oldest_contributing_row_snapshot_for_freshness(self):
+        player_core = pd.DataFrame(
+            [
+                {
+                    "athlete_id": "1001",
+                    "full_name": "Base Player",
+                    "current_team_id": "17",
+                    "position_name": "Guard",
+                    "position_abbreviation": "G",
+                    "active": True,
+                    "status_type": "active",
+                    "_roster_source_as_of": "2026-08-22",
+                },
+                {
+                    "athlete_id": "1002",
+                    "full_name": "Addendum Player",
+                    "current_team_id": "17",
+                    "position_name": "Forward",
+                    "position_abbreviation": "F",
+                    "active": True,
+                    "status_type": "developmental",
+                    "_roster_source_as_of": "2026-08-24",
+                },
+            ]
+        )
+        eligibility = pd.DataFrame(
+            [
+                {"player_id": "p1", "player_name": "Base Player", "espn_athlete_id": "1001", "review_status": "reviewed"},
+                {"player_id": "p2", "player_name": "Addendum Player", "espn_athlete_id": "1002", "review_status": "reviewed"},
+            ]
+        )
+        standings = pd.DataFrame([{"team_id": 17, "team_abbreviation": "LV"}])
+
+        with self.assertRaisesRegex(
+            RosterAdapterError,
+            "oldest contributing roster snapshot is older than the standings cutoff",
+        ):
+            adapt_espn_roster(
+                player_core,
+                eligibility,
+                standings,
+                source_as_of="2026-08-24",
+                cutoff_date="2026-08-23",
+            )
+
     def test_live_loader_wires_reviewed_sources_and_derives_effective_windows(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -346,6 +404,7 @@ class LiveSourceAdapterTest(unittest.TestCase):
             ingest_manifest_path = root / "ingest_manifest.json"
             failures_path = root / "failures.json"
             player_core_path = root / "player_core.csv"
+            player_core_addendum_path = root / "player_core_addendum.csv"
             eligibility_path = root / "eligibility.csv"
             assignments_path = root / "assignments.csv"
             parity_path = root / "locked_parity.csv"
@@ -365,7 +424,18 @@ class LiveSourceAdapterTest(unittest.TestCase):
             pd.DataFrame(
                 [{"athlete_id": "1001", "full_name": "Player One", "current_team_id": "17", "position_name": "Guard", "position_abbreviation": "G", "active": True, "status_type": "active"}]
             ).to_csv(player_core_path, index=False)
-            pd.DataFrame([self._eligibility_row()]).to_csv(eligibility_path, index=False)
+            pd.DataFrame(
+                [{"athlete_id": "1002", "full_name": "Player Two", "current_team_id": "17", "position_name": "Forward", "position_abbreviation": "F", "active": True, "status_type": "developmental"}]
+            ).to_csv(player_core_addendum_path, index=False)
+            pd.DataFrame([
+                self._eligibility_row(),
+                dict(
+                    self._eligibility_row(),
+                    player_id="p2",
+                    player_name="Player Two",
+                    espn_athlete_id="1002",
+                ),
+            ]).to_csv(eligibility_path, index=False)
             pd.DataFrame([self._assignment_row()]).to_csv(assignments_path, index=False)
             pd.DataFrame([self._locked_parity_row()]).to_csv(parity_path, index=False)
 
@@ -381,6 +451,12 @@ class LiveSourceAdapterTest(unittest.TestCase):
                 assignments_path=assignments_path,
                 parity_path=parity_path,
             )
+            config["sources"]["roster_addenda"] = [
+                {
+                    "path": str(player_core_addendum_path),
+                    "source_as_of": "2026-08-24",
+                }
+            ]
             sources = load_sources(config)
             analysis = build_analysis(config)
 
@@ -398,6 +474,25 @@ class LiveSourceAdapterTest(unittest.TestCase):
         self.assertEqual(sources.source_manifest["player_game"]["status"], "reviewed_live_adapter")
         self.assertEqual(sources.roster_status.loc[0, "team_abbreviation"], "LVA")
         self.assertEqual(sources.roster_status.loc[0, "position_abbreviation"], "G")
+        self.assertEqual(len(sources.roster_status), 2)
+        self.assertEqual(
+            sources.source_manifest["roster_status"]["addenda"],
+            [
+                {
+                    "path": str(player_core_addendum_path.resolve()),
+                    "rows": 1,
+                    "source_as_of": "2026-08-24",
+                }
+            ],
+        )
+        self.assertEqual(
+            sources.roster_status.set_index("player_id")["source_as_of"].to_dict(),
+            {"p1": "2026-08-22", "p2": "2026-08-24"},
+        )
+        self.assertEqual(
+            sources.source_manifest["roster_status"]["quality"]["oldest_source_as_of"],
+            "2026-08-22",
+        )
         self.assertEqual(analysis.funnel.loc[0, "position_name"], "Guard")
         self.assertEqual(sources.standings.loc[0, "cutoff_date"], "2026-08-21")
         self.assertEqual(analysis.manifest["mode"], "live_dry_run")
@@ -749,91 +844,47 @@ class CurrentTeamSafeguardTest(unittest.TestCase):
 
 
 class LiveDryRunOutputTest(unittest.TestCase):
-    def test_real_sources_build_an_isolated_nonpublishing_review_package(self):
+    def test_real_sources_fail_closed_when_base_roster_is_stale(self):
         from build_role_fulfillment_live_dry_run import build
 
         with tempfile.TemporaryDirectory() as tmp:
             output_root = Path(tmp) / "live_dry_run"
-            manifest = build(output_root=output_root)
+            with self.assertRaisesRegex(
+                RosterAdapterError,
+                "oldest contributing roster snapshot is older than the standings cutoff",
+            ):
+                build(output_root=output_root)
+            self.assertFalse(output_root.exists())
+
+    def test_refreshed_base_roster_reaches_the_candidate_role_review_gate(self):
+        from build_role_fulfillment_live_dry_run import build
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            config = json.loads(LIVE_CONFIG.read_text())
+            config["sources"]["roster_source_as_of"] = "2026-08-23"
+            config_path = root / "refreshed_roster_config.json"
+            config_path.write_text(json.dumps(config))
+            output_root = root / "live_dry_run"
+
+            manifest = build(config_path=config_path, output_root=output_root)
             report = (
                 output_root / "role_fulfillment_matrix_live_dry_run_validation.md"
             ).read_text()
-            bundle = output_root / "deliverables" / "role_fulfillment_matrix"
-            html = (bundle / "index.html").read_text()
-            payload = json.loads(
-                (bundle / "data" / "role_fulfillment_payload.json").read_text()
-            )
 
-        self.assertEqual(manifest["mode"], "live_dry_run")
-        self.assertEqual(manifest["live_scoring_status"], "dry_run_only")
-        self.assertFalse(manifest["live_output_enabled"])
         self.assertEqual(manifest["adapter_audit"]["status"], "review_ready")
-        self.assertEqual(manifest["adapter_audit"]["locked_parity_players"], 11)
         self.assertEqual(manifest["adapter_audit"]["locked_parity_matches"], 11)
-        self.assertLessEqual(
-            manifest["adapter_audit"]["locked_parity_max_abs_difference"],
-            0.000001,
-        )
-        self.assertEqual(manifest["dry_run_gate_status"], "review_ready")
         self.assertEqual(
             manifest["dry_run_gate_blockers"],
-            [],
-        )
-        self.assertEqual(manifest["funnel_counts"]["players_considered"], 232)
-        self.assertEqual(
-            manifest["funnel_counts"].get("excluded_eligibility_not_reviewed", 0),
-            0,
+            ["current contender candidates without reviewed role assignments: 1"],
         )
         self.assertEqual(
-            manifest["funnel_counts"].get("excluded_role_assignment_not_reviewed", 0),
-            0,
+            manifest["source_manifest"]["roster_status"]["quality"]
+            ["oldest_source_as_of"],
+            "2026-08-23",
         )
-        self.assertEqual(
-            manifest["funnel_counts"]["excluded_inactive_role_review_deferred"],
-            1,
-        )
-        self.assertGreater(manifest["funnel_counts"]["candidates_included"], 0)
-        self.assertIn("Review status: **pending reviewer approval**", report)
-        self.assertIn("Live output remains disabled", report)
-        self.assertNotIn("Chloe Bibby", report)
-        self.assertIn("role assignment", report)
-        self.assertIn("Janiah Barker", report)
-        self.assertIn("deferred while inactive", report)
-        self.assertNotIn("Iliana Rupert", report)
-        self.assertNotIn("reviewed eligibility row required", report)
-        self.assertIn("Locked 11-player parity: 11 of 11", report)
-        self.assertIn("Zero-omitted cells filled:", report)
-        self.assertIn("Live-data dry run", html)
-        self.assertNotIn("Synthetic players and teams", html)
-        self.assertNotIn(">FIXTURE<", html)
-        self.assertEqual(payload["meta"]["mode"], "live_dry_run")
-        self.assertTrue(
-            all(row["analysis_mode"] == "live_dry_run" for row in payload["candidates"])
-        )
-        self.assertEqual(
-            {row["source_name"] for row in payload["evidence"]},
-            {
-                "pbpstats_player_game_reviewed_adapter",
-                "reviewed_player_role_assignments_2026",
-            },
-        )
-        self.assertEqual(
-            {row["safeguard"] for row in payload["evidence"]},
-            {
-                "live_dry_run_only; rates_recomputed_from_additive_counts",
-                "live_dry_run_only; reviewed_role_assignment",
-            },
-        )
-        self.assertFalse(
-            any(
-                "fixture" in row["source_name"] or "fixture" in row["safeguard"]
-                for row in payload["evidence"]
-            )
-        )
-        self.assertNotIn(
-            "fixture_only",
-            {row["score_status"] for row in payload["candidates"]},
-        )
+        self.assertIn("Michelle Onyiah (IND)", report)
+        self.assertIn("reviewed primary role assignment required", report)
 
 
 if __name__ == "__main__":

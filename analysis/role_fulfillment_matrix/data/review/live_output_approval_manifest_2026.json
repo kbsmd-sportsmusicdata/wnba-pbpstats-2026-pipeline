@@ -4,8 +4,21 @@
   "approved_by": "Krystal Beasley",
   "approved_at": "2026-08-23",
   "formula_version": "rfm-live-v1",
-  "approved_config_sha256": "a013dbd8ca8387f3d84a5b9280228592fbf416a70c49f548f40aff7bb01aa782",
+  "approved_config_sha256": "0d941684dc397c565c917fb3bfb2dac401d9602577df2b96cbd7d2dd253aa696",
   "end_to_end_review_status": "approved_19_player_review",
+  "roster_freshness_safeguard": {
+    "status": "implemented_from_pr_review",
+    "base_source_as_of": "2026-08-22",
+    "validation_basis": "oldest_contributing_snapshot",
+    "execution_status": "blocked_pending_base_roster_refresh"
+  },
+  "eligibility_coverage_update": {
+    "review_status": "approved",
+    "reviewed_by": "Krystal Beasley",
+    "reviewed_at": "2026-08-24",
+    "eligibility_approval_manifest": "analysis/role_fulfillment_matrix/data/review/eligibility_approval_manifest_2026.json",
+    "next_live_gate": "michelle_onyiah_role_assignment_review"
+  },
   "approved_result_counts": {
     "live_scored": 11,
     "season_context_only": 5,
@@ -29,6 +42,13 @@
   "execution_mode": "manual_only",
   "scheduling_enabled": false,
   "manual_live_run_status": "completed",
+  "manual_live_run_review": {
+    "review_status": "approved",
+    "approved_by": "Krystal Beasley",
+    "approved_at": "2026-08-24",
+    "report_path": "analysis/role_fulfillment_matrix/data/review/manual_live_run_post_review_2026-08-23.md",
+    "scheduling_status": "disabled_not_approved"
+  },
   "manual_live_run": {
     "generated_at_utc": "2026-08-23T23:37:49+00:00",
     "live_scoring_status": "live_enabled",

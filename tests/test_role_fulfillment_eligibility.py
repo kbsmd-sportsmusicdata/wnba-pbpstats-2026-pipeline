@@ -31,6 +31,46 @@ ELIGIBILITY_ADDENDUM = (
     / "review"
     / "eligibility_addendum_2026-08-23.csv"
 )
+PENDING_COVERAGE_ADDENDUM = (
+    ROOT
+    / "analysis"
+    / "role_fulfillment_matrix"
+    / "data"
+    / "review"
+    / "eligibility_coverage_addendum_2026-08-24.pending.csv"
+)
+PENDING_COVERAGE_MANIFEST = (
+    ROOT
+    / "analysis"
+    / "role_fulfillment_matrix"
+    / "data"
+    / "review"
+    / "eligibility_coverage_addendum_manifest_2026-08-24.json"
+)
+PENDING_PLAYER_CORE_ADDENDUM = (
+    ROOT
+    / "analysis"
+    / "role_fulfillment_matrix"
+    / "data"
+    / "review"
+    / "player_core_coverage_addendum_2026-08-24.pending.csv"
+)
+APPROVED_COVERAGE_ADDENDUM = (
+    ROOT
+    / "analysis"
+    / "role_fulfillment_matrix"
+    / "data"
+    / "review"
+    / "eligibility_coverage_addendum_2026-08-24.csv"
+)
+APPROVED_PLAYER_CORE_ADDENDUM = (
+    ROOT
+    / "analysis"
+    / "role_fulfillment_matrix"
+    / "data"
+    / "review"
+    / "player_core_coverage_addendum_2026-08-24.csv"
+)
 PENDING_ELIGIBILITY = (
     ROOT
     / "analysis"
@@ -370,17 +410,102 @@ class EligibilityBuilderTest(unittest.TestCase):
 
 
 class ApprovedEligibilityArtifactTest(unittest.TestCase):
+    def test_new_pbpstats_identities_have_a_complete_pending_review_addendum(self):
+        self.assertTrue(PENDING_COVERAGE_ADDENDUM.exists())
+        self.assertTrue(PENDING_COVERAGE_MANIFEST.exists())
+        self.assertTrue(PENDING_PLAYER_CORE_ADDENDUM.exists())
+
+        addendum = pd.read_csv(PENDING_COVERAGE_ADDENDUM, dtype={"player_id": str})
+        self.assertEqual(len(addendum), 2)
+        self.assertEqual(addendum["player_id"].nunique(), 2)
+        self.assertEqual(addendum["espn_athlete_id"].nunique(), 2)
+        self.assertEqual(
+            set(addendum["player_name"]),
+            {"Michelle Onyiah", "Morgan Maly"},
+        )
+        by_name = addendum.set_index("player_name")
+        self.assertEqual(by_name.loc["Michelle Onyiah", "player_id"], "1642803")
+        self.assertEqual(by_name.loc["Michelle Onyiah", "espn_athlete_id"], 4433744)
+        self.assertEqual(by_name.loc["Michelle Onyiah", "team_abbreviation"], "IND")
+        self.assertEqual(by_name.loc["Michelle Onyiah", "date_of_birth"], "2002-03-12")
+        self.assertEqual(by_name.loc["Morgan Maly", "player_id"], "1642835")
+        self.assertEqual(by_name.loc["Morgan Maly", "espn_athlete_id"], 4599199)
+        self.assertEqual(by_name.loc["Morgan Maly", "team_abbreviation"], "CHI")
+        self.assertEqual(by_name.loc["Morgan Maly", "date_of_birth"], "2002-01-25")
+        self.assertTrue((addendum["experience_years"] == 0).all())
+        self.assertTrue(addendum["eligible_flag"].all())
+        self.assertEqual(set(addendum["review_status"]), {"pending"})
+        self.assertTrue(addendum["reviewed_by"].isna().all())
+        self.assertTrue(addendum["reviewed_at"].isna().all())
+        self.assertEqual(set(addendum["source_system"]), {"WNBA"})
+
+        player_core = pd.read_csv(PENDING_PLAYER_CORE_ADDENDUM)
+        self.assertEqual(len(player_core), 2)
+        self.assertEqual(player_core["athlete_id"].nunique(), 2)
+        self.assertEqual(set(player_core["athlete_id"]), {4433744, 4599199})
+        self.assertEqual(set(player_core["full_name"]), {"Michelle Onyiah", "Morgan Maly"})
+        self.assertEqual(set(player_core["experience_years"]), {0})
+        self.assertTrue(player_core["active"].all())
+        self.assertEqual(set(player_core["status_type"]), {"developmental"})
+        self.assertFalse(
+            player_core[["current_team_id", "position_name", "position_abbreviation"]]
+            .isna()
+            .any()
+            .any()
+        )
+
+        manifest = json.loads(PENDING_COVERAGE_MANIFEST.read_text(encoding="utf-8"))
+        self.assertEqual(manifest["review_status"], "reviewed")
+        self.assertEqual(manifest["approved_by"], "Krystal Beasley")
+        self.assertEqual(manifest["approved_at"], "2026-08-24")
+        self.assertEqual(manifest["rows"], 2)
+        self.assertEqual(manifest["pbpstats_player_ids"], ["1642803", "1642835"])
+        self.assertEqual(manifest["eligible_players"], 2)
+        self.assertEqual(manifest["projected_approved_rows"], 231)
+        self.assertEqual(manifest["live_scoring_status"], "eligibility_coverage_approved")
+        self.assertEqual(
+            manifest["output"]["sha256"],
+            hashlib.sha256(PENDING_COVERAGE_ADDENDUM.read_bytes()).hexdigest(),
+        )
+        self.assertEqual(
+            manifest["player_core_output"]["sha256"],
+            hashlib.sha256(PENDING_PLAYER_CORE_ADDENDUM.read_bytes()).hexdigest(),
+        )
+
+    def test_approved_coverage_addendum_is_promoted_without_mutating_pending_evidence(self):
+        self.assertTrue(APPROVED_COVERAGE_ADDENDUM.exists())
+        self.assertTrue(APPROVED_PLAYER_CORE_ADDENDUM.exists())
+
+        pending = pd.read_csv(PENDING_COVERAGE_ADDENDUM, dtype={"player_id": str})
+        approved = pd.read_csv(APPROVED_COVERAGE_ADDENDUM, dtype={"player_id": str})
+        review_fields = ["review_status", "reviewed_by", "reviewed_at"]
+        pd.testing.assert_frame_equal(
+            pending.drop(columns=review_fields),
+            approved.drop(columns=review_fields),
+            check_dtype=False,
+        )
+        self.assertEqual(set(approved["review_status"]), {"reviewed"})
+        self.assertEqual(set(approved["reviewed_by"]), {"Krystal Beasley"})
+        self.assertEqual(set(approved["reviewed_at"]), {"2026-08-24"})
+
+        approved_core = pd.read_csv(APPROVED_PLAYER_CORE_ADDENDUM)
+        pending_core = pd.read_csv(PENDING_PLAYER_CORE_ADDENDUM)
+        pd.testing.assert_frame_equal(pending_core, approved_core, check_dtype=False)
+
     def test_approved_table_preserves_rule_and_records_human_review(self):
         self.assertTrue(APPROVED_ELIGIBILITY.exists(), "approved eligibility table is missing")
         eligibility = pd.read_csv(APPROVED_ELIGIBILITY)
 
-        self.assertEqual(len(eligibility), 229)
-        self.assertEqual(eligibility["player_id"].nunique(), 229)
-        self.assertEqual(eligibility["espn_athlete_id"].nunique(), 229)
+        self.assertEqual(len(eligibility), 231)
+        self.assertEqual(eligibility["player_id"].nunique(), 231)
+        self.assertEqual(eligibility["espn_athlete_id"].nunique(), 231)
         self.assertTrue((eligibility["eligible_flag"] == (eligibility["experience_years"] <= 3)).all())
         self.assertEqual(set(eligibility["review_status"]), {"reviewed"})
         self.assertEqual(set(eligibility["reviewed_by"]), {"Krystal Beasley"})
-        self.assertEqual(set(eligibility["reviewed_at"]), {"2026-08-22", "2026-08-23"})
+        self.assertEqual(
+            set(eligibility["reviewed_at"]),
+            {"2026-08-22", "2026-08-23", "2026-08-24"},
+        )
 
         pending = pd.read_csv(PENDING_ELIGIBILITY)
         review_fields = ["review_status", "reviewed_by", "reviewed_at"]
@@ -422,9 +547,9 @@ class ApprovedEligibilityArtifactTest(unittest.TestCase):
         self.assertEqual(manifest["review_status"], "reviewed")
         self.assertEqual(manifest["approved_by"], "Krystal Beasley")
         self.assertEqual(manifest["approved_at"], "2026-08-22")
-        self.assertEqual(manifest["last_updated_at"], "2026-08-23")
-        self.assertEqual(manifest["approved_rows"], 229)
-        self.assertEqual(manifest["eligible_players"], 121)
+        self.assertEqual(manifest["last_updated_at"], "2026-08-24")
+        self.assertEqual(manifest["approved_rows"], 231)
+        self.assertEqual(manifest["eligible_players"], 123)
         self.assertEqual(manifest["ineligible_players"], 108)
         self.assertEqual(manifest["live_eligibility_status"], "approved")
         self.assertEqual(manifest["live_scoring_status"], "enabled_manual_only")
@@ -445,13 +570,24 @@ class ApprovedEligibilityArtifactTest(unittest.TestCase):
             manifest["build_manifest"]["sha256"],
             hashlib.sha256(BUILD_MANIFEST.read_bytes()).hexdigest(),
         )
-        self.assertEqual(len(manifest["supplemental_reviews"]), 1)
+        self.assertEqual(len(manifest["supplemental_reviews"]), 2)
         supplement = manifest["supplemental_reviews"][0]
         self.assertEqual(supplement["reviewed_at"], "2026-08-23")
         self.assertEqual(supplement["rows"], 2)
         self.assertEqual(
             supplement["sha256"],
             hashlib.sha256(ELIGIBILITY_ADDENDUM.read_bytes()).hexdigest(),
+        )
+        coverage_supplement = manifest["supplemental_reviews"][1]
+        self.assertEqual(coverage_supplement["reviewed_at"], "2026-08-24")
+        self.assertEqual(coverage_supplement["rows"], 2)
+        self.assertEqual(
+            coverage_supplement["sha256"],
+            hashlib.sha256(APPROVED_COVERAGE_ADDENDUM.read_bytes()).hexdigest(),
+        )
+        self.assertEqual(
+            coverage_supplement["player_core_sha256"],
+            hashlib.sha256(APPROVED_PLAYER_CORE_ADDENDUM.read_bytes()).hexdigest(),
         )
 
     def test_dry_run_config_references_approved_eligibility_without_enabling_output(self):

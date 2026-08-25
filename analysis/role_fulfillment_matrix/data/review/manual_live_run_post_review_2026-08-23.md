@@ -1,15 +1,15 @@
 # Role Fulfillment Matrix — First Manual Live-Run Post-Review
 
-Review status: **review ready — approval recommended**
+Review status: **approved**
 
-Owner approval: **pending explicit confirmation**
+Owner approval: **approved by Krystal Beasley on 2026-08-24**
 
 Scheduling status: **disabled and outside this approval**
 
 ## Technical summary
 
-Approve the first manual Role Fulfillment Matrix live run as the immutable live-output baseline. The
-review found no blocking discrepancy: all seven pinned live and dry-run artifacts retain their
+The first manual Role Fulfillment Matrix live run is approved as the immutable live-output baseline.
+The review found no blocking discrepancy: all seven pinned live and dry-run artifacts retain their
 approved hashes, the live configuration matches its approved fingerprint, the 19-player output
 reconciles to the candidate funnel, and live scores match the approved dry run except for the
 intended live provenance labels.
@@ -70,13 +70,13 @@ reviewed contender candidate.
 - No cadence, retry policy, alert destination, retention policy, or automated rollback has been
   reviewed. Scheduling must remain disabled until those controls receive separate approval.
 
-## Approval recommendation and next gate
+## Approval decision and next gate
 
-**Recommended decision:** approve the 2026-08-23 manual live run as the first accepted live-output
-baseline and preserve its pinned artifacts unchanged.
+**Approved decision:** the 2026-08-23 manual live run is the first accepted live-output baseline;
+its pinned artifacts remain unchanged.
 
-After explicit owner approval, the next sequence gate is a separate scheduling design review. That
-review should define cadence and cutoff timing, freshness thresholds, candidate-affecting failure
+The next sequence gate is a separate scheduling design review. That review should define cadence
+and cutoff timing, freshness thresholds, candidate-affecting failure
 behavior, notifications, append-only retention, per-run input provenance, and the manual rollback or
 disable procedure before any workflow is enabled.
 

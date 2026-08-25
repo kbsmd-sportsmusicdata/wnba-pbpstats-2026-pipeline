@@ -19,8 +19,11 @@ playoff forecast dashboard.
 - **Formula validation status:** the 11-player hand-calculation and threshold-sensitivity gate is
   approved.
 - **Live adapter status:** the PBPStats adapter validation package was approved on 2026-08-22.
-- **Current gate:** the first manual live run completed on 2026-08-23; review that run before any
-  separate scheduling decision.
+- **Current gate:** the first manual live run completed on 2026-08-23 and was accepted as the
+  immutable baseline on 2026-08-24. Michelle Onyiah's role assignment is the next review decision;
+  before another live execution, the August 22 base roster must also be refreshed to at least the
+  current standings cutoff. Scheduling remains disabled and requires a separate design and approval
+  gate.
 - **Output interpretation:** the fixture dashboard remains synthetic; the dry-run dashboard uses
   reviewed real sources and is labeled `DRY RUN`, while the manual live dashboard is labeled
   `LIVE`.
@@ -52,6 +55,8 @@ Review outputs:
 - `eligibility_build_manifest_2026.json`: rule, cutoff, source hash, coverage, and output hashes;
 - `eligibility_approval_manifest_2026.json`: reviewer, approval date, and promoted-table hash;
 - `eligibility_addendum_2026-08-23.csv`: reviewed Janiah Barker and Iliana Rupert roster-only rows;
+- `eligibility_coverage_addendum_2026-08-24.csv`: reviewed Michelle Onyiah and Morgan Maly rows;
+- `player_core_coverage_addendum_2026-08-24.csv`: reviewed roster context for those two identities;
 - `README.md`: reviewer checklist and promotion boundary.
 
 ## Build
@@ -93,6 +98,10 @@ manual invocation writes to a unique
 `analysis/role_fulfillment_matrix/live/runs/<UTC-run-id>/` directory and refuses to overwrite an
 existing run. The approved configuration requires `execution_mode = manual_only` and
 `scheduling_enabled = false`; no GitHub workflow invokes the live builder.
+
+The base roster and each reviewed addendum retain separate `source_as_of` dates. The adapter stamps
+those dates onto the rows they contributed and compares the oldest contributing snapshot with the
+standings cutoff. A newer addendum therefore cannot make an unchanged base roster appear current.
 
 ## Reviewed role and sample safeguards
 

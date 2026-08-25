@@ -1,0 +1,40 @@
+{
+  "captured_on": "2026-08-24",
+  "eligibility_rule": "experience_years <= 3",
+  "players": [
+    {
+      "pbpstats_player_id": "1642803",
+      "pbpstats_player_name": "Michelle Onyiah",
+      "espn_athlete_id": "4433744",
+      "espn_player_name": "Ugonne Onyiah",
+      "wnba_player_id": "1642803",
+      "team_abbreviation": "IND",
+      "position": "Forward-Center",
+      "date_of_birth": "2002-03-12",
+      "experience_label": "Rookie",
+      "experience_years": 0,
+      "active": true,
+      "status_type": "developmental",
+      "wnba_profile_url": "https://www.wnba.com/player/1642803",
+      "espn_identity_url": "https://www.espn.com/womens-college-basketball/player/_/id/4433744/ugonne-onyiah",
+      "identity_note": "WNBA Michelle Onyiah and ESPN Ugonne Onyiah are the same California player; manual alias review required."
+    },
+    {
+      "pbpstats_player_id": "1642835",
+      "pbpstats_player_name": "Morgan Maly",
+      "espn_athlete_id": "4599199",
+      "espn_player_name": "Morgan Maly",
+      "wnba_player_id": "1642835",
+      "team_abbreviation": "CHI",
+      "position": "Forward",
+      "date_of_birth": "2002-01-25",
+      "experience_label": "Rookie",
+      "experience_years": 0,
+      "active": true,
+      "status_type": "developmental",
+      "wnba_profile_url": "https://www.wnba.com/player/1642835",
+      "espn_identity_url": "https://www.espn.com/wnba/player/_/id/4599199/morgan-maly",
+      "identity_note": "Exact normalized full-name match across PBPStats, WNBA, and ESPN."
+    }
+  ]
+}

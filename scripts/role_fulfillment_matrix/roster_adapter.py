@@ -65,16 +65,38 @@ def adapt_espn_roster(
         if missing:
             raise RosterAdapterError(f"{label} missing required columns: {', '.join(missing)}")
 
-    source_date = pd.to_datetime(source_as_of, errors="coerce")
     cutoff = pd.to_datetime(cutoff_date, errors="coerce")
-    if pd.isna(source_date) or pd.isna(cutoff):
+    if pd.isna(cutoff):
         raise RosterAdapterError("roster source_as_of and cutoff_date must be valid dates")
-    if source_date.normalize() < cutoff.normalize():
-        raise RosterAdapterError("roster snapshot is older than the standings cutoff")
     if not eligibility["review_status"].eq("reviewed").all():
         raise RosterAdapterError("eligibility contains rows that are not reviewed")
 
     core = player_core.copy()
+    if "_roster_source_as_of" in core.columns:
+        source_dates = pd.to_datetime(core["_roster_source_as_of"], errors="coerce")
+        if source_dates.isna().any():
+            raise RosterAdapterError(
+                "each contributing roster input must have a valid source_as_of date"
+            )
+        core["_roster_source_as_of"] = source_dates.dt.normalize()
+        oldest_source_date = source_dates.min().normalize()
+        newest_source_date = source_dates.max().normalize()
+        if oldest_source_date < cutoff.normalize():
+            raise RosterAdapterError(
+                "oldest contributing roster snapshot is older than the standings cutoff"
+            )
+    else:
+        source_date = pd.to_datetime(source_as_of, errors="coerce")
+        if pd.isna(source_date):
+            raise RosterAdapterError(
+                "roster source_as_of and cutoff_date must be valid dates"
+            )
+        source_date = source_date.normalize()
+        if source_date < cutoff.normalize():
+            raise RosterAdapterError("roster snapshot is older than the standings cutoff")
+        core["_roster_source_as_of"] = source_date
+        oldest_source_date = source_date
+        newest_source_date = source_date
     missing_position = (
         core["position_name"].isna()
         | core["position_name"].astype(str).str.strip().eq("")
@@ -125,6 +147,7 @@ def adapt_espn_roster(
             "position_abbreviation",
             "active",
             "status_type",
+            "_roster_source_as_of",
         ]
     ].merge(
         reviewed,
@@ -171,7 +194,7 @@ def adapt_espn_roster(
         ]
     ].rename(columns={"_team_abbreviation": "team_abbreviation"})
     roster["player_id"] = roster["player_id"].astype(str)
-    roster["source_as_of"] = source_date.date().isoformat()
+    roster["source_as_of"] = joined["_roster_source_as_of"].dt.strftime("%Y-%m-%d")
     return RosterAdapterResult(
         roster=roster,
         quality={
@@ -184,6 +207,11 @@ def adapt_espn_roster(
             "active_players": int(roster["active"].sum()),
             "inactive_players": int((roster["status_type"] == "inactive").sum()),
             "free_agents": int((roster["status_type"] == "free-agent").sum()),
-            "source_as_of": source_date.date().isoformat(),
+            "source_as_of": oldest_source_date.date().isoformat(),
+            "oldest_source_as_of": oldest_source_date.date().isoformat(),
+            "newest_source_as_of": newest_source_date.date().isoformat(),
+            "source_snapshot_count": int(
+                joined["_roster_source_as_of"].nunique()
+            ),
         },
     )

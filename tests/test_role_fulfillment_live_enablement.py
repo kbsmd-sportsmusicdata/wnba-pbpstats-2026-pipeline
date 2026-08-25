@@ -5,9 +5,6 @@ import tempfile
 import unittest
 from pathlib import Path
 
-import pandas as pd
-
-
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 
@@ -17,6 +14,7 @@ from role_fulfillment_matrix.contracts import (  # noqa: E402
     authorize_execution,
     live_config_fingerprint,
 )
+from role_fulfillment_matrix.roster_adapter import RosterAdapterError  # noqa: E402
 
 
 LIVE_CONFIG = (
@@ -50,6 +48,7 @@ class LiveEnablementConfigTest(unittest.TestCase):
             config["output_root"],
             "analysis/role_fulfillment_matrix/live",
         )
+        self.assertEqual(config["sources"]["roster_source_as_of"], "2026-08-22")
         authorize_execution(config)
 
         approval = json.loads(LIVE_OUTPUT_APPROVAL.read_text())
@@ -67,10 +66,36 @@ class LiveEnablementConfigTest(unittest.TestCase):
             approval["approved_config_sha256"],
             live_config_fingerprint(config),
         )
+        self.assertEqual(approval["roster_freshness_safeguard"], {
+            "status": "implemented_from_pr_review",
+            "base_source_as_of": "2026-08-22",
+            "validation_basis": "oldest_contributing_snapshot",
+            "execution_status": "blocked_pending_base_roster_refresh",
+        })
+        self.assertEqual(approval["eligibility_coverage_update"], {
+            "review_status": "approved",
+            "reviewed_by": "Krystal Beasley",
+            "reviewed_at": "2026-08-24",
+            "eligibility_approval_manifest": (
+                "analysis/role_fulfillment_matrix/data/review/"
+                "eligibility_approval_manifest_2026.json"
+            ),
+            "next_live_gate": "michelle_onyiah_role_assignment_review",
+        })
         for item in approval["approved_dry_run_artifacts"]:
             path = ROOT / item["path"]
             self.assertEqual(item["sha256"], hashlib.sha256(path.read_bytes()).hexdigest())
         self.assertEqual(approval["manual_live_run_status"], "completed")
+        self.assertEqual(approval["manual_live_run_review"], {
+            "review_status": "approved",
+            "approved_by": "Krystal Beasley",
+            "approved_at": "2026-08-24",
+            "report_path": (
+                "analysis/role_fulfillment_matrix/data/review/"
+                "manual_live_run_post_review_2026-08-23.md"
+            ),
+            "scheduling_status": "disabled_not_approved",
+        })
         self.assertEqual(
             approval["manual_live_run"]["generated_at_utc"],
             "2026-08-23T23:37:49+00:00",
@@ -110,7 +135,7 @@ class LiveEnablementConfigTest(unittest.TestCase):
 
 
 class ManualLiveOutputTest(unittest.TestCase):
-    def test_manual_live_run_writes_isolated_enabled_output(self):
+    def test_manual_live_run_blocks_before_writing_when_base_roster_is_stale(self):
         approval = json.loads(LIVE_OUTPUT_APPROVAL.read_text())
         approved_paths = [ROOT / item["path"] for item in approval["manual_live_run"]["artifacts"]]
         approved_hashes_before = {
@@ -120,65 +145,17 @@ class ManualLiveOutputTest(unittest.TestCase):
             runs_root = Path(tmp) / "live"
             run_id = "2026-08-24T010000Z"
             output_root = runs_root / "runs" / run_id
-            manifest = build(runs_root=runs_root, run_id=run_id)
-            scores = pd.read_csv(
-                output_root / "data" / "processed" / "role_fulfillment_matrix_2026.csv"
-            )
-            evidence = json.loads(
-                (
-                    output_root
-                    / "data"
-                    / "processed"
-                    / "role_fulfillment_evidence_2026.json"
-                ).read_text()
-            )
-            html = (
-                output_root
-                / "deliverables"
-                / "role_fulfillment_matrix"
-                / "index.html"
-            ).read_text()
-
-            with self.assertRaises(FileExistsError):
+            with self.assertRaisesRegex(
+                RosterAdapterError,
+                "oldest contributing roster snapshot is older than the standings cutoff",
+            ):
                 build(runs_root=runs_root, run_id=run_id)
+            self.assertFalse(output_root.exists())
 
         approved_hashes_after = {
             path: hashlib.sha256(path.read_bytes()).hexdigest() for path in approved_paths
         }
 
-        self.assertEqual(manifest["mode"], "live")
-        self.assertEqual(manifest["manual_run_id"], run_id)
-        self.assertEqual(manifest["live_scoring_status"], "live_enabled")
-        self.assertEqual(manifest["live_scoring_blockers"], [])
-        self.assertTrue(manifest["live_output_enabled"])
-        self.assertEqual(manifest["execution_mode"], "manual_only")
-        self.assertFalse(manifest["scheduling_enabled"])
-        self.assertEqual(manifest["players_scored"], 11)
-        self.assertEqual(
-            scores["score_status"].value_counts().to_dict(),
-            {
-                "live_scored": 11,
-                "season_context_only": 5,
-                "inactive_suppressed": 3,
-            },
-        )
-        self.assertEqual(
-            {row["source_name"] for row in evidence},
-            {
-                "pbpstats_player_game_reviewed_adapter",
-                "reviewed_player_role_assignments_2026",
-            },
-        )
-        self.assertEqual(
-            {row["safeguard"] for row in evidence},
-            {
-                "live_output; rates_recomputed_from_additive_counts",
-                "live_output; reviewed_role_assignment",
-            },
-        )
-        self.assertIn("Live output enabled", html)
-        self.assertIn("Live scoring: <b>ENABLED</b>", html)
-        self.assertNotIn("DRY RUN", html)
         self.assertEqual(approved_hashes_after, approved_hashes_before)
 
     def test_manual_run_id_rejects_paths_and_non_timestamp_values(self):
