@@ -19,8 +19,9 @@ playoff forecast dashboard.
 - **Formula validation status:** the 11-player hand-calculation and threshold-sensitivity gate is
   approved.
 - **Live adapter status:** the PBPStats adapter validation package was approved on 2026-08-22.
-- **Current gate:** the first manual live run completed on 2026-08-23; review that run before any
-  separate scheduling decision.
+- **Current gate:** the first manual live run completed on 2026-08-23 and was accepted as the
+  immutable baseline on 2026-08-24. Scheduling remains disabled and requires a separate design and
+  approval gate.
 - **Output interpretation:** the fixture dashboard remains synthetic; the dry-run dashboard uses
   reviewed real sources and is labeled `DRY RUN`, while the manual live dashboard is labeled
   `LIVE`.

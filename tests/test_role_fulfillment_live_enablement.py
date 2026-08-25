@@ -71,6 +71,16 @@ class LiveEnablementConfigTest(unittest.TestCase):
             path = ROOT / item["path"]
             self.assertEqual(item["sha256"], hashlib.sha256(path.read_bytes()).hexdigest())
         self.assertEqual(approval["manual_live_run_status"], "completed")
+        self.assertEqual(approval["manual_live_run_review"], {
+            "review_status": "approved",
+            "approved_by": "Krystal Beasley",
+            "approved_at": "2026-08-24",
+            "report_path": (
+                "analysis/role_fulfillment_matrix/data/review/"
+                "manual_live_run_post_review_2026-08-23.md"
+            ),
+            "scheduling_status": "disabled_not_approved",
+        })
         self.assertEqual(
             approval["manual_live_run"]["generated_at_utc"],
             "2026-08-23T23:37:49+00:00",
