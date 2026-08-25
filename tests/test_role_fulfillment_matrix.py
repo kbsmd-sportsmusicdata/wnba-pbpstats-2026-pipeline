@@ -72,8 +72,8 @@ class DataContractTest(unittest.TestCase):
             "interior_finisher_rim_runner",
         }
 
-        self.assertEqual(len(assignments), 37)
-        self.assertEqual(assignments["player_id"].nunique(), 37)
+        self.assertEqual(len(assignments), 38)
+        self.assertEqual(assignments["player_id"].nunique(), 38)
         self.assertEqual(set(assignments["review_status"]), {"reviewed"})
         self.assertTrue(set(assignments["role_code"]).issubset(allowed_roles))
         self.assertTrue(
@@ -90,15 +90,26 @@ class DataContractTest(unittest.TestCase):
         self.assertEqual(chloe["secondary_role_code"], "secondary_creator_connector")
         self.assertAlmostEqual(chloe["assignment_confidence"], 0.70)
         self.assertEqual(chloe["reviewed_at"], "2026-08-23")
+        michelle = assignments.set_index("player_name").loc["Michelle Onyiah"]
+        self.assertEqual(michelle["team_abbreviation"], "IND")
+        self.assertEqual(michelle["role_code"], "interior_finisher_rim_runner")
+        self.assertEqual(michelle["secondary_role_code"], "interior_hub_rebounder")
+        self.assertAlmostEqual(michelle["assignment_confidence"], 0.60)
+        self.assertEqual(michelle["reviewed_at"], "2026-08-25")
 
         manifest = json.loads(ROLE_ASSIGNMENT_MANIFEST.read_text())
-        self.assertEqual(manifest["reviewed_assignment_rows"], 37)
+        self.assertEqual(manifest["reviewed_assignment_rows"], 38)
         self.assertEqual(manifest["reviewed_team_counts"]["MIN"], 9)
+        self.assertEqual(manifest["reviewed_team_counts"]["IND"], 6)
         self.assertEqual(
             manifest["reviewed_primary_role_counts"]["perimeter_scorer_spacer"],
             12,
         )
-        self.assertEqual(manifest["last_updated_at"], "2026-08-23")
+        self.assertEqual(
+            manifest["reviewed_primary_role_counts"]["interior_finisher_rim_runner"],
+            7,
+        )
+        self.assertEqual(manifest["last_updated_at"], "2026-08-25")
         self.assertEqual(manifest["live_scoring_status"], "enabled_manual_only")
         self.assertEqual(manifest["remaining_blockers"], [])
         self.assertEqual(
@@ -114,6 +125,23 @@ class DataContractTest(unittest.TestCase):
         self.assertEqual(
             janiah_review["reactivation_policy"],
             "reviewed_primary_role_required",
+        )
+        michelle_review = next(
+            row
+            for row in manifest["supplemental_reviews"]
+            if row["player_name"] == "Michelle Onyiah"
+        )
+        self.assertEqual(
+            michelle_review,
+            {
+                "reviewed_at": "2026-08-25",
+                "reviewed_by": "Krystal Beasley",
+                "player_name": "Michelle Onyiah",
+                "primary_role": "interior_finisher_rim_runner",
+                "secondary_role": "interior_hub_rebounder",
+                "assignment_confidence": 0.60,
+                "live_score_safeguard": "insufficient_recent_sample",
+            },
         )
         self.assertEqual(
             manifest["reviewed_output"]["sha256"],

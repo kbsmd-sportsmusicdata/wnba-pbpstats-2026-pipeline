@@ -39,3 +39,9 @@ Two newly visible PBPStats identities, Michelle Onyiah and Morgan Maly, were app
 on 2026-08-24, including the Michelle Onyiah / Ugonne Onyiah alias match. The reviewed eligibility
 table now contains 231 rows, and the immutable base player-core snapshot is supplemented by the
 reviewed two-row player-core addendum.
+
+Michelle Onyiah's primary Interior Finisher / Rim Runner role and optional Interior Hub / Rebounder
+secondary role were approved on 2026-08-25 at 0.60 assignment confidence. Her one-game,
+two-offensive-possession WNBA sample remains below both recent minimums and the season fallback, so
+she receives no live score. The next execution gate is refreshing the August 22 base roster through
+the standings cutoff.
