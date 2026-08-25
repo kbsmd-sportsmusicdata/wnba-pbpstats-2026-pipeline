@@ -179,20 +179,54 @@ def row_count_check() -> list[str]:
 # on every refresh, so a chart built to these words silently drops her latest
 # games -- which is exactly what happened once already.
 DASH = r"[-\u2013\u2014]"
+# Recognise an actual count rather than blacklisting the words that are not one.
+# A blacklist fails both ways: "all available post-injury games" matches at
+# "available" once "all" is rejected, and any word not on the list is treated as
+# a number. English number words are a *closed* class, so spelling out the
+# grammar is complete -- unlike the earlier "one..twelve" list, which was a
+# truncation of an open-ended quantity and went stale as the window grew.
+_ONES = (r"one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve"
+         r"|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen")
+_TENS = r"twenty|thirty|forty|fifty|sixty|seventy|eighty|ninety"
+COUNT = rf"(?:\d+|(?:{_TENS})(?:[-\s](?:{_ONES}))?|(?:{_ONES}))"
 CLOSED_WINDOW_PROSE = re.compile(
     # any fixed endpoint, not just the 6-10 / g32-36 wording that was wrong once:
     # a future refresh is just as likely to write "return 6-11" or "g32-37".
     rf"return\s*(?:games\s*)?6\s*{DASH}\s*\d+"
     rf"|\bg\s*3\d\s*{DASH}\s*3\d\b"
-    rf"|\b(?:\d+|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve)"
-    rf"\s+post-injury games",
+    # ...and any *count* of post-injury games, however it is spelled.
+    rf"|\b{COUNT}\s+post-injury games",
     re.I)
+
+
+# Markdown emphasis, in every form these documents use. Underscore is special:
+# it is emphasis only at a word edge, so "_thirteen_" is stripped while the
+# underscores in "off_player_1" are left alone. No alternative can match a
+# newline, so line numbers derived from the result still point at the right
+# source line.
+_EMPHASIS = re.compile(
+    r"</?[A-Za-z][^>\n]*>"      # inline HTML: <b>, </em>
+    r"|[*`~]+"                  # bold/italic, code, strikethrough
+    r"|(?<!\w)_+|_+(?!\w)"      # underscore emphasis, never intraword
+)
+
+
+def _plain(body: str) -> str:
+    """Strip markdown emphasis so "**thirteen** games" reads as a count.
+
+    Matching a count against raw markdown is what let two stale-count shapes
+    through already: the marker sits between the number and the noun, so the
+    pattern never sees them adjacent. Normalise once here rather than teaching
+    the count pattern about markup.
+    """
+    return _EMPHASIS.sub("", body)
 
 
 def prose_check(text: dict[str, str]) -> list[str]:
     """No document may describe the open-ended return window as a closed range."""
     bad = []
-    for f, body in text.items():
+    for f, raw in text.items():
+        body = _plain(raw)
         for m in CLOSED_WINDOW_PROSE.finditer(body):
             line = body[:m.start()].count("\n") + 1
             bad.append(f"{f}:{line} describes the open return window as closed: {m.group(0)!r}")
