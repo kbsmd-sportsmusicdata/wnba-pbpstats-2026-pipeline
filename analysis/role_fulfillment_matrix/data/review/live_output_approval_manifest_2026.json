@@ -17,7 +17,7 @@
     "reviewed_by": "Krystal Beasley",
     "reviewed_at": "2026-08-24",
     "eligibility_approval_manifest": "analysis/role_fulfillment_matrix/data/review/eligibility_approval_manifest_2026.json",
-    "next_live_gate": "michelle_onyiah_role_assignment_review"
+    "next_live_gate": "base_roster_refresh"
   },
   "approved_result_counts": {
     "live_scored": 11,

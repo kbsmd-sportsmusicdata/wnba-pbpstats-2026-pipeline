@@ -871,20 +871,30 @@ class LiveDryRunOutputTest(unittest.TestCase):
             report = (
                 output_root / "role_fulfillment_matrix_live_dry_run_validation.md"
             ).read_text()
+            funnel = pd.read_csv(
+                output_root / "data" / "processed" / "candidate_funnel_2026.csv",
+                dtype={"player_id": str},
+            )
 
         self.assertEqual(manifest["adapter_audit"]["status"], "review_ready")
         self.assertEqual(manifest["adapter_audit"]["locked_parity_matches"], 11)
         self.assertEqual(
             manifest["dry_run_gate_blockers"],
-            ["current contender candidates without reviewed role assignments: 1"],
+            [],
         )
+        self.assertEqual(manifest["dry_run_gate_status"], "review_ready")
         self.assertEqual(
             manifest["source_manifest"]["roster_status"]["quality"]
             ["oldest_source_as_of"],
             "2026-08-23",
         )
-        self.assertIn("Michelle Onyiah (IND)", report)
-        self.assertIn("reviewed primary role assignment required", report)
+        michelle = funnel.set_index("player_id").loc["1642803"]
+        self.assertEqual(michelle["role_code"], "interior_finisher_rim_runner")
+        self.assertEqual(michelle["secondary_role_code"], "interior_hub_rebounder")
+        self.assertEqual(michelle["exclusion_reason"], "insufficient_recent_sample")
+        self.assertEqual(michelle["funnel_status"], "excluded")
+        self.assertNotIn("Michelle Onyiah (IND)", report)
+        self.assertNotIn("reviewed primary role assignment required", report)
 
 
 if __name__ == "__main__":

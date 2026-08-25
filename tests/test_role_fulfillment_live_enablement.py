@@ -80,7 +80,7 @@ class LiveEnablementConfigTest(unittest.TestCase):
                 "analysis/role_fulfillment_matrix/data/review/"
                 "eligibility_approval_manifest_2026.json"
             ),
-            "next_live_gate": "michelle_onyiah_role_assignment_review",
+            "next_live_gate": "base_roster_refresh",
         })
         for item in approval["approved_dry_run_artifacts"]:
             path = ROOT / item["path"]

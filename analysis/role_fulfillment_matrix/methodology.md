@@ -21,7 +21,7 @@ contender requirement
 | Player identity | `player_id`, `player_name`, `team_abbreviation` | Available | PBPStats key is canonical. ESPN identity requires a reviewed crosswalk. |
 | Opportunity level | `minutes`, `off_poss`, `team_possessions`, games | Available / derivable | Recompute MPG and possession share from player-game counts. |
 | Opportunity change | recent and baseline possession share | Derivable | Recent minus baseline; keep both windows and denominators. |
-| Role assignment | `role_code`, optional `secondary_role_code`, `assignment_confidence`, reviewer metadata | Available / reviewed | Thirty-six roster-attached eligible players on top-six contenders have reviewed six-role assignments. Three confirmed free agents are excluded from the current assignment pool. |
+| Role assignment | `role_code`, optional `secondary_role_code`, `assignment_confidence`, reviewer metadata | Available / reviewed | Thirty-eight roster-attached eligible players on top-six contenders have reviewed six-role assignments. Three confirmed free agents are excluded from the current assignment pool. |
 | Creator behavior | assists, offensive possessions | Available / derivable | `75 * assists / off_poss`. |
 | Rim behavior | rim attempts, total FGA | Available / derivable | Rim-attempt share and rim accuracy. |
 | Perimeter behavior | three-point attempts, total FGA | Available / derivable | Three-point attempt share from additive game-level counts. |

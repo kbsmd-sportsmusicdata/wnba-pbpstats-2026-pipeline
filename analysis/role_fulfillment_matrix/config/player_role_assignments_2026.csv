@@ -22,6 +22,7 @@ player_id,player_name,team_abbreviation,role_code,secondary_role_code,assignment
 1643433,Raven Johnson,IND,secondary_creator_connector,perimeter_scorer_spacer,0.90,reviewed,Krystal Beasley,2026-08-22,Reviewed with season-volume fallback flag
 1642788,Bree Hall,IND,perimeter_scorer_spacer,,0.30,reviewed,Krystal Beasley,2026-08-22,Reviewed low-confidence hypothesis with score suppressed
 1643453,Grace VanSlooten,IND,downhill_pressure_wing,interior_finisher_rim_runner,0.75,reviewed,Krystal Beasley,2026-08-22,Reviewed with insufficient-evidence safeguard
+1642803,Michelle Onyiah,IND,interior_finisher_rim_runner,interior_hub_rebounder,0.60,reviewed,Krystal Beasley,2026-08-25,Reviewed from strong pre-WNBA interior-finishing and rebounding evidence; live scoring withheld under insufficient-recent-sample safeguards
 1642291,Angel Reese,ATL,interior_hub_rebounder,interior_finisher_rim_runner,0.95,reviewed,Krystal Beasley,2026-08-22,Reviewed six-role taxonomy assignment
 1642302,Isobel Borlase,ATL,downhill_pressure_wing,perimeter_scorer_spacer,0.80,reviewed,Krystal Beasley,2026-08-22,Reviewed six-role taxonomy assignment
 1643431,Madina Okot,ATL,interior_finisher_rim_runner,interior_hub_rebounder,0.90,reviewed,Krystal Beasley,2026-08-22,Reviewed six-role taxonomy assignment

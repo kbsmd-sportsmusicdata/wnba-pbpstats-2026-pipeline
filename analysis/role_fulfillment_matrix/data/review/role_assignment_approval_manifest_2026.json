@@ -3,25 +3,25 @@
   "review_status": "reviewed",
   "approved_by": "Krystal Beasley",
   "approved_at": "2026-08-22",
-  "last_updated_at": "2026-08-23",
+  "last_updated_at": "2026-08-25",
   "assignment_policy": {
     "primary_role": "required_and_scored_after_threshold_approval",
     "secondary_role": "optional_and_unscored",
     "inactive_without_role": "deferred_until_active",
     "taxonomy_role_count": 6
   },
-  "reviewed_assignment_rows": 37,
+  "reviewed_assignment_rows": 38,
   "reviewed_team_counts": {
     "ATL": 8,
     "GSV": 6,
-    "IND": 5,
+    "IND": 6,
     "LVA": 3,
     "MIN": 9,
     "NYL": 6
   },
   "reviewed_primary_role_counts": {
     "downhill_pressure_wing": 5,
-    "interior_finisher_rim_runner": 6,
+    "interior_finisher_rim_runner": 7,
     "interior_hub_rebounder": 4,
     "lead_creator": 2,
     "perimeter_scorer_spacer": 12,
@@ -34,7 +34,7 @@
   ],
   "reviewed_output": {
     "path": "analysis/role_fulfillment_matrix/config/player_role_assignments_2026.csv",
-    "sha256": "a29b01f9136da6ed84bbf76da4fa8fed51b42b0be8ff20a9bad2c9698614c455"
+    "sha256": "74f9836487067570107f30cfb1730224c840ed6d2824acc21963f19de951d104"
   },
   "supplemental_reviews": [
     {
@@ -52,6 +52,15 @@
       "player_name": "Janiah Barker",
       "decision": "defer_role_while_inactive",
       "reactivation_policy": "reviewed_primary_role_required"
+    },
+    {
+      "reviewed_at": "2026-08-25",
+      "reviewed_by": "Krystal Beasley",
+      "player_name": "Michelle Onyiah",
+      "primary_role": "interior_finisher_rim_runner",
+      "secondary_role": "interior_hub_rebounder",
+      "assignment_confidence": 0.60,
+      "live_score_safeguard": "insufficient_recent_sample"
     }
   ],
   "sample_policy": {

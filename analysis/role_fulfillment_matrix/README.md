@@ -13,17 +13,16 @@ playoff forecast dashboard.
 - **Real eligibility data:** reviewed and approved for all 227 current PBPStats players plus two
   ESPN roster-only identities. Roster-only rows use reviewed `espn:<athlete_id>` placeholders;
   a later PBPStats appearance fails closed pending a reviewed identity crosswalk.
-- **Real role assignments:** reviewed and approved for 37 roster-attached eligible players on
+- **Real role assignments:** reviewed and approved for 38 roster-attached eligible players on
   top-six contenders; three confirmed free agents remain in eligibility history only.
 - **Live formula status:** the six-role `rfm-live-v1` formulas and thresholds are approved.
 - **Formula validation status:** the 11-player hand-calculation and threshold-sensitivity gate is
   approved.
 - **Live adapter status:** the PBPStats adapter validation package was approved on 2026-08-22.
 - **Current gate:** the first manual live run completed on 2026-08-23 and was accepted as the
-  immutable baseline on 2026-08-24. Michelle Onyiah's role assignment is the next review decision;
-  before another live execution, the August 22 base roster must also be refreshed to at least the
-  current standings cutoff. Scheduling remains disabled and requires a separate design and approval
-  gate.
+  immutable baseline on 2026-08-24. Michelle Onyiah's role assignment was approved on August 25;
+  before another live execution, the August 22 base roster must be refreshed to at least the current
+  standings cutoff. Scheduling remains disabled and requires a separate design and approval gate.
 - **Output interpretation:** the fixture dashboard remains synthetic; the dry-run dashboard uses
   reviewed real sources and is labeled `DRY RUN`, while the manual live dashboard is labeled
   `LIVE`.
