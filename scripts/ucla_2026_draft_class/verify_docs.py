@@ -29,7 +29,14 @@ def load_truth() -> dict:
     story = json.loads((DATA / "story_manifest.json").read_text())
     derived = json.loads((DATA / "derived_possessions_manifest.json").read_text())
     noise = derived["noise"]
+    sdv = ROOT / "data/raw/sportsdataverse/wnba_2026"
+    frozen_poss = pd.read_parquet(sdv / "wnba_possessions_2026.parquet", columns=["game_id"])
+    frozen_lineups = pd.read_parquet(sdv / "wnba_lineups_2026.parquet", columns=["game_id"])
+    espn = pd.read_parquet(sdv / "espn_pbp_2026.parquet", columns=["game_id"])
     return {
+        "frozen_poss_games": int(frozen_poss.game_id.nunique()),
+        "frozen_lineup_games": int(frozen_lineups.game_id.nunique()),
+        "espn_games": int(espn.game_id.nunique()),
         "games": int(pg.game_id.nunique()),
         "players": int(pg.player_id.nunique()),
         "team_rows": int(tg.shape[0]),
@@ -68,6 +75,51 @@ def checks(t: dict) -> list[tuple[str, str, str]]:
     ]
 
 
+# Lines that legitimately quote a superseded vintage, with the reason. Each must
+# still appear verbatim -- a stale exemption is itself reported, so this list
+# cannot silently start excusing something it was never meant to.
+HISTORICAL_QUOTES = [
+    ("DERIVED_POSSESSIONS.md", "| Derived layer, 277 games |",
+     "four-vintage Betts+Austin table: the point is that the estimate moved"),
+    ("EDA_FINDINGS_PBPSTATS_ONLY.md", "At 277 games this document said",
+     "explicit correction against the previous vintage"),
+    ("DERIVED_POSSESSIONS.md", "277 games as her decline continued",
+     "retained earlier-vintage note; the preceding line labels it as such"),
+]
+
+
+def coverage_value_check(t: dict, text: dict[str, str]) -> list[str]:
+    """Reject obsolete game counts, rather than merely finding one fresh one.
+
+    `re.search` is satisfied by a single match, so a document can quote the
+    current vintage once and keep four stale copies. This walks every
+    "<n> games" occurrence instead. A value is fine if it is the current count
+    or another source's real coverage (all derived, never hardcoded); a
+    superseded value is fine only on a line that also names the current count,
+    or on an explicitly listed historical line.
+    """
+    allowed = {t["games"], t["frozen_poss_games"], t["frozen_lineup_games"],
+               t["espn_games"], t["team_games_validated"]}
+    bad = []
+    for f, body in text.items():
+        for m in re.finditer(r"\b(\d{3})(?:,\d{3})? (?:team[- ])?games\b", body):
+            val = int(m.group(1))
+            if val in allowed:
+                continue
+            line_no = body[:m.start()].count("\n") + 1
+            line = body.splitlines()[line_no - 1]
+            if str(t["games"]) in line:
+                continue                      # a side-by-side vintage comparison
+            if any(fn == f and frag in line for fn, frag, _ in HISTORICAL_QUOTES):
+                continue                      # explicitly allowed history
+            bad.append(f"{f}:{line_no} quotes an obsolete coverage value "
+                       f"({val} games); current is {t['games']}")
+    for fn, frag, why in HISTORICAL_QUOTES:
+        if frag not in text.get(fn, ""):
+            bad.append(f"stale exemption: {fn} no longer contains {frag!r} ({why})")
+    return bad
+
+
 def row_count_check() -> list[str]:
     """Every row count quoted in the README's artifact table must be real.
 
@@ -96,8 +148,15 @@ def row_count_check() -> list[str]:
 # prose that describes the open Rice window as a fixed range. The window grows
 # on every refresh, so a chart built to these words silently drops her latest
 # games -- which is exactly what happened once already.
-CLOSED_WINDOW_PROSE = re.compile(r"return\s*6\s*[-\u2013]\s*10|g32\s*[-\u2013]\s*36|ten post-injury games",
-                                 re.I)
+DASH = r"[-\u2013\u2014]"
+CLOSED_WINDOW_PROSE = re.compile(
+    # any fixed endpoint, not just the 6-10 / g32-36 wording that was wrong once:
+    # a future refresh is just as likely to write "return 6-11" or "g32-37".
+    rf"return\s*(?:games\s*)?6\s*{DASH}\s*\d+"
+    rf"|\bg\s*3\d\s*{DASH}\s*3\d\b"
+    rf"|\b(?:\d+|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve)"
+    rf"\s+post-injury games",
+    re.I)
 
 
 def prose_check(text: dict[str, str]) -> list[str]:
@@ -134,6 +193,7 @@ def main() -> int:
                 for f, pat, desc in checks(t) if not re.search(pat, text[f])]
     failures += label_check()
     failures += prose_check(text)
+    failures += coverage_value_check(t, text)
     row_failures = row_count_check()
     failures += row_failures
 
@@ -147,7 +207,7 @@ def main() -> int:
         for f in failures:
             print(f"  - {f}")
         return 1
-    print(f"all {len(checks(t)) + 5 + n_rows} doc/data consistency checks pass "
+    print(f"all {len(checks(t)) + 6 + n_rows} doc/data consistency checks pass "
           f"({n_rows} of them per-export row counts)")
     return 0
 
