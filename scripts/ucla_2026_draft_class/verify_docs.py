@@ -179,13 +179,21 @@ def row_count_check() -> list[str]:
 # on every refresh, so a chart built to these words silently drops her latest
 # games -- which is exactly what happened once already.
 DASH = r"[-\u2013\u2014]"
+# determiners that leave the count open; anything else before "post-injury
+# games" is a fixed count and therefore the bug this check exists to reject
+OPEN_QUANTIFIER = (r"(?:her|his|their|its|the|all|any|some|these|those|each|every"
+                   r"|both|no|more|later|further|subsequent|remaining|other"
+                   r"|several|many|few)")
 CLOSED_WINDOW_PROSE = re.compile(
     # any fixed endpoint, not just the 6-10 / g32-36 wording that was wrong once:
     # a future refresh is just as likely to write "return 6-11" or "g32-37".
     rf"return\s*(?:games\s*)?6\s*{DASH}\s*\d+"
     rf"|\bg\s*3\d\s*{DASH}\s*3\d\b"
-    rf"|\b(?:\d+|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve)"
-    rf"\s+post-injury games",
+    # ...and any *count* of post-injury games. A spelled-out alternation is the
+    # same enumerate-don't-derive trap one level down: the first version stopped
+    # at "twelve" while the window kept growing, so "thirteen" would have passed.
+    # Match any leading token instead and exempt the words that are not counts.
+    rf"|\b(?!{OPEN_QUANTIFIER}\b)[\w-]+\s+post-injury games",
     re.I)
 
 

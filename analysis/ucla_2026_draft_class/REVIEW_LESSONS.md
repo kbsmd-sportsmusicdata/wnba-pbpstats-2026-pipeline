@@ -91,7 +91,7 @@ The most instructive class, because every one of these is a check I wrote
 |---|---|---|
 | #45-2 | The README artifact-table row counts were never validated. README claimed 181 rows for `story_ucla_six_game_logs.csv` (actual 187) and 36 for `story_rice_timeline.csv` (actual 37) — and the verifier reported success. | Parse the README table and compare *every* claimed count to the file it names. All 16 exports covered; new rows covered automatically. Checks went 20 → 37. |
 | #45-3 | `re.search` is satisfied by one match, so a document can carry one fresh quote and four stale ones. `METRIC_FRAMEWORK.md` named the game count in five places against three checked shapes. | Walk *every* `<n> games` occurrence and reject obsolete values. A value passes if it is the current count or another source's real coverage — all derived from files, never hardcoded. Superseded values pass only on a line that also names the current count, or on one of three listed historical lines, each with a stated reason. The exemption list is itself checked: a listed line that stops matching is reported. |
-| #45-4 | `CLOSED_WINDOW_PROSE` promised to reject *any* closed range but only matched `6-10` / `g32-36`. A refresh writing `return 6-11` or `g32-37` would pass. | Generalised to any numeric endpoint, any `g3x-3x`, and any spelled or numeric post-injury game count. |
+| #45-4 | `CLOSED_WINDOW_PROSE` promised to reject *any* closed range but only matched `6-10` / `g32-36`. A refresh writing `return 6-11` or `g32-37` would pass. | Generalised to any numeric endpoint and any `g3x-3x`. The game-count half was *re-broken in the same fix* and repaired only on the PR that added this file — see §9. |
 | #45-5 | **Open.** The obsolete-value sweep only inspects values followed by the literal word `games`; player counts are never swept. | — |
 | #45-6 | **Open.** The export-label check requires *both* halves to be closed (`re.search(r"g3\d-3\d", b) and "6" in b`), so `Return games 6-10 (g32+)` passes. | — |
 
@@ -191,13 +191,37 @@ to B; over a season substitutions run in both directions and the per-player net
 error largely washes out, which is exactly why the correlation stayed high.
 
 What breaks is **co-presence** — which four teammates were on the floor together
-— and co-presence is the entire reason this layer exists. I validated the two
-dimensions I could check against an external source, and did not validate the
-one dimension that had no external source to check against. The absence of a
-convenient ground truth became, silently, an absence of scrutiny. The right move
-was an internal consistency check (snapshot the lineup at the possession's first
-event and assert it matches the lineup at flush), which needs no external data at
-all — that is precisely the instrumentation used to produce the 7.3% figure above.
+— and co-presence is the entire reason this layer exists. It is the one dimension
+I never validated.
+
+My first account of why was that co-presence had no external reference to check
+against. That is false, and Codex said so on the PR that added this file: the
+frozen `wnba_possessions_2026.parquet` carries all ten `off_player_*` /
+`def_player_*` columns across 32,265 possessions and 202 games. Differing
+possession conventions would need alignment, but for the two-thirds of the season
+the two layers overlap, a direct external check on reconstructed lineup
+combinations was available the whole time.
+
+So the real reason is worse than "no ground truth existed," and worth naming
+precisely. I had cast the frozen file exclusively as *the thing being replaced* —
+stale, superseded, the motivation for the rebuild — and never once as *a thing to
+validate against on the overlap*. Once a dataset is framed as the problem, it
+stops being visible as a resource. Compounding that, the two checks I did write
+compare scalar aggregates that a `groupby` produces directly; comparing lineups
+means joining set-valued columns across two identifier namespaces, which is more
+work. I validated the dimensions that were convenient to validate and then
+constructed a justification for the gap that sounded principled.
+
+Two checks were available and neither was written:
+
+- **External, partial season.** Join reconstructed lineups to the frozen
+  parquet's ten lineup columns over the 202-game overlap.
+- **Internal, full season, no external data at all.** Snapshot the lineup at the
+  possession's first event and assert it still matches at flush. This is exactly
+  the instrumentation that produced the 7.3% figure above — perhaps twenty lines,
+  and it needs nothing but the replay itself.
+
+The second would have caught the bug on the day it was written.
 
 **Why my checks missed #40-2.** No check reads a compatibility claim, and I never
 tried the substitution the sentence advertises. The prose hedges accurately in
@@ -288,10 +312,53 @@ Ordered by leverage, for this module and for sibling analysis modules.
 12. Include the nuisance controls the design demands (home court), unpenalised.
 13. Write at least one check at the *unit* grain — per player, per possession —
     because aggregate invariants cannot see errors that cancel.
-14. When a dimension has no external ground truth, check it internally rather
-    than not at all. Absence of a reference is not absence of a testable
-    property.
+14. Before concluding a dimension is unverifiable, check whether a superseded or
+    partial-coverage dataset can still validate it over the overlap. A file you
+    are replacing is still a reference for the range it does cover — being framed
+    as the problem is what makes it invisible as a resource.
+15. Failing that, check the dimension internally. Absence of an external
+    reference is not absence of a testable property, and an internal invariant
+    (snapshot at start, assert at end) often needs no reference at all.
+16. Be suspicious when the dimensions you validated are exactly the ones that
+    were convenient to validate. That correlation is usually the explanation,
+    not a coincidence.
 
 **Documentation**
-15. Regenerate prose after the last code change, not before it.
-16. When you hedge a claim, do not write past the hedge in the next clause.
+17. Regenerate prose after the last code change, not before it.
+18. When you hedge a claim, do not write past the hedge in the next clause.
+
+---
+
+## 9. Postscript: this document drew two findings of its own
+
+Codex reviewed the PR that added this file and raised two P2s. Both were real,
+and one of them is the document's own thesis landing on the document.
+
+**The enumerate-don't-derive bug had recurred inside the fix that named it.**
+The #45-4 repair generalised the *range* half of `CLOSED_WINDOW_PROSE` properly
+— any numeric endpoint, any `g3x-3x` — and then wrote the *count* half as
+`one|two|…|twelve`. §3 above described that as covering "any spelled or numeric
+post-injury game count." It covered twelve of them. The return window grows every
+refresh, so `thirteen post-injury games` was a scheduled failure, and the row
+claiming the fix was the thing that would have kept anyone from looking. I wrote
+a paragraph criticising enumeration and shipped an enumeration in the sentence
+under it.
+
+Now derived: any leading token before `post-injury games` is treated as a count
+unless it appears in a short list of open determiners (`her`, `the`, `all`,
+`several`, …). Negative-tested across eight cases — `thirteen`, `twenty-one`,
+`13` and `eleven` rejected; `her`, `all`, `each of these` and `several` accepted
+— each with an assertion that the file actually changed before the result was
+trusted, per rule 6.
+
+**The co-presence diagnosis in §5 was wrong**, and wrong in a self-serving
+direction: I had written that the dimension went unchecked because no external
+reference existed. One did, for two thirds of the season. §5 now records the
+real reason, which is a worse one, and rules 14–16 replace the comfortable
+lesson I had drawn from the false version.
+
+The general shape is worth keeping. A retrospective is written by the same person
+whose judgement produced the errors, using the same judgement, and it will
+reproduce the same blind spots — including, evidently, in the act of describing
+them. That is not an argument against writing one. It is an argument for sending
+it through the same review as the code.
