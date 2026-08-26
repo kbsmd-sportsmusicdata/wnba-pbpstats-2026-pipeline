@@ -10,6 +10,7 @@ sys.path.insert(0, str(ROOT / "scripts"))
 
 from build_role_fulfillment_live import build  # noqa: E402
 from role_fulfillment_matrix.contracts import (  # noqa: E402
+    ContractError,
     LiveScoringBlocked,
     authorize_execution,
     live_config_fingerprint,
@@ -48,7 +49,8 @@ class LiveEnablementConfigTest(unittest.TestCase):
             config["output_root"],
             "analysis/role_fulfillment_matrix/live",
         )
-        self.assertEqual(config["sources"]["roster_source_as_of"], "2026-08-22")
+        self.assertEqual(config["sources"]["roster_source_as_of"], "2026-08-25")
+        self.assertEqual(config["sources"]["roster_addenda"], [])
         authorize_execution(config)
 
         approval = json.loads(LIVE_OUTPUT_APPROVAL.read_text())
@@ -67,20 +69,20 @@ class LiveEnablementConfigTest(unittest.TestCase):
             live_config_fingerprint(config),
         )
         self.assertEqual(approval["roster_freshness_safeguard"], {
-            "status": "implemented_from_pr_review",
-            "base_source_as_of": "2026-08-22",
+            "status": "approved_refreshed_base",
+            "base_source_as_of": "2026-08-25",
             "validation_basis": "oldest_contributing_snapshot",
-            "execution_status": "blocked_pending_base_roster_refresh",
+            "execution_status": "fresh_through_2026-08-23_standings_cutoff",
         })
         self.assertEqual(approval["eligibility_coverage_update"], {
             "review_status": "approved",
             "reviewed_by": "Krystal Beasley",
-            "reviewed_at": "2026-08-24",
+            "reviewed_at": "2026-08-25",
             "eligibility_approval_manifest": (
                 "analysis/role_fulfillment_matrix/data/review/"
                 "eligibility_approval_manifest_2026.json"
             ),
-            "next_live_gate": "base_roster_refresh",
+            "next_live_gate": "role_assignment_coverage_review",
         })
         for item in approval["approved_dry_run_artifacts"]:
             path = ROOT / item["path"]
@@ -135,7 +137,7 @@ class LiveEnablementConfigTest(unittest.TestCase):
 
 
 class ManualLiveOutputTest(unittest.TestCase):
-    def test_manual_live_run_blocks_before_writing_when_base_roster_is_stale(self):
+    def test_manual_live_run_preserves_approved_outputs_when_a_current_gate_blocks(self):
         approval = json.loads(LIVE_OUTPUT_APPROVAL.read_text())
         approved_paths = [ROOT / item["path"] for item in approval["manual_live_run"]["artifacts"]]
         approved_hashes_before = {
@@ -145,10 +147,7 @@ class ManualLiveOutputTest(unittest.TestCase):
             runs_root = Path(tmp) / "live"
             run_id = "2026-08-24T010000Z"
             output_root = runs_root / "runs" / run_id
-            with self.assertRaisesRegex(
-                RosterAdapterError,
-                "oldest contributing roster snapshot is older than the standings cutoff",
-            ):
+            with self.assertRaises(ContractError):
                 build(runs_root=runs_root, run_id=run_id)
             self.assertFalse(output_root.exists())
 

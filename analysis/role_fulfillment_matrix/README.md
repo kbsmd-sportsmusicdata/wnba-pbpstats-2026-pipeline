@@ -10,7 +10,7 @@ playoff forecast dashboard.
 - **Live-data mode:** approved sources support both the isolated `live_dry_run` review path and
   the standalone manual `live` path.
 - **Live output:** enabled for manual execution only; scheduling remains disabled.
-- **Real eligibility data:** reviewed and approved for all 227 current PBPStats players plus two
+- **Real eligibility data:** reviewed and approved for all 229 current PBPStats players plus five
   ESPN roster-only identities. Roster-only rows use reviewed `espn:<athlete_id>` placeholders;
   a later PBPStats appearance fails closed pending a reviewed identity crosswalk.
 - **Real role assignments:** reviewed and approved for 38 roster-attached eligible players on
@@ -20,9 +20,12 @@ playoff forecast dashboard.
   approved.
 - **Live adapter status:** the PBPStats adapter validation package was approved on 2026-08-22.
 - **Current gate:** the first manual live run completed on 2026-08-23 and was accepted as the
-  immutable baseline on 2026-08-24. Michelle Onyiah's role assignment was approved on August 25;
-  before another live execution, the August 22 base roster must be refreshed to at least the current
-  standings cutoff. Scheduling remains disabled and requires a separate design and approval gate.
+  immutable baseline on 2026-08-24. Michelle Onyiah's role assignment was approved on August 25.
+  The 15-team ESPN base-roster refresh through the August 23 standings cutoff was approved and
+  promoted on August 25. The post-promotion PBPStats retry cleared all three refresh failures and
+  the adapter audit returned `review_ready`. The next gates are Kara Dunn eligibility coverage and
+  Elena Buenavida and Elizabeth Balogun role assignments. Scheduling remains disabled and requires
+  a separate design and approval gate.
 - **Output interpretation:** the fixture dashboard remains synthetic; the dry-run dashboard uses
   reviewed real sources and is labeled `DRY RUN`, while the manual live dashboard is labeled
   `LIVE`.
@@ -101,6 +104,32 @@ existing run. The approved configuration requires `execution_mode = manual_only`
 The base roster and each reviewed addendum retain separate `source_as_of` dates. The adapter stamps
 those dates onto the rows they contributed and compares the oldest contributing snapshot with the
 standings cutoff. A newer addendum therefore cannot make an unchanged base roster appear current.
+
+Build a review-only base-roster refresh from previously downloaded ESPN team pages:
+
+```bash
+python3 scripts/build_rfm_roster_refresh.py \
+  --base analysis/role_fulfillment_matrix/data/live_inputs/player_core_2026.csv \
+  --addendum analysis/role_fulfillment_matrix/data/review/player_core_coverage_addendum_2026-08-24.csv \
+  --page ind=/path/to/ind.html \
+  --source-as-of 2026-08-25 \
+  --cutoff-date 2026-08-23 \
+  --output-directory analysis/role_fulfillment_matrix/data/review/roster_refresh_2026-08-25
+```
+
+Repeat `--page abbreviation=/path/to/page.html` for every downloaded team page. Omitting all
+`--page` arguments fetches the 15 current ESPN team-roster pages directly. The builder preserves
+historical inactive/free-agent identities, adds current identities, and writes any previously
+active player absent from all current pages as `pending-roster-review`. Its pending CSV is not a
+live input; new identities, removals, team changes, and position changes require explicit review
+before promotion.
+
+The approved August 25 promotion replaced the base roster, set `roster_source_as_of` to
+`2026-08-25`, and retired the two-row player-core addendum from both live configurations. The
+pending source package remains immutable beside a separate promotion manifest and post-promotion
+gate report. The promoted eligibility table contains 234 reviewed identities, including three new
+ESPN-only placeholders that must fail closed for identity reconciliation if they later appear in
+PBPStats.
 
 ## Reviewed role and sample safeguards
 

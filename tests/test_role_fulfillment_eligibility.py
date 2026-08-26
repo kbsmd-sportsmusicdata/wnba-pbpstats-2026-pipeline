@@ -496,15 +496,27 @@ class ApprovedEligibilityArtifactTest(unittest.TestCase):
         self.assertTrue(APPROVED_ELIGIBILITY.exists(), "approved eligibility table is missing")
         eligibility = pd.read_csv(APPROVED_ELIGIBILITY)
 
-        self.assertEqual(len(eligibility), 231)
-        self.assertEqual(eligibility["player_id"].nunique(), 231)
-        self.assertEqual(eligibility["espn_athlete_id"].nunique(), 231)
+        self.assertEqual(len(eligibility), 234)
+        self.assertEqual(eligibility["player_id"].nunique(), 234)
+        self.assertEqual(eligibility["espn_athlete_id"].nunique(), 234)
         self.assertTrue((eligibility["eligible_flag"] == (eligibility["experience_years"] <= 3)).all())
         self.assertEqual(set(eligibility["review_status"]), {"reviewed"})
         self.assertEqual(set(eligibility["reviewed_by"]), {"Krystal Beasley"})
         self.assertEqual(
             set(eligibility["reviewed_at"]),
-            {"2026-08-22", "2026-08-23", "2026-08-24"},
+            {"2026-08-22", "2026-08-23", "2026-08-24", "2026-08-25"},
+        )
+
+        refreshed = eligibility.set_index("player_name").loc[
+            ["Elizabeth Balogun", "Christyn Williams", "Elena Buenavida"]
+        ]
+        self.assertEqual(set(refreshed["review_status"]), {"reviewed"})
+        self.assertEqual(set(refreshed["reviewed_by"]), {"Krystal Beasley"})
+        self.assertEqual(set(refreshed["reviewed_at"]), {"2026-08-25"})
+        self.assertTrue(refreshed["eligible_flag"].all())
+        self.assertEqual(
+            set(refreshed["identity_match_method"]),
+            {"espn_roster_identity_no_pbpstats_record"},
         )
 
         pending = pd.read_csv(PENDING_ELIGIBILITY)
@@ -547,9 +559,9 @@ class ApprovedEligibilityArtifactTest(unittest.TestCase):
         self.assertEqual(manifest["review_status"], "reviewed")
         self.assertEqual(manifest["approved_by"], "Krystal Beasley")
         self.assertEqual(manifest["approved_at"], "2026-08-22")
-        self.assertEqual(manifest["last_updated_at"], "2026-08-24")
-        self.assertEqual(manifest["approved_rows"], 231)
-        self.assertEqual(manifest["eligible_players"], 123)
+        self.assertEqual(manifest["last_updated_at"], "2026-08-25")
+        self.assertEqual(manifest["approved_rows"], 234)
+        self.assertEqual(manifest["eligible_players"], 126)
         self.assertEqual(manifest["ineligible_players"], 108)
         self.assertEqual(manifest["live_eligibility_status"], "approved")
         self.assertEqual(manifest["live_scoring_status"], "enabled_manual_only")
@@ -570,7 +582,7 @@ class ApprovedEligibilityArtifactTest(unittest.TestCase):
             manifest["build_manifest"]["sha256"],
             hashlib.sha256(BUILD_MANIFEST.read_bytes()).hexdigest(),
         )
-        self.assertEqual(len(manifest["supplemental_reviews"]), 2)
+        self.assertEqual(len(manifest["supplemental_reviews"]), 3)
         supplement = manifest["supplemental_reviews"][0]
         self.assertEqual(supplement["reviewed_at"], "2026-08-23")
         self.assertEqual(supplement["rows"], 2)
@@ -589,6 +601,10 @@ class ApprovedEligibilityArtifactTest(unittest.TestCase):
             coverage_supplement["player_core_sha256"],
             hashlib.sha256(APPROVED_PLAYER_CORE_ADDENDUM.read_bytes()).hexdigest(),
         )
+        refresh_supplement = manifest["supplemental_reviews"][2]
+        self.assertEqual(refresh_supplement["reviewed_at"], "2026-08-25")
+        self.assertEqual(refresh_supplement["rows"], 3)
+        self.assertEqual(refresh_supplement["identity_scope"], "new ESPN roster-only identities")
 
     def test_dry_run_config_references_approved_eligibility_without_enabling_output(self):
         live_config_path = (

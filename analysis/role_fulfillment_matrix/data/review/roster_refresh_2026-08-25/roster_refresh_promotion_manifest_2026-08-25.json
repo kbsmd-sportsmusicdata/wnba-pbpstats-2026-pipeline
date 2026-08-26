@@ -1,0 +1,77 @@
+{
+  "approved_at": "2026-08-25",
+  "approved_by": "Krystal Beasley",
+  "departure_decisions": {
+    "2955898": {
+      "active": false,
+      "current_team_id": "5",
+      "decision_note": "Retain Indiana affiliation and suppress live scoring after the Fever's season-ending injury update.",
+      "player_name": "Damiris Dantas",
+      "source_url": "https://fever.wnba.com/news/damiris-dantas-injury-update",
+      "status_type": "inactive"
+    },
+    "869": {
+      "active": false,
+      "current_team_id": "",
+      "decision_note": "Remove Phoenix affiliation after the August 24 contract buyout and waiver process.",
+      "player_name": "DeWanna Bonner",
+      "source_url": "https://ca.sports.yahoo.com/news/mercury-buy-dewanna-bonner-contract-214605380.html",
+      "status_type": "free-agent"
+    }
+  },
+  "execution_mode": "manual_only",
+  "manual_live_run_authorized": false,
+  "pending_evidence": {
+    "changes": {
+      "path": "analysis/role_fulfillment_matrix/data/review/roster_refresh_2026-08-25/roster_refresh_changes_2026-08-25.csv",
+      "sha256": "6904bded4b4bdbc7d567dff7a38a82efc9c8ae6dcbbc8efabaffd407ccdae95a"
+    },
+    "player_core": {
+      "path": "analysis/role_fulfillment_matrix/data/review/roster_refresh_2026-08-25/player_core_2026-08-25.pending.csv",
+      "sha256": "70e305466dbd2af77b6e3be9b660961f4c14ec38afa418378b6c6143dc30a3c6"
+    },
+    "source_snapshot": {
+      "path": "analysis/role_fulfillment_matrix/data/review/roster_refresh_2026-08-25/espn_roster_pages_2026-08-25.json",
+      "sha256": "1c3a98fe1affdf052ba6942617d14720119e42c9493f1dae180cc42b19e4e9bd"
+    }
+  },
+  "promoted_outputs": {
+    "approval_report": {
+      "path": "analysis/role_fulfillment_matrix/data/review/roster_refresh_2026-08-25/roster_refresh_approval_2026-08-25.md",
+      "sha256": "5fce0c990274b69bcf6a979feb9cf9e5e1abaa926262dc9a5c0beee37bee4b69"
+    },
+    "crosswalk": {
+      "path": "analysis/role_fulfillment_matrix/data/review/player_identity_crosswalk_2026.csv",
+      "sha256": "07ca37002e34f0837d823703dae3b957563e028671d0f26f35ee973bfd56f687"
+    },
+    "eligibility": {
+      "path": "analysis/role_fulfillment_matrix/config/player_eligibility_2026.csv",
+      "sha256": "af5001f21281e67a15ea80e6d72678c58baaa9a6c4d9968bb3bc6a7798941d25"
+    },
+    "player_core": {
+      "path": "analysis/role_fulfillment_matrix/data/live_inputs/player_core_2026.csv",
+      "sha256": "2a5d1ec99e818b4ea65c6370a6716fb5e605e78b4817bd0f6e1cc96ca2fb5224"
+    },
+    "reviewed_changes": {
+      "path": "analysis/role_fulfillment_matrix/data/review/roster_refresh_2026-08-25/roster_refresh_changes_2026-08-25.reviewed.csv",
+      "sha256": "57ea0d146a078cdc95ab9c34ee393bd9913ea488e16e5bb08259211e7651f205"
+    }
+  },
+  "promotion_ready": true,
+  "quality": {
+    "active_players": 211,
+    "crosswalk_rows": 237,
+    "eligibility_rows": 234,
+    "free_agents": 20,
+    "inactive_players": 6,
+    "new_eligibility_rows": 3,
+    "player_core_rows": 237,
+    "unresolved_departures": 0
+  },
+  "retired_live_addendum": "analysis/role_fulfillment_matrix/data/review/player_core_coverage_addendum_2026-08-24.csv",
+  "review_status": "approved",
+  "scheduling_enabled": false,
+  "season": 2026,
+  "source_as_of": "2026-08-25",
+  "standings_cutoff": "2026-08-23"
+}

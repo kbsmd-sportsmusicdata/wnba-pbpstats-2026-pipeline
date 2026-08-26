@@ -1,0 +1,23 @@
+{
+  "reviewed_by": "Krystal Beasley",
+  "reviewed_at": "2026-08-25",
+  "review_status": "approved",
+  "departure_decisions": {
+    "2955898": {
+      "player_name": "Damiris Dantas",
+      "status_type": "inactive",
+      "active": false,
+      "current_team_id": "5",
+      "source_url": "https://fever.wnba.com/news/damiris-dantas-injury-update",
+      "decision_note": "Retain Indiana affiliation and suppress live scoring after the Fever's season-ending injury update."
+    },
+    "869": {
+      "player_name": "DeWanna Bonner",
+      "status_type": "free-agent",
+      "active": false,
+      "current_team_id": "",
+      "source_url": "https://ca.sports.yahoo.com/news/mercury-buy-dewanna-bonner-contract-214605380.html",
+      "decision_note": "Remove Phoenix affiliation after the August 24 contract buyout and waiver process."
+    }
+  }
+}

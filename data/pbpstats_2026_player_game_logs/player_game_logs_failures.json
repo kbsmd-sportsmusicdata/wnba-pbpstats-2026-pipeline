@@ -1,17 +1,1 @@
-[
-  {
-    "player_id": "1629479",
-    "name": "Teaira McCowan",
-    "error": "failed to fetch /get-game-logs/wnba after 5 attempts: retryable status 500"
-  },
-  {
-    "player_id": "1631044",
-    "name": "Naz Hillmon",
-    "error": "failed to fetch /get-game-logs/wnba after 5 attempts: retryable status 500"
-  },
-  {
-    "player_id": "1643489",
-    "name": "Antonia Delaere",
-    "error": "failed to fetch /get-game-logs/wnba after 5 attempts: retryable status 500"
-  }
-]
+[]

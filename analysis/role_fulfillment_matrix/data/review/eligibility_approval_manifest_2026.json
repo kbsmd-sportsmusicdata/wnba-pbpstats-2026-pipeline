@@ -9,9 +9,9 @@
   "review_status": "reviewed",
   "approved_by": "Krystal Beasley",
   "approved_at": "2026-08-22",
-  "last_updated_at": "2026-08-24",
-  "approved_rows": 231,
-  "eligible_players": 123,
+  "last_updated_at": "2026-08-25",
+  "approved_rows": 234,
+  "eligible_players": 126,
   "ineligible_players": 108,
   "pending_input": {
     "path": "analysis/role_fulfillment_matrix/data/review/player_eligibility_2026.pending.csv",
@@ -19,7 +19,7 @@
   },
   "crosswalk": {
     "path": "analysis/role_fulfillment_matrix/data/review/player_identity_crosswalk_2026.csv",
-    "sha256": "9ecd8a30f5c25ad0601ef1de35b9d1407830f52817682393f9dce74288c96799"
+    "sha256": "07ca37002e34f0837d823703dae3b957563e028671d0f26f35ee973bfd56f687"
   },
   "build_manifest": {
     "path": "analysis/role_fulfillment_matrix/data/review/eligibility_build_manifest_2026.json",
@@ -27,7 +27,7 @@
   },
   "approved_output": {
     "path": "analysis/role_fulfillment_matrix/config/player_eligibility_2026.csv",
-    "sha256": "7066d68a182e511487f8d290bc474a51d40ea1049ea2aec1940d37273cb3ad2b"
+    "sha256": "af5001f21281e67a15ea80e6d72678c58baaa9a6c4d9968bb3bc6a7798941d25"
   },
   "supplemental_reviews": [
     {
@@ -47,6 +47,16 @@
       "player_core_path": "analysis/role_fulfillment_matrix/data/review/player_core_coverage_addendum_2026-08-24.csv",
       "player_core_sha256": "7cf12a1c7da752f4b9bf257f4253d533a15d455d6f67bfc4541dca5a9ceeac6a",
       "identity_scope": "New PBPStats identities with WNBA rookie experience evidence; Michelle Onyiah alias manually reviewed"
+    },
+    {
+      "reviewed_at": "2026-08-25",
+      "reviewed_by": "Krystal Beasley",
+      "rows": 3,
+      "path": "analysis/role_fulfillment_matrix/data/review/roster_refresh_2026-08-25/roster_refresh_promotion_manifest_2026-08-25.json",
+      "sha256": "fd8480969016d271774285776e50abface2a155c6208ca1ba6b4ea463356d4d9",
+      "player_core_path": "analysis/role_fulfillment_matrix/data/live_inputs/player_core_2026.csv",
+      "player_core_sha256": "2a5d1ec99e818b4ea65c6370a6716fb5e605e78b4817bd0f6e1cc96ca2fb5224",
+      "identity_scope": "new ESPN roster-only identities"
     }
   ],
   "live_eligibility_status": "approved",
