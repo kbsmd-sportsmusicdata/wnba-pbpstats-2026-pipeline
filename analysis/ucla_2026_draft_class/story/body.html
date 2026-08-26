@@ -1,0 +1,298 @@
+<div class="wrap">
+
+  <header class="hero">
+    <div class="col">
+      <div class="rule-top"></div>
+      <p class="eyebrow" style="margin-bottom:1.4rem">2026 WNBA rookie season · a record draft class</p>
+      <h1>Six from Westwood</h1>
+      <p class="stand">UCLA put six players into the 2026 WNBA draft, more than any school ever has.
+        They arrived as a cohort and get discussed as one. Ten weeks of possession data says
+        they had six different seasons — and that the honest version of this story is partly
+        about which differences are real.</p>
+      <div class="byline">
+        <span><span class="num" id="cv-games"></span> games through <span class="num" id="cv-date"></span></span>
+        <span><span class="num" id="cv-poss"></span> possessions reconstructed</span>
+        <span>league reference pool <span class="num" id="cv-pool"></span></span>
+      </div>
+    </div>
+  </header>
+
+  <!-- ───────────────────────────────── 1 ───────────────────────────── -->
+  <section>
+    <div class="col sec-head">
+      <span class="eyebrow">One</span>
+      <h2>They were drafted together. Nothing after that was shared.</h2>
+    </div>
+    <div class="col">
+      <p>The six landed on four teams, and the rotations sorted them immediately. Kiki Rice played
+        <strong>26.3 minutes a game</strong> in Toronto. Gianna Kneepkens played <strong>8.3</strong>
+        in Connecticut. In between, three of the six saw their minutes fall through the season and
+        two saw them rise — and the shapes are so different that any sentence beginning
+        "the UCLA rookies" is already wrong.</p>
+      <p>Read the panels below as trajectories rather than levels. Lauren Betts and Charlisse
+        Leger-Walker were trusted with more as the season went on. Gabriela Jaquez and Angela
+        Dugalic were trusted with steadily less — Jaquez from 28.3 minutes in May to
+        11.8 in August, Dugalic all the way down to 3.3. Rice's gap is an injury, and gets its
+        own section.</p>
+      <div class="chiprow">
+        <span class="chip holds">Minutes reproduce across every data vintage</span>
+      </div>
+    </div>
+
+    <figure>
+      <div class="fig-head">
+        <h3>Minutes per game, by month</h3>
+        <p>Each panel is one player, May through August. Shared vertical scale, 0–32 minutes.</p>
+      </div>
+      <div class="sm-grid" id="sm-minutes"></div>
+      <figcaption>Rice's dip is a knee injury that cost her sixteen games; the two low months are
+        one and two appearances. Kneepkens never cleared the league's 250-minute reference
+        threshold, so she is missing from every league percentile in this piece.</figcaption>
+    </figure>
+  </section>
+
+  <!-- ───────────────────────────────── 2 ───────────────────────────── -->
+  <section>
+    <div class="col sec-head">
+      <span class="eyebrow">Two</span>
+      <h2>The looks you get, and what you do with them</h2>
+    </div>
+    <div class="col">
+      <p>Two things get folded together when people talk about efficiency: the quality of the shots
+        a player takes, and how well she converts relative to that quality. In this league they are
+        close to independent — across the 149-player reference pool they correlate at just
+        <strong>0.15</strong>. So they are worth plotting against each other, and the quadrants mean
+        something.</p>
+      <p>Betts sits in the hardest one. Her average shot is worth <strong>0.483</strong> expected
+        points — 15th percentile, among the worst diets in the league — and she converts
+        <strong>+0.068</strong> above that expectation, which is 85th percentile. She is taking bad
+        looks and making them anyway. Jaquez is the mirror image: 80th-percentile shot quality,
+        14th-percentile conversion.</p>
+    </div>
+
+    <figure>
+      <div class="fig-head">
+        <h3>Shot quality against shot-making</h3>
+        <p>Horizontal: expected points per shot from location and type. Vertical: actual conversion
+          minus that expectation. Grey marks are the 149 league players with 250+ minutes.</p>
+      </div>
+      <div class="legend">
+        <span><span class="swatch" style="background:var(--pool)"></span>League pool</span>
+        <span><span class="swatch" style="background:var(--accent)"></span>UCLA six</span>
+      </div>
+      <div class="plot scroller"><div id="fig-scatter"></div></div>
+      <figcaption>Quadrants are drawn at the league pool's medians. Kneepkens is plotted but sits
+        below the pool's minutes threshold, so her position carries the least weight of the six.</figcaption>
+    </figure>
+  </section>
+
+  <!-- ───────────────────────────────── 3 ───────────────────────────── -->
+  <section>
+    <div class="col sec-head">
+      <span class="eyebrow">Three</span>
+      <h2>Betts is two different players at the two ends</h2>
+    </div>
+    <div class="col">
+      <p>Split her regularised plus-minus into its offensive and defensive halves and the cohort's
+        widest gap opens up: <strong>+1.95 on defence, −2.46 on offence</strong>. The defensive
+        number is the best of the six by a distance. The offensive number is near the worst.</p>
+      <p>The spacing cost is not a subtlety here. Betts attempted <strong>zero three-pointers in 622
+        minutes</strong> — one of only five players in the 149-player reference pool who did not
+        take a single one. A centre who cannot be guarded away from the rim shrinks the floor for
+        everyone else, and that shows up in the offensive coefficient no matter how well she
+        finishes at it.</p>
+    </div>
+
+    <figure>
+      <div class="fig-head">
+        <h3>Offensive and defensive impact, per 100 possessions</h3>
+        <p>Ridge-regularised plus-minus, split by side of the ball. Zero is league average.</p>
+      </div>
+      <div class="legend">
+        <span><span class="swatch" style="background:var(--accent)"></span>Offence</span>
+        <span><span class="swatch" style="background:var(--counter)"></span>Defence</span>
+      </div>
+      <div class="plot scroller"><div id="fig-rapm"></div></div>
+      <figcaption>Read these as tiers, not decimals. Split-half reliability on this sample is
+        <span class="num" id="rel-1"></span> — high enough to separate the top of the league from
+        the bottom, nowhere near high enough to rank six players inside a 1.5-point band.</figcaption>
+      <details class="tbl">
+        <summary>Table view</summary>
+        <div class="scroller"><table id="tbl-rapm"></table></div>
+      </details>
+    </figure>
+
+    <div class="col">
+      <p>The development arc underneath it is the most encouraging thing in the cohort. Across four
+        months Betts's true shooting climbed <strong>0.52 → 0.59 → 0.61 → 0.64</strong> while her
+        foul rate fell <strong>4.24 → 4.01 → 3.15 → 1.42</strong> per 75 possessions. Scoring
+        efficiency up and fouling down, at the same time, is the pairing that usually means a
+        rookie big has stopped guessing.</p>
+      <div class="chiprow">
+        <span class="chip holds">Shooting splits and foul rates reproduce across vintages</span>
+        <span class="chip unres">Ordering within the six is not resolvable</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ───────────────────────────────── 4 ───────────────────────────── -->
+  <section>
+    <div class="col sec-head">
+      <span class="eyebrow">Four</span>
+      <h2>Rice's collapse was a minutes restriction</h2>
+    </div>
+    <div class="col">
+      <p>Toronto lost Rice for sixteen games. When she came back, her per-possession numbers looked
+        alarming — true shooting down from <strong>0.67</strong> to <strong>0.46</strong>, rim
+        accuracy from 71% to 56%, turnovers more than doubled. Read as a season arc, that is a
+        player who came back broken.</p>
+      <p>Read against her minutes, it is something much more ordinary. Her first five games back
+        were a capped ramp: 17, 23, 27, 23, 18 minutes. From the sixth game on she was at
+        <strong>29.6 minutes a game</strong>, and the rates came back with the workload — true
+        shooting to 0.61, rim accuracy to 94%, turnovers to
+        <span class="num">1.05</span> per 75. The chart below needs no annotation; the step is
+        visible on its own.</p>
+    </div>
+
+    <figure>
+      <div class="fig-head">
+        <h3>Every Rice appearance after the injury</h3>
+        <p>Minutes played, Toronto's 27th game onward. The shaded block is the five-game
+          re-integration window.</p>
+      </div>
+      <div class="plot scroller"><div id="fig-rice"></div></div>
+      <figcaption>Rest-day correlation across the window is −0.49, which rules out load management
+        on back-to-backs as the explanation. The final block is open-ended and grows with each
+        refresh, so it is labelled "6+" rather than as a fixed range.</figcaption>
+    </figure>
+
+    <div class="col">
+      <div class="scroller"><table id="tbl-rice"></table></div>
+      <div class="chiprow" style="margin-top:1.1rem">
+        <span class="chip holds">The five-game ramp reproduces across vintages</span>
+        <span class="chip moves">Block-level on/off moves several points per 100 per refresh</span>
+      </div>
+      <p style="margin-top:1.1rem">Rice finishes as the only one of the six with a positive
+        wins-above-average figure, and the only one whose team was clearly better with her on the
+        floor. On a 11-win Toronto team, that is worth more than it looks.</p>
+    </div>
+  </section>
+
+  <!-- ───────────────────────────────── 5 ───────────────────────────── -->
+  <section>
+    <div class="col sec-head">
+      <span class="eyebrow">Five</span>
+      <h2>One pairing is a real problem. The rest is noise.</h2>
+    </div>
+    <div class="col">
+      <p>Washington drafted two of the six and plays them together. Over 224 possessions with both
+        Betts and Dugalic on the floor, the Mystics are <strong>−20.0 per 100</strong>. With Betts
+        on and Dugalic off, they are <strong>+2.6</strong>. The damage is almost entirely defensive:
+        114.7 allowed per 100, against 107.4 for the team's other minutes.</p>
+      <p>That gap is large enough to survive the noise floor, and it has held its sign and rough
+        magnitude across four separate data vintages and a correctness fix to how possessions are
+        attributed. It is the one pairing finding in this cohort worth printing.</p>
+      <p>The others are not. Every remaining duo gap sits under about 15 points per 100, which on
+        these sample sizes is indistinguishable from nothing. A "two-big" storyline about Betts and
+        Shakira Austin looked compelling on partial-season data and evaporated on the full season —
+        across four vintages that estimate read +1.6, −1.6, −0.1 and +4.7. It changed sign twice.</p>
+    </div>
+
+    <figure>
+      <div class="fig-head">
+        <h3>Duo net rating: together, against the best alternative</h3>
+        <p>Points per 100 possessions, both states shown. The right-hand column is the gap
+          between them — the quantity the noise threshold actually applies to.</p>
+      </div>
+      <div class="plot scroller"><div id="fig-duo"></div></div>
+      <figcaption>"Best alternative" is the strongest state available with one of the two on the
+        floor and the other off. A gap of roughly 15 points per 100 is the threshold below which
+        these sample sizes cannot distinguish a real effect from nothing — one pairing clears it.
+        Possession counts are calibrated to the pbpstats scale.</figcaption>
+    </figure>
+
+    <figure>
+      <div class="fig-head">
+        <h3>On-court minus off-court net rating</h3>
+        <p>Each player's team net rating with her on the floor, minus the same team without her.
+          Grey marks are the league pool for scale.</p>
+      </div>
+      <div class="plot scroller"><div id="fig-swing"></div></div>
+      <figcaption>On/off is the least stable metric in this piece — several points per 100 can move
+        on a handful of new games. It is shown because the extremes are informative, not because
+        the ordering is.</figcaption>
+    </figure>
+  </section>
+
+  <!-- ───────────────────────────────── 6 ───────────────────────────── -->
+  <section>
+    <div class="col sec-head">
+      <span class="eyebrow">Six</span>
+      <h2>The six, in one place</h2>
+    </div>
+    <div class="cards" id="cards"></div>
+    <details class="tbl" style="max-width:var(--w-wide)">
+      <summary>Full table</summary>
+      <div class="scroller"><table id="tbl-all"></table></div>
+    </details>
+  </section>
+
+  <!-- ───────────────────────────────── 7 ───────────────────────────── -->
+  <section>
+    <div class="col sec-head">
+      <span class="eyebrow">Seven</span>
+      <h2>How much of this should you believe?</h2>
+    </div>
+    <div class="col">
+      <p>Every claim above carries a chip, and the chips are not decoration. This pipeline rebuilds
+        on new data most days, and rebuilding the same analysis on successive vintages turned out
+        to be the most useful robustness check available. Some numbers reproduce exactly. Others
+        move by several points on four extra games. Knowing which is which is most of the
+        analytical work.</p>
+      <div class="note">
+        <span class="eyebrow">What reproduces, and what doesn't</span>
+        <p><strong>Stable:</strong> minutes, shooting splits, shot diet, foul rates, and the one
+          well-sampled pairing. These reproduced across every vintage tested.</p>
+        <p><strong>Unstable:</strong> anything resting on a few hundred possessions. Rice's
+          season on/off swing read +11.4, then +7.8, then +5.7 across three vintages. Same player,
+          same method, four extra games each time.</p>
+        <p><strong>Not resolvable:</strong> the ordering of these six against each other on impact
+          metrics. Six players inside a 1.5-point band, at a split-half reliability of
+          <span class="num" id="rel-2"></span>, is not a ranking. It is a band.</p>
+      </div>
+      <p>The impact layer was checked against an independently published 2026 RAPM covering the
+        league's top players. Of <span class="num" id="ext-n"></span> players present in both,
+        <strong><span class="num" id="ext-hit"></span> fall inside that reference's own published
+        uncertainty interval</strong>, at essentially zero bias. Worth noting what the reference's
+        own error bars say, though: it publishes a standard error of
+        <span class="num" id="ext-se"></span>, and its entire top-24 spans
+        <span class="num" id="ext-span"></span> standard errors. By its own arithmetic that group
+        is not rank-orderable either — which is the same caution, arriving from outside.</p>
+      <p>One honest gap: on the four players in that comparison with fewer than twenty games, this
+        model runs about 1.5 points lower than the reference. Ridge shrinkage toward zero is the
+        obvious explanation and it does not survive checking — these estimates only shrink
+        materially below about 300 possessions, and three of the four sit well above that. The
+        cause is open. Treat low-sample players here as the least trustworthy rows in the set.</p>
+    </div>
+  </section>
+
+  <footer>
+    <div class="col">
+      <p><strong>Method.</strong> Built on the pbpstats game layer for
+        <span class="num" id="cv-games-2"></span> games through
+        <span class="num" id="cv-date-2"></span>. Lineup and pairing figures come from a possession
+        layer reconstructed from play-by-play — <span class="num" id="cv-poss-2"></span>
+        possessions, both five-player lineups carried on every row, calibrated so team totals match
+        the pbpstats scale exactly. Impact figures are ridge-regularised plus-minus fitted in-repo
+        on that layer, cross-validated by game rather than by possession, and calibrated separately
+        on each side of the ball.</p>
+      <p>Season aggregates are possession-weighted throughout, never averages of per-game rates.
+        Percentiles are against the <span class="num" id="cv-pool-2"></span>-player league pool
+        (250+ minutes); higher always means better. Box-score plus-minus is deliberately absent —
+        it cross-validates at R² below zero on a single season, which means it would be a decorated
+        guess.</p>
+    </div>
+  </footer>
+</div>
+
+<div class="tip" id="tip" role="status" aria-live="polite"></div>
