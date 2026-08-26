@@ -29,6 +29,7 @@ def load_truth() -> dict:
     story = json.loads((DATA / "story_manifest.json").read_text())
     derived = json.loads((DATA / "derived_possessions_manifest.json").read_text())
     noise = derived["noise"]
+    ext = json.loads((DATA / "external_rapm_check.json").read_text())
     impact = json.loads((DATA / "impact_manifest.json").read_text())
     sdv = ROOT / "data/raw/sportsdataverse/wnba_2026"
     frozen_poss = pd.read_parquet(sdv / "wnba_possessions_2026.parquet", columns=["game_id"])
@@ -58,6 +59,10 @@ def load_truth() -> dict:
         "attenuation_off": impact["attenuation_offense"],
         "attenuation_def": impact["attenuation_defense"],
         "points_per_win": impact["points_per_win"]["points_per_win"],
+        "ext_matched": int(ext["matched"]),
+        "ext_raw_in_band": int(ext["raw_inside_reference_interval"]),
+        "ext_se": float(ext["reference_median_se"]),
+        "ext_span": float(ext["reference_span_in_se"]),
         "ppw_r2": impact["points_per_win"]["r2"],
         "replacement": impact["replacement_rapm"],
         "impact_players": int(impact["players"]),
@@ -114,6 +119,12 @@ def checks(t: dict) -> list[tuple[str, str, str]]:
         ("IMPACT_LAYER.md", re.escape(f"{t['implied_repl_win_pct'] * 100:.1f}%"),
          "implied replacement win rate"),
         ("IMPACT_LAYER.md", rf"\b{t['impact_players']} players\b", "impact player count"),
+        # external RAPM cross-check; the reference file is committed alongside
+        ("IMPACT_LAYER.md", rf"\*\*{t['ext_raw_in_band']} / {t['ext_matched']} \(96%\)\*\*",
+         "external RAPM interval coverage"),
+        ("IMPACT_LAYER.md", rf"standard error of \*\*{t['ext_se']:.2f}\*\*",
+         "external reference SE"),
+        ("IMPACT_LAYER.md", rf"\*\*{t['ext_span']:.2f} SE\*\*", "external reference span"),
     ]
 
 

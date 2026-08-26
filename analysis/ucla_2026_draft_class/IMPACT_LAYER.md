@@ -96,6 +96,43 @@ the mean of the two.
 | o_rapm + d_rapm = rapm | max residual 4.4e-16 |
 | vs. the frozen sportsdataverse RAPM | r = 0.519 over different windows (n = 165, both pools 200+ poss) |
 
+**Checked against an independently published 2026 RAPM.** Until now the only
+external reference was the frozen sportsdataverse RAPM, itself stale at
+mid-July. A published table covering the league's top 34 (24 rows) gives a
+second, current one. `verify_external_rapm.py` reproduces everything below.
+
+Point-estimate correlation is the wrong headline, for two reasons. The slice is
+selected on the reference's own metric, which is range restriction on the
+dependent variable; and the reference publishes a standard error of **2.25**
+while its entire top-24 spans 2.6 points — **1.16 SE**. By its own error bars
+that slice is not rank-resolvable, so two correct estimators would disagree on
+its ordering.
+
+The meaningful test is coverage against the reference's own interval:
+
+| Check | Result |
+|---|---|
+| Players matched (name and team) | 24 / 24 |
+| Our **raw** RAPM inside the reference's published interval | **23 / 24 (96%)** |
+| Our calibrated RAPM inside that interval | 19 / 24 (79%) |
+| Mean signed z, (ours − theirs) / their SE | **+0.15** |
+| Pearson / Spearman on the slice | 0.486 / 0.429 |
+| Pearson, defence only | 0.597 |
+
+Compare *raw* coefficients, not calibrated ones: the reference is a shrunk
+estimate and ours are deliberately de-shrunk by the attenuation factor, so the
+calibrated column sits on a wider scale by construction. On the like-for-like
+comparison we agree with the reference on 23 of 24 players to within its own
+uncertainty, at essentially zero bias.
+
+One real disagreement, stated rather than explained: on the four players with
+fewer than 20 games we run **1.50 lower** on average, while on the 17 with 30+
+games we run 0.40 higher. Ridge shrinkage toward zero is the obvious
+candidate and does not survive checking — our estimates shrink materially only
+below about 300 possessions, and three of the four sit well above that. The
+reference's method is not documented here, so the cause is open. Treat
+low-sample players in this layer as the least trustworthy rows in it.
+
 **Split-half reliability** — the honest error bar. Odd and even games fitted
 separately, then correlated:
 

@@ -1,0 +1,17 @@
+{
+  "reference": "independently published 2026 WNBA RAPM (top 34; 24 rows)",
+  "matched": 24,
+  "unmatched": [],
+  "team_agreement": 24,
+  "reference_median_se": 2.25,
+  "reference_span_in_se": 1.16,
+  "raw_inside_reference_interval": 23,
+  "scaled_inside_reference_interval": 19,
+  "mean_signed_z": 0.15,
+  "pearson_raw": 0.486,
+  "spearman_raw": 0.429,
+  "pearson_defence": 0.597,
+  "mean_diff_gp_under_20": -1.5,
+  "mean_diff_gp_30_plus": 0.4,
+  "note": "Coverage against the reference's own interval is the headline; correlation on a top-34 slice is range-restricted and its span is ~1.16 SE, so the slice is not rank-resolvable by the reference's own error bars. The sub-20-game gap is real and unexplained: our ridge shrinks materially only below ~300 possessions, so shrinkage toward zero does not account for it, and the reference's method is not documented here."
+}
