@@ -1,0 +1,934 @@
+<title>The UCLA Six</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;0,6..72,700;1,6..72,400&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+
+<style>
+/* ── tokens ─────────────────────────────────────────────────────────────
+   Light is the complete set on bare :root. Dark redefines ONLY tokens,
+   once under prefers-color-scheme (guarded so an explicit light stamp
+   wins) and once under the data-theme stamp (so the toggle wins too). */
+:root {
+  color-scheme: light;
+  --paper:      #f2f5f8;
+  --card:       #ffffff;
+  --card-sunk:  #eaeff5;
+  --ink:        #0e1116;
+  --ink-mid:    #3d4652;
+  --ink-soft:   #5f6b7a;
+  --ink-faint:  #8c97a5;
+  --rule:       #dbe2ea;
+  --rule-firm:  #c3ccd8;
+  --accent:     #2a78d6;
+  --accent-sunk:#e2ecfa;
+  --counter:    #eb6834;
+  --pool:       #b6c0cd;
+  --holds:      #1baf7a;
+  --moves:      #c07c00;
+  --unres:      #8c97a5;
+  --shade:      #eef2f7;
+
+  --w-text: 63ch;
+  --w-wide: 1080px;
+  --s1: .35rem; --s2: .7rem; --s3: 1.1rem; --s4: 1.8rem;
+  --s5: 2.8rem; --s6: 4.2rem; --s7: 6rem;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --paper:      #12151a;
+    --card:       #191d24;
+    --card-sunk:  #1f242c;
+    --ink:        #eef2f7;
+    --ink-mid:    #b9c3cf;
+    --ink-soft:   #97a2b0;
+    --ink-faint:  #6c7684;
+    --rule:       #262c35;
+    --rule-firm:  #38404b;
+    --accent:     #3987e5;
+    --accent-sunk:#17273c;
+    --counter:    #d95926;
+    --pool:       #4a535f;
+    --holds:      #199e70;
+    --moves:      #c98500;
+    --unres:      #6c7684;
+    --shade:      #1c2129;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --paper:      #12151a;
+  --card:       #191d24;
+  --card-sunk:  #1f242c;
+  --ink:        #eef2f7;
+  --ink-mid:    #b9c3cf;
+  --ink-soft:   #97a2b0;
+  --ink-faint:  #6c7684;
+  --rule:       #262c35;
+  --rule-firm:  #38404b;
+  --accent:     #3987e5;
+  --accent-sunk:#17273c;
+  --counter:    #d95926;
+  --pool:       #4a535f;
+  --holds:      #199e70;
+  --moves:      #c98500;
+  --unres:      #6c7684;
+  --shade:      #1c2129;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font: 400 1.0625rem/1.68 "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.wrap { max-width: var(--w-wide); margin: 0 auto; padding: 0 var(--s4); }
+.col  { max-width: var(--w-text); margin-inline: auto; }
+
+h1, h2, h3 { font-family: Newsreader, ui-serif, Georgia, serif; text-wrap: balance; margin: 0; }
+h1 { font-size: clamp(2.9rem, 7vw, 5.1rem); font-weight: 700; line-height: 1.02; letter-spacing: -.022em; }
+h2 { font-size: clamp(1.8rem, 3.4vw, 2.6rem); font-weight: 600; line-height: 1.14; letter-spacing: -.014em; }
+h3 { font-size: 1.28rem; font-weight: 600; line-height: 1.25; }
+p  { margin: 0 0 var(--s3); }
+a  { color: var(--accent); text-underline-offset: .18em; }
+strong { font-weight: 600; color: var(--ink); }
+em { font-style: italic; }
+
+.eyebrow {
+  font: 500 .72rem/1 "IBM Plex Mono", ui-monospace, monospace;
+  letter-spacing: .16em; text-transform: uppercase; color: var(--ink-faint);
+}
+.num { font-family: "IBM Plex Mono", ui-monospace, monospace; font-variant-numeric: tabular-nums; }
+
+/* ── hero ───────────────────────────────────────────────────────────── */
+.hero { padding: clamp(4rem, 11vh, 8rem) 0 var(--s6); }
+.hero .rule-top { height: 3px; background: var(--ink); margin-bottom: var(--s4); }
+.hero h1 { margin-bottom: var(--s4); }
+.hero .stand {
+  font-family: Newsreader, ui-serif, Georgia, serif;
+  font-size: clamp(1.2rem, 2.1vw, 1.5rem); line-height: 1.5; color: var(--ink-mid);
+  max-width: 54ch; margin-bottom: var(--s4);
+}
+.byline {
+  display: flex; flex-wrap: wrap; gap: var(--s1) var(--s3);
+  font: 400 .82rem/1.5 "IBM Plex Mono", ui-monospace, monospace;
+  color: var(--ink-faint); border-top: 1px solid var(--rule); padding-top: var(--s3);
+}
+
+/* ── sections ───────────────────────────────────────────────────────── */
+section { padding-block: var(--s6); border-top: 1px solid var(--rule); }
+.sec-head { margin-bottom: var(--s4); }
+.sec-head .eyebrow { display: block; margin-bottom: var(--s2); }
+
+/* ── stability chip: encodes the repo's own vintage verdict ─────────── */
+.chip {
+  display: inline-flex; align-items: center; gap: .45em;
+  font: 500 .68rem/1 "IBM Plex Mono", ui-monospace, monospace;
+  letter-spacing: .07em; text-transform: uppercase;
+  color: var(--ink-mid); background: var(--card);
+  border: 1px solid var(--rule-firm); border-radius: 2px;
+  padding: .4em .6em; white-space: nowrap;
+}
+.chip::before {
+  content: ""; width: .5em; height: .5em; border-radius: 50%;
+  background: var(--dot, var(--unres)); flex: none;
+}
+.chip.holds { --dot: var(--holds); }
+.chip.moves { --dot: var(--moves); }
+.chip.unres { --dot: var(--unres); }
+.chiprow { display: flex; flex-wrap: wrap; gap: var(--s2); margin-bottom: var(--s3); }
+
+/* ── figures ────────────────────────────────────────────────────────── */
+figure { margin: var(--s5) 0; }
+.fig-head { max-width: var(--w-text); margin: 0 auto var(--s3); }
+.fig-head h3 { margin-bottom: var(--s1); }
+.fig-head p { color: var(--ink-soft); font-size: .94rem; margin: 0; }
+figcaption {
+  max-width: var(--w-text); margin: var(--s3) auto 0;
+  font-size: .86rem; line-height: 1.6; color: var(--ink-soft);
+}
+.plot { background: var(--card); border: 1px solid var(--rule); border-radius: 3px; padding: var(--s3); }
+.scroller { overflow-x: auto; }
+svg { display: block; max-width: 100%; height: auto; }
+.gridline { stroke: var(--rule); stroke-width: 1; }
+.axis { stroke: var(--rule-firm); stroke-width: 1; }
+.tick { font: 400 11px "IBM Plex Mono", ui-monospace, monospace; fill: var(--ink-faint); }
+.slab { font: 500 12px "IBM Plex Sans", sans-serif; fill: var(--ink-mid); }
+.zero { stroke: var(--ink-faint); stroke-width: 1.5; }
+
+.legend { display: flex; flex-wrap: wrap; gap: var(--s3); margin-bottom: var(--s3);
+          font-size: .82rem; color: var(--ink-mid); }
+.legend span { display: inline-flex; align-items: center; gap: .45em; }
+.swatch { width: 11px; height: 11px; border-radius: 2px; flex: none; }
+
+/* ── small multiples ────────────────────────────────────────────────── */
+.sm-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px;
+           background: var(--rule); border: 1px solid var(--rule); border-radius: 3px; }
+.sm { background: var(--card); padding: var(--s3); }
+.sm h4 { margin: 0 0 .15rem; font: 600 .95rem/1.2 "IBM Plex Sans", sans-serif; }
+.sm .meta { font: 400 .74rem/1.3 "IBM Plex Mono", ui-monospace, monospace; color: var(--ink-faint);
+            margin-bottom: var(--s2); }
+
+/* ── table ──────────────────────────────────────────────────────────── */
+table { width: 100%; border-collapse: collapse; font-size: .88rem; }
+th, td { padding: .55rem .7rem; text-align: right; border-bottom: 1px solid var(--rule); }
+th:first-child, td:first-child { text-align: left; }
+thead th { font: 500 .7rem/1.3 "IBM Plex Mono", ui-monospace, monospace;
+           letter-spacing: .07em; text-transform: uppercase; color: var(--ink-faint);
+           border-bottom: 1px solid var(--rule-firm); }
+tbody td { font-variant-numeric: tabular-nums; }
+tbody tr:hover { background: var(--card-sunk); }
+td.name { font-weight: 500; }
+
+details.tbl { margin-top: var(--s3); max-width: var(--w-text); margin-inline: auto; }
+details.tbl summary {
+  cursor: pointer; font: 500 .78rem/1 "IBM Plex Mono", ui-monospace, monospace;
+  letter-spacing: .07em; text-transform: uppercase; color: var(--ink-soft);
+  padding: .5rem 0; list-style: none;
+}
+details.tbl summary::-webkit-details-marker { display: none; }
+details.tbl summary::before { content: "▸ "; }
+details.tbl[open] summary::before { content: "▾ "; }
+details.tbl summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* ── callout ────────────────────────────────────────────────────────── */
+.note {
+  background: var(--card); border: 1px solid var(--rule);
+  border-left: 3px solid var(--accent); border-radius: 2px;
+  padding: var(--s3) var(--s4); margin: var(--s4) auto; max-width: var(--w-text);
+}
+.note .eyebrow { display: block; margin-bottom: var(--s2); }
+.note p:last-child { margin-bottom: 0; }
+
+/* ── player cards ───────────────────────────────────────────────────── */
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(268px, 1fr)); gap: var(--s3); }
+.card { background: var(--card); border: 1px solid var(--rule); border-radius: 3px;
+        padding: var(--s3) var(--s4) var(--s4); display: flex; flex-direction: column; gap: var(--s2); }
+.card .top { display: flex; justify-content: space-between; align-items: baseline; gap: var(--s2); }
+.card h3 { font-family: Newsreader, serif; }
+.card .team { font: 500 .72rem/1 "IBM Plex Mono", monospace; letter-spacing: .1em;
+              color: var(--ink-faint); }
+.card .line { font: 400 .8rem/1.5 "IBM Plex Mono", monospace; color: var(--ink-soft); }
+.card p { font-size: .93rem; line-height: 1.6; margin: 0; color: var(--ink-mid); }
+.bars { display: flex; flex-direction: column; gap: .3rem; margin-top: var(--s1); }
+.bar { display: grid; grid-template-columns: 6.2rem 1fr 2.4rem; align-items: center; gap: .5rem;
+       font: 400 .74rem/1 "IBM Plex Mono", monospace; color: var(--ink-soft); }
+.bar .track { height: 7px; background: var(--card-sunk); border-radius: 2px; position: relative; }
+.bar .fill { position: absolute; inset-block: 0; left: 0; background: var(--accent);
+             border-radius: 2px; }
+.bar .v { text-align: right; color: var(--ink-mid); font-variant-numeric: tabular-nums; }
+
+/* ── footer ─────────────────────────────────────────────────────────── */
+footer { padding-block: var(--s6) var(--s7); border-top: 1px solid var(--rule); }
+footer p { font-size: .88rem; color: var(--ink-soft); }
+
+.tip {
+  position: fixed; pointer-events: none; z-index: 40; opacity: 0;
+  transition: opacity .1s; background: var(--ink); color: var(--paper);
+  font: 400 .78rem/1.45 "IBM Plex Mono", ui-monospace, monospace;
+  padding: .45rem .6rem; border-radius: 3px; max-width: 15rem;
+}
+.tip strong { color: var(--paper); font-weight: 600; }
+.tip.on { opacity: 1; }
+
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+@media (max-width: 900px) { .sm-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 560px) { .sm-grid { grid-template-columns: 1fr; } }
+@media (max-width: 640px) {
+  .wrap { padding: 0 1.1rem; }
+  .bar { grid-template-columns: 5rem 1fr 2.2rem; }
+}
+</style>
+<div class="wrap">
+
+  <header class="hero">
+    <div class="col">
+      <div class="rule-top"></div>
+      <p class="eyebrow" style="margin-bottom:1.4rem">2026 WNBA rookie season · a record draft class</p>
+      <h1>Six from Westwood</h1>
+      <p class="stand">UCLA put six players into the 2026 WNBA draft, more than any school ever has.
+        They arrived as a cohort and get discussed as one. Ten weeks of possession data says
+        they had six different seasons — and that the honest version of this story is partly
+        about which differences are real.</p>
+      <div class="byline">
+        <span><span class="num" id="cv-games"></span> games through <span class="num" id="cv-date"></span></span>
+        <span><span class="num" id="cv-poss"></span> possessions reconstructed</span>
+        <span>league reference pool <span class="num" id="cv-pool"></span></span>
+      </div>
+    </div>
+  </header>
+
+  <!-- ───────────────────────────────── 1 ───────────────────────────── -->
+  <section>
+    <div class="col sec-head">
+      <span class="eyebrow">One</span>
+      <h2>They were drafted together. Nothing after that was shared.</h2>
+    </div>
+    <div class="col">
+      <p>The six landed on four teams, and the rotations sorted them immediately. Kiki Rice played
+        <strong>26.3 minutes a game</strong> in Toronto. Gianna Kneepkens played <strong>8.3</strong>
+        in Connecticut. In between, three of the six saw their minutes fall through the season and
+        two saw them rise — and the shapes are so different that any sentence beginning
+        "the UCLA rookies" is already wrong.</p>
+      <p>Read the panels below as trajectories rather than levels. Lauren Betts and Charlisse
+        Leger-Walker were trusted with more as the season went on. Gabriela Jaquez and Angela
+        Dugalic were trusted with steadily less — Jaquez from 28.3 minutes in May to
+        11.8 in August, Dugalic all the way down to 3.3. Rice's gap is an injury, and gets its
+        own section.</p>
+      <div class="chiprow">
+        <span class="chip holds">Minutes reproduce across every data vintage</span>
+      </div>
+    </div>
+
+    <figure>
+      <div class="fig-head">
+        <h3>Minutes per game, by month</h3>
+        <p>Each panel is one player, May through August. Shared vertical scale, 0–32 minutes.</p>
+      </div>
+      <div class="sm-grid" id="sm-minutes"></div>
+      <figcaption>Rice's dip is a knee injury that cost her sixteen games; the two low months are
+        one and two appearances. Kneepkens never cleared the league's 250-minute reference
+        threshold, so she is missing from every league percentile in this piece.</figcaption>
+    </figure>
+  </section>
+
+  <!-- ───────────────────────────────── 2 ───────────────────────────── -->
+  <section>
+    <div class="col sec-head">
+      <span class="eyebrow">Two</span>
+      <h2>The looks you get, and what you do with them</h2>
+    </div>
+    <div class="col">
+      <p>Two things get folded together when people talk about efficiency: the quality of the shots
+        a player takes, and how well she converts relative to that quality. In this league they are
+        close to independent — across the 149-player reference pool they correlate at just
+        <strong>0.15</strong>. So they are worth plotting against each other, and the quadrants mean
+        something.</p>
+      <p>Betts sits in the hardest one. Her average shot is worth <strong>0.483</strong> expected
+        points — 15th percentile, among the worst diets in the league — and she converts
+        <strong>+0.068</strong> above that expectation, which is 85th percentile. She is taking bad
+        looks and making them anyway. Jaquez is the mirror image: 80th-percentile shot quality,
+        14th-percentile conversion.</p>
+    </div>
+
+    <figure>
+      <div class="fig-head">
+        <h3>Shot quality against shot-making</h3>
+        <p>Horizontal: expected points per shot from location and type. Vertical: actual conversion
+          minus that expectation. Grey marks are the 149 league players with 250+ minutes.</p>
+      </div>
+      <div class="legend">
+        <span><span class="swatch" style="background:var(--pool)"></span>League pool</span>
+        <span><span class="swatch" style="background:var(--accent)"></span>UCLA six</span>
+      </div>
+      <div class="plot scroller"><div id="fig-scatter"></div></div>
+      <figcaption>Quadrants are drawn at the league pool's medians. Kneepkens is plotted but sits
+        below the pool's minutes threshold, so her position carries the least weight of the six.</figcaption>
+    </figure>
+  </section>
+
+  <!-- ───────────────────────────────── 3 ───────────────────────────── -->
+  <section>
+    <div class="col sec-head">
+      <span class="eyebrow">Three</span>
+      <h2>Betts is two different players at the two ends</h2>
+    </div>
+    <div class="col">
+      <p>Split her regularised plus-minus into its offensive and defensive halves and the cohort's
+        widest gap opens up: <strong>+1.95 on defence, −2.46 on offence</strong>. The defensive
+        number is the best of the six by a distance. The offensive number is near the worst.</p>
+      <p>The spacing cost is not a subtlety here. Betts attempted <strong>zero three-pointers in 622
+        minutes</strong> — one of only five players in the 149-player reference pool who did not
+        take a single one. A centre who cannot be guarded away from the rim shrinks the floor for
+        everyone else, and that shows up in the offensive coefficient no matter how well she
+        finishes at it.</p>
+    </div>
+
+    <figure>
+      <div class="fig-head">
+        <h3>Offensive and defensive impact, per 100 possessions</h3>
+        <p>Ridge-regularised plus-minus, split by side of the ball. Zero is league average.</p>
+      </div>
+      <div class="legend">
+        <span><span class="swatch" style="background:var(--accent)"></span>Offence</span>
+        <span><span class="swatch" style="background:var(--counter)"></span>Defence</span>
+      </div>
+      <div class="plot scroller"><div id="fig-rapm"></div></div>
+      <figcaption>Read these as tiers, not decimals. Split-half reliability on this sample is
+        <span class="num" id="rel-1"></span> — high enough to separate the top of the league from
+        the bottom, nowhere near high enough to rank six players inside a 1.5-point band.</figcaption>
+      <details class="tbl">
+        <summary>Table view</summary>
+        <div class="scroller"><table id="tbl-rapm"></table></div>
+      </details>
+    </figure>
+
+    <div class="col">
+      <p>The development arc underneath it is the most encouraging thing in the cohort. Across four
+        months Betts's true shooting climbed <strong>0.52 → 0.59 → 0.61 → 0.64</strong> while her
+        foul rate fell <strong>4.24 → 4.01 → 3.15 → 1.42</strong> per 75 possessions. Scoring
+        efficiency up and fouling down, at the same time, is the pairing that usually means a
+        rookie big has stopped guessing.</p>
+      <div class="chiprow">
+        <span class="chip holds">Shooting splits and foul rates reproduce across vintages</span>
+        <span class="chip unres">Ordering within the six is not resolvable</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ───────────────────────────────── 4 ───────────────────────────── -->
+  <section>
+    <div class="col sec-head">
+      <span class="eyebrow">Four</span>
+      <h2>Rice's collapse was a minutes restriction</h2>
+    </div>
+    <div class="col">
+      <p>Toronto lost Rice for sixteen games. When she came back, her per-possession numbers looked
+        alarming — true shooting down from <strong>0.67</strong> to <strong>0.46</strong>, rim
+        accuracy from 71% to 56%, turnovers more than doubled. Read as a season arc, that is a
+        player who came back broken.</p>
+      <p>Read against her minutes, it is something much more ordinary. Her first five games back
+        were a capped ramp: 17, 23, 27, 23, 18 minutes. From the sixth game on she was at
+        <strong>29.6 minutes a game</strong>, and the rates came back with the workload — true
+        shooting to 0.61, rim accuracy to 94%, turnovers to
+        <span class="num">1.05</span> per 75. The chart below needs no annotation; the step is
+        visible on its own.</p>
+    </div>
+
+    <figure>
+      <div class="fig-head">
+        <h3>Every Rice appearance after the injury</h3>
+        <p>Minutes played, Toronto's 27th game onward. The shaded block is the five-game
+          re-integration window.</p>
+      </div>
+      <div class="plot scroller"><div id="fig-rice"></div></div>
+      <figcaption>Rest-day correlation across the window is −0.49, which rules out load management
+        on back-to-backs as the explanation. The final block is open-ended and grows with each
+        refresh, so it is labelled "6+" rather than as a fixed range.</figcaption>
+    </figure>
+
+    <div class="col">
+      <div class="scroller"><table id="tbl-rice"></table></div>
+      <div class="chiprow" style="margin-top:1.1rem">
+        <span class="chip holds">The five-game ramp reproduces across vintages</span>
+        <span class="chip moves">Block-level on/off moves several points per 100 per refresh</span>
+      </div>
+      <p style="margin-top:1.1rem">Rice finishes as the only one of the six with a positive
+        wins-above-average figure, and the only one whose team was clearly better with her on the
+        floor. On a 11-win Toronto team, that is worth more than it looks.</p>
+    </div>
+  </section>
+
+  <!-- ───────────────────────────────── 5 ───────────────────────────── -->
+  <section>
+    <div class="col sec-head">
+      <span class="eyebrow">Five</span>
+      <h2>One pairing is a real problem. The rest is noise.</h2>
+    </div>
+    <div class="col">
+      <p>Washington drafted two of the six and plays them together. Over 224 possessions with both
+        Betts and Dugalic on the floor, the Mystics are <strong>−20.0 per 100</strong>. With Betts
+        on and Dugalic off, they are <strong>+2.6</strong>. The damage is almost entirely defensive:
+        114.7 allowed per 100, against 107.4 for the team's other minutes.</p>
+      <p>That gap is large enough to survive the noise floor, and it has held its sign and rough
+        magnitude across four separate data vintages and a correctness fix to how possessions are
+        attributed. It is the one pairing finding in this cohort worth printing.</p>
+      <p>The others are not. Every remaining duo gap sits under about 15 points per 100, which on
+        these sample sizes is indistinguishable from nothing. A "two-big" storyline about Betts and
+        Shakira Austin looked compelling on partial-season data and evaporated on the full season —
+        across four vintages that estimate read +1.6, −1.6, −0.1 and +4.7. It changed sign twice.</p>
+    </div>
+
+    <figure>
+      <div class="fig-head">
+        <h3>Duo net rating: together, against the best alternative</h3>
+        <p>Points per 100 possessions, both states shown. The right-hand column is the gap
+          between them — the quantity the noise threshold actually applies to.</p>
+      </div>
+      <div class="plot scroller"><div id="fig-duo"></div></div>
+      <figcaption>"Best alternative" is the strongest state available with one of the two on the
+        floor and the other off. A gap of roughly 15 points per 100 is the threshold below which
+        these sample sizes cannot distinguish a real effect from nothing — one pairing clears it.
+        Possession counts are calibrated to the pbpstats scale.</figcaption>
+    </figure>
+
+    <figure>
+      <div class="fig-head">
+        <h3>On-court minus off-court net rating</h3>
+        <p>Each player's team net rating with her on the floor, minus the same team without her.
+          Grey marks are the league pool for scale.</p>
+      </div>
+      <div class="plot scroller"><div id="fig-swing"></div></div>
+      <figcaption>On/off is the least stable metric in this piece — several points per 100 can move
+        on a handful of new games. It is shown because the extremes are informative, not because
+        the ordering is.</figcaption>
+    </figure>
+  </section>
+
+  <!-- ───────────────────────────────── 6 ───────────────────────────── -->
+  <section>
+    <div class="col sec-head">
+      <span class="eyebrow">Six</span>
+      <h2>The six, in one place</h2>
+    </div>
+    <div class="cards" id="cards"></div>
+    <details class="tbl" style="max-width:var(--w-wide)">
+      <summary>Full table</summary>
+      <div class="scroller"><table id="tbl-all"></table></div>
+    </details>
+  </section>
+
+  <!-- ───────────────────────────────── 7 ───────────────────────────── -->
+  <section>
+    <div class="col sec-head">
+      <span class="eyebrow">Seven</span>
+      <h2>How much of this should you believe?</h2>
+    </div>
+    <div class="col">
+      <p>Every claim above carries a chip, and the chips are not decoration. This pipeline rebuilds
+        on new data most days, and rebuilding the same analysis on successive vintages turned out
+        to be the most useful robustness check available. Some numbers reproduce exactly. Others
+        move by several points on four extra games. Knowing which is which is most of the
+        analytical work.</p>
+      <div class="note">
+        <span class="eyebrow">What reproduces, and what doesn't</span>
+        <p><strong>Stable:</strong> minutes, shooting splits, shot diet, foul rates, and the one
+          well-sampled pairing. These reproduced across every vintage tested.</p>
+        <p><strong>Unstable:</strong> anything resting on a few hundred possessions. Rice's
+          season on/off swing read +11.4, then +7.8, then +5.7 across three vintages. Same player,
+          same method, four extra games each time.</p>
+        <p><strong>Not resolvable:</strong> the ordering of these six against each other on impact
+          metrics. Six players inside a 1.5-point band, at a split-half reliability of
+          <span class="num" id="rel-2"></span>, is not a ranking. It is a band.</p>
+      </div>
+      <p>The impact layer was checked against an independently published 2026 RAPM covering the
+        league's top players. Of <span class="num" id="ext-n"></span> players present in both,
+        <strong><span class="num" id="ext-hit"></span> fall inside that reference's own published
+        uncertainty interval</strong>, at essentially zero bias. Worth noting what the reference's
+        own error bars say, though: it publishes a standard error of
+        <span class="num" id="ext-se"></span>, and its entire top-24 spans
+        <span class="num" id="ext-span"></span> standard errors. By its own arithmetic that group
+        is not rank-orderable either — which is the same caution, arriving from outside.</p>
+      <p>One honest gap: on the four players in that comparison with fewer than twenty games, this
+        model runs about 1.5 points lower than the reference. Ridge shrinkage toward zero is the
+        obvious explanation and it does not survive checking — these estimates only shrink
+        materially below about 300 possessions, and three of the four sit well above that. The
+        cause is open. Treat low-sample players here as the least trustworthy rows in the set.</p>
+    </div>
+  </section>
+
+  <footer>
+    <div class="col">
+      <p><strong>Method.</strong> Built on the pbpstats game layer for
+        <span class="num" id="cv-games-2"></span> games through
+        <span class="num" id="cv-date-2"></span>. Lineup and pairing figures come from a possession
+        layer reconstructed from play-by-play — <span class="num" id="cv-poss-2"></span>
+        possessions, both five-player lineups carried on every row, calibrated so team totals match
+        the pbpstats scale exactly. Impact figures are ridge-regularised plus-minus fitted in-repo
+        on that layer, cross-validated by game rather than by possession, and calibrated separately
+        on each side of the ball.</p>
+      <p>Season aggregates are possession-weighted throughout, never averages of per-game rates.
+        Percentiles are against the <span class="num" id="cv-pool-2"></span>-player league pool
+        (250+ minutes); higher always means better. Box-score plus-minus is deliberately absent —
+        it cross-validates at R² below zero on a single season, which means it would be a decorated
+        guess.</p>
+    </div>
+  </footer>
+</div>
+
+<div class="tip" id="tip" role="status" aria-live="polite"></div>
+
+<script type="application/json" id="payload">{"coverage":{"games":283,"through":"2026-08-24","league_pool":149,"rookie_pool":37,"possessions":45945},"reliability":{"r200":0.586,"att_off":0.789,"att_def":0.803,"ext_matched":24,"ext_in_band":23,"ext_se":2.25,"ext_span":1.16},"players":[{"name":"Kiki Rice","last":"Rice","team":"TOR","minutes":552.0,"mpg":26.3,"gp":21,"usage":18.6,"pts75":17.4,"ts":0.613,"sq":0.518,"making":0.025,"ast75":4.4,"tov75":2.06,"foul75":4.37,"stocks75":1.5,"rim_share":0.36,"three_share":0.297,"pct":{"mpg":66.0,"pts75":62.0,"ts":85.0,"sq":64.0,"making":62.0,"ast75":77.0,"stocks75":27.0,"rim_share":68.0},"o_rapm":0.95,"d_rapm":-0.86,"rapm":0.09,"waa":0.05,"rapm_pctile":63.0,"poss":1087.0,"on_net":-4.5,"off_net":-10.22,"swing":5.73,"on_poss":1087.0},{"name":"Lauren Betts","last":"Betts","team":"WAS","minutes":623.0,"mpg":16.8,"gp":37,"usage":16.4,"pts75":14.6,"ts":0.592,"sq":0.483,"making":0.068,"ast75":2.38,"tov75":2.07,"foul75":3.13,"stocks75":3.07,"rim_share":0.509,"three_share":0.0,"pct":{"mpg":32.0,"pts75":49.0,"ts":70.0,"sq":15.0,"making":85.0,"ast75":30.0,"stocks75":87.0,"rim_share":87.0},"o_rapm":-2.46,"d_rapm":1.95,"rapm":-0.51,"waa":-0.29,"rapm_pctile":53.0,"poss":1195.0,"on_net":-1.61,"off_net":-0.95,"swing":-0.66,"on_poss":1195.0},{"name":"Gabriela Jaquez","last":"Jaquez","team":"CHI","minutes":620.0,"mpg":18.8,"gp":33,"usage":17.2,"pts75":13.1,"ts":0.52,"sq":0.528,"making":-0.066,"ast75":1.69,"tov75":2.17,"foul75":2.62,"stocks75":1.45,"rim_share":0.38,"three_share":0.299,"pct":{"mpg":38.0,"pts75":38.0,"ts":32.0,"sq":80.0,"making":14.0,"ast75":9.0,"stocks75":26.0,"rim_share":73.0},"o_rapm":-1.77,"d_rapm":-0.05,"rapm":-1.82,"waa":-0.96,"rapm_pctile":21.0,"poss":1238.0,"on_net":-6.19,"off_net":-0.5,"swing":-5.69,"on_poss":1238.0},{"name":"Charlisse Leger-Walker","last":"Leger-Walker","team":"CON","minutes":845.0,"mpg":23.5,"gp":36,"usage":16.5,"pts75":10.9,"ts":0.474,"sq":0.474,"making":-0.038,"ast75":5.61,"tov75":2.83,"foul75":3.6,"stocks75":1.69,"rim_share":0.196,"three_share":0.417,"pct":{"mpg":56.0,"pts75":17.0,"ts":9.0,"sq":9.0,"making":28.0,"ast75":84.0,"stocks75":38.0,"rim_share":28.0},"o_rapm":-1.51,"d_rapm":-0.73,"rapm":-2.24,"waa":-1.59,"rapm_pctile":12.0,"poss":1671.0,"on_net":-9.78,"off_net":-10.67,"swing":0.89,"on_poss":1671.0},{"name":"Gianna Kneepkens","last":"Kneepkens","team":"CON","minutes":233.0,"mpg":8.3,"gp":28,"usage":16.3,"pts75":14.0,"ts":0.519,"sq":0.485,"making":-0.031,"ast75":1.91,"tov75":0.79,"foul75":5.89,"stocks75":0.77,"rim_share":0.158,"three_share":0.474,"pct":{"mpg":null,"pts75":null,"ts":null,"sq":null,"making":null,"ast75":null,"stocks75":null,"rim_share":null},"o_rapm":-1.94,"d_rapm":0.09,"rapm":-1.86,"waa":-0.37,"rapm_pctile":20.0,"poss":473.0,"on_net":-14.35,"off_net":-9.32,"swing":-5.03,"on_poss":473.0},{"name":"Angela Dugalic","last":"Dugalic","team":"WAS","minutes":316.0,"mpg":9.9,"gp":32,"usage":17.2,"pts75":11.9,"ts":0.485,"sq":0.506,"making":-0.056,"ast75":2.58,"tov75":2.82,"foul75":3.98,"stocks75":2.29,"rim_share":0.416,"three_share":0.348,"pct":{"mpg":3.0,"pts75":26.0,"ts":13.0,"sq":43.0,"making":16.0,"ast75":36.0,"stocks75":64.0,"rim_share":79.0},"o_rapm":-2.64,"d_rapm":-1.3,"rapm":-3.94,"waa":-1.02,"rapm_pctile":3.0,"poss":610.0,"on_net":-15.42,"off_net":2.5,"swing":-17.93,"on_poss":610.0}],"league_scatter":[{"x":0.51,"y":-0.05},{"x":0.514,"y":-0.048},{"x":0.508,"y":-0.024},{"x":0.494,"y":0.064},{"x":0.487,"y":0.01},{"x":0.48,"y":0.05},{"x":0.501,"y":-0.05},{"x":0.556,"y":-0.042},{"x":0.501,"y":-0.068},{"x":0.521,"y":0.06},{"x":0.478,"y":0.038},{"x":0.543,"y":0.051},{"x":0.513,"y":0.048},{"x":0.458,"y":0.068},{"x":0.531,"y":-0.023},{"x":0.522,"y":-0.051},{"x":0.522,"y":0.033},{"x":0.504,"y":-0.038},{"x":0.531,"y":-0.067},{"x":0.514,"y":0.046},{"x":0.551,"y":0.013},{"x":0.519,"y":-0.015},{"x":0.52,"y":-0.025},{"x":0.508,"y":0.052},{"x":0.486,"y":-0.078},{"x":0.486,"y":-0.018},{"x":0.5,"y":-0.04},{"x":0.487,"y":0.007},{"x":0.488,"y":-0.002},{"x":0.518,"y":0.069},{"x":0.518,"y":-0.023},{"x":0.444,"y":0.053},{"x":0.535,"y":0.15},{"x":0.538,"y":0.036},{"x":0.535,"y":0.027},{"x":0.491,"y":0.122},{"x":0.53,"y":-0.003},{"x":0.501,"y":-0.051},{"x":0.515,"y":0.014},{"x":0.452,"y":0.023},{"x":0.478,"y":-0.032},{"x":0.548,"y":-0.011},{"x":0.511,"y":-0.03},{"x":0.541,"y":-0.031},{"x":0.52,"y":0.077},{"x":0.521,"y":-0.037},{"x":0.548,"y":-0.086},{"x":0.472,"y":0.0},{"x":0.455,"y":0.094},{"x":0.503,"y":-0.002},{"x":0.523,"y":0.006},{"x":0.482,"y":-0.017},{"x":0.527,"y":0.101},{"x":0.476,"y":0.096},{"x":0.509,"y":0.112},{"x":0.533,"y":0.089},{"x":0.511,"y":0.074},{"x":0.495,"y":0.053},{"x":0.484,"y":0.082},{"x":0.539,"y":-0.042},{"x":0.486,"y":0.045},{"x":0.508,"y":0.073},{"x":0.506,"y":0.095},{"x":0.475,"y":0.045},{"x":0.515,"y":-0.03},{"x":0.521,"y":-0.08},{"x":0.512,"y":-0.047},{"x":0.501,"y":-0.039},{"x":0.489,"y":0.024},{"x":0.52,"y":0.083},{"x":0.499,"y":-0.089},{"x":0.499,"y":-0.037},{"x":0.522,"y":0.028},{"x":0.473,"y":0.141},{"x":0.52,"y":0.023},{"x":0.495,"y":-0.027},{"x":0.508,"y":-0.032},{"x":0.522,"y":0.019},{"x":0.475,"y":-0.119},{"x":0.469,"y":0.04},{"x":0.499,"y":0.027},{"x":0.487,"y":0.152},{"x":0.489,"y":0.015},{"x":0.552,"y":0.001},{"x":0.545,"y":0.03},{"x":0.512,"y":0.02},{"x":0.515,"y":0.014},{"x":0.496,"y":-0.031},{"x":0.496,"y":0.072},{"x":0.515,"y":0.065},{"x":0.522,"y":-0.02},{"x":0.499,"y":0.072},{"x":0.52,"y":-0.091},{"x":0.497,"y":-0.074},{"x":0.495,"y":0.053},{"x":0.529,"y":-0.035},{"x":0.474,"y":-0.062},{"x":0.5,"y":0.041},{"x":0.521,"y":0.051},{"x":0.58,"y":-0.033},{"x":0.499,"y":0.053},{"x":0.577,"y":-0.131},{"x":0.53,"y":-0.013},{"x":0.547,"y":-0.122},{"x":0.53,"y":-0.07},{"x":0.47,"y":0.005},{"x":0.477,"y":0.014},{"x":0.53,"y":0.012},{"x":0.495,"y":0.052},{"x":0.492,"y":0.005},{"x":0.506,"y":-0.054},{"x":0.521,"y":0.066},{"x":0.441,"y":0.123},{"x":0.49,"y":0.04},{"x":0.566,"y":-0.104},{"x":0.528,"y":-0.004},{"x":0.471,"y":-0.054},{"x":0.533,"y":-0.045},{"x":0.495,"y":0.018},{"x":0.526,"y":-0.061},{"x":0.504,"y":-0.05},{"x":0.484,"y":-0.116},{"x":0.568,"y":0.07},{"x":0.472,"y":0.105},{"x":0.536,"y":-0.008},{"x":0.481,"y":0.066},{"x":0.532,"y":0.022},{"x":0.483,"y":0.068},{"x":0.512,"y":-0.067},{"x":0.519,"y":-0.078},{"x":0.571,"y":0.01},{"x":0.484,"y":-0.039},{"x":0.549,"y":0.021},{"x":0.526,"y":-0.019},{"x":0.499,"y":0.036},{"x":0.518,"y":0.025},{"x":0.528,"y":-0.066},{"x":0.515,"y":-0.094},{"x":0.474,"y":-0.038},{"x":0.506,"y":-0.056},{"x":0.518,"y":-0.12},{"x":0.517,"y":-0.028},{"x":0.521,"y":-0.176},{"x":0.511,"y":0.097},{"x":0.508,"y":0.054},{"x":0.517,"y":0.001},{"x":0.514,"y":0.04},{"x":0.489,"y":0.029},{"x":0.507,"y":-0.143}],"league_swing":[4.7,-6.6,-9.8,0.6,0.4,-9.4,-9.3,-4.1,-5.6,3.3,12.2,13.4,-7.1,4.3,-5.1,2.5,-5.1,0.7,3.7,-11.1,-3.6,-13.6,-4.4,-1.0,6.1,12.0,0.6,-5.6,2.5,-3.6,-0.8,-0.5,-0.2,0.7,-5.9,10.2,13.7,-0.1,-7.4,-6.1,5.9,-7.0,15.3,2.2,13.3,-6.9,-4.6,-6.5,23.0,-12.2,-16.9,-8.5,-5.7,12.2,6.4,-6.3,-2.1,-10.0,24.1,-15.7,10.4,4.5,4.8,12.9,7.8,2.7,-0.6,8.4,5.3,2.7,7.1,4.2,6.0,1.7,8.3,-5.8,-6.1,-7.4,-14.1,10.0,-5.0,-0.3,8.9,1.2,-3.3,1.9,6.3,-1.0,8.4,4.4,0.1,3.4,-2.7,6.7,5.8,5.3,-2.3,-5.1,4.6,-5.3,-11.7,7.3,6.1,-1.4,-9.3,-4.5,10.3,13.4,4.2,-2.2,-2.4,6.3,-0.8,19.0,10.9,4.9,4.1,10.0,4.1,-4.0,-21.8,-5.2,8.1,-3.1,7.6,4.8,7.0,-1.7,15.1,-4.9,-10.3,-8.6,0.2,3.6,8.7,7.8,-9.3,6.5,-0.1,-15.7,1.1,-13.9,-7.3,-0.3,4.2,-4.7,14.2,-2.9,-12.5],"monthly":[{"player":"Lauren Betts","month":"05","mpg":13.4,"ts":0.518,"pts75":16.0,"foul75":4.24,"on_net":-15.1,"games":7},{"player":"Lauren Betts","month":"06","mpg":18.4,"ts":0.591,"pts75":14.9,"foul75":4.01,"on_net":-0.0,"games":11},{"player":"Lauren Betts","month":"07","mpg":16.3,"ts":0.608,"pts75":16.7,"foul75":3.15,"on_net":-2.3,"games":10},{"player":"Lauren Betts","month":"08","mpg":18.2,"ts":0.636,"pts75":11.3,"foul75":1.42,"on_net":5.6,"games":9},{"player":"Gianna Kneepkens","month":"05","mpg":10.0,"ts":0.527,"pts75":13.9,"foul75":5.31,"on_net":-12.0,"games":10},{"player":"Gianna Kneepkens","month":"06","mpg":5.9,"ts":0.435,"pts75":11.3,"foul75":3.0,"on_net":-2.6,"games":6},{"player":"Gianna Kneepkens","month":"07","mpg":6.7,"ts":0.723,"pts75":16.3,"foul75":11.75,"on_net":-15.5,"games":6},{"player":"Gianna Kneepkens","month":"08","mpg":9.5,"ts":0.452,"pts75":14.2,"foul75":4.61,"on_net":-10.3,"games":6},{"player":"Kiki Rice","month":"05","mpg":27.0,"ts":0.69,"pts75":18.3,"foul75":4.17,"on_net":8.4,"games":9},{"player":"Kiki Rice","month":"06","mpg":23.4,"ts":0.483,"pts75":15.7,"foul75":1.7,"on_net":-6.6,"games":1},{"player":"Kiki Rice","month":"07","mpg":20.1,"ts":0.306,"pts75":9.4,"foul75":7.32,"on_net":-33.2,"games":2},{"player":"Kiki Rice","month":"08","mpg":27.2,"ts":0.609,"pts75":17.9,"foul75":4.32,"on_net":-10.7,"games":9},{"player":"Gabriela Jaquez","month":"05","mpg":28.3,"ts":0.571,"pts75":15.2,"foul75":3.41,"on_net":6.6,"games":6},{"player":"Gabriela Jaquez","month":"06","mpg":21.6,"ts":0.528,"pts75":13.2,"foul75":2.24,"on_net":-1.5,"games":9},{"player":"Gabriela Jaquez","month":"07","mpg":16.6,"ts":0.465,"pts75":14.7,"foul75":1.18,"on_net":-9.3,"games":9},{"player":"Gabriela Jaquez","month":"08","mpg":11.8,"ts":0.517,"pts75":7.4,"foul75":4.11,"on_net":-24.1,"games":9},{"player":"Charlisse Leger-Walker","month":"05","mpg":21.6,"ts":0.481,"pts75":13.3,"foul75":4.21,"on_net":-19.0,"games":10},{"player":"Charlisse Leger-Walker","month":"06","mpg":18.7,"ts":0.552,"pts75":12.2,"foul75":3.79,"on_net":7.7,"games":9},{"player":"Charlisse Leger-Walker","month":"07","mpg":28.5,"ts":0.382,"pts75":8.4,"foul75":3.3,"on_net":-8.4,"games":10},{"player":"Charlisse Leger-Walker","month":"08","mpg":25.1,"ts":0.54,"pts75":10.7,"foul75":3.19,"on_net":-14.8,"games":7},{"player":"Angela Dugalic","month":"05","mpg":12.5,"ts":0.551,"pts75":13.7,"foul75":4.44,"on_net":-18.5,"games":7},{"player":"Angela Dugalic","month":"06","mpg":15.0,"ts":0.472,"pts75":12.5,"foul75":4.59,"on_net":-7.4,"games":11},{"player":"Angela Dugalic","month":"07","mpg":5.5,"ts":0.258,"pts75":3.8,"foul75":1.83,"on_net":-23.6,"games":8},{"player":"Angela Dugalic","month":"08","mpg":3.3,"ts":0.571,"pts75":15.7,"foul75":1.7,"on_net":-20.8,"games":6}],"duos":[{"pair":"Betts + Austin","team":"WAS","together":3.2,"poss":403.0,"best_other":"Austin","best_other_net":0.3},{"pair":"Betts + Iriafen","team":"WAS","together":0.8,"poss":520.0,"best_other":"Iriafen","best_other_net":1.2},{"pair":"Betts + Dugalic","team":"WAS","together":-20.0,"poss":224.0,"best_other":"Betts","best_other_net":2.6},{"pair":"Leger-Walker + Kneepkens","team":"CON","together":-13.3,"poss":262.0,"best_other":"Leger-Walker","best_other_net":-9.1},{"pair":"Rice + Allemand","team":"TOR","together":-7.9,"poss":306.0,"best_other":"Rice","best_other_net":-3.2},{"pair":"Jaquez + Cloud","team":"CHI","together":-9.2,"poss":666.0,"best_other":"Cloud","best_other_net":-1.0}],"rice":{"minutes":[{"g":27,"min":17.1},{"g":28,"min":23.0},{"g":29,"min":26.8},{"g":30,"min":22.9},{"g":31,"min":17.6},{"g":32,"min":30.1},{"g":33,"min":31.4},{"g":34,"min":29.9},{"g":35,"min":24.5},{"g":36,"min":31.8},{"g":37,"min":29.8}],"blocks":[{"block":"Pre-injury (g1-10)","games":10,"mpg":26.7,"ts":0.67,"pts75":18.1,"rim_acc":0.71,"tov75":1.85},{"block":"Return games 1-5 (g27-31)","games":5,"mpg":21.5,"ts":0.46,"pts75":12.0,"rim_acc":0.56,"tov75":4.35},{"block":"Return games 6+ (g32+)","games":6,"mpg":29.6,"ts":0.614,"pts75":19.5,"rim_acc":0.94,"tov75":1.05}],"onoff":[{"block":"Pre-injury (g1-10)","on_net":6.1,"off_net":-15.6,"poss":529.0},{"block":"Return games 1-5 (g27-31)","on_net":-23.8,"off_net":-13.7,"poss":205.0},{"block":"Return games 6+ (g32+)","on_net":-9.1,"off_net":-10.3,"poss":352.0},{"block":"Rice OUT (g11-26)","on_net":null,"off_net":-8.6,"poss":0.0}]},"teams":[{"team":"ATL","net":8.1,"rank":3,"wins":25,"games":38,"ucla":false},{"team":"CHI","net":-1.8,"rank":9,"wins":15,"games":38,"ucla":true},{"team":"CON","net":-9.2,"rank":15,"wins":9,"games":36,"ucla":true},{"team":"DAL","net":4.1,"rank":7,"wins":22,"games":38,"ucla":false},{"team":"GSV","net":9.7,"rank":2,"wins":26,"games":37,"ucla":false},{"team":"IND","net":7.9,"rank":4,"wins":25,"games":39,"ucla":false},{"team":"LAS","net":-5.6,"rank":13,"wins":13,"games":38,"ucla":false},{"team":"LVA","net":6.1,"rank":5,"wins":26,"games":39,"ucla":false},{"team":"MIN","net":11.7,"rank":1,"wins":31,"games":39,"ucla":false},{"team":"NYL","net":4.5,"rank":6,"wins":23,"games":38,"ucla":false},{"team":"PDX","net":-4.6,"rank":11,"wins":15,"games":37,"ucla":false},{"team":"PHX","net":-3.3,"rank":10,"wins":13,"games":37,"ucla":false},{"team":"SEA","net":-5.4,"rank":12,"wins":7,"games":38,"ucla":false},{"team":"TOR","net":-6.9,"rank":14,"wins":11,"games":37,"ucla":true},{"team":"WAS","net":-0.2,"rank":8,"wins":22,"games":37,"ucla":true}]}</script>
+<script>
+const D = JSON.parse(document.getElementById("payload").textContent);
+const NS = "http://www.w3.org/2000/svg";
+const ORDER = ["Rice", "Betts", "Jaquez", "Leger-Walker", "Kneepkens", "Dugalic"];
+const byLast = Object.fromEntries(D.players.map(p => [p.last, p]));
+const P = ORDER.map(l => byLast[l]);
+
+/* ── dom helpers ─────────────────────────────────────────────────────── */
+const el = (t, a = {}, kids = []) => {
+  const n = document.createElementNS(NS, t);
+  for (const k in a) if (a[k] != null) n.setAttribute(k, a[k]);
+  (Array.isArray(kids) ? kids : [kids]).forEach(c =>
+    n.appendChild(typeof c === "string" ? document.createTextNode(c) : c));
+  return n;
+};
+const svg = (w, h) => el("svg", {
+  viewBox: `0 0 ${w} ${h}`, width: w, height: h,
+  role: "img", preserveAspectRatio: "xMinYMin meet"
+});
+const txt = (x, y, s, cls, extra = {}) =>
+  el("text", { x, y, class: cls, ...extra }, String(s));
+const fmt = (v, n = 1) => (v > 0 ? "+" : v < 0 ? "−" : "") + Math.abs(v).toFixed(n);
+
+/* Bars are square where they meet the baseline and rounded only at the data
+   end, so the mark stays anchored to zero instead of floating off it. */
+const hbar = (x0, x1, y, h, r = 3) => {
+  const xs = Math.min(x0, x1), xe = Math.max(x0, x1);
+  const rr = Math.max(0, Math.min(r, xe - xs, h / 2));
+  return x1 >= x0
+    ? `M${xs},${y} H${xe - rr} Q${xe},${y} ${xe},${y + rr} V${y + h - rr} Q${xe},${y + h} ${xe - rr},${y + h} H${xs} Z`
+    : `M${xe},${y} H${xs + rr} Q${xs},${y} ${xs},${y + rr} V${y + h - rr} Q${xs},${y + h} ${xs + rr},${y + h} H${xe} Z`;
+};
+const vbar = (x, w, yTop, yBase, r = 4) => {
+  const rr = Math.max(0, Math.min(r, w / 2, yBase - yTop));
+  return `M${x},${yBase} V${yTop + rr} Q${x},${yTop} ${x + rr},${yTop} H${x + w - rr} Q${x + w},${yTop} ${x + w},${yTop + rr} V${yBase} Z`;
+};
+
+/* ── tooltip ─────────────────────────────────────────────────────────── */
+const tip = document.getElementById("tip");
+function hover(node, html) {
+  const show = e => {
+    tip.innerHTML = html;
+    tip.classList.add("on");
+    const r = tip.getBoundingClientRect();
+    let x = e.clientX + 14, y = e.clientY - r.height - 10;
+    if (x + r.width > innerWidth - 8) x = e.clientX - r.width - 14;
+    if (y < 8) y = e.clientY + 18;
+    tip.style.left = x + "px"; tip.style.top = y + "px";
+  };
+  node.addEventListener("pointerenter", show);
+  node.addEventListener("pointermove", show);
+  node.addEventListener("pointerleave", () => tip.classList.remove("on"));
+  node.setAttribute("tabindex", "0");
+  node.addEventListener("focus", () => {
+    const b = node.getBoundingClientRect();
+    show({ clientX: b.left + b.width / 2, clientY: b.top });
+  });
+  node.addEventListener("blur", () => tip.classList.remove("on"));
+}
+
+/* ── 1. minutes small multiples ──────────────────────────────────────── */
+(function minutes() {
+  const host = document.getElementById("sm-minutes");
+  const MONTHS = ["05", "06", "07", "08"];
+  const LBL = { "05": "May", "06": "Jun", "07": "Jul", "08": "Aug" };
+  const W = 250, H = 118, m = { t: 10, r: 14, b: 20, l: 26 };
+  const maxY = 32;
+
+  P.forEach(p => {
+    const rows = MONTHS.map(mo => D.monthly.find(r => r.player === p.name && r.month === mo));
+    const box = document.createElement("div");
+    box.className = "sm";
+    box.innerHTML = `<h4>${p.last}</h4><div class="meta">${p.team} · ${p.gp} games · ${p.minutes} min</div>`;
+
+    const s = svg(W, H);
+    const x = i => m.l + i * ((W - m.l - m.r) / (MONTHS.length - 1));
+    const y = v => m.t + (1 - v / maxY) * (H - m.t - m.b);
+
+    [0, 16, 32].forEach(v => {
+      s.appendChild(el("line", { x1: m.l, x2: W - m.r, y1: y(v), y2: y(v), class: "gridline" }));
+      s.appendChild(txt(m.l - 6, y(v) + 4, v, "tick", { "text-anchor": "end" }));
+    });
+    MONTHS.forEach((mo, i) => s.appendChild(
+      txt(x(i), H - 5, LBL[mo], "tick", { "text-anchor": "middle" })));
+
+    const pts = rows.map((r, i) => (r ? [x(i), y(r.mpg), r] : null)).filter(Boolean);
+    s.appendChild(el("polyline", {
+      points: pts.map(q => `${q[0]},${q[1]}`).join(" "),
+      fill: "none", stroke: "var(--accent)", "stroke-width": 2,
+      "stroke-linejoin": "round", "stroke-linecap": "round"
+    }));
+    pts.forEach(([cx, cy, r]) => {
+      const g = el("g");
+      // radius carries games played, so a one-appearance month reads as thin
+      const rad = 3 + Math.min(r.games, 11) / 11 * 3.5;
+      g.appendChild(el("circle", { cx, cy, r: rad, fill: "var(--card)", stroke: "var(--accent)", "stroke-width": 2 }));
+      hover(g, `<strong>${p.last} · ${LBL[r.month]}</strong><br>${r.mpg} min/game<br>${r.games} game${r.games === 1 ? "" : "s"}`);
+      s.appendChild(g);
+    });
+    box.appendChild(s);
+    host.appendChild(box);
+  });
+})();
+
+/* ── 2. shot quality vs shot making ──────────────────────────────────── */
+(function scatter() {
+  const W = 1000, H = 520, m = { t: 22, r: 24, b: 52, l: 62 };
+  const xs = D.league_scatter.map(d => d.x).concat(P.map(p => p.sq));
+  const ys = D.league_scatter.map(d => d.y).concat(P.map(p => p.making));
+  const pad = (a, f) => { const lo = Math.min(...a), hi = Math.max(...a); const s = (hi - lo) * f; return [lo - s, hi + s]; };
+  const [x0, x1] = pad(xs, .06), [y0, y1] = pad(ys, .08);
+  const X = v => m.l + (v - x0) / (x1 - x0) * (W - m.l - m.r);
+  const Y = v => m.t + (1 - (v - y0) / (y1 - y0)) * (H - m.t - m.b);
+  const med = a => { const s = [...a].sort((p, q) => p - q); return s[Math.floor(s.length / 2)]; };
+  const mx = med(D.league_scatter.map(d => d.x)), my = med(D.league_scatter.map(d => d.y));
+
+  const s = svg(W, H);
+  for (let v = 0.40; v <= 0.62; v += 0.04) {
+    s.appendChild(el("line", { x1: X(v), x2: X(v), y1: m.t, y2: H - m.b, class: "gridline" }));
+    s.appendChild(txt(X(v), H - m.b + 18, v.toFixed(2), "tick", { "text-anchor": "middle" }));
+  }
+  for (let v = -0.12; v <= 0.13; v += 0.04) {
+    s.appendChild(el("line", { x1: m.l, x2: W - m.r, y1: Y(v), y2: Y(v), class: "gridline" }));
+    s.appendChild(txt(m.l - 8, Y(v) + 4, fmt(v, 2), "tick", { "text-anchor": "end" }));
+  }
+  s.appendChild(el("line", { x1: X(mx), x2: X(mx), y1: m.t, y2: H - m.b, class: "zero", "stroke-dasharray": "4 4" }));
+  s.appendChild(el("line", { x1: m.l, x2: W - m.r, y1: Y(my), y2: Y(my), class: "zero", "stroke-dasharray": "4 4" }));
+  s.appendChild(txt(m.l + 8, m.t + 16, "worse looks, better conversion", "slab", { fill: "var(--ink-faint)" }));
+  s.appendChild(txt(W - m.r - 8, H - m.b - 8, "better looks, worse conversion", "slab",
+    { "text-anchor": "end", fill: "var(--ink-faint)" }));
+  s.appendChild(txt(W / 2, H - 8, "Expected points per shot  →", "slab", { "text-anchor": "middle" }));
+  s.appendChild(txt(-H / 2, 16, "Conversion over expectation  →", "slab",
+    { "text-anchor": "middle", transform: "rotate(-90)" }));
+
+  D.league_scatter.forEach(d =>
+    s.appendChild(el("circle", { cx: X(d.x), cy: Y(d.y), r: 4, fill: "var(--pool)", opacity: .55 })));
+
+  const place = { Rice: [10, -12], Betts: [10, -12], Jaquez: [10, 18], "Leger-Walker": [-10, -12], Kneepkens: [10, 18], Dugalic: [10, 18] };
+  P.forEach(p => {
+    const g = el("g");
+    g.appendChild(el("circle", {
+      cx: X(p.sq), cy: Y(p.making), r: 8,
+      fill: "var(--accent)", stroke: "var(--card)", "stroke-width": 2
+    }));
+    const [dx, dy] = place[p.last] || [10, -10];
+    g.appendChild(txt(X(p.sq) + dx, Y(p.making) + dy, p.last, "slab", {
+      "text-anchor": dx < 0 ? "end" : "start", fill: "var(--ink)", "font-weight": 600
+    }));
+    hover(g, `<strong>${p.name}</strong><br>shot quality ${p.sq.toFixed(3)} (p${p.pct.sq ?? "—"})<br>` +
+      `making ${fmt(p.making, 3)} (p${p.pct.making ?? "—"})<br>TS ${p.ts.toFixed(3)}`);
+    s.appendChild(g);
+  });
+  document.getElementById("fig-scatter").appendChild(s);
+})();
+
+/* ── 3. offensive / defensive RAPM ───────────────────────────────────── */
+(function rapm() {
+  const W = 1000, H = 330, m = { t: 18, r: 26, b: 40, l: 128 };
+  const lim = 4.4, band = (H - m.t - m.b) / P.length;
+  const X = v => m.l + (v + lim) / (2 * lim) * (W - m.l - m.r);
+  const s = svg(W, H);
+
+  for (let v = -4; v <= 4; v += 2) {
+    s.appendChild(el("line", { x1: X(v), x2: X(v), y1: m.t, y2: H - m.b, class: "gridline" }));
+    s.appendChild(txt(X(v), H - m.b + 18, fmt(v, 0), "tick", { "text-anchor": "middle" }));
+  }
+  s.appendChild(el("line", { x1: X(0), x2: X(0), y1: m.t, y2: H - m.b, class: "zero" }));
+  s.appendChild(txt(W / 2, H - 6, "points per 100 possessions vs league average", "slab", { "text-anchor": "middle" }));
+
+  P.forEach((p, i) => {
+    const top = m.t + i * band;
+    s.appendChild(txt(m.l - 12, top + band / 2 + 4, p.last, "slab",
+      { "text-anchor": "end", fill: "var(--ink)", "font-weight": 600 }));
+    [["o_rapm", "var(--accent)", "Offence"], ["d_rapm", "var(--counter)", "Defence"]]
+      .forEach(([k, col, lab], j) => {
+        const v = p[k], h = 13, y = top + band / 2 - h - 2 + j * (h + 2);
+        const g = el("g");
+        g.appendChild(el("path", { d: hbar(X(0), X(v), y, h), fill: col }));
+        hover(g, `<strong>${p.name}</strong><br>${lab} ${fmt(v, 2)} per 100<br>${p.poss} possessions`);
+        s.appendChild(g);
+      });
+  });
+  document.getElementById("fig-rapm").appendChild(s);
+
+  document.getElementById("tbl-rapm").innerHTML =
+    `<thead><tr><th>Player</th><th>Team</th><th>Poss</th><th>Offence</th><th>Defence</th>
+     <th>Net</th><th>Pctile</th><th>WAA</th></tr></thead><tbody>` +
+    P.map(p => `<tr><td class="name">${p.name}</td><td>${p.team}</td><td>${p.poss.toLocaleString()}</td>
+      <td>${fmt(p.o_rapm, 2)}</td><td>${fmt(p.d_rapm, 2)}</td><td>${fmt(p.rapm, 2)}</td>
+      <td>${p.rapm_pctile}</td><td>${fmt(p.waa, 2)}</td></tr>`).join("") + "</tbody>";
+})();
+
+/* ── 4. Rice return minutes ──────────────────────────────────────────── */
+(function rice() {
+  const g = D.rice.minutes, W = 1000, H = 300, m = { t: 20, r: 24, b: 46, l: 46 };
+  const bw = (W - m.l - m.r) / g.length, maxY = 34;
+  const Y = v => m.t + (1 - v / maxY) * (H - m.t - m.b);
+  const s = svg(W, H);
+
+  s.appendChild(el("rect", {
+    x: m.l, y: m.t, width: bw * 5, height: H - m.t - m.b,
+    fill: "var(--shade)"
+  }));
+  s.appendChild(txt(m.l + bw * 2.5, m.t + 16, "five-game re-integration", "slab",
+    { "text-anchor": "middle", fill: "var(--ink-soft)" }));
+
+  [0, 10, 20, 30].forEach(v => {
+    s.appendChild(el("line", { x1: m.l, x2: W - m.r, y1: Y(v), y2: Y(v), class: "gridline" }));
+    s.appendChild(txt(m.l - 8, Y(v) + 4, v, "tick", { "text-anchor": "end" }));
+  });
+
+  const barW = Math.min(46, bw - 10);
+  g.forEach((d, i) => {
+    const x = m.l + i * bw + (bw - barW) / 2, w = barW;
+    const grp = el("g");
+    grp.appendChild(el("path", {
+      d: vbar(x, w, Y(d.min), Y(0)),
+      fill: i < 5 ? "var(--counter)" : "var(--accent)"
+    }));
+    grp.appendChild(txt(x + w / 2, Y(d.min) - 7, d.min.toFixed(1), "tick",
+      { "text-anchor": "middle", fill: "var(--ink-mid)" }));
+    grp.appendChild(txt(x + w / 2, H - m.b + 18, "g" + d.g, "tick", { "text-anchor": "middle" }));
+    hover(grp, `<strong>Game ${d.g}</strong><br>${d.min.toFixed(1)} minutes<br>` +
+      (i < 5 ? "restriction window" : "unrestricted"));
+    s.appendChild(grp);
+  });
+  s.appendChild(el("line", { x1: m.l, x2: W - m.r, y1: Y(0), y2: Y(0), class: "axis" }));
+  document.getElementById("fig-rice").appendChild(s);
+
+  const b = D.rice.blocks;
+  document.getElementById("tbl-rice").innerHTML =
+    `<thead><tr><th>Window</th><th>Games</th><th>Min/game</th><th>Pts/75</th>
+      <th>TS%</th><th>Rim acc.</th><th>TOV/75</th></tr></thead><tbody>` +
+    b.map(r => `<tr><td class="name">${r.block}</td><td>${r.games}</td><td>${r.mpg}</td>
+      <td>${r.pts75}</td><td>${r.ts.toFixed(3)}</td><td>${(r.rim_acc * 100).toFixed(0)}%</td>
+      <td>${r.tov75}</td></tr>`).join("") + "</tbody>";
+})();
+
+/* ── 5. duo dumbbell ─────────────────────────────────────────────────── */
+(function duos() {
+  const d = D.duos.map(r => ({ ...r, gap: r.together - r.best_other_net }));
+  const W = 1000, H = 320, m = { t: 30, r: 132, b: 46, l: 190 };
+  const lim = 24, band = (H - m.t - m.b) / d.length;
+  const X = v => m.l + (v + lim) / (2 * lim) * (W - m.l - m.r);
+  const s = svg(W, H);
+
+  s.appendChild(txt(W - m.r + 10, m.t - 10, "gap", "tick",
+    { "text-anchor": "start", fill: "var(--ink-faint)" }));
+
+  for (let v = -20; v <= 20; v += 10) {
+    s.appendChild(el("line", { x1: X(v), x2: X(v), y1: m.t, y2: H - m.b, class: "gridline" }));
+    s.appendChild(txt(X(v), H - m.b + 18, fmt(v, 0), "tick", { "text-anchor": "middle" }));
+  }
+  s.appendChild(el("line", { x1: X(0), x2: X(0), y1: m.t, y2: H - m.b, class: "zero" }));
+
+  d.forEach((r, i) => {
+    const y = m.t + i * band + band / 2;
+    s.appendChild(txt(m.l - 12, y + 4, r.pair, "slab",
+      { "text-anchor": "end", fill: "var(--ink)", "font-weight": 600 }));
+    s.appendChild(el("line", {
+      x1: X(r.best_other_net), x2: X(r.together), y1: y, y2: y,
+      stroke: "var(--rule-firm)", "stroke-width": 2
+    }));
+    const a = el("g");
+    a.appendChild(el("circle", { cx: X(r.best_other_net), cy: y, r: 6, fill: "var(--pool)", stroke: "var(--card)", "stroke-width": 2 }));
+    hover(a, `<strong>${r.pair}</strong><br>best alternative (${r.best_other} on)<br>${fmt(r.best_other_net, 1)} per 100`);
+    s.appendChild(a);
+    const b = el("g");
+    b.appendChild(el("circle", { cx: X(r.together), cy: y, r: 8, fill: "var(--accent)", stroke: "var(--card)", "stroke-width": 2 }));
+    hover(b, `<strong>${r.pair} together</strong><br>${fmt(r.together, 1)} per 100<br>${r.poss} possessions`);
+    s.appendChild(b);
+    const clears = Math.abs(r.gap) >= 15;
+    // when the two states nearly coincide the markers overlap, so clear the
+    // label past both of them instead of tucking it against the near one
+    const tight = Math.abs(X(r.together) - X(r.best_other_net)) < 26;
+    const left = tight ? true : r.together < r.best_other_net;
+    const off = tight ? Math.abs(X(r.together) - X(r.best_other_net)) + 20 : 14;
+    s.appendChild(txt(X(r.together) + (left ? -off : off), y + 4,
+      fmt(r.together, 1), "tick",
+      { "text-anchor": left ? "end" : "start", fill: "var(--ink-mid)" }));
+    s.appendChild(txt(W - m.r + 10, y + 4, fmt(r.gap, 1), "tick", {
+      "text-anchor": "start", fill: clears ? "var(--ink)" : "var(--ink-faint)",
+      "font-weight": clears ? 600 : 400
+    }));
+    s.appendChild(txt(W - m.r + 58, y + 4, clears ? "clears" : "noise", "tick", {
+      "text-anchor": "start", fill: clears ? "var(--accent)" : "var(--ink-faint)"
+    }));
+  });
+  s.appendChild(txt((m.l + W - m.r) / 2, H - 6, "net rating per 100 possessions", "slab", { "text-anchor": "middle" }));
+  document.getElementById("fig-duo").appendChild(s);
+})();
+
+/* ── 6. on/off swing ─────────────────────────────────────────────────── */
+(function swing() {
+  const W = 1000, H = 250, m = { t: 34, r: 30, b: 44, l: 128 };
+  const lim = 24, band = (H - m.t - m.b) / P.length;
+  const X = v => m.l + (v + lim) / (2 * lim) * (W - m.l - m.r);
+  const s = svg(W, H);
+
+  D.league_swing.forEach(v => {
+    if (v < -lim || v > lim) return;
+    s.appendChild(el("line", {
+      x1: X(v), x2: X(v), y1: m.t - 22, y2: m.t - 6,
+      stroke: "var(--pool)", "stroke-width": 1.5, opacity: .5
+    }));
+  });
+  s.appendChild(txt(m.l - 12, m.t - 11, "league", "tick", { "text-anchor": "end" }));
+
+  for (let v = -20; v <= 20; v += 10) {
+    s.appendChild(el("line", { x1: X(v), x2: X(v), y1: m.t, y2: H - m.b, class: "gridline" }));
+    s.appendChild(txt(X(v), H - m.b + 18, fmt(v, 0), "tick", { "text-anchor": "middle" }));
+  }
+  s.appendChild(el("line", { x1: X(0), x2: X(0), y1: m.t, y2: H - m.b, class: "zero" }));
+
+  P.forEach((p, i) => {
+    const y = m.t + i * band + band / 2;
+    s.appendChild(txt(m.l - 12, y + 4, p.last, "slab",
+      { "text-anchor": "end", fill: "var(--ink)", "font-weight": 600 }));
+    const g = el("g");
+    g.appendChild(el("path", { d: hbar(X(0), X(p.swing), y - 6, 12), fill: "var(--accent)" }));
+    hover(g, `<strong>${p.name}</strong><br>on ${fmt(p.on_net, 1)} · off ${fmt(p.off_net, 1)}<br>` +
+      `swing ${fmt(p.swing, 1)} per 100<br>${p.on_poss} on-court possessions`);
+    s.appendChild(g);
+    s.appendChild(txt(X(p.swing) + (p.swing < 0 ? -10 : 10), y + 4, fmt(p.swing, 1), "tick",
+      { "text-anchor": p.swing < 0 ? "end" : "start", fill: "var(--ink-mid)" }));
+  });
+  s.appendChild(txt(W / 2, H - 6, "on-court minus off-court net rating, per 100", "slab", { "text-anchor": "middle" }));
+  document.getElementById("fig-swing").appendChild(s);
+})();
+
+/* ── 7. cards + full table ───────────────────────────────────────────── */
+(function cards() {
+  const READ = {
+    Rice: "The only one of the six whose team was clearly better with her on the floor, and the only positive wins-above-average. Sixteen games lost to injury and a five-game ramp back keep the sample thin.",
+    Betts: "The widest two-way split in the cohort: best defensive impact of the six, near-worst offensive. Zero three-point attempts all season. Her efficiency and foul rate both improved every month.",
+    Jaquez: "Best shot quality of the six and the worst conversion against it. Minutes fell every month, from 28.3 in May to 11.8 in August.",
+    "Leger-Walker": "Played the most possessions of the six, which magnifies a negative rate into the cohort's lowest wins-above-average. Genuine passing volume at 5.6 assists per 75.",
+    Kneepkens: "Never cleared the league's 250-minute reference threshold, so most percentiles are unavailable. The highest three-point share of the six on the smallest sample.",
+    Dugalic: "The clearest negative in the cohort on both ends, and the other half of Washington's problem pairing. Minutes collapsed to 3.3 a game by August."
+  };
+  const METRICS = [
+    ["Minutes", "mpg"], ["Scoring", "pts75"], ["True shooting", "ts"],
+    ["Shot quality", "sq"], ["Shot-making", "making"], ["Playmaking", "ast75"], ["Stocks", "stocks75"]
+  ];
+  const host = document.getElementById("cards");
+  P.forEach(p => {
+    const c = document.createElement("div");
+    c.className = "card";
+    const bars = METRICS.map(([lab, k]) => {
+      const v = p.pct[k];
+      return `<div class="bar"><span>${lab}</span>
+        <span class="track">${v == null ? "" : `<span class="fill" style="width:${v}%"></span>`}</span>
+        <span class="v">${v == null ? "—" : v}</span></div>`;
+    }).join("");
+    c.innerHTML =
+      `<div class="top"><h3>${p.name}</h3><span class="team">${p.team}</span></div>
+       <div class="line">${p.gp} games · ${p.mpg} min · ${p.minutes} total</div>
+       <p>${READ[p.last]}</p>
+       <div class="bars">${bars}</div>
+       <div class="line" style="margin-top:.2rem">league percentile, 250+ min pool</div>`;
+    host.appendChild(c);
+  });
+
+  document.getElementById("tbl-all").innerHTML =
+    `<thead><tr><th>Player</th><th>Tm</th><th>G</th><th>Min</th><th>MPG</th><th>Usage</th>
+      <th>Pts/75</th><th>TS%</th><th>SQ</th><th>Making</th><th>Ast/75</th><th>TOV/75</th>
+      <th>3PA sh.</th><th>RAPM</th><th>WAA</th><th>On/off</th></tr></thead><tbody>` +
+    P.map(p => `<tr><td class="name">${p.name}</td><td>${p.team}</td><td>${p.gp}</td>
+      <td>${p.minutes}</td><td>${p.mpg}</td><td>${p.usage}</td><td>${p.pts75}</td>
+      <td>${p.ts.toFixed(3)}</td><td>${p.sq.toFixed(3)}</td><td>${fmt(p.making, 3)}</td>
+      <td>${p.ast75}</td><td>${p.tov75}</td><td>${p.three_share.toFixed(2)}</td>
+      <td>${fmt(p.rapm, 2)}</td><td>${fmt(p.waa, 2)}</td><td>${fmt(p.swing, 1)}</td></tr>`).join("") +
+    "</tbody>";
+})();
+
+/* ── 8. inline figures ───────────────────────────────────────────────── */
+(function fill() {
+  const c = D.coverage, r = D.reliability;
+  const set = (id, v) => { const n = document.getElementById(id); if (n) n.textContent = v; };
+  set("cv-games", c.games); set("cv-games-2", c.games);
+  set("cv-date", c.through); set("cv-date-2", c.through);
+  set("cv-poss", c.possessions.toLocaleString()); set("cv-poss-2", c.possessions.toLocaleString());
+  set("cv-pool", c.league_pool); set("cv-pool-2", c.league_pool);
+  set("rel-1", r.r200.toFixed(2)); set("rel-2", r.r200.toFixed(2));
+  set("ext-n", r.ext_matched); set("ext-hit", r.ext_in_band);
+  set("ext-se", r.ext_se.toFixed(2)); set("ext-span", r.ext_span.toFixed(2));
+})();
+</script>
