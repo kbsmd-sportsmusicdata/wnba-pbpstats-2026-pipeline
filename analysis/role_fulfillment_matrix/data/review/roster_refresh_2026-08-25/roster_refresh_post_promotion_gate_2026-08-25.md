@@ -19,10 +19,10 @@ team affiliation, and position. The current standings cutoff is August 23.
 | Base freshness | Pass | Oldest/newest source date `2026-08-25`; standings cutoff `2026-08-23`; one snapshot | The August 22 freshness blocker is resolved. |
 | Base uniqueness | Pass | 237 rows; 237 unique ESPN athlete IDs | No duplicate identity grain. |
 | Current membership | Pass | 211 active, 6 inactive, 20 free agents | Dantas is inactive with Indiana; Bonner is a free agent without affiliation. |
-| Reviewed eligibility identities | Pass | 234 rows; 234 unique player IDs and ESPN IDs; all reviewed | The three new roster identities are reviewed and eligible under `experience_years <= 3`. |
+| Reviewed eligibility identities | Pass | 235 rows; 235 unique player IDs and ESPN IDs; all reviewed | The refreshed identities plus Kara Dunn are reviewed under `experience_years <= 3`. |
 | Current PBPStats eligibility coverage | Pass | 229/229 unique PBPStats players covered | No current PBP player is silently dropped for missing eligibility. |
-| Full active-roster eligibility | Warning | 210/211 active ESPN roster identities covered | Kara Dunn is the one active ESPN-only identity without eligibility; Phoenix is 12th and outside the current contender funnel. |
-| Top-six role coverage | Block | 34/36 active eligible contender players have reviewed roles | Elena Buenavida (MIN) and Elizabeth Balogun (NYL) require primary-role review. |
+| Full active-roster eligibility | Pass | 211/211 active ESPN roster identities covered | Kara Dunn is reviewed as eligible; Phoenix remains outside the current contender funnel. |
+| Top-six role coverage | Pass | 36/36 active eligible contender players have reviewed roles | Buenavida and Balogun have reviewed roles but remain sample-suppressed without PBPStats records. |
 | PBPStats live-adapter audit | Pass | 38/38 reviewed assignments matched; 0 reviewed-player and 0 global refresh failures; 11/11 locked parity matches | The incremental retry refreshed all three prior failures, including Antonia Delaere, and the adapter returned `review_ready`. |
 | Scheduling | Pass | `scheduling_enabled = false`; no workflow invokes the live builder | No recurring live execution is authorized. |
 
@@ -39,10 +39,13 @@ team affiliation, and position. The current standings cutoff is August 23.
 
 ## Remaining actions before another manual live run
 
-1. Review Kara Dunn's experience/eligibility row or explicitly retain her as noncandidate coverage.
-2. Review primary roles for Elena Buenavida and Elizabeth Balogun.
-3. Rerun the end-to-end dry run and confirm the resulting cohort before authorizing another manual
-   live run. Scheduling remains a separate, unapproved gate.
+Resolved on August 25–26:
+
+1. Kara Dunn was approved as eligible and remains outside the top-six contender pool.
+2. Elena Buenavida and Elizabeth Balogun received reviewed primary roles with current-team sample
+   safeguards.
+3. The end-to-end dry run was approved with 10 scored, five season-context, and three
+   inactive-suppressed results. Scheduling remains a separate, unapproved gate.
 
 ## Source notes
 

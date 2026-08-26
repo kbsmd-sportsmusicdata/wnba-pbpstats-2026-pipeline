@@ -32,7 +32,7 @@ LIVE_OUTPUT_APPROVAL = (
 
 
 class LiveEnablementConfigTest(unittest.TestCase):
-    def test_live_config_records_manual_approval_and_disables_scheduling(self):
+    def test_live_config_records_latest_dry_run_approval_and_disables_scheduling(self):
         config = json.loads(LIVE_CONFIG.read_text())
 
         self.assertEqual(config["mode"], "live")
@@ -65,6 +65,10 @@ class LiveEnablementConfigTest(unittest.TestCase):
         self.assertEqual(approval["execution_mode"], "manual_only")
         self.assertFalse(approval["scheduling_enabled"])
         self.assertEqual(
+            approval["current_manual_execution_status"],
+            "enabled_manual_only",
+        )
+        self.assertEqual(
             approval["approved_config_sha256"],
             live_config_fingerprint(config),
         )
@@ -82,11 +86,33 @@ class LiveEnablementConfigTest(unittest.TestCase):
                 "analysis/role_fulfillment_matrix/data/review/"
                 "eligibility_approval_manifest_2026.json"
             ),
-            "next_live_gate": "role_assignment_coverage_review",
+            "next_live_gate": "manual_live_run_optional_scheduling_separate",
         })
-        for item in approval["approved_dry_run_artifacts"]:
+        self.assertEqual(approval["remaining_gate_reviews"]["review_status"], "approved")
+        self.assertEqual(approval["remaining_gate_reviews"]["reviewed_players"], [
+            "Kara Dunn",
+            "Elena Buenavida",
+            "Elizabeth Balogun",
+        ])
+        rerun = approval["latest_dry_run_rerun"]
+        self.assertEqual(rerun["review_status"], "approved")
+        self.assertEqual(rerun["approved_by"], "Krystal Beasley")
+        self.assertEqual(rerun["approved_at"], "2026-08-25")
+        self.assertEqual(rerun["dry_run_gate_status"], "review_ready")
+        self.assertEqual(rerun["result_counts"], {
+            "dry_run_scored": 10,
+            "season_context_only": 5,
+            "inactive_suppressed": 3,
+        })
+        self.assertFalse(rerun["live_output_enabled"])
+        self.assertFalse(rerun["scheduling_enabled"])
+        for item in rerun["artifacts"]:
             path = ROOT / item["path"]
             self.assertEqual(item["sha256"], hashlib.sha256(path.read_bytes()).hexdigest())
+        self.assertEqual(
+            approval["approved_dry_run_artifacts_status"],
+            "historical_hashes_superseded_by_2026-08-26_rerun",
+        )
         self.assertEqual(approval["manual_live_run_status"], "completed")
         self.assertEqual(approval["manual_live_run_review"], {
             "review_status": "approved",
@@ -108,6 +134,8 @@ class LiveEnablementConfigTest(unittest.TestCase):
 
     def test_live_authorization_rejects_changes_to_reviewed_inputs_or_formulas(self):
         approved = json.loads(LIVE_CONFIG.read_text())
+        approved["end_to_end_review_status"] = "approved_19_player_review"
+        approved["live_output_enabled"] = True
         mutations = []
         changed_source = json.loads(json.dumps(approved))
         changed_source["sources"]["pbpstats_player_game"] = "unreviewed/player_game.csv"
@@ -137,7 +165,7 @@ class LiveEnablementConfigTest(unittest.TestCase):
 
 
 class ManualLiveOutputTest(unittest.TestCase):
-    def test_manual_live_run_preserves_approved_outputs_when_a_current_gate_blocks(self):
+    def test_approved_manual_live_run_uses_isolated_output_and_preserves_prior_outputs(self):
         approval = json.loads(LIVE_OUTPUT_APPROVAL.read_text())
         approved_paths = [ROOT / item["path"] for item in approval["manual_live_run"]["artifacts"]]
         approved_hashes_before = {
@@ -147,9 +175,9 @@ class ManualLiveOutputTest(unittest.TestCase):
             runs_root = Path(tmp) / "live"
             run_id = "2026-08-24T010000Z"
             output_root = runs_root / "runs" / run_id
-            with self.assertRaises(ContractError):
-                build(runs_root=runs_root, run_id=run_id)
-            self.assertFalse(output_root.exists())
+            manifest = build(runs_root=runs_root, run_id=run_id)
+            self.assertTrue(output_root.exists())
+            self.assertEqual(manifest["live_scoring_status"], "live_enabled")
 
         approved_hashes_after = {
             path: hashlib.sha256(path.read_bytes()).hexdigest() for path in approved_paths

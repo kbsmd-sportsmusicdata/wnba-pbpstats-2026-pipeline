@@ -37,3 +37,5 @@ player_id,player_name,team_abbreviation,role_code,secondary_role_code,assignment
 1630993,Anneli Maley,NYL,interior_hub_rebounder,perimeter_scorer_spacer,0.70,reviewed,Krystal Beasley,2026-08-22,Reviewed with insufficient-recent-sample safeguard
 1630384,Raquel Carrera,NYL,interior_finisher_rim_runner,interior_hub_rebounder,0.85,reviewed,Krystal Beasley,2026-08-22,Reviewed with recent-possession safeguard
 1642826,Aubrey Griffin,NYL,downhill_pressure_wing,,0.25,reviewed,Krystal Beasley,2026-08-22,Reviewed low-confidence hypothesis with inactive score suppression
+espn:5208984,Elena Buenavida,MIN,secondary_creator_connector,,0.70,reviewed,Krystal Beasley,2026-08-25,Reviewed from FIBA playmaking profile; current-team live score withheld until WNBA sample meets safeguards
+espn:4398589,Elizabeth Balogun,NYL,perimeter_scorer_spacer,,0.70,reviewed,Krystal Beasley,2026-08-25,Reviewed from 2026 FIBA three-point volume; current-team live score withheld until WNBA sample meets safeguards

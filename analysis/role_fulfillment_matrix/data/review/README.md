@@ -47,8 +47,9 @@ she receives no live score.
 
 The August 22 base-roster refresh was approved and promoted on August 25. The complete 237-row base
 now incorporates the former two-row addendum, which remains historical evidence but is no longer a
-live input. The current PBPStats population has 229/229 reviewed eligibility coverage. Remaining
-downstream blockers are documented in
-`roster_refresh_2026-08-25/roster_refresh_post_promotion_gate_2026-08-25.md`: Kara Dunn is the one
-active ESPN-only roster identity without eligibility, Elena Buenavida and Elizabeth Balogun need
-role review, and Antonia Delaere has a current PBPStats refresh failure.
+live input. The current PBPStats population has 229/229 reviewed eligibility coverage. The original
+downstream gates are documented in
+`roster_refresh_2026-08-25/roster_refresh_post_promotion_gate_2026-08-25.md`.
+`remaining_gate_review_2026-08-25.md` records the approved Kara Dunn eligibility decision and Elena
+Buenavida / Elizabeth Balogun role assignments. The subsequent August 26 dry run is approved;
+those two ESPN-only roles remain sample-suppressed.

@@ -144,6 +144,32 @@ class PBPStatsAdapterTest(unittest.TestCase):
         self.assertEqual(audit["status"], "blocked")
         self.assertTrue(any("failure count" in item for item in audit["blockers"]))
 
+    def test_reviewed_espn_only_roles_are_sample_suppressed_not_adapter_blockers(self):
+        result = adapt_pbpstats_player_game(player_rows(), team_rows())
+        audit = audit_live_adapter(
+            result,
+            assignments=pd.DataFrame(
+                [
+                    {"player_id": "p1", "player_name": "Player One"},
+                    {
+                        "player_id": "espn:5208984",
+                        "player_name": "Elena Buenavida",
+                    },
+                ]
+            ),
+            manifest={
+                "coverage_through": "2026-08-20",
+                "players": {"failed_players": 0},
+            },
+            failures=[],
+            recent_end="2026-08-20",
+        )
+
+        self.assertEqual(audit["status"], "review_ready")
+        self.assertEqual(audit["candidate_coverage"], {"matched": 1, "expected": 1})
+        self.assertEqual(audit["source_only_assignments"], ["espn:5208984"])
+        self.assertTrue(any("sample-suppressed" in item for item in audit["warnings"]))
+
     def test_canonical_counts_derive_the_live_v1_role_metrics(self):
         adapted = adapt_pbpstats_player_game(player_rows(), team_rows()).player_game
         metrics = aggregate_window(adapted, "recent").set_index("player_id").loc["p1"]
@@ -162,6 +188,7 @@ class PBPStatsAdapterTest(unittest.TestCase):
             output_names = {path.name for path in Path(tmp).iterdir()}
         self.assertEqual(manifest["status"], "review_ready")
         self.assertEqual(manifest["candidate_coverage"], {"matched": 38, "expected": 38})
+        self.assertEqual(manifest["source_only_assignments"], 2)
         self.assertEqual(manifest["parity_players"], 11)
         self.assertEqual(manifest["parity_matches"], 11)
         self.assertEqual(

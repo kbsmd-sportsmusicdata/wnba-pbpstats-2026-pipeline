@@ -10,22 +10,22 @@
     "inactive_without_role": "deferred_until_active",
     "taxonomy_role_count": 6
   },
-  "reviewed_assignment_rows": 38,
+  "reviewed_assignment_rows": 40,
   "reviewed_team_counts": {
     "ATL": 8,
     "GSV": 6,
     "IND": 6,
     "LVA": 3,
-    "MIN": 9,
-    "NYL": 6
+    "MIN": 10,
+    "NYL": 7
   },
   "reviewed_primary_role_counts": {
     "downhill_pressure_wing": 5,
     "interior_finisher_rim_runner": 7,
     "interior_hub_rebounder": 4,
     "lead_creator": 2,
-    "perimeter_scorer_spacer": 12,
-    "secondary_creator_connector": 8
+    "perimeter_scorer_spacer": 13,
+    "secondary_creator_connector": 9
   },
   "excluded_free_agents": [
     "Alex Fowler",
@@ -34,7 +34,7 @@
   ],
   "reviewed_output": {
     "path": "analysis/role_fulfillment_matrix/config/player_role_assignments_2026.csv",
-    "sha256": "74f9836487067570107f30cfb1730224c840ed6d2824acc21963f19de951d104"
+    "sha256": "2fc9982f204366e71a907e2950462b1d10eb38b5f28ecd9ca7e3c847ffff1871"
   },
   "supplemental_reviews": [
     {
@@ -61,6 +61,24 @@
       "secondary_role": "interior_hub_rebounder",
       "assignment_confidence": 0.60,
       "live_score_safeguard": "insufficient_recent_sample"
+    },
+    {
+      "reviewed_at": "2026-08-25",
+      "reviewed_by": "Krystal Beasley",
+      "player_name": "Elena Buenavida",
+      "primary_role": "secondary_creator_connector",
+      "assignment_confidence": 0.70,
+      "live_score_safeguard": "current_team_sample_required",
+      "review_path": "analysis/role_fulfillment_matrix/data/review/remaining_gate_review_2026-08-25.md"
+    },
+    {
+      "reviewed_at": "2026-08-25",
+      "reviewed_by": "Krystal Beasley",
+      "player_name": "Elizabeth Balogun",
+      "primary_role": "perimeter_scorer_spacer",
+      "assignment_confidence": 0.70,
+      "live_score_safeguard": "current_team_sample_required",
+      "review_path": "analysis/role_fulfillment_matrix/data/review/remaining_gate_review_2026-08-25.md"
     }
   ],
   "sample_policy": {
