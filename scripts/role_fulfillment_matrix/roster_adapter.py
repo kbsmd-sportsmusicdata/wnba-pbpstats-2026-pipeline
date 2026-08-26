@@ -204,6 +204,12 @@ def adapt_espn_roster(
             "unmatched_eligibility_players": sorted(
                 joined.loc[eligibility_missing, "player_name"].tolist()
             ),
+            "active_eligibility_players_unmatched": int(
+                (eligibility_missing & joined["active"]).sum()
+            ),
+            "unmatched_active_eligibility_players": sorted(
+                joined.loc[eligibility_missing & joined["active"], "player_name"].tolist()
+            ),
             "active_players": int(roster["active"].sum()),
             "inactive_players": int((roster["status_type"] == "inactive").sum()),
             "free_agents": int((roster["status_type"] == "free-agent").sum()),

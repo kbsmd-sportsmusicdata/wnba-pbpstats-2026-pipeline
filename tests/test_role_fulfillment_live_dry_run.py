@@ -106,7 +106,7 @@ class LiveDryRunGovernanceTest(unittest.TestCase):
                 }
             )
 
-    def test_approved_dry_run_and_explicit_manual_live_publish_are_allowed(self):
+    def test_approved_dry_run_and_manual_live_publish_are_allowed(self):
         config = json.loads(LIVE_CONFIG.read_text())
         config["mode"] = "live_dry_run"
         authorize_execution(config)
@@ -833,6 +833,52 @@ class CurrentTeamSafeguardTest(unittest.TestCase):
 
 
 class LiveDryRunOutputTest(unittest.TestCase):
+    def test_latest_end_to_end_dry_run_is_review_ready_and_sample_suppresses_new_roles(self):
+        review_root = (
+            ROOT
+            / "analysis"
+            / "role_fulfillment_matrix"
+            / "data"
+            / "review"
+            / "live_dry_run"
+        )
+        manifest = json.loads(
+            (review_root / "data" / "processed" / "run_manifest_2026.json").read_text()
+        )
+        funnel = pd.read_csv(
+            review_root / "data" / "processed" / "candidate_funnel_2026.csv",
+            dtype={"player_id": str},
+        ).set_index("player_name")
+        scores = pd.read_csv(
+            review_root / "data" / "processed" / "role_fulfillment_matrix_2026.csv"
+        )
+
+        self.assertEqual(manifest["dry_run_gate_status"], "review_ready")
+        self.assertEqual(manifest["dry_run_gate_blockers"], [])
+        self.assertEqual(manifest["players_scored"], 10)
+        self.assertEqual(
+            manifest["adapter_audit"]["source_only_assignments"],
+            ["espn:4398589", "espn:5208984"],
+        )
+        self.assertEqual(
+            funnel.loc["Elena Buenavida", "exclusion_reason"],
+            "insufficient_recent_sample",
+        )
+        self.assertEqual(
+            funnel.loc["Elizabeth Balogun", "exclusion_reason"],
+            "insufficient_recent_sample",
+        )
+        self.assertEqual(funnel.loc["Kara Dunn", "exclusion_reason"], "non_contender_team")
+        self.assertEqual(
+            funnel.loc["Marine Fauthoux", "exclusion_reason"],
+            "insufficient_recent_possessions",
+        )
+        self.assertEqual(scores["score_status"].value_counts().to_dict(), {
+            "dry_run_scored": 10,
+            "season_context_only": 5,
+            "inactive_suppressed": 3,
+        })
+
     def test_promoted_base_roster_is_fresh_and_has_reviewed_identity_coverage(self):
         config = json.loads(LIVE_CONFIG.read_text())
         sources = config["sources"]
@@ -853,7 +899,9 @@ class LiveDryRunOutputTest(unittest.TestCase):
 
         self.assertEqual(len(result.roster), 237)
         self.assertEqual(result.quality["active_players"], 211)
-        self.assertEqual(result.quality["reviewed_players_matched"], 234)
+        self.assertEqual(result.quality["reviewed_players_matched"], 235)
+        self.assertEqual(result.quality["eligibility_players_unmatched"], 2)
+        self.assertEqual(result.quality["active_eligibility_players_unmatched"], 0)
         self.assertEqual(result.quality["oldest_source_as_of"], "2026-08-25")
         self.assertEqual(result.quality["newest_source_as_of"], "2026-08-25")
         self.assertEqual(result.quality["source_snapshot_count"], 1)
@@ -871,7 +919,7 @@ class LiveDryRunOutputTest(unittest.TestCase):
         eligibility = pd.read_csv(ROOT / sources["eligibility"], dtype=str)
 
         require_pbp_eligibility_coverage(population, eligibility)
-        self.assertEqual(eligibility["player_id"].nunique(), 234)
+        self.assertEqual(eligibility["player_id"].nunique(), 235)
 
 
 if __name__ == "__main__":

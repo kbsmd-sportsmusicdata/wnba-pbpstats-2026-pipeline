@@ -29,7 +29,7 @@ Live output remains disabled. This package validates the adapter boundary only.
 - Locked parity window: 2026-08-07 through 2026-08-20
 
 Warnings:
-- None
+- 2 reviewed ESPN-only role assignments are sample-suppressed until a reviewed PBPStats identity is available
 
 ## Automated checks
 

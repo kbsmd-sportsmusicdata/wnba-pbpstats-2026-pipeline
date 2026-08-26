@@ -248,6 +248,7 @@ def build(output_dir: Path = DEFAULT_OUTPUT) -> Dict[str, Any]:
     return {
         "status": audit["status"],
         "candidate_coverage": audit["candidate_coverage"],
+        "source_only_assignments": len(audit["source_only_assignments"]),
         "parity_players": int(len(parity)),
         "parity_matches": int(parity["parity_match"].sum()),
         "scoring_windows": scoring_windows,

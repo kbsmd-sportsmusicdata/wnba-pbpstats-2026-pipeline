@@ -17,7 +17,61 @@
     "reviewed_by": "Krystal Beasley",
     "reviewed_at": "2026-08-25",
     "eligibility_approval_manifest": "analysis/role_fulfillment_matrix/data/review/eligibility_approval_manifest_2026.json",
-    "next_live_gate": "role_assignment_coverage_review"
+    "next_live_gate": "manual_live_run_optional_scheduling_separate"
+  },
+  "remaining_gate_reviews": {
+    "review_status": "approved",
+    "reviewed_by": "Krystal Beasley",
+    "reviewed_at": "2026-08-25",
+    "reviewed_players": [
+      "Kara Dunn",
+      "Elena Buenavida",
+      "Elizabeth Balogun"
+    ],
+    "review_path": "analysis/role_fulfillment_matrix/data/review/remaining_gate_review_2026-08-25.md",
+    "review_sha256": "c78929c760d0e6c53dea264b885409ed0bdc55216284c9e8eaed3afe78fd7ba3"
+  },
+  "latest_dry_run_rerun": {
+    "generated_at_utc": "2026-08-26T03:13:48+00:00",
+    "review_status": "approved",
+    "approved_by": "Krystal Beasley",
+    "approved_at": "2026-08-25",
+    "dry_run_gate_status": "review_ready",
+    "dry_run_gate_blockers": [],
+    "source_only_assignments_sample_suppressed": 2,
+    "result_counts": {
+      "dry_run_scored": 10,
+      "season_context_only": 5,
+      "inactive_suppressed": 3
+    },
+    "live_output_enabled": false,
+    "scheduling_enabled": false,
+    "artifacts": [
+      {
+        "path": "analysis/role_fulfillment_matrix/data/review/live_dry_run/data/processed/run_manifest_2026.json",
+        "sha256": "78eb5436bf61808b2b56f365c595535cc4f7daa1a7c7875a3fa01dd46de85c66"
+      },
+      {
+        "path": "analysis/role_fulfillment_matrix/data/review/live_dry_run/data/processed/candidate_funnel_2026.csv",
+        "sha256": "33b15afcac0a99787a790b83ac4eaec9fafec5d280c38e3c33e53cc7d3d763c5"
+      },
+      {
+        "path": "analysis/role_fulfillment_matrix/data/review/live_dry_run/data/processed/role_fulfillment_matrix_2026.csv",
+        "sha256": "709f206b88f9671dab0e24a797b1e95ff9433f13216cf1d1f547b1ce40f8dd2e"
+      },
+      {
+        "path": "analysis/role_fulfillment_matrix/data/review/live_dry_run/data/processed/role_fulfillment_evidence_2026.json",
+        "sha256": "3682902f979e7f9456eb00b11aa0ccb705b54bc87d0cfe0a00ae24f75e9eaf2e"
+      },
+      {
+        "path": "analysis/role_fulfillment_matrix/data/review/live_dry_run/role_fulfillment_matrix_live_dry_run_validation.md",
+        "sha256": "13944cd7e7572e82c19bf3721e4cbe2b4fe3d398411617df43b31b6368f5eb8b"
+      },
+      {
+        "path": "analysis/role_fulfillment_matrix/data/review/live_dry_run/deliverables/role_fulfillment_matrix/index.html",
+        "sha256": "27a6d3f0cedd3e2cc04868423bdd9db5fc682fb838d7de196ebb5841bb496aa3"
+      }
+    ]
   },
   "roster_refresh_promotion": {
     "review_status": "approved",
@@ -48,9 +102,11 @@
       "sha256": "9ae14d95340af33b59a92dc1f616269554cc5ecf472fb9a0f2b54ea94743ad2b"
     }
   ],
+  "approved_dry_run_artifacts_status": "historical_hashes_superseded_by_2026-08-26_rerun",
   "evidence_provenance_status": "reviewed_live_sources_only",
   "execution_mode": "manual_only",
   "scheduling_enabled": false,
+  "current_manual_execution_status": "enabled_manual_only",
   "manual_live_run_status": "completed",
   "manual_live_run_review": {
     "review_status": "approved",

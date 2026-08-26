@@ -186,8 +186,19 @@ def audit_live_adapter(
     assignment_ids = assignments["player_id"].astype(str)
     if assignment_ids.duplicated().any():
         blockers.append("reviewed role assignments contain duplicate player ids")
+    source_only_assignments = sorted(
+        player_id for player_id in set(assignment_ids) if player_id.startswith("espn:")
+    )
+    pbp_assignment_ids = {
+        player_id for player_id in set(assignment_ids) if not player_id.startswith("espn:")
+    }
+    if source_only_assignments:
+        warnings.append(
+            f"{len(source_only_assignments)} reviewed ESPN-only role assignments are "
+            "sample-suppressed until a reviewed PBPStats identity is available"
+        )
     source_ids = set(result.player_game["player_id"].astype(str))
-    missing_ids = sorted(set(assignment_ids) - source_ids)
+    missing_ids = sorted(pbp_assignment_ids - source_ids)
     if missing_ids:
         blockers.append(f"reviewed-role players missing from adapted data: {', '.join(missing_ids)}")
 
@@ -195,7 +206,7 @@ def audit_live_adapter(
     manifest_failure_count = manifest.get("players", {}).get("failed_players")
     if manifest_failure_count is None or int(manifest_failure_count) != len(failures):
         blockers.append("manifest player failure count does not match the failure ledger")
-    assigned_failures = sorted(set(assignment_ids) & failure_ids)
+    assigned_failures = sorted(pbp_assignment_ids & failure_ids)
     if assigned_failures:
         blockers.append(
             "reviewed-role player refresh failures: " + ", ".join(assigned_failures)
@@ -210,9 +221,10 @@ def audit_live_adapter(
         "blockers": blockers,
         "warnings": warnings,
         "candidate_coverage": {
-            "matched": int(len(set(assignment_ids) & source_ids)),
-            "expected": int(len(set(assignment_ids))),
+            "matched": int(len(pbp_assignment_ids & source_ids)),
+            "expected": int(len(pbp_assignment_ids)),
         },
+        "source_only_assignments": source_only_assignments,
         "candidate_refresh_failures": assigned_failures,
         "global_refresh_failures": int(len(failures)),
         "manifest_refresh_failures": (

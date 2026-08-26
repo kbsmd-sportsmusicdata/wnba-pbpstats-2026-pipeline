@@ -9,12 +9,15 @@ playoff forecast dashboard.
 - **Fixture mode:** retained for deterministic regression tests.
 - **Live-data mode:** approved sources support both the isolated `live_dry_run` review path and
   the standalone manual `live` path.
-- **Live output:** enabled for manual execution only; scheduling remains disabled.
-- **Real eligibility data:** reviewed and approved for all 229 current PBPStats players plus five
+- **Live output:** the August 26 dry run is approved and manual-only execution is authorized.
+  Scheduling remains disabled.
+- **Real eligibility data:** reviewed and approved for all 229 current PBPStats players plus six
   ESPN roster-only identities. Roster-only rows use reviewed `espn:<athlete_id>` placeholders;
   a later PBPStats appearance fails closed pending a reviewed identity crosswalk.
-- **Real role assignments:** reviewed and approved for 38 roster-attached eligible players on
-  top-six contenders; three confirmed free agents remain in eligibility history only.
+- **Real role assignments:** reviewed and approved for 40 roster-attached eligible players on
+  top-six contenders. The 38 PBPStats identities retain complete adapter coverage; Elena Buenavida
+  and Elizabeth Balogun are reviewed ESPN-only roles with scoring suppressed until a qualifying
+  current-team sample exists. Three confirmed free agents remain in eligibility history only.
 - **Live formula status:** the six-role `rfm-live-v1` formulas and thresholds are approved.
 - **Formula validation status:** the 11-player hand-calculation and threshold-sensitivity gate is
   approved.
@@ -23,9 +26,10 @@ playoff forecast dashboard.
   immutable baseline on 2026-08-24. Michelle Onyiah's role assignment was approved on August 25.
   The 15-team ESPN base-roster refresh through the August 23 standings cutoff was approved and
   promoted on August 25. The post-promotion PBPStats retry cleared all three refresh failures and
-  the adapter audit returned `review_ready`. The next gates are Kara Dunn eligibility coverage and
-  Elena Buenavida and Elizabeth Balogun role assignments. Scheduling remains disabled and requires
-  a separate design and approval gate.
+  the adapter audit returned `review_ready`. Kara Dunn eligibility and the Elena Buenavida and
+  Elizabeth Balogun role reviews were approved on August 25. The August 26 end-to-end dry run is
+  approved with 10 scored, five season-context, and three inactive-suppressed results. Scheduling
+  remains disabled and requires a separate design and approval gate.
 - **Output interpretation:** the fixture dashboard remains synthetic; the dry-run dashboard uses
   reviewed real sources and is labeled `DRY RUN`, while the manual live dashboard is labeled
   `LIVE`.

@@ -10,8 +10,8 @@
   "approved_by": "Krystal Beasley",
   "approved_at": "2026-08-22",
   "last_updated_at": "2026-08-25",
-  "approved_rows": 234,
-  "eligible_players": 126,
+  "approved_rows": 235,
+  "eligible_players": 127,
   "ineligible_players": 108,
   "pending_input": {
     "path": "analysis/role_fulfillment_matrix/data/review/player_eligibility_2026.pending.csv",
@@ -19,7 +19,7 @@
   },
   "crosswalk": {
     "path": "analysis/role_fulfillment_matrix/data/review/player_identity_crosswalk_2026.csv",
-    "sha256": "07ca37002e34f0837d823703dae3b957563e028671d0f26f35ee973bfd56f687"
+    "sha256": "29ccfa36ca93cf01561040e0b723176aaac0d7d1bc69613278cdf36a30dbd326"
   },
   "build_manifest": {
     "path": "analysis/role_fulfillment_matrix/data/review/eligibility_build_manifest_2026.json",
@@ -27,7 +27,7 @@
   },
   "approved_output": {
     "path": "analysis/role_fulfillment_matrix/config/player_eligibility_2026.csv",
-    "sha256": "af5001f21281e67a15ea80e6d72678c58baaa9a6c4d9968bb3bc6a7798941d25"
+    "sha256": "92e5bed8f05ac57eaf51a9bc711874e41979626d558c58c739d4651081296927"
   },
   "supplemental_reviews": [
     {
@@ -57,6 +57,15 @@
       "player_core_path": "analysis/role_fulfillment_matrix/data/live_inputs/player_core_2026.csv",
       "player_core_sha256": "2a5d1ec99e818b4ea65c6370a6716fb5e605e78b4817bd0f6e1cc96ca2fb5224",
       "identity_scope": "new ESPN roster-only identities"
+    },
+    {
+      "reviewed_at": "2026-08-25",
+      "reviewed_by": "Krystal Beasley",
+      "rows": 1,
+      "player_name": "Kara Dunn",
+      "path": "analysis/role_fulfillment_matrix/data/review/remaining_gate_review_2026-08-25.md",
+      "sha256": "c78929c760d0e6c53dea264b885409ed0bdc55216284c9e8eaed3afe78fd7ba3",
+      "identity_scope": "reviewed ESPN roster-only rookie identity outside the current contender pool"
     }
   ],
   "live_eligibility_status": "approved",
