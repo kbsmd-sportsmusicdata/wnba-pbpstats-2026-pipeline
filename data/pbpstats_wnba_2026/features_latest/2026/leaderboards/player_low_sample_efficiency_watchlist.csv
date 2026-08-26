@@ -1,5 +1,4 @@
 season,entity_id_feature,entity_name_feature,sample_size_flag,detected_zone_fga_total,efg_pct_feature,ts_pct_feature,shotquality_pbp_feature,shot_making_over_shotquality_pbp,specialized_shooter_label,shot_diet_profile_label
-2026,203828,Stefanie Dolson,Low,90.0,0.5611111111111111,0.6,0.5132077777777777,0.04790333333333341,Low-Volume Efficient Shooter,Modern Shot Diet
 2026,1629488,Brianna Turner,Low,45.0,0.6222222222222222,0.6304347826086957,0.53308,0.08914222222222223,Low-Volume Efficient Shooter,Unavailable Shot Diet
 2026,1643489,Antonia Delaere,Low,85.0,0.5941176470588235,0.6091954022988506,0.5111078313253012,0.08300981573352229,Low-Volume Efficient Shooter,Modern Shot Diet
 2026,1627701,Temi Fagbenle,Low,88.0,0.5738636363636364,0.5707070707070707,0.5372517241379311,0.036611912225705256,Low-Volume Efficient Shooter,Modern Shot Diet

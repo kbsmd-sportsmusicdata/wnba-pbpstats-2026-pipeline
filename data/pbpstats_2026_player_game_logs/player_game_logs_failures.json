@@ -1,1 +1,22 @@
-[]
+[
+  {
+    "player_id": "1628276",
+    "name": "Kelsey Plum",
+    "error": "failed to fetch /get-game-logs/wnba after 5 attempts: retryable status 500"
+  },
+  {
+    "player_id": "1628922",
+    "name": "Azura Stevens",
+    "error": "failed to fetch /get-game-logs/wnba after 5 attempts: retryable status 500"
+  },
+  {
+    "player_id": "1642296",
+    "name": "Nyadiew Puoch",
+    "error": "failed to fetch /get-game-logs/wnba after 5 attempts: retryable status 500"
+  },
+  {
+    "player_id": "203400",
+    "name": "Skylar Diggins",
+    "error": "failed to fetch /get-game-logs/wnba after 5 attempts: retryable status 500"
+  }
+]
