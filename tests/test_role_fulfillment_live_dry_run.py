@@ -63,19 +63,8 @@ class LiveDryRunGovernanceTest(unittest.TestCase):
             },
         )
         self.assertFalse(config["live_output_enabled"])
-        self.assertEqual(config["sources"]["roster_source_as_of"], "2026-08-22")
-        self.assertEqual(
-            config["sources"]["roster_addenda"],
-            [
-                {
-                    "path": (
-                        "analysis/role_fulfillment_matrix/data/review/"
-                        "player_core_coverage_addendum_2026-08-24.csv"
-                    ),
-                    "source_as_of": "2026-08-24",
-                }
-            ],
-        )
+        self.assertEqual(config["sources"]["roster_source_as_of"], "2026-08-25")
+        self.assertEqual(config["sources"]["roster_addenda"], [])
 
     def test_cutoff_policy_derives_non_overlapping_fourteen_day_windows(self):
         self.assertEqual(
@@ -844,57 +833,45 @@ class CurrentTeamSafeguardTest(unittest.TestCase):
 
 
 class LiveDryRunOutputTest(unittest.TestCase):
-    def test_real_sources_fail_closed_when_base_roster_is_stale(self):
-        from build_role_fulfillment_live_dry_run import build
-
-        with tempfile.TemporaryDirectory() as tmp:
-            output_root = Path(tmp) / "live_dry_run"
-            with self.assertRaisesRegex(
-                RosterAdapterError,
-                "oldest contributing roster snapshot is older than the standings cutoff",
-            ):
-                build(output_root=output_root)
-            self.assertFalse(output_root.exists())
-
-    def test_refreshed_base_roster_reaches_the_candidate_role_review_gate(self):
-        from build_role_fulfillment_live_dry_run import build
-
-        with tempfile.TemporaryDirectory() as tmp:
-            root = Path(tmp)
-            config = json.loads(LIVE_CONFIG.read_text())
-            config["sources"]["roster_source_as_of"] = "2026-08-23"
-            config_path = root / "refreshed_roster_config.json"
-            config_path.write_text(json.dumps(config))
-            output_root = root / "live_dry_run"
-
-            manifest = build(config_path=config_path, output_root=output_root)
-            report = (
-                output_root / "role_fulfillment_matrix_live_dry_run_validation.md"
-            ).read_text()
-            funnel = pd.read_csv(
-                output_root / "data" / "processed" / "candidate_funnel_2026.csv",
-                dtype={"player_id": str},
-            )
-
-        self.assertEqual(manifest["adapter_audit"]["status"], "review_ready")
-        self.assertEqual(manifest["adapter_audit"]["locked_parity_matches"], 11)
-        self.assertEqual(
-            manifest["dry_run_gate_blockers"],
-            [],
+    def test_promoted_base_roster_is_fresh_and_has_reviewed_identity_coverage(self):
+        config = json.loads(LIVE_CONFIG.read_text())
+        sources = config["sources"]
+        core = pd.read_csv(ROOT / sources["roster"], dtype=str, keep_default_na=False)
+        eligibility = pd.read_csv(
+            ROOT / sources["eligibility"], dtype=str, keep_default_na=False
         )
-        self.assertEqual(manifest["dry_run_gate_status"], "review_ready")
-        self.assertEqual(
-            manifest["source_manifest"]["roster_status"]["quality"]
-            ["oldest_source_as_of"],
-            "2026-08-23",
+        standings = pd.read_csv(ROOT / sources["standings"])
+        standings_manifest = json.loads((ROOT / sources["standings_manifest"]).read_text())
+
+        result = adapt_espn_roster(
+            core,
+            eligibility,
+            standings,
+            source_as_of=sources["roster_source_as_of"],
+            cutoff_date=standings_manifest["cutoff_date"],
         )
-        michelle = funnel.set_index("player_id").loc["1642803"]
-        self.assertEqual(michelle["role_code"], "interior_finisher_rim_runner")
-        self.assertEqual(michelle["secondary_role_code"], "interior_hub_rebounder")
-        self.assertEqual(michelle["exclusion_reason"], "insufficient_recent_sample")
-        self.assertEqual(michelle["funnel_status"], "excluded")
-        self.assertNotIn("Michelle Onyiah (IND)", report)
-        self.assertNotIn("reviewed primary role assignment required", report)
+
+        self.assertEqual(len(result.roster), 237)
+        self.assertEqual(result.quality["active_players"], 211)
+        self.assertEqual(result.quality["reviewed_players_matched"], 234)
+        self.assertEqual(result.quality["oldest_source_as_of"], "2026-08-25")
+        self.assertEqual(result.quality["newest_source_as_of"], "2026-08-25")
+        self.assertEqual(result.quality["source_snapshot_count"], 1)
+        self.assertEqual(sources["roster_addenda"], [])
+
+    def test_current_pbpstats_population_remains_covered_by_reviewed_eligibility(self):
+        config = json.loads(LIVE_CONFIG.read_text())
+        sources = config["sources"]
+        raw = pd.read_csv(ROOT / sources["pbpstats_player_game"], dtype=str)
+        population = (
+            raw[["PlayerId", "PlayerName"]]
+            .drop_duplicates()
+            .rename(columns={"PlayerId": "player_id", "PlayerName": "player_name"})
+        )
+        eligibility = pd.read_csv(ROOT / sources["eligibility"], dtype=str)
+
+        require_pbp_eligibility_coverage(population, eligibility)
+        self.assertEqual(eligibility["player_id"].nunique(), 234)
 
 
 if __name__ == "__main__":

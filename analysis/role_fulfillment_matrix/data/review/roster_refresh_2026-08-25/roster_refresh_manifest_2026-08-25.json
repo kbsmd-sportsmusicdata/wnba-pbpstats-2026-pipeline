@@ -1,0 +1,57 @@
+{
+  "artifacts": {
+    "changes": {
+      "path": "roster_refresh_changes_2026-08-25.csv",
+      "sha256": "6904bded4b4bdbc7d567dff7a38a82efc9c8ae6dcbbc8efabaffd407ccdae95a"
+    },
+    "player_core_pending": {
+      "path": "player_core_2026-08-25.pending.csv",
+      "sha256": "70e305466dbd2af77b6e3be9b660961f4c14ec38afa418378b6c6143dc30a3c6"
+    },
+    "review_report": {
+      "path": "roster_refresh_review_2026-08-25.md",
+      "sha256": "f6d5c5fc7c911493cfa2f6c2b3b450a52577aee5f94c03ce9f3b698bbceebdaf"
+    },
+    "source_snapshot": {
+      "path": "espn_roster_pages_2026-08-25.json",
+      "sha256": "1c3a98fe1affdf052ba6942617d14720119e42c9493f1dae180cc42b19e4e9bd"
+    }
+  },
+  "blockers": [
+    "new active identities require eligibility review",
+    "players removed from the active roster page require status review",
+    "all material roster changes require explicit approval before promotion"
+  ],
+  "candidate_rows": 237,
+  "current_active_players": 211,
+  "historical_addendum_rows": 2,
+  "historical_base_rows": 232,
+  "material_changes": 9,
+  "new_active_identities": 3,
+  "page_generated_at_utc_max": "2026-08-25T23:21:34Z",
+  "page_generated_at_utc_min": "2026-08-25T23:21:30Z",
+  "promotion_ready": false,
+  "removed_from_active_page": 2,
+  "review_status": "pending",
+  "source_as_of": "2026-08-25",
+  "source_system": "ESPN team roster pages",
+  "source_urls": [
+    "https://www.espn.com/wnba/team/roster/_/name/atl",
+    "https://www.espn.com/wnba/team/roster/_/name/chi",
+    "https://www.espn.com/wnba/team/roster/_/name/con",
+    "https://www.espn.com/wnba/team/roster/_/name/dal",
+    "https://www.espn.com/wnba/team/roster/_/name/gs",
+    "https://www.espn.com/wnba/team/roster/_/name/ind",
+    "https://www.espn.com/wnba/team/roster/_/name/la",
+    "https://www.espn.com/wnba/team/roster/_/name/lv",
+    "https://www.espn.com/wnba/team/roster/_/name/min",
+    "https://www.espn.com/wnba/team/roster/_/name/ny",
+    "https://www.espn.com/wnba/team/roster/_/name/phx",
+    "https://www.espn.com/wnba/team/roster/_/name/por",
+    "https://www.espn.com/wnba/team/roster/_/name/sea",
+    "https://www.espn.com/wnba/team/roster/_/name/tor",
+    "https://www.espn.com/wnba/team/roster/_/name/wsh"
+  ],
+  "standings_cutoff": "2026-08-23",
+  "team_pages": 15
+}

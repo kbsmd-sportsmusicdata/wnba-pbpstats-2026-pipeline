@@ -1,0 +1,10 @@
+change_type,athlete_id,player_name,old_value,new_value,review_status
+activated,4282168,Kiana Williams,False,True,pending
+added_active,4398965,Christyn Williams,,active,pending
+added_active,5208984,Elena Buenavida,,active,pending
+added_active,4398589,Elizabeth Balogun,,active,pending
+position_changed,4433744,Michelle Onyiah,F-C,C,pending
+position_changed,4599199,Morgan Maly,F,G,pending
+removed_from_active_page,2955898,Damiris Dantas,active,pending-roster-review,pending
+removed_from_active_page,869,DeWanna Bonner,active,pending-roster-review,pending
+team_changed,4282168,Kiana Williams,6,131935,pending
