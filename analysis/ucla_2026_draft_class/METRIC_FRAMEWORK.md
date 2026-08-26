@@ -53,10 +53,12 @@ scores in) · `recovered_blocks ÷ blocks` (blocks your team keeps) ·
 
 **Use the in-repo layer**, not the frozen parquet: `rapm`, `rapm_scaled`, `waa`
 and `war` from `impact_rapm_war_2026.csv`, rebuilt on all 283 games from the
-derived possessions. Read ranks and tiers — split-half reliability is 0.64.
+derived possessions. Read ranks and tiers — split-half reliability is 0.59.
 Quote `waa` in preference to `war`, which carries a replacement convention. Use
-`rapm` for ordering and `rapm_scaled` for magnitudes; they differ by the 0.64
-ridge attenuation and must not be mixed in one chart. See
+`rapm` for ordering and `rapm_scaled` for magnitudes; they differ by the
+0.789 / 0.803 offensive and defensive ridge attenuation and must not be mixed
+in one chart. Compare `rapm` against any external RAPM, never `rapm_scaled`,
+which is deliberately de-shrunk. See
 [`IMPACT_LAYER.md`](./IMPACT_LAYER.md).
 
 **BPM is not available and should not be improvised.** It is a regression of

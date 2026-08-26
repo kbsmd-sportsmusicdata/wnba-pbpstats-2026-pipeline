@@ -75,7 +75,7 @@ every rate on the pbpstats scale without touching the lineup structure.
 | Team-game **points** | **Exact on 100% of 566 team-games**, MAE 0.00 |
 | Team-game possessions | r = 0.971, mean +1.20, MAE 1.31 on a base of ~80 |
 | Player-game on-court possessions | **r = 0.9983**, MAE 0.96, median error 0.0% |
-| Season on-court ORtg vs pbpstats (169 players, 250+ poss) | r = 0.992, MAE 1.60 |
+| Season on-court ORtg vs pbpstats (169 players, 250+ poss) | r = 0.993, MAE 0.49 |
 | Season on-court NET vs pbpstats | r = 0.990, MAE 1.28 |
 
 Points reproducing exactly across every team-game means the scoring

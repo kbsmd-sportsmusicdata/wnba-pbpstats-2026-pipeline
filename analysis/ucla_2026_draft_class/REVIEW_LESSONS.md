@@ -304,38 +304,42 @@ Ordered by leverage, for this module and for sibling analysis modules.
 7. Test the *space*, not the reported case. A finding is a sample: enumerate the
    dimensions it came from (every emphasis form × every count shape) and test the
    cross-product. Fixing the named example is how one finding becomes four.
-8. Re-read each docstring against its implementation: does the pattern cover the
+8. A check is only worth what it has been shown to reject. Run every new check
+   against a reconstruction of the actual defect before committing it — a check
+   that has only been observed passing is not evidence, however plausible its
+   logic reads.
+9. Re-read each docstring against its implementation: does the pattern cover the
    class the sentence promises, or only the instance you last saw?
-9. Make exemption lists self-checking, so a stale exemption is itself reported.
+10. Make exemption lists self-checking, so a stale exemption is itself reported.
 
 **Modelling**
-10. Every term gets its own exposure. Offensive coefficients take offensive
+11. Every term gets its own exposure. Offensive coefficients take offensive
    possessions; defensive take defensive; net quantities take the mean.
-11. Cross-validation folds go at the grain correlation lives at — by game, never
+12. Cross-validation folds go at the grain correlation lives at — by game, never
     by row.
-12. Calibrate each side against its own aggregate, not a combined one through a
+13. Calibrate each side against its own aggregate, not a combined one through a
     single side's lineups.
-13. Include the nuisance controls the design demands (home court), unpenalised.
-14. Write at least one check at the *unit* grain — per player, per possession —
+14. Include the nuisance controls the design demands (home court), unpenalised.
+15. Write at least one check at the *unit* grain — per player, per possession —
     because aggregate invariants cannot see errors that cancel.
-15. Before concluding a dimension is unverifiable, check whether a superseded or
+16. Before concluding a dimension is unverifiable, check whether a superseded or
     partial-coverage dataset can still validate it over the overlap. A file you
     are replacing is still a reference for the range it does cover — being framed
     as the problem is what makes it invisible as a resource.
-16. Failing that, check the dimension internally. Absence of an external
+17. Failing that, check the dimension internally. Absence of an external
     reference is not absence of a testable property, and an internal invariant
     (snapshot at start, assert at end) often needs no reference at all.
-17. Be suspicious when the dimensions you validated are exactly the ones that
+18. Be suspicious when the dimensions you validated are exactly the ones that
     were convenient to validate. That correlation is usually the explanation,
     not a coincidence.
 
 **Documentation**
-18. Regenerate prose after the last code change, not before it.
-19. When you hedge a claim, do not write past the hedge in the next clause.
+19. Regenerate prose after the last code change, not before it.
+20. When you hedge a claim, do not write past the hedge in the next clause.
 
 ---
 
-## 9. Postscript: this document drew two findings of its own
+## 9. Postscript: this document drew five findings of its own
 
 Codex reviewed the PR that added this file four times and raised four P2s. All
 were real. One is the document's own thesis landing on the document; the other
@@ -381,7 +385,7 @@ reported line number survived the markdown stripping (per rule 6): `thirteen`,
 **The co-presence diagnosis in §5 was wrong**, and wrong in a self-serving
 direction: I had written that the dimension went unchecked because no external
 reference existed. One did, for two thirds of the season. §5 now records the
-real reason, which is a worse one, and rules 15–17 replace the comfortable
+real reason, which is a worse one, and rules 16–18 replace the comfortable
 lesson I had drawn from the false version.
 
 **Round four: the normalisation was a third done.** Codex's round-three comment
@@ -407,6 +411,15 @@ finally worked was to stop fixing the reported case and enumerate the space the
 reports were samples from.
 
 ---
+
+**Round five was declined.** `a dozen post-injury games` evades the count
+grammar, as do `half a dozen`, `a couple of`, `a handful of`, `a score of` and
+`a baker's dozen` — six evasions in about thirty seconds. Five rounds on one
+regex, each surfacing a new lexical form, is not convergence but a lexical
+check trying to settle a semantic question against an unbounded language. The
+claim was narrowed instead: `prose_check`'s docstring now says it is a
+best-effort lint, and the enforceable guarantee is `label_check`, which reads
+the exports' block labels rather than commentary about them.
 
 The general shape is worth keeping. A retrospective is written by the same person
 whose judgement produced the errors, using the same judgement, and it will
@@ -464,12 +477,16 @@ to −20.0 and held its sign and rough magnitude. Every *other* duo gap shrank,
 which is the direction to expect: the bug blended adjacent lineups, and
 blending exaggerates a split whenever the two states differ.
 
-**Two checks were added rather than one fix shipped**, because rules 15–17 were
+**Two checks were added rather than one fix shipped**, because rules 16–18 were
 written about exactly this gap:
 
-- `lineup_audit()` — asserts every possession carries five players a side, and
-  the runner now aborts if it does not. An internal invariant needing no
-  external reference; twenty lines, and it would have caught this on day one.
+- `lineup_audit()` — re-derives every possession's opening lineup from the
+  substitution stream in a second pass and compares **identities**, aborting the
+  runner on any mismatch. Negative-tested against a deliberately rebuilt buggy
+  layer: 7,516 of 45,945 possessions flagged, 0 on the fixed layer.
+
+  The first version of this check asserted only that each side held five
+  players — and is the subject of §11, because it did not work.
 - `season_rating_check()` — the season on-court ORtg/NET comparison table had
   lived in `DERIVED_POSSESSIONS.md` for several vintages *with no script
   producing it*, so it could not be regenerated and had gone stale unnoticed.
@@ -477,3 +494,62 @@ written about exactly this gap:
 
 That second one is its own small lesson: an unreproducible number in a
 validation table is worse than no number, because it looks like evidence.
+
+---
+
+## 11. The check written for the bug did not catch the bug
+
+Shipped with the §10 fix was a `lineup_audit()` that asserted every possession
+carried five players a side. The commit message called it the check that "would
+have caught this on day one." Codex asked the obvious question on the next
+review: the buggy replay *swapped* players rather than losing them, so it also
+produced five a side.
+
+Rebuilt the contaminated layer and ran the check against it:
+
+```
+lineup_audit on the BUGGY layer -> {'off_lineups_not_five': 0,
+                                    'def_lineups_not_five': 0,
+                                    'clean': True}
+```
+
+Clean. Zero protection against the one regression it existed for, shipped in
+the same commit as the fix and described in the pull request as protection.
+
+What makes this worth a section rather than a line: **the correct check already
+existed and I had already run it.** Verifying the fix meant writing a scratch
+script that re-derived each possession's opening lineup from the substitution
+stream and compared identities — it returned 0 mismatches, and that result is
+what the fix was validated against. Then I wrote a *different, weaker* check
+into the module, and carried the scratch script's credibility across to it in
+the commit message and the PR body. The evidence was real; it just was not
+evidence for the thing that got committed.
+
+Rule 7 says a finding is a sample, not a specification. This is its companion:
+**a check is only worth what it has been shown to reject.** The scratch script
+had been shown to reject something; the shipped check never had, and one run
+against a deliberately broken layer would have taken a minute.
+
+`lineup_audit()` now does what the scratch script did, and the negative test is
+part of the workflow rather than a thing done once in a temporary file: buggy
+layer 7,516 mismatches, fixed layer 0.
+
+Two corrections that follow from it:
+
+- **The contamination figure was understated.** The 7.3% in §5 and §10 counts
+  possessions whose lineup changed between their last event and the flush. The
+  identity audit compares against the lineup at the possession's *opening*
+  event, which is the convention actually adopted, and finds **16.4%**
+  (7,516 of 45,945). Both measure real things; 16.4% is the footprint of the
+  bug under the convention the fix uses.
+- **`season_rating_check()` cancelled its own calibration** — it weighted points
+  *and* possessions by `poss_weight`, which returns the raw reconstructed rating
+  and disagrees with `lineup_splits`, this repo's convention for the same rate.
+  Only the denominator is weighted. Correcting it moved the ORtg check from
+  r 0.992 / MAE 1.60 to **r 0.993 / MAE 0.49**. A validation statistic that was
+  itself computed wrong is the same failure as an unreproducible one, one level
+  in.
+
+This is carry-forward rule 8: **run every new check against a known-bad input
+before committing it.** Not the bug you imagine — the actual defect,
+reconstructed.

@@ -30,15 +30,17 @@
     "player_poss_mae": 0.9624396351278841,
     "lineup_audit": {
       "possessions": 45945,
-      "off_lineups_not_five": 0,
-      "def_lineups_not_five": 0,
+      "checked": 45945,
+      "lineup_mismatches": 0,
+      "games_out_of_step": 0,
+      "sizes_not_five": 0,
       "clean": true
     },
     "season_ratings": {
       "min_poss": 250,
       "players": 169,
-      "ortg_r": 0.992,
-      "ortg_mae": 1.6,
+      "ortg_r": 0.993,
+      "ortg_mae": 0.49,
       "net_r": 0.99,
       "net_mae": 1.28
     }

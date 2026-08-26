@@ -219,6 +219,9 @@ def season_rating_check(poss: pd.DataFrame, min_poss: int = 250) -> dict:
     Both sides are possession-weighted season aggregates. Averaging per-game
     rates instead would be an average of averages and is wrong for any rate
     whose denominator varies by game.
+
+    Only the possession denominator carries the calibration weight, matching
+    `lineup_splits`. Weighting the points too cancels it out.
     """
     pg = pd.read_parquet(PBP_PLAYER)
     pg["player_id"] = pg.player_id.astype(int)
@@ -231,9 +234,11 @@ def season_rating_check(poss: pd.DataFrame, min_poss: int = 250) -> dict:
         parts.append(ex)
     ex = pd.concat(parts)
     ex["espn_id"] = pd.to_numeric(ex.espn_id, errors="coerce")
-    ex["wpts"] = ex.points * ex.poss_weight
+    # Only the denominator is calibrated. Weighting points as well cancels the
+    # calibration and gives back the raw reconstructed rating -- and disagrees
+    # with `lineup_splits`, which is this repo's convention for the same rate.
     g = ex.groupby(["espn_id", "side"], as_index=False).agg(
-        poss=("poss_weight", "sum"), pts=("wpts", "sum"))
+        poss=("poss_weight", "sum"), pts=("points", "sum"))
     piv = g.pivot(index="espn_id", columns="side", values=["poss", "pts"])
     piv.columns = [f"{a}_{b}" for a, b in piv.columns]
     piv = piv.reset_index()
@@ -257,25 +262,160 @@ def season_rating_check(poss: pd.DataFrame, min_poss: int = 250) -> dict:
 
 
 def lineup_audit(poss: pd.DataFrame) -> dict:
-    """Assert every possession carries exactly five players a side.
+    """Re-derive every possession's opening lineup and compare identities.
 
-    This is the check that should have existed from the start. The lineup
-    dimension has no convenient scalar to compare against pbpstats -- team
-    possession counts and points are insensitive to *which* five were on the
-    floor -- so it went unvalidated, and a substitution-ordering bug attributed
-    7.3% of possessions to the lineup that replaced the one which played them.
-    An internal invariant needs no external reference at all.
+    This is the regression test for the substitution-attribution bug: a
+    possession must carry the five players who were on the floor when it
+    opened, not the five who replaced them at the next dead ball.
 
-    `replay_game` snapshots at the possession's opening event, so a lineup can
-    only be wrong here if the substitution stream itself is incomplete, which
-    shows up as a side holding other than five players.
+    It must compare *identities*. An earlier version of this function checked
+    only that each side held five players, which the buggy replay also
+    satisfied -- it swapped players rather than losing them, so a cardinality
+    check reported the contaminated layer as clean and offered no protection
+    at all against the one regression it existed to catch.
+
+    The expected lineups are rebuilt here from the substitution stream by a
+    separate pass, so a bug in `replay_game`'s snapshot placement cannot hide
+    itself by also being present in the reference.
     """
-    off_bad = poss[poss.off_lineup.map(len) != 5]
-    def_bad = poss[poss.def_lineup.map(len) != 5]
-    return dict(possessions=len(poss),
-                off_lineups_not_five=len(off_bad),
-                def_lineups_not_five=len(def_bad),
-                clean=bool(len(off_bad) == 0 and len(def_bad) == 0))
+    e = load_pbp()
+    tg = pd.read_parquet(PBP_TEAM)
+    xw = game_crosswalk(e, tg)
+    starts = starting_lineups()
+    meta = xw.set_index("game_id")
+
+    checked = mismatched = misordered = 0
+    for gid, got in poss.groupby("game_id", sort=False):
+        m = meta.loc[gid]
+        h, a = int(m.home_id), int(m.away_id)
+        st = {h: starts.get((str(gid), h), set()), a: starts.get((str(gid), a), set())}
+        want = _expected_possessions(e[e.game_id == gid], h, a, st)
+        if len(want) != len(got):
+            misordered += 1
+            continue
+        for (w_off, w_lu), r in zip(want, got.itertuples()):
+            checked += 1
+            if (w_off != r.off_team
+                    or frozenset(r.off_lineup) != w_lu[w_off]
+                    or frozenset(r.def_lineup) != w_lu[a if w_off == h else h]):
+                mismatched += 1
+
+    return dict(possessions=len(poss), checked=checked,
+                lineup_mismatches=mismatched, games_out_of_step=misordered,
+                sizes_not_five=int((poss.off_lineup.map(len) != 5).sum()
+                                   + (poss.def_lineup.map(len) != 5).sum()),
+                clean=bool(mismatched == 0 and misordered == 0
+                           and checked == len(poss)))
+
+
+def _expected_possessions(ev: pd.DataFrame, home_id: int, away_id: int,
+                          start: dict[int, set[int]]) -> list[tuple]:
+    """Independent second pass: (offensive team, lineups) as each possession opens."""
+    on = {home_id: set(start.get(home_id, set())), away_id: set(start.get(away_id, set()))}
+    other = {home_id: away_id, away_id: home_id}
+    out: list[tuple] = []
+    off_team = None
+    period = int(ev.period_number.iloc[0])
+    pending = None
+
+    def close():
+        nonlocal pending
+        if pending is not None:
+            out.append(pending)
+            pending = None
+
+    def open_(team):
+        nonlocal pending
+        pending = (team, {k: frozenset(v) for k, v in on.items()})
+
+    for row in ev.itertuples():
+        t = row.type_text or ""
+        if int(row.period_number) != period:
+            close()
+            off_team, period = None, int(row.period_number)
+        if t == "Substitution":
+            tid = int(row.team_id) if not pd.isna(row.team_id) else None
+            if tid in on and not pd.isna(row.athlete_id_1) and not pd.isna(row.athlete_id_2):
+                on[tid].discard(int(row.athlete_id_2))
+                on[tid].add(int(row.athlete_id_1))
+            continue
+        if t in PERIOD_END:
+            close()
+            off_team = None
+            continue
+        if not _informative(t) or pd.isna(row.team_id):
+            continue
+        tid = int(row.team_id)
+        if tid not in on:
+            continue
+        ball = tid
+        if t == "Defensive Rebound":
+            if off_team is None:
+                off_team = other[tid]
+                open_(off_team)
+            ball = tid
+        if off_team is None:
+            off_team = ball
+            open_(off_team)
+        elif ball != off_team:
+            close()
+            off_team = ball
+            open_(off_team)
+    close()
+    return out
+
+
+def season_rating_check(poss: pd.DataFrame, min_poss: int = 250) -> dict:
+    """Compare season on-court ratings against pbpstats, possession-weighted.
+
+    This table lived in DERIVED_POSSESSIONS.md for several vintages without any
+    script producing it, so it could not be regenerated and quietly went stale.
+    Computing it here puts it in the manifest where `verify_docs.py` can hold
+    the document to it.
+
+    Both sides are possession-weighted season aggregates. Averaging per-game
+    rates instead would be an average of averages and is wrong for any rate
+    whose denominator varies by game.
+
+    Only the possession denominator carries the calibration weight, matching
+    `lineup_splits`. Weighting the points too cancels it out.
+    """
+    pg = pd.read_parquet(PBP_PLAYER)
+    pg["player_id"] = pg.player_id.astype(int)
+    esp2pbp = {v: k for k, v in player_crosswalk().items()}
+
+    parts = []
+    for side, lin in (("off", "off_lineup"), ("def", "def_lineup")):
+        ex = poss[[lin, "points", "poss_weight"]].explode(lin).rename(columns={lin: "espn_id"})
+        ex["side"] = side
+        parts.append(ex)
+    ex = pd.concat(parts)
+    ex["espn_id"] = pd.to_numeric(ex.espn_id, errors="coerce")
+    # Only the denominator is calibrated. Weighting points as well cancels the
+    # calibration and gives back the raw reconstructed rating -- and disagrees
+    # with `lineup_splits`, which is this repo's convention for the same rate.
+    g = ex.groupby(["espn_id", "side"], as_index=False).agg(
+        poss=("poss_weight", "sum"), pts=("points", "sum"))
+    piv = g.pivot(index="espn_id", columns="side", values=["poss", "pts"])
+    piv.columns = [f"{a}_{b}" for a, b in piv.columns]
+    piv = piv.reset_index()
+    piv["d_ortg"] = piv.pts_off / piv.poss_off * 100
+    piv["d_net"] = piv.d_ortg - piv.pts_def / piv.poss_def * 100
+
+    ref = pg.groupby("player_id").apply(lambda d: pd.Series({
+        "ortg": (d.on_off_rtg / 100 * d.off_poss).sum() / d.off_poss.sum() * 100,
+        "drtg": (d.on_def_rtg / 100 * d.def_poss).sum() / d.def_poss.sum() * 100,
+    }), include_groups=False).reset_index()
+    ref["net"] = ref.ortg - ref.drtg
+    ref["espn_id"] = ref.player_id.map(esp2pbp)
+
+    j = piv.merge(ref.dropna(subset=["espn_id"]), on="espn_id", how="inner")
+    j = j[j.poss_off >= min_poss]
+    return dict(min_poss=min_poss, players=len(j),
+                ortg_r=round(float(j.d_ortg.corr(j.ortg)), 3),
+                ortg_mae=round(float((j.d_ortg - j.ortg).abs().mean()), 2),
+                net_r=round(float(j.d_net.corr(j.net)), 3),
+                net_mae=round(float((j.d_net - j.net).abs().mean()), 2))
 
 
 def validate(poss: pd.DataFrame) -> dict:
