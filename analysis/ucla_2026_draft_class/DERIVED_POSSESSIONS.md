@@ -72,11 +72,11 @@ every rate on the pbpstats scale without touching the lineup structure.
 
 | Check | Result |
 |---|---|
-| Team-game **points** | **Exact on 100% of 562 team-games**, MAE 0.00 |
+| Team-game **points** | **Exact on 100% of 566 team-games**, MAE 0.00 |
 | Team-game possessions | r = 0.971, mean +1.20, MAE 1.31 on a base of ~80 |
-| Player-game on-court possessions | **r = 0.9972**, MAE 1.19, median error +0.5% |
-| Season on-court ORtg vs pbpstats (169 players, 250+ poss) | r = 0.975, MAE 1.03 |
-| Season on-court NET vs pbpstats | r = 0.972, MAE 1.65 |
+| Player-game on-court possessions | **r = 0.9983**, MAE 0.96, median error 0.0% |
+| Season on-court ORtg vs pbpstats (169 players, 250+ poss) | r = 0.993, MAE 0.49 |
+| Season on-court NET vs pbpstats | r = 0.990, MAE 1.28 |
 
 Points reproducing exactly across every team-game means the scoring
 attribution is right. Player-game possessions correlating at 0.997 means the
@@ -89,9 +89,9 @@ Comparing the derived single-player on/off against the exact pbpstats version:
 
 | Pool | n | corr | MAE |
 |---|---:|---:|---:|
-| All players, 150+ poss | 187 | 0.839 | 3.88 |
-| **Players in 95%+ of team games** | 57 | **0.906** | **2.54** |
-| Players missing >5% of games | 130 | 0.822 | 4.47 |
+| All players, 150+ poss | 188 | 0.872 | 3.02 |
+| **Players in 95%+ of team games** | 56 | **0.956** | **1.80** |
+| Players missing >5% of games | 132 | 0.853 | 3.54 |
 
 The gap between those last two rows is **a definition difference, not error**.
 pbpstats computes on/off only within games a player appeared in; the derived
@@ -118,7 +118,7 @@ That threshold decides both findings below.
 
 ### The two-big number is unpublishable, and four vintages prove it
 
-Full season, 281 games:
+Full season, 283 games:
 
 | WAS state | Off poss | ORtg | DRtg | Net |
 |---|---:|---:|---:|---:|
@@ -135,7 +135,7 @@ Track the same quantity across every vintage of the data we have:
 | Frozen sportsdataverse parquet, 202 games | **+1.6** over 200 poss |
 | Derived layer, same 202 games | **−1.6** over 218 poss |
 | Derived layer, 277 games | **−0.1** over 400 poss |
-| Derived layer, 281 games | **+4.7** over 421 poss |
+| Derived layer, 283 games | **+4.7** over 421 poss |
 
 Four estimates of one pairing spanning **6.3 points per 100**, with the sign
 changing twice. The last step is the most damning: **four extra team games
@@ -150,31 +150,43 @@ statement is that this sample cannot resolve whether the pairing helps.
 
 | WAS state | Off poss | ORtg | DRtg | Net |
 |---|---:|---:|---:|---:|
-| Neither | 1,326 | 108.6 | 105.7 | **+2.9** |
-| Betts without Dugalic | 989 | 101.9 | 102.0 | −0.1 |
-| Dugalic without Betts | 388 | 97.9 | 106.7 | −8.9 |
-| **Betts + Dugalic** | 232 | 99.7 | **116.5** | **−16.8** |
+| Neither | 1,352 | 109.8 | 107.4 | **+2.4** |
+| Betts without Dugalic | 972 | 101.8 | 99.2 | +2.6 |
+| Dugalic without Betts | 386 | 96.0 | 108.8 | −12.8 |
+| **Betts + Dugalic** | 224 | 94.8 | **114.7** | **−20.0** |
 
-A 20-point gap between the pairing and Washington's other minutes, comfortably
-past the threshold — and, unlike Betts + Austin, **stable across vintages**:
-the pairing sat at −16.8 at 277 games and −16.8 at 281. That stability is the
-reason this one is publishable and the other is not. The game-level proxy in the first document put it at −13.0;
-at possession level it is −16.8, and the damage is almost entirely defensive
-(116.5 allowed, 12 points worse than the team's other lineups). Washington's
-two UCLA rookies sharing the floor is the clearest role-construction problem in
-the cohort, and it now has possession-level evidence across the full season.
+A 22-point gap between the pairing and Washington's other minutes, comfortably
+past the threshold — and, unlike Betts + Austin, **stable in sign and rough
+magnitude across every vintage and across the substitution-attribution fix**:
+the pairing sat at −16.8 at 277 games, −16.8 at 281, and −20.0 at 283 games
+once possessions were attributed to the lineup that opened them rather than the
+one on the floor at flush. That stability is the reason this one is publishable
+and the other is not. The game-level proxy in the first document put it at
+−13.0; at possession level it is −20.0, and the damage is almost entirely
+defensive (114.7 allowed, 7 points worse than the team's other lineups).
+Washington's two UCLA rookies sharing the floor is the clearest
+role-construction problem in the cohort, and it now has possession-level
+evidence across the full season.
+
+The move from −16.8 to −20.0 is the lineup fix, not the two added games: before
+the fix, 7.3% of possessions carried the lineup that *replaced* the five who
+played them, which blurs every duo split toward the team average. Correcting it
+sharpened this one rather than reversing it.
 
 ### The other pairings
 
 | Pair | Together | Best available state | Gap | Verdict |
 |---|---:|---|---:|---|
-| Leger-Walker + Kneepkens (CON) | −16.4 (267) | Leger-Walker alone −8.9 | 7.5 | Suggestive, inside noise |
-| Rice + Allemand (TOR) | −11.8 (306) | Rice alone −5.3 | 6.5 | Suggestive, inside noise |
-| Jaquez + Cloud (CHI) | −3.5 (688) | Neither +5.3 | 8.8 | Suggestive, inside noise |
+| Leger-Walker + Kneepkens (CON) | −13.3 (262) | Leger-Walker alone −9.1 | 4.2 | Suggestive, inside noise |
+| Rice + Allemand (TOR) | −7.9 (306) | Rice alone −3.2 | 4.8 | Suggestive, inside noise |
+| Jaquez + Cloud (CHI) | −9.2 (666) | Cloud alone −1.0 | 8.2 | Suggestive, inside noise |
 
 All three point the same direction as the earlier partial-season reads, none
-clears the bar for a published claim. The Rice + Allemand split is still worth
-noting descriptively: Toronto plays them together for only 306 of Rice's 1,088
+clears the bar for a published claim — and every gap *shrank* once possessions
+were attributed to the lineup that opened them, which is the expected direction:
+the bug mixed adjacent lineups together, and mixing exaggerates a split whenever
+the two states differ. The Rice + Allemand split is still worth noting
+descriptively: Toronto plays them together for only 306 of Rice's 1,087
 on-court possessions, which corroborates the full-season minutes-correlation
 finding (4.7th percentile of substitution) through a second route.
 
@@ -191,30 +203,33 @@ where her minutes actually go.
 
 The pipeline refreshes daily, and rebuilding on each new vintage has turned
 into the most useful robustness check in this project. Coverage history:
-**274 games / 08-21 → 277 / 08-22 → 281 / 08-23**, with every export
-regenerated each time.
+**274 games / 08-21 → 277 / 08-22 → 281 / 08-23 → 283 games / 08-24**, with
+every export regenerated each time.
 
-What four extra games (277 → 281) did to published figures:
+What successive vintages did to published figures. The last column also
+absorbs the substitution-attribution fix, which lands between the 281 and 283
+columns and is the larger of the two perturbations for anything lineup-derived:
 
-| Figure | 277 games | 281 games | Verdict |
-|---|---:|---:|---|
-| Betts + Dugalic net/100 | −16.8 | **−16.8** | stable |
-| Rice pre-injury on/off swing | +20.6 | **+20.6** | stable |
-| Rice minutes, return 1–5 / 6–10 | 21.5 / 29.5 | **21.5 / 29.6** | stable |
-| Betts + Austin net/100 | −0.1 | **+4.7** | unstable |
-| Rice on/off swing, return block g32+ | +18.1 | **+2.6** | unstable |
-| Rice season on/off swing | +11.4 | **+7.8** | drifting |
-| Betts season on/off swing | −4.8 | **−1.7** | drifting |
+| Figure | 277 games | 281 games | 283 games + fix | Verdict |
+|---|---:|---:|---:|---|
+| Betts + Dugalic net/100 | −16.8 | −16.8 | **−20.0** | stable in sign and tier |
+| Rice pre-injury on/off swing | +20.6 | +20.6 | **+21.7** | stable |
+| Rice minutes, return 1–5 / 6+ | 21.5 / 29.5 | 21.5 / 29.6 | **21.5 / 29.6** | stable |
+| Betts + Austin net/100 | −0.1 | +4.7 | **+3.2** | unstable |
+| Rice on/off swing, return block g32+ | +18.1 | +2.6 | **+1.1** | unstable |
+| Rice season on/off swing | +11.4 | +7.8 | **+5.7** | drifting |
+| Betts season on/off swing | −4.8 | −1.7 | **−0.7** | drifting |
 
 The pattern is clean and worth stating in the piece: **rate and role
 measurements are stable; small-sample on/off differentials are not.** Minutes,
 shooting splits, shot diet and the large well-sampled pairing all reproduce.
 Anything resting on a few hundred possessions moves by several points per 100
-on a handful of games.
+on a handful of games — and, as the last column shows, by a similar amount on a
+correctness fix to how those possessions were attributed.
 
 Two earlier vintage notes, retained: Jaquez's net swing fell −7.21 → −9.29 at
-277 games as her decline continued, and Kneepkens flipped −2.06 → +0.53 on one
-extra game.
+277 games as her decline continued (it reads −5.69 after the fix), and
+Kneepkens flipped −2.06 → +0.53 on one extra game.
 
 ## 6. Reproducing
 
@@ -223,7 +238,7 @@ python3 scripts/ucla_2026_draft_class/run_derived_possessions.py
 ```
 
 Builds and calibrates the layer, prints the full validation report, and writes
-`derived_possessions_2026.parquet` (45,643 possessions, 281 games) plus
+`derived_possessions_2026.parquet` (45,945 possessions, 283 games) plus
 `story_duo_splits_full_season.csv`, `story_derived_onoff_full_season.csv`,
 `story_rice_blocks_derived.csv`, `derived_vs_exact_onoff.csv` and
 `derived_stale_window_replication.csv`.

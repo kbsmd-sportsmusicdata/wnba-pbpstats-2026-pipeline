@@ -29,6 +29,7 @@ def load_truth() -> dict:
     story = json.loads((DATA / "story_manifest.json").read_text())
     derived = json.loads((DATA / "derived_possessions_manifest.json").read_text())
     noise = derived["noise"]
+    ext = json.loads((DATA / "external_rapm_check.json").read_text())
     impact = json.loads((DATA / "impact_manifest.json").read_text())
     sdv = ROOT / "data/raw/sportsdataverse/wnba_2026"
     frozen_poss = pd.read_parquet(sdv / "wnba_possessions_2026.parquet", columns=["game_id"])
@@ -44,6 +45,11 @@ def load_truth() -> dict:
         "through": str(pd.to_datetime(pg.game_date).max().date()),
         "possessions": int(derived["possessions"]),
         "team_games_validated": int(derived["validation"]["team_games"]),
+        "player_poss_r": float(derived["validation"]["player_poss_corr"]),
+        "season_ortg_r": float(derived["validation"]["season_ratings"]["ortg_r"]),
+        "season_ortg_mae": float(derived["validation"]["season_ratings"]["ortg_mae"]),
+        "season_net_r": float(derived["validation"]["season_ratings"]["net_r"]),
+        "season_net_mae": float(derived["validation"]["season_ratings"]["net_mae"]),
         "league_pool": int(story["league_pool_size"]),
         "rookie_pool": int(story["rookie_pool_size"]),
         "rookie_population": int(story["rookie_population"]),
@@ -53,6 +59,11 @@ def load_truth() -> dict:
         "attenuation_off": impact["attenuation_offense"],
         "attenuation_def": impact["attenuation_defense"],
         "points_per_win": impact["points_per_win"]["points_per_win"],
+        "reliability_200": impact["split_half_reliability"]["200+_poss"]["full_season_reliability"],
+        "ext_matched": int(ext["matched"]),
+        "ext_raw_in_band": int(ext["raw_inside_reference_interval"]),
+        "ext_se": float(ext["reference_median_se"]),
+        "ext_span": float(ext["reference_span_in_se"]),
         "ppw_r2": impact["points_per_win"]["r2"],
         "replacement": impact["replacement_rapm"],
         "impact_players": int(impact["players"]),
@@ -71,6 +82,13 @@ def checks(t: dict) -> list[tuple[str, str, str]]:
         ("EDA_FINDINGS_PBPSTATS_ONLY.md", rf"202/{g} games", "frozen-possessions ratio"),
         ("EDA_FINDINGS_PBPSTATS_ONLY.md", re.escape(t["through"]), "coverage date"),
         ("DERIVED_POSSESSIONS.md", rf"{t['team_games_validated']} team-games", "validated team-games"),
+        # this table sat in the document for several vintages with no script
+        # producing it, so it could not be regenerated and went stale unnoticed
+        ("DERIVED_POSSESSIONS.md", rf"{t['season_ortg_r']:.3f}, MAE {t['season_ortg_mae']:.2f}",
+         "season on-court ORtg check"),
+        ("DERIVED_POSSESSIONS.md", rf"{t['season_net_r']:.3f}, MAE {t['season_net_mae']:.2f}",
+         "season on-court NET check"),
+        ("DERIVED_POSSESSIONS.md", rf"\br = {t['player_poss_r']:.4f}\b", "player-game possession check"),
         ("DERIVED_POSSESSIONS.md", rf"{p:,} possessions", "possession count"),
         ("DERIVED_POSSESSIONS.md", rf"\|\s*{t['noise_all_n']}\s*\|", "all-players noise sample"),
         ("DERIVED_POSSESSIONS.md", rf"\|\s*{t['noise_ever_n']}\s*\|", "ever-present noise sample"),
@@ -99,9 +117,21 @@ def checks(t: dict) -> list[tuple[str, str, str]]:
         ("IMPACT_LAYER.md", rf"[-\u2212]{abs(t['replacement']):.1f} points per 100",
          "replacement level"),
         ("IMPACT_LAYER.md", re.escape(f"{t['reliability_1000']:.3f}"), "split-half reliability"),
+        # the framework quotes impact diagnostics too and drifted once already
+        ("METRIC_FRAMEWORK.md", rf"reliability is {t['reliability_200']:.2f}",
+         "framework reliability"),
+        ("METRIC_FRAMEWORK.md",
+         rf"{t['attenuation_off']:.3f} / {t['attenuation_def']:.3f}",
+         "framework attenuation"),
         ("IMPACT_LAYER.md", re.escape(f"{t['implied_repl_win_pct'] * 100:.1f}%"),
          "implied replacement win rate"),
         ("IMPACT_LAYER.md", rf"\b{t['impact_players']} players\b", "impact player count"),
+        # external RAPM cross-check; the reference file is committed alongside
+        ("IMPACT_LAYER.md", rf"\*\*{t['ext_raw_in_band']} / {t['ext_matched']} \(96%\)\*\*",
+         "external RAPM interval coverage"),
+        ("IMPACT_LAYER.md", rf"standard error of \*\*{t['ext_se']:.2f}\*\*",
+         "external reference SE"),
+        ("IMPACT_LAYER.md", rf"\*\*{t['ext_span']:.2f} SE\*\*", "external reference span"),
     ]
 
 
@@ -223,7 +253,19 @@ def _plain(body: str) -> str:
 
 
 def prose_check(text: dict[str, str]) -> list[str]:
-    """No document may describe the open-ended return window as a closed range."""
+    """Best-effort lint for the closed-range *forms* that have appeared so far.
+
+    Deliberately not a guarantee, and the docstring said otherwise for five
+    rounds of review. It matches digits, cardinal number words and g-ranges
+    after markdown normalisation; English has unbounded other ways to write a
+    fixed count ("a dozen", "a handful of", "half a dozen"), so prose can always
+    be phrased around it. Claiming a guarantee here is what made four
+    "confirmed and fixed" replies sound conclusive when each had only closed one
+    lexical hole.
+
+    The enforceable check is `label_check`, which reads the exports' actual
+    block labels rather than commentary about them.
+    """
     bad = []
     for f, raw in text.items():
         body = _plain(raw)

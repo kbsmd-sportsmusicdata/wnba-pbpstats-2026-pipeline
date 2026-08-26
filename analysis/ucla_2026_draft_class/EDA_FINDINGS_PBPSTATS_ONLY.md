@@ -4,7 +4,7 @@ A second pass at the 2026 UCLA draft class built **exclusively on the pbpstats
 game layer**. Nothing here depends on a source that stops in mid-July.
 
 > **Coverage:** figures were regenerated against the refreshed pipeline —
-> **281 games through 2026-08-23**. Rate and role measurements held; several
+> **283 games through 2026-08-24**. Rate and role measurements held; several
 > small-sample on/off differentials moved materially, including one correction
 > to §1 below. The vintage-by-vintage comparison is in §5 of
 > [`DERIVED_POSSESSIONS.md`](./DERIVED_POSSESSIONS.md).
@@ -15,8 +15,8 @@ including partial-season sources) and
 
 ## What this document is allowed to use
 
-**In:** `player_game.parquet` (281 games, 229 players, 252 columns) and
-`team_game.parquet` (281 games, 562 rows). Every number below is computed from
+**In:** `player_game.parquet` (283 games, 229 players, 252 columns) and
+`team_game.parquet` (283 games, 566 rows). Every number below is computed from
 those two files.
 
 **One exception, stated plainly:** pbpstats carries no college or draft
@@ -29,8 +29,8 @@ the mid-July sources are.
 
 | Dropped source | Coverage | Claims from `EDA_FINDINGS.md` that do not survive |
 |---|---|---|
-| `wnba_possessions_2026` | 202/281 games | Betts + Austin two-big net rating; Betts + Iriafen; Rice + Allemand; Kneepkens + Leger-Walker duo splits; all co-presence percentages; opponent shot-profile on/off |
-| `wnba_lineups_2026` | 195/281 games | Any stint-level construction |
+| `wnba_possessions_2026` | 202/283 games | Betts + Austin two-big net rating; Betts + Iriafen; Rice + Allemand; Kneepkens + Leger-Walker duo splits; all co-presence percentages; opponent shot-profile on/off |
+| `wnba_lineups_2026` | 195/283 games | Any stint-level construction |
 | `wnba_player_impact_2026` | gp ≤ 29 | RAPM, BPM, WAR, DARKO for all six |
 | `player_box_2026` (ESPN) | full season, but not pbpstats | Starts and DNP counts |
 
@@ -294,10 +294,12 @@ Betts–Dugalic pairing problem gained a second, independent line of support.
 rebuilt for the full season from play-by-play
 ([`DERIVED_POSSESSIONS.md`](./DERIVED_POSSESSIONS.md)). Betts + Austin is
 dead as a story — it swings 6.3 points across data vintages. Betts + Dugalic is
-confirmed, worse than the game-level proxy suggested (−16.8 per 100 against
-+2.9 for Washington's other minutes), and stable across vintages.
-Still withdrawn: all opponent shot-profile splits and all RAPM/BPM/WAR
-figures, which depend on sources that remain frozen in mid-July.
+confirmed, worse than the game-level proxy suggested (−20.0 per 100 against
++2.4 for Washington's other minutes), and stable across vintages.
+RAPM and WAR are no longer withdrawn — both are now computed in-repo on the
+full season ([`IMPACT_LAYER.md`](./IMPACT_LAYER.md)). Still withdrawn: all
+opponent shot-profile splits, and BPM, which depend on sources that remain
+frozen in mid-July.
 
 **Still open**, in priority order: extend the *impact* layer (RAPM/BPM/WAR)
 past mid-July — the possessions half of this is now done; Betts's shot chart from

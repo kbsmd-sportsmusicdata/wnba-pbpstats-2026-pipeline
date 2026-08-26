@@ -27,6 +27,11 @@ def main() -> None:
     poss.to_parquet(OUT / "derived_possessions_2026.parquet", index=False)
     v = dp.validate(poss)
     report = {k: v[k] for k in v if not k.startswith("_")}
+    audit = dp.lineup_audit(poss)
+    report["lineup_audit"] = audit
+    report["season_ratings"] = dp.season_rating_check(poss)
+    if not audit["clean"]:
+        raise SystemExit(f"lineup audit failed: {audit}")
     print("VALIDATION:", json.dumps(report, indent=2))
 
     core = pd.read_csv(ROOT / "analysis/role_fulfillment_matrix/data/live_inputs/player_core_2026.csv")

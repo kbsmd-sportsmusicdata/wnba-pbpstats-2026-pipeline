@@ -19,8 +19,8 @@ holds the exploratory analysis and the filtered, design-ready data behind it.
   of what to dig into next. Uses every available source, including three that
   stop in mid-July.
 - **[`EDA_FINDINGS_PBPSTATS_ONLY.md`](./EDA_FINDINGS_PBPSTATS_ONLY.md)** — a
-  second pass built exclusively on the pbpstats game layer (281 games, through
-  2026-08-23). States which first-pass claims do not survive the restriction,
+  second pass built exclusively on the pbpstats game layer (283 games, through
+  2026-08-24). States which first-pass claims do not survive the restriction,
   rebuilds two of them from full-season data, and resolves the Kiki Rice
   on/off contradiction: her return was a five-game minutes restriction, and
   and her per-possession rates collapse and recover with it. **Use this one for
@@ -56,11 +56,11 @@ All are small enough to inline into an HTML artifact.
 | `story_teammate_minute_correlations.csv` | 663 | Every rotation-teammate pair league-wide, minutes correlation and percentile |
 | `story_opponent_adjusted_scoring.csv` | 6 | Schedule strength faced and opponent-adjusted scoring rate |
 | `story_team_defense_strength.csv` | 15 | Team defensive rating and distance from league average |
-| `derived_possessions_2026.parquet` | 45,643 | Full-season possession layer: both five-player lineups, points, calibration weight. Drop-in replacement for the frozen `wnba_possessions_2026.parquet` |
+| `derived_possessions_2026.parquet` | 45,945 | Full-season possession layer: both five-player lineups, points, calibration weight. Drop-in replacement for the frozen `wnba_possessions_2026.parquet` |
 | `story_duo_splits_full_season.csv` | 24 | Every duo state (both on / one on / neither) with ORtg, DRtg, net |
 | `story_derived_onoff_full_season.csv` | 6 | Possession-level on/off for the six |
 | `story_rice_blocks_derived.csv` | 4 | Rice's return windows on the derived layer |
-| `derived_vs_exact_onoff.csv` | 187 | Derived vs pbpstats-exact on/off, for error bars |
+| `derived_vs_exact_onoff.csv` | 188 | Derived vs pbpstats-exact on/off, for error bars |
 | `impact_rapm_war_2026.csv` | 229 | RAPM (raw and calibrated), WAA and WAR for every player |
 | `story_ucla_six_impact.csv` | 6 | The six, with percentile against the 200+ possession pool |
 
@@ -119,7 +119,7 @@ Charts the data is already shaped for, roughly in order of how much they carry:
    annotation.
 
 Three things to carry into the copy. Impact is no longer stale — RAPM and WAR
-are rebuilt on all 281 games (`IMPACT_LAYER.md`); quote WAA rather than WAR
+are rebuilt on all 283 games (`IMPACT_LAYER.md`); quote WAA rather than WAR
 unless you state the replacement level, and read RAPM as ranks, since
 split-half reliability is 0.64.
 Rice (21 games) and Kneepkens (~230 minutes) are below any normal stability
@@ -128,8 +128,11 @@ differentials move by several points per 100 on a handful of new games, while
 minutes, shooting splits and shot diet reproduce across every vintage — prefer
 the latter for anything stated as a fact.
 
-Claims to leave out: all opponent shot-profile splits and all RAPM/BPM/WAR
-figures, whose sources are still frozen in mid-July. The duo numbers are no
-longer on that list — they were rebuilt for the full season, and the Betts +
-Austin two-big angle died in the process (see `DERIVED_POSSESSIONS.md`). Treat
-any duo gap under about 15 points per 100 as indistinguishable from noise.
+Claims to leave out: all opponent shot-profile splits, and BPM, whose sources
+are still frozen in mid-July. RAPM and WAR are no longer on that list — both
+are computed in-repo on the full season (`IMPACT_LAYER.md`), though quote them
+as ranks and tiers rather than decimals: split-half reliability is 0.59, and
+the ordering within the six is not resolvable. Nor are the duo numbers — they
+were rebuilt for the full season, and the Betts + Austin two-big angle died in
+the process (see `DERIVED_POSSESSIONS.md`). Treat any duo gap under about 15
+points per 100 as indistinguishable from noise.
