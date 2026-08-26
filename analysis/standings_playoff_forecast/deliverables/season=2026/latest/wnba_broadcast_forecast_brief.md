@@ -30,7 +30,7 @@ Current standings reconstructed from completed regular-season schedule + team-bo
 | 4 | ATL | 25-13 | 65.8% | 5.50 | 12-6 | 13-7 | 7-3 | W4 | Unavailable | 8-11 | 214.0 | 100.0% | 4.27 | Mathematically clinched |
 | 5 | IND | 25-14 | 64.1% | 6.00 | 13-6 | 12-8 | 6-4 | W1 | Unavailable | 9-11 | 222.0 | 100.0% | 4.93 | Mathematically clinched |
 | 6 | NY | 23-15 | 60.5% | 7.50 | 13-5 | 10-10 | 7-3 | W1 | Unavailable | 9-9 | 119.0 | 100.0% | 6.73 | Mathematically clinched |
-| 7 | WSH | 22-15 | 59.5% | 8.00 | 13-7 | 9-8 | 7-3 | W1 | Unavailable | 9-11 | -19.0 | 100.0% | 6.83 | In contention |
+| 7 | WSH | 22-15 | 59.5% | 8.00 | 13-7 | 9-8 | 7-3 | W1 | Unavailable | 9-11 | -19.0 | 100.0% | 6.83 | Mathematically clinched |
 | 8 | DAL | 22-16 | 57.9% | 8.50 | 12-6 | 10-10 | 4-6 | W2 | Unavailable | 7-15 | 102.0 | 100.0% | 6.79 | In contention |
 | 9 | POR | 15-22 | 40.5% | 15.00 | 8-11 | 7-11 | 4-6 | L2 | Unavailable | 6-14 | -162.0 | 0.0% | 10.26 | In contention |
 | 10 | CHI | 15-23 | 39.5% | 15.50 | 10-10 | 5-13 | 5-5 | L1 | Unavailable | 5-16 | -95.0 | 0.0% | 9.53 | Mathematically eliminated |
