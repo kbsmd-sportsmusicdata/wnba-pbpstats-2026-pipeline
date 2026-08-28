@@ -3431,6 +3431,30 @@
       "AwayPossessions": 76,
       "HomeTeamAbbreviation": "PHX",
       "AwayTeamAbbreviation": "WAS"
+    },
+    {
+      "GameId": "1022600287",
+      "Date": "2026-08-26",
+      "HomeTeamId": "1611661323",
+      "AwayTeamId": "1611661331",
+      "HomePoints": 64,
+      "AwayPoints": 89,
+      "HomePossessions": 75,
+      "AwayPossessions": 74,
+      "HomeTeamAbbreviation": "CON",
+      "AwayTeamAbbreviation": "GSV"
+    },
+    {
+      "GameId": "1022600288",
+      "Date": "2026-08-26",
+      "HomeTeamId": "1611661328",
+      "AwayTeamId": "1611661332",
+      "HomePoints": 90,
+      "AwayPoints": 78,
+      "HomePossessions": 84,
+      "AwayPossessions": 83,
+      "HomeTeamAbbreviation": "SEA",
+      "AwayTeamAbbreviation": "TOR"
     }
   ]
 }
