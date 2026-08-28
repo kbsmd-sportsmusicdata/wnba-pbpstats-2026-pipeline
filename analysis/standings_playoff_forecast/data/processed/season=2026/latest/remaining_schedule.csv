@@ -1,9 +1,4 @@
 game_id,game_date,home_id,away_id,home_abbreviation,home_display_name,away_abbreviation,away_display_name,home_rest_days,away_rest_days,home_b2b,away_b2b
-401857173,2026-08-25,18,19,CON,Connecticut Sun,CHI,Chicago Sky,2,1,False,False
-401857174,2026-08-25,3,132052,DAL,Dallas Wings,POR,Portland Fire,1,1,False,False
-401857175,2026-08-25,11,16,PHX,Phoenix Mercury,WSH,Washington Mystics,2,1,False,False
-401857176,2026-08-26,18,129689,CON,Connecticut Sun,GS,Golden State Valkyries,0,1,True,False
-401857177,2026-08-26,14,131935,SEA,Seattle Storm,TOR,Toronto Tempo,2,2,False,False
 401857178,2026-08-27,9,129689,NY,New York Liberty,GS,Golden State Valkyries,4,0,False,True
 401857179,2026-08-27,11,16,PHX,Phoenix Mercury,WSH,Washington Mystics,1,1,False,False
 401857180,2026-08-28,20,132052,ATL,Atlanta Dream,POR,Portland Fire,3,2,False,False
