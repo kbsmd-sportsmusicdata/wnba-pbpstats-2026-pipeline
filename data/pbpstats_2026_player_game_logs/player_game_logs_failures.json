@@ -1,12 +1,7 @@
 [
   {
-    "player_id": "1628922",
-    "name": "Azura Stevens",
-    "error": "failed to fetch /get-game-logs/wnba after 5 attempts: retryable status 500"
-  },
-  {
-    "player_id": "1631135",
-    "name": "Olivia Nelson-Ododa",
+    "player_id": "1630149",
+    "name": "Satou Sabally",
     "error": "failed to fetch /get-game-logs/wnba after 5 attempts: retryable status 500"
   }
 ]
