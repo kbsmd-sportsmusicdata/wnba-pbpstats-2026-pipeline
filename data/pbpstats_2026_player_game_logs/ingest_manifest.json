@@ -1,29 +1,29 @@
 {
-  "generated_at_utc": "2026-08-28T23:16:12+00:00",
+  "generated_at_utc": "2026-08-29T17:26:25+00:00",
   "season": "2026",
   "season_type": "Regular Season",
-  "games_total": 290,
-  "coverage_through": "2026-08-27",
+  "games_total": 294,
+  "coverage_through": "2026-08-28",
   "players_total": 229,
   "players": {
     "is_first_build": false,
-    "affected_players": 64,
-    "refreshed_players": 63,
-    "failed_players": 1,
-    "new_game_ids": 2,
-    "combined_rows": 5765,
+    "affected_players": 122,
+    "refreshed_players": 120,
+    "failed_players": 2,
+    "new_game_ids": 4,
+    "combined_rows": 5846,
     "combined_players": 229,
-    "combined_game_ids": 290
+    "combined_game_ids": 294
   },
   "teams_total": 15,
   "teams": {
     "is_first_build": false,
-    "affected_teams": 4,
-    "refreshed_teams": 4,
+    "affected_teams": 8,
+    "refreshed_teams": 8,
     "failed_teams": 0,
-    "new_game_ids": 2,
-    "combined_rows": 580,
+    "new_game_ids": 4,
+    "combined_rows": 588,
     "combined_teams": 15,
-    "combined_game_ids": 290
+    "combined_game_ids": 294
   }
 }
