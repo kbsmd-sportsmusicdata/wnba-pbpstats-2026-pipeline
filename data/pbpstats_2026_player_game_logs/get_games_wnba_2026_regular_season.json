@@ -3527,6 +3527,30 @@
       "AwayPossessions": 76,
       "HomeTeamAbbreviation": "LAS",
       "AwayTeamAbbreviation": "WAS"
+    },
+    {
+      "GameId": "1022600295",
+      "Date": "2026-08-29",
+      "HomeTeamId": "1611661313",
+      "AwayTeamId": "1611661329",
+      "HomePoints": 85,
+      "AwayPoints": 66,
+      "HomePossessions": 80,
+      "AwayPossessions": 80,
+      "HomeTeamAbbreviation": "NYL",
+      "AwayTeamAbbreviation": "CHI"
+    },
+    {
+      "GameId": "1022600296",
+      "Date": "2026-08-29",
+      "HomeTeamId": "1611661317",
+      "AwayTeamId": "1611661332",
+      "HomePoints": 101,
+      "AwayPoints": 69,
+      "HomePossessions": 80,
+      "AwayPossessions": 80,
+      "HomeTeamAbbreviation": "PHX",
+      "AwayTeamAbbreviation": "TOR"
     }
   ]
 }
