@@ -1,7 +1,1 @@
-[
-  {
-    "team_id": "1611661321",
-    "name": "DAL",
-    "error": "failed to fetch /get-game-logs/wnba after 5 attempts: retryable status 500"
-  }
-]
+[]
