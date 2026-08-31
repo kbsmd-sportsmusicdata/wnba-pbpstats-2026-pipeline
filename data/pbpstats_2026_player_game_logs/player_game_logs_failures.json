@@ -1,1 +1,27 @@
-[]
+[
+  {
+    "player_id": "1628278",
+    "name": "Shatori Walker-Kimbrough",
+    "error": "failed to fetch /get-game-logs/wnba after 5 attempts: retryable status 500"
+  },
+  {
+    "player_id": "1628878",
+    "name": "Ariel Atkins",
+    "error": "failed to fetch /get-game-logs/wnba after 5 attempts: retryable status 500"
+  },
+  {
+    "player_id": "1641651",
+    "name": "Jordan Horston",
+    "error": "failed to fetch /get-game-logs/wnba after 5 attempts: retryable status 500"
+  },
+  {
+    "player_id": "1641652",
+    "name": "Maddy Siegrist",
+    "error": "failed to fetch /get-game-logs/wnba after 5 attempts: retryable status 500"
+  },
+  {
+    "player_id": "1643686",
+    "name": "Nadia Fingall",
+    "error": "failed to fetch /get-game-logs/wnba after 5 attempts: retryable status 500"
+  }
+]
