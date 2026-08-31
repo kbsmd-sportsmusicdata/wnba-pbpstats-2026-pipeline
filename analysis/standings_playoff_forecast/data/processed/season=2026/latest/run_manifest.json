@@ -1,12 +1,12 @@
 {
   "conditional_simulation_count": 0,
-  "cutoff_date": "2026-08-26",
+  "cutoff_date": "2026-08-30",
   "external_standings_qa": {
     "compared_team_count": 0,
     "mismatch_team_ids": [],
     "status": "unavailable"
   },
-  "git_sha": "430bd3f03cc7f8747e440cb29f0c54d924e42082",
+  "git_sha": "6675cb0ae266742d8891e442128d15c918d33d4e",
   "git_sha_status": "available",
   "history_seasons_used": [],
   "ledger_validation": {
@@ -17,7 +17,7 @@
   "official_tiebreak_fallback_count": 0,
   "pbpstats_enrichment_status": "available_not_safe_for_cutoff",
   "pbpstats_provenance_kind": "last_saved_at_utc_upper_bound",
-  "random_seed": 20260826,
+  "random_seed": 20260830,
   "season": 2026,
   "season_config_sha256": "537185f08b3f32599b8785a8c5325db194105533f28a0f661976dee3324a2ad5",
   "season_schedule_validation": {
@@ -29,22 +29,22 @@
     {
       "name": "pbp_team_features",
       "path": "/home/runner/work/wnba-pbpstats-2026-pipeline/wnba-pbpstats-2026-pipeline/data/pbpstats_wnba_2026/features_latest/2026/team_totals_features_latest.csv",
-      "sha256": "668772ea57340afea0196d112c0a6567338085c6fda8f38b60dbc16b85242c28",
-      "size_bytes": 57233
+      "sha256": "f1aad5b9bf24eb917e724cce3217171c6a6b3d4b5e2bac3153f973cc39feef5b",
+      "size_bytes": 57377
     },
     {
-      "evidence_date": "2026-08-27T23:17:38+00:00",
+      "evidence_date": "2026-08-31T19:43:47+00:00",
       "evidence_kind": "last_saved_at_utc_upper_bound",
       "name": "pbp_team_features_sidecar",
       "path": "/home/runner/work/wnba-pbpstats-2026-pipeline/wnba-pbpstats-2026-pipeline/data/pbpstats_wnba_2026/features_latest/2026/team_totals_features_latest.json",
-      "sha256": "4dce94c4a4f33cc2f330d992b796ba13bd358f62fcba3085595d07307fe0c20e",
-      "size_bytes": 188158
+      "sha256": "03c4eba3b8ed6c3806f1026c69266334fb95dba1e48294c917293004648a3964",
+      "size_bytes": 188302
     },
     {
       "name": "schedule",
       "path": "/home/runner/work/wnba-pbpstats-2026-pipeline/wnba-pbpstats-2026-pipeline/data/raw/pbpstats_forecast/wnba_2026/schedule_2026.parquet",
-      "sha256": "6eca78947829718ecf1bdb9e84d2fa85b4d611060c9233ae48c3ae7964f75945",
-      "size_bytes": 332661
+      "sha256": "c49b68ab34630861c8e8d1dd08a87646f6947668560891ce0b797e9e7e9d9522",
+      "size_bytes": 340353
     },
     {
       "name": "season_config_default",
@@ -55,8 +55,8 @@
     {
       "name": "team_box",
       "path": "/home/runner/work/wnba-pbpstats-2026-pipeline/wnba-pbpstats-2026-pipeline/data/raw/pbpstats_forecast/wnba_2026/team_box_2026.parquet",
-      "sha256": "307e4e187988a5ad6e7bdc241ab9b03432d8433497883569cb2443488ca65cc1",
-      "size_bytes": 22778
+      "sha256": "1efa94ac21a493677836e7725604b237a1d83717e4fbc2e513c622123e246f7f",
+      "size_bytes": 23135
     },
     {
       "name": "team_history",
