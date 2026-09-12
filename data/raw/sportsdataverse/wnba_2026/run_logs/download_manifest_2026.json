@@ -127,7 +127,7 @@
       "column_count": 28,
       "filename": "wnba_player_impact_2026.parquet",
       "row_count": 231,
-      "sha256": "7149c19bfdfd555568a9ba241ec50068fba40525bab9726cf29d82be57dd56c3",
+      "sha256": "b013967a8751b801bf1031fdbe5bec917652b8de53849907cf0ea0d9cc22118a",
       "size_note": "~42 KB",
       "source": "SportsDataverse",
       "success": true,
