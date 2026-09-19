@@ -1,37 +1,17 @@
 [
   {
-    "player_id": "1629491",
-    "name": "Jessica Shepard",
+    "player_id": "1628881",
+    "name": "Monique Billings",
     "error": "failed to fetch /get-game-logs/wnba after 5 attempts: retryable status 500"
   },
   {
-    "player_id": "1631083",
-    "name": "Emily Engstler",
+    "player_id": "1629484",
+    "name": "Megan DiLeo",
     "error": "failed to fetch /get-game-logs/wnba after 5 attempts: retryable status 500"
   },
   {
-    "player_id": "1642785",
-    "name": "Sonia Citron",
-    "error": "failed to fetch /get-game-logs/wnba after 5 attempts: retryable status 500"
-  },
-  {
-    "player_id": "1642804",
-    "name": "Te-Hina Paopao",
-    "error": "failed to fetch /get-game-logs/wnba after 5 attempts: retryable status 500"
-  },
-  {
-    "player_id": "1643644",
-    "name": "Alicia Florez",
-    "error": "failed to fetch /get-game-logs/wnba after 5 attempts: retryable status 500"
-  },
-  {
-    "player_id": "204319",
-    "name": "Jewell Loyd",
-    "error": "failed to fetch /get-game-logs/wnba after 5 attempts: retryable status 500"
-  },
-  {
-    "player_id": "204323",
-    "name": "Cheyenne Parker-Tyus",
+    "player_id": "1643488",
+    "name": "Emma Cechova",
     "error": "failed to fetch /get-game-logs/wnba after 5 attempts: retryable status 500"
   }
 ]

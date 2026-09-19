@@ -3,16 +3,16 @@
     "Name": "Marine Fauthoux",
     "ShortName": "Marine Fauthoux",
     "TeamAbbreviation": "NYL",
-    "SecondsPlayed": 14116.9,
-    "GamesPlayed": 18,
-    "Minutes": 235,
+    "SecondsPlayed": 14137.7,
+    "GamesPlayed": 19,
+    "Minutes": 236,
     "PlusMinus": 7,
     "OffPoss": 474,
-    "DefPoss": 475,
+    "DefPoss": 477,
     "PenaltyOffPoss": 151,
-    "PenaltyDefPoss": 133,
+    "PenaltyDefPoss": 135,
     "SecondChanceOffPoss": 72,
-    "TotalPoss": 949,
+    "TotalPoss": 951,
     "AtRimFGM": 8,
     "AtRimFGA": 11,
     "SecondChanceAtRimFGA": 1,
@@ -100,7 +100,7 @@
     "NonShootingPenaltyNonTakeFouls": 2,
     "NonShootingPenaltyNonTakeFoulsDrawn": 4,
     "OnOffRtg": 108.01687763713079,
-    "OnDefRtg": 106.3157894736842,
+    "OnDefRtg": 105.87002096436059,
     "Assisted2sPct": 0.3,
     "NonPutbacksAssisted2sPct": 0.3,
     "Assisted3sPct": 0.5454545454545454,
@@ -1386,6 +1386,16 @@
       "GameId": "1022600295",
       "Team": "NYL",
       "Opponent": "CHI"
+    },
+    {
+      "Minutes": "00:20",
+      "DefPoss": 2,
+      "PenaltyDefPoss": 2,
+      "TotalPoss": 2,
+      "Date": "2026-09-18",
+      "GameId": "1022600307",
+      "Team": "NYL",
+      "Opponent": "MIN"
     }
   ]
 }

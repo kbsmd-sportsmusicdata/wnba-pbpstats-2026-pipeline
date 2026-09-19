@@ -3659,6 +3659,42 @@
       "AwayPossessions": 84,
       "HomeTeamAbbreviation": "SEA",
       "AwayTeamAbbreviation": "LVA"
+    },
+    {
+      "GameId": "1022600306",
+      "Date": "2026-09-18",
+      "HomeTeamId": "1611661332",
+      "AwayTeamId": "1611661325",
+      "HomePoints": 85,
+      "AwayPoints": 103,
+      "HomePossessions": 78,
+      "AwayPossessions": 77,
+      "HomeTeamAbbreviation": "TOR",
+      "AwayTeamAbbreviation": "IND"
+    },
+    {
+      "GameId": "1022600307",
+      "Date": "2026-09-18",
+      "HomeTeamId": "1611661324",
+      "AwayTeamId": "1611661313",
+      "HomePoints": 81,
+      "AwayPoints": 93,
+      "HomePossessions": 85,
+      "AwayPossessions": 84,
+      "HomeTeamAbbreviation": "MIN",
+      "AwayTeamAbbreviation": "NYL"
+    },
+    {
+      "GameId": "1022600308",
+      "Date": "2026-09-18",
+      "HomeTeamId": "1611661331",
+      "AwayTeamId": "1611661327",
+      "HomePoints": 82,
+      "AwayPoints": 66,
+      "HomePossessions": 78,
+      "AwayPossessions": 77,
+      "HomeTeamAbbreviation": "GSV",
+      "AwayTeamAbbreviation": "PDX"
     }
   ]
 }
