@@ -1,17 +1,7 @@
 [
   {
-    "player_id": "1628881",
-    "name": "Monique Billings",
-    "error": "failed to fetch /get-game-logs/wnba after 5 attempts: retryable status 500"
-  },
-  {
-    "player_id": "1629484",
-    "name": "Megan DiLeo",
-    "error": "failed to fetch /get-game-logs/wnba after 5 attempts: retryable status 500"
-  },
-  {
-    "player_id": "1643488",
-    "name": "Emma Cechova",
+    "player_id": "1641695",
+    "name": "Ashten Prechtel",
     "error": "failed to fetch /get-game-logs/wnba after 5 attempts: retryable status 500"
   }
 ]

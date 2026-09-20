@@ -3695,6 +3695,42 @@
       "AwayPossessions": 77,
       "HomeTeamAbbreviation": "GSV",
       "AwayTeamAbbreviation": "PDX"
+    },
+    {
+      "GameId": "1022600309",
+      "Date": "2026-09-19",
+      "HomeTeamId": "1611661321",
+      "AwayTeamId": "1611661317",
+      "HomePoints": 87,
+      "AwayPoints": 82,
+      "HomePossessions": 81,
+      "AwayPossessions": 81,
+      "HomeTeamAbbreviation": "DAL",
+      "AwayTeamAbbreviation": "PHX"
+    },
+    {
+      "GameId": "1022600310",
+      "Date": "2026-09-19",
+      "HomeTeamId": "1611661330",
+      "AwayTeamId": "1611661329",
+      "HomePoints": 106,
+      "AwayPoints": 81,
+      "HomePossessions": 88,
+      "AwayPossessions": 88,
+      "HomeTeamAbbreviation": "ATL",
+      "AwayTeamAbbreviation": "CHI"
+    },
+    {
+      "GameId": "1022600311",
+      "Date": "2026-09-19",
+      "HomeTeamId": "1611661331",
+      "AwayTeamId": "1611661328",
+      "HomePoints": 70,
+      "AwayPoints": 57,
+      "HomePossessions": 72,
+      "AwayPossessions": 72,
+      "HomeTeamAbbreviation": "GSV",
+      "AwayTeamAbbreviation": "SEA"
     }
   ]
 }
