@@ -1,7 +1,17 @@
 [
   {
-    "player_id": "1641695",
-    "name": "Ashten Prechtel",
+    "player_id": "1629480",
+    "name": "Kalani Brown",
+    "error": "failed to fetch /get-game-logs/wnba after 5 attempts: retryable status 500"
+  },
+  {
+    "player_id": "1630154",
+    "name": "Kamiah Smalls",
+    "error": "failed to fetch /get-game-logs/wnba after 5 attempts: retryable status 500"
+  },
+  {
+    "player_id": "1643488",
+    "name": "Emma Cechova",
     "error": "failed to fetch /get-game-logs/wnba after 5 attempts: retryable status 500"
   }
 ]
