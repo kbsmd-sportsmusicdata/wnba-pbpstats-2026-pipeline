@@ -14,7 +14,7 @@ player_id,player_name,team_abbreviation,rapm_rank,o_rapm,d_rapm,rapm,off_poss,de
 204323,Cheyenne Parker-Tyus,LVA,13,1.134,0.304,1.439,534,542,1076,Reliable,2026-07-22
 203833,Chelsea Gray,LVA,14,1.009,0.418,1.426,1439,1452,2891,Reliable,2026-07-22
 1643447,Gabriela Jaquez,CHI,15,1.164,0.222,1.387,969,957,1926,Reliable,2026-07-22
-1642801,Aaliyah Nye,ATL,16,1.111,0.25,1.36,165,167,332,Low sample,2026-07-22
+1642801,Aaliyah Nye,LAS,16,1.111,0.25,1.36,165,167,332,Low sample,2026-07-22
 1642820,Liatu King,MIN,17,0.581,0.732,1.314,176,176,352,Low sample,2026-07-22
 1642302,Isobel Borlase,ATL,18,0.869,0.407,1.277,688,681,1369,Reliable,2026-07-22
 1642291,Angel Reese,ATL,19,-0.066,1.317,1.251,1349,1354,2703,Reliable,2026-07-22
@@ -39,7 +39,7 @@ player_id,player_name,team_abbreviation,rapm_rank,o_rapm,d_rapm,rapm,off_poss,de
 204468,Valeriane Ayayi,PHX,38,0.604,0.193,0.797,695,691,1386,Reliable,2026-07-22
 1630112,Tyasha Harris,IND,39,0.728,0.061,0.789,697,692,1389,Reliable,2026-07-22
 1628931,Gabby Williams,GSV,40,0.124,0.65,0.774,1196,1196,2392,Reliable,2026-07-22
-1628269,Nia Coffey,MIN,41,0.705,0.052,0.758,1280,1293,2573,Reliable,2026-07-22
+1628269,Nia Brodie,MIN,41,0.705,0.052,0.758,1280,1293,2573,Reliable,2026-07-22
 1629481,Arike Ogunbowale,DAL,42,0.376,0.375,0.751,1466,1444,2910,Reliable,2026-07-22
 203400,Skylar Diggins,CHI,43,0.691,0.06,0.751,959,966,1925,Reliable,2026-07-22
 204319,Jewell Loyd,LVA,44,0.719,0.016,0.735,1342,1347,2689,Reliable,2026-07-22
@@ -106,7 +106,7 @@ player_id,player_name,team_abbreviation,rapm_rank,o_rapm,d_rapm,rapm,off_poss,de
 1643525,Alex Fowler,NYL,105,-0.064,0.062,-0.003,69,65,134,Low sample,2026-07-22
 1629484,Megan DiLeo,PDX,106,0.17,-0.182,-0.012,997,991,1988,Reliable,2026-07-22
 1642293,Alissa Pili,LAS,107,-0.019,-0.013,-0.032,55,57,112,Low sample,2026-07-22
-1643479,Ndjakalenga Mwenentanda,GSV,108,0.284,-0.327,-0.043,97,96,193,Low sample,2026-07-22
+1643479,Ndjakalenga Mwenentanda,LAS,108,0.284,-0.327,-0.043,97,96,193,Low sample,2026-07-22
 1643490,Eliska Joklova,MIN,109,-0.004,-0.053,-0.057,169,173,342,Low sample,2026-07-22
 1643441,Raegan Beers,CON,110,0.13,-0.19,-0.059,472,483,955,Reliable,2026-07-22
 1643450,Rori Harmon,WAS,111,-0.091,0.022,-0.069,225,228,453,Low sample,2026-07-22
