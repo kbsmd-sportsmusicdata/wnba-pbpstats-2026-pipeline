@@ -1,17 +1,22 @@
 [
   {
-    "player_id": "1629480",
-    "name": "Kalani Brown",
+    "player_id": "1628277",
+    "name": "Allisha Gray",
     "error": "failed to fetch /get-game-logs/wnba after 5 attempts: retryable status 500"
   },
   {
-    "player_id": "1630154",
-    "name": "Kamiah Smalls",
+    "player_id": "1629488",
+    "name": "Brianna Turner",
     "error": "failed to fetch /get-game-logs/wnba after 5 attempts: retryable status 500"
   },
   {
-    "player_id": "1643488",
-    "name": "Emma Cechova",
+    "player_id": "1643457",
+    "name": "Teonni Key",
+    "error": "failed to fetch /get-game-logs/wnba after 5 attempts: retryable status 500"
+  },
+  {
+    "player_id": "1643473",
+    "name": "Taina Mair",
     "error": "failed to fetch /get-game-logs/wnba after 5 attempts: retryable status 500"
   }
 ]

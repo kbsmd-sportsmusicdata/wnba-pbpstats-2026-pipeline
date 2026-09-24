@@ -2226,3 +2226,5 @@ PlayerId,PlayerName,_dataset,_league,_season,_season_type,_source_endpoint,_sour
 1642327,Matilde Villa,players_directory,wnba,,,/get-all-players-for-league/wnba,{},20260920T170402Z,2026-09-20T17:04:03+00:00,52ad9d95177d8d3cd0ee0af4cf495a6bd405627714145cf13bbb71ba297c053a,"[""players""]"
 1631137,Kamila Borkowska,players_directory,wnba,,,/get-all-players-for-league/wnba,{},20260921T185714Z,2026-09-21T18:57:15+00:00,884df557f0df7509bb3e1eb56e7cb10bd5c07f52e1b3741c6c037e48c0f7e66b,"[""players""]"
 1642832,Maria Gakdeng,players_directory,wnba,,,/get-all-players-for-league/wnba,{},20260921T185714Z,2026-09-21T18:57:15+00:00,4de84229b9e6b2beca17eeafe27d995501958f42d10178680db9fd0891caf288,"[""players""]"
+1642795,Deja Kelly,players_directory,wnba,,,/get-all-players-for-league/wnba,{},20260924T180115Z,2026-09-24T18:01:16+00:00,726d797e716dd1ec666107c9a7a03f10d712876c340bf6293dcac403d30a78d7,"[""players""]"
+1643832,Aminata Gueye,players_directory,wnba,,,/get-all-players-for-league/wnba,{},20260924T180115Z,2026-09-24T18:01:16+00:00,a01c7f3f51190a70099886c51bb3f438d9906d55dda7df8e8eb9312dc4d06fed,"[""players""]"
