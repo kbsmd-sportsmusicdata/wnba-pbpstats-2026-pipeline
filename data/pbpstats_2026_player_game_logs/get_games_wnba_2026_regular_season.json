@@ -3899,6 +3899,66 @@
       "AwayPossessions": 78,
       "HomeTeamAbbreviation": "SEA",
       "AwayTeamAbbreviation": "DAL"
+    },
+    {
+      "GameId": "1022600326",
+      "Date": "2026-09-24",
+      "HomeTeamId": "1611661323",
+      "AwayTeamId": "1611661332",
+      "HomePoints": 95,
+      "AwayPoints": 81,
+      "HomePossessions": 81,
+      "AwayPossessions": 82,
+      "HomeTeamAbbreviation": "CON",
+      "AwayTeamAbbreviation": "TOR"
+    },
+    {
+      "GameId": "1022600327",
+      "Date": "2026-09-24",
+      "HomeTeamId": "1611661322",
+      "AwayTeamId": "1611661329",
+      "HomePoints": 101,
+      "AwayPoints": 93,
+      "HomePossessions": 82,
+      "AwayPossessions": 83,
+      "HomeTeamAbbreviation": "WAS",
+      "AwayTeamAbbreviation": "CHI"
+    },
+    {
+      "GameId": "1022600328",
+      "Date": "2026-09-24",
+      "HomeTeamId": "1611661324",
+      "AwayTeamId": "1611661325",
+      "HomePoints": 86,
+      "AwayPoints": 66,
+      "HomePossessions": 79,
+      "AwayPossessions": 80,
+      "HomeTeamAbbreviation": "MIN",
+      "AwayTeamAbbreviation": "IND"
+    },
+    {
+      "GameId": "1022600329",
+      "Date": "2026-09-24",
+      "HomeTeamId": "1611661320",
+      "AwayTeamId": "1611661331",
+      "HomePoints": 75,
+      "AwayPoints": 76,
+      "HomePossessions": 77,
+      "AwayPossessions": 77,
+      "HomeTeamAbbreviation": "LAS",
+      "AwayTeamAbbreviation": "GSV"
+    },
+    {
+      "GameId": "1022600330",
+      "Date": "2026-09-24",
+      "HomeTeamId": "1611661317",
+      "AwayTeamId": "1611661319",
+      "HomePoints": 82,
+      "AwayPoints": 100,
+      "HomePossessions": 79,
+      "AwayPossessions": 81,
+      "HomeTeamAbbreviation": "PHX",
+      "AwayTeamAbbreviation": "LVA"
     }
   ]
 }

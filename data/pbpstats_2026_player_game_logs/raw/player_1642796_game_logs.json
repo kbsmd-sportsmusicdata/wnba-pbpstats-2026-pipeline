@@ -3,16 +3,16 @@
     "Name": "Rayah Marshall",
     "ShortName": "Rayah Marshall",
     "TeamAbbreviation": "CON",
-    "SecondsPlayed": 2085.0,
-    "GamesPlayed": 5,
+    "SecondsPlayed": 2110.0,
+    "GamesPlayed": 6,
     "Minutes": 35,
-    "PlusMinus": -14,
-    "OffPoss": 65,
-    "DefPoss": 67,
+    "PlusMinus": -16,
+    "OffPoss": 66,
+    "DefPoss": 68,
     "PenaltyOffPoss": 23,
     "PenaltyDefPoss": 32,
     "SecondChanceOffPoss": 19,
-    "TotalPoss": 132,
+    "TotalPoss": 134,
     "AtRimFGM": 1,
     "AtRimFGA": 1,
     "SecondChanceAtRimFGM": 1,
@@ -24,7 +24,7 @@
     "FG2A": 9,
     "FtPoints": 4,
     "Points": 10,
-    "OpponentPoints": 78,
+    "OpponentPoints": 80,
     "SecondChanceFG2M": 2,
     "SecondChanceFG2A": 4,
     "SecondChanceFtPoints": 2,
@@ -70,8 +70,8 @@
     "PenaltyPointsExcludingTakeFouls": 2,
     "PenaltyOffPossExcludingTakeFouls": 23,
     "Period2Fouls2Minutes": 2,
-    "OnOffRtg": 98.46153846153845,
-    "OnDefRtg": 116.41791044776119,
+    "OnOffRtg": 96.96969696969697,
+    "OnDefRtg": 117.6470588235294,
     "Assisted2sPct": 0.3333333333333333,
     "NonPutbacksAssisted2sPct": 1.0,
     "Fg2Pct": 0.3333333333333333,
@@ -85,7 +85,7 @@
     "PenaltyTsPct": 0.3333333333333333,
     "FG2APctBlocked": 0.1111111111111111,
     "LongMidRangePctBlocked": 1.0,
-    "Usage": 17.24137931034483,
+    "Usage": 17.045454545454547,
     "LiveBallTurnoverPct": 0.6666666666666666,
     "DefFTReboundPct": 1.0,
     "DefTwoPtReboundPct": 0.07692307692307693,
@@ -119,7 +119,7 @@
     "PenaltyPointsPct": 0.2,
     "Avg2ptShotDistance": 7.7777777777777795,
     "ShortMidRangeOffReboundedPct": 0.4,
-    "PenaltyOffPossPct": 0.35384615384615387
+    "PenaltyOffPossPct": 0.3484848484848485
   },
   "multi_row_table_data": [
     {
@@ -414,6 +414,18 @@
       "GameId": "1022600319",
       "Team": "CON",
       "Opponent": "WAS"
+    },
+    {
+      "Minutes": "00:25",
+      "PlusMinus": -2,
+      "OffPoss": 1,
+      "DefPoss": 1,
+      "TotalPoss": 2,
+      "OnDefRtg": 200.0,
+      "Date": "2026-09-24",
+      "GameId": "1022600326",
+      "Team": "CON",
+      "Opponent": "TOR"
     }
   ]
 }
