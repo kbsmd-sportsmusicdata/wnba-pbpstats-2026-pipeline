@@ -1,29 +1,4 @@
 game_id,game_date,home_id,away_id,home_abbreviation,home_display_name,away_abbreviation,away_display_name,home_rest_days,away_rest_days,home_b2b,away_b2b
-401857190,2026-09-17,20,18,ATL,Atlanta Dream,CON,Connecticut Sun,17,17,False,False
-401857191,2026-09-17,19,16,CHI,Chicago Sky,WSH,Washington Mystics,18,19,False,False
-401857192,2026-09-17,3,6,DAL,Dallas Wings,LA,Los Angeles Sparks,17,17,False,False
-401857193,2026-09-17,132052,11,POR,Portland Fire,PHX,Phoenix Mercury,17,18,False,False
-401857194,2026-09-17,14,17,SEA,Seattle Storm,LV,Las Vegas Aces,17,19,False,False
-401857195,2026-09-18,131935,5,TOR,Toronto Tempo,IND,Indiana Fever,19,20,False,False
-401857196,2026-09-18,8,9,MIN,Minnesota Lynx,NY,New York Liberty,18,19,False,False
-401857197,2026-09-18,129689,132052,GS,Golden State Valkyries,POR,Portland Fire,18,0,False,True
-401857198,2026-09-19,3,11,DAL,Dallas Wings,PHX,Phoenix Mercury,1,1,False,False
-401857199,2026-09-19,20,19,ATL,Atlanta Dream,CHI,Chicago Sky,1,1,False,False
-401857200,2026-09-19,129689,14,GS,Golden State Valkyries,SEA,Seattle Storm,0,1,True,False
-401857201,2026-09-20,18,8,CON,Connecticut Sun,MIN,Minnesota Lynx,2,1,False,False
-401857202,2026-09-20,131935,9,TOR,Toronto Tempo,NY,New York Liberty,1,1,False,False
-401857203,2026-09-20,5,16,IND,Indiana Fever,WSH,Washington Mystics,1,2,False,False
-401857204,2026-09-20,6,132052,LA,Los Angeles Sparks,POR,Portland Fire,2,1,False,False
-401857205,2026-09-20,17,14,LV,Las Vegas Aces,SEA,Seattle Storm,2,0,False,True
-401857206,2026-09-21,9,20,NY,New York Liberty,ATL,Atlanta Dream,0,1,True,False
-401857207,2026-09-21,11,3,PHX,Phoenix Mercury,DAL,Dallas Wings,1,1,False,False
-401857208,2026-09-22,16,18,WSH,Washington Mystics,CON,Connecticut Sun,1,1,False,False
-401857209,2026-09-22,5,8,IND,Indiana Fever,MIN,Minnesota Lynx,1,1,False,False
-401857210,2026-09-22,19,131935,CHI,Chicago Sky,TOR,Toronto Tempo,2,1,False,False
-401857211,2026-09-22,17,6,LV,Las Vegas Aces,LA,Los Angeles Sparks,1,1,False,False
-401857212,2026-09-22,132052,129689,POR,Portland Fire,GS,Golden State Valkyries,1,2,False,False
-401857213,2026-09-23,9,20,NY,New York Liberty,ATL,Atlanta Dream,1,1,False,False
-401857214,2026-09-23,14,3,SEA,Seattle Storm,DAL,Dallas Wings,2,1,False,False
 401857215,2026-09-24,18,131935,CON,Connecticut Sun,TOR,Toronto Tempo,1,1,False,False
 401857216,2026-09-24,16,19,WSH,Washington Mystics,CHI,Chicago Sky,1,1,False,False
 401857217,2026-09-24,8,5,MIN,Minnesota Lynx,IND,Indiana Fever,1,1,False,False
