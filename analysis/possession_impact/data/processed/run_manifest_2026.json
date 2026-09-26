@@ -18,8 +18,8 @@
       "usable_possessions": 31074
     },
     "published_impact_comparison": {
-      "correlation_all": 0.8634,
-      "correlation_reliable_only": 0.8682,
+      "correlation_all": 0.8313,
+      "correlation_reliable_only": 0.839,
       "note": "published rapm is DARKO-derived, so agreement is expected to be partial",
       "players": 207,
       "status": "compared"
@@ -35,29 +35,29 @@
   },
   "config_hash": "2ca80646ac117b6a2f5a688b1dec626074cdb5caeb2a5705fd3e8761de7b2623",
   "config_path": "analysis/possession_impact/config/possession_impact_config.json",
-  "generated_at_utc": "2026-09-25T06:45:16+00:00",
+  "generated_at_utc": "2026-09-26T21:59:14+00:00",
   "outputs": {
     "bench_net_rating_2026.csv": 15,
     "clutch_net_rating_2026.csv": 15,
     "rapm_alpha_cv_2026.csv": 10,
     "rapm_player_2026.csv": 207
   },
-  "run_id": "20260925T064516+0000",
+  "run_id": "20260926T215914+0000",
   "season": 2026,
   "source_manifest": {
     "game_dimension": {
       "columns": 2,
-      "games": 325,
-      "modified_at_utc": "2026-09-25T06:44:19+00:00",
+      "games": 330,
+      "modified_at_utc": "2026-09-26T21:59:00+00:00",
       "path": "/home/runner/work/wnba-pbpstats-2026-pipeline/wnba-pbpstats-2026-pipeline/data/processed/wnba_pbpstats_team_game/season=2026/team_game.parquet",
-      "rows": 325,
-      "size_bytes": 385391,
+      "rows": 330,
+      "size_bytes": 387920,
       "status": "resolved"
     },
     "game_logs": {
       "columns": 35,
       "games": 300,
-      "modified_at_utc": "2026-09-25T06:44:19+00:00",
+      "modified_at_utc": "2026-09-26T21:59:00+00:00",
       "path": "/home/runner/work/wnba-pbpstats-2026-pipeline/wnba-pbpstats-2026-pipeline/data/raw/sportsdataverse/wnba_2026/player_game_logs_2026.parquet",
       "rows": 4611,
       "size_bytes": 135729,
@@ -65,24 +65,24 @@
     },
     "player_features": {
       "columns": 311,
-      "modified_at_utc": "2026-09-25T06:44:19+00:00",
+      "modified_at_utc": "2026-09-26T21:59:00+00:00",
       "path": "/home/runner/work/wnba-pbpstats-2026-pipeline/wnba-pbpstats-2026-pipeline/data/pbpstats_wnba_2026/features_latest/2026/player_totals_features_latest.csv",
-      "rows": 237,
-      "size_bytes": 704204,
+      "rows": 238,
+      "size_bytes": 707472,
       "status": "resolved"
     },
     "player_impact": {
       "columns": 28,
-      "modified_at_utc": "2026-09-25T06:44:19+00:00",
+      "modified_at_utc": "2026-09-26T21:59:00+00:00",
       "path": "/home/runner/work/wnba-pbpstats-2026-pipeline/wnba-pbpstats-2026-pipeline/data/raw/sportsdataverse/wnba_2026/wnba_player_impact_2026.parquet",
-      "rows": 231,
-      "size_bytes": 52201,
+      "rows": 238,
+      "size_bytes": 52902,
       "status": "resolved"
     },
     "possessions": {
       "columns": 34,
       "games": 202,
-      "modified_at_utc": "2026-09-25T06:44:19+00:00",
+      "modified_at_utc": "2026-09-26T21:59:00+00:00",
       "path": "/home/runner/work/wnba-pbpstats-2026-pipeline/wnba-pbpstats-2026-pipeline/data/raw/sportsdataverse/wnba_2026/wnba_possessions_2026.parquet",
       "rows": 32265,
       "size_bytes": 487723,
@@ -90,16 +90,16 @@
     },
     "team_features": {
       "columns": 296,
-      "modified_at_utc": "2026-09-25T06:44:19+00:00",
+      "modified_at_utc": "2026-09-26T21:59:00+00:00",
       "path": "/home/runner/work/wnba-pbpstats-2026-pipeline/wnba-pbpstats-2026-pipeline/data/pbpstats_wnba_2026/features_latest/2026/team_totals_features_latest.csv",
       "rows": 15,
-      "size_bytes": 57300,
+      "size_bytes": 57194,
       "status": "resolved"
     },
     "wnba_pbp": {
       "columns": 25,
       "games": 300,
-      "modified_at_utc": "2026-09-25T06:44:19+00:00",
+      "modified_at_utc": "2026-09-26T21:59:00+00:00",
       "path": "/home/runner/work/wnba-pbpstats-2026-pipeline/wnba-pbpstats-2026-pipeline/data/raw/sportsdataverse/wnba_2026/wnba_pbp_2026.parquet",
       "rows": 127992,
       "size_bytes": 3089648,
