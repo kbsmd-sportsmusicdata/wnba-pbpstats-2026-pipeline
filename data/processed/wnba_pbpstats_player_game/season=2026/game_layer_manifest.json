@@ -1,12 +1,12 @@
 {
   "games_in_spine": 330,
-  "generated_at_utc": "2026-09-25T19:48:12+00:00",
+  "generated_at_utc": "2026-09-26T22:03:00+00:00",
   "player_game": {
     "columns": 252,
     "games": 330,
     "path": "/home/runner/work/wnba-pbpstats-2026-pipeline/wnba-pbpstats-2026-pipeline/data/processed/wnba_pbpstats_player_game/season=2026/player_game.parquet",
     "players": 238,
-    "rows": 6584
+    "rows": 6587
   },
   "season": "2026",
   "season_type": "Regular Season",
