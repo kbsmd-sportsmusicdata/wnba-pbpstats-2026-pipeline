@@ -92,10 +92,13 @@ class SeasonEndingDetectionTest(unittest.TestCase):
         self.assertTrue(mentions_season_ending("will be sidelined for the rest of the season"))
         self.assertTrue(mentions_season_ending("out for the 2026 WNBA season"))
         self.assertTrue(mentions_season_ending("suffered a season-ending injury"))
+        self.assertTrue(mentions_season_ending("will miss the final four games of the 2026 season"))
         # Single-game phrasings that merely contain "season"/"game" must not match.
         self.assertFalse(mentions_season_ending("out for the season finale Thursday"))
         self.assertFalse(mentions_season_ending("ruled out for the remainder of Thursday's game"))
         self.assertFalse(mentions_season_ending("out for Thursday's game against the Sky"))
+        # A fixed count of *upcoming* games (more to come) is not season-ending.
+        self.assertFalse(mentions_season_ending("will miss the next four games"))
 
     def test_out_status_upgraded_to_season_ending_by_comment(self):
         # ESPN left the status as OUT, but the comment confirms a season-ender (the NaLyssa case).

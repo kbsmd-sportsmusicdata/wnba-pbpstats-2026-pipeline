@@ -91,6 +91,10 @@ _SEASON_ENDING_RE = re.compile(
     r"|miss(?:ing|es|ed)? the (?:rest|remainder|balance) of the (?:\d{4} )?(?:wnba )?season"
     r"|will miss the (?:\d{4} )?(?:wnba )?season"
     r"|(?:done|shut down|sidelined) for the (?:rest of the )?(?:season|year)"
+    # "the final four games of the 2026 season" -- a fixed count of the *remaining* games is
+    # season-ending; "the next four games" (more to come) is not, so the "of the season" clause is
+    # required.
+    r"|(?:final|remaining|last)\s+\S+\s+games?\s+of\s+the\s+(?:\d{4}\s+)?(?:wnba\s+)?season"
     r"|season[- ]ending"
     r")(?!\s+(?:finale|opener|debut|game))",
     re.IGNORECASE,

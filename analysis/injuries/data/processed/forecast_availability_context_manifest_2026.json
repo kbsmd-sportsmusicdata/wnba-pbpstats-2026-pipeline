@@ -12,7 +12,7 @@
   },
   "config_hash": "7599b4c8c11633c8c194b7483cceac2a5dccb40376a48cefe2ffc19079d9f5b3",
   "config_path": "analysis/injuries/config/forecast_availability_config.json",
-  "generated_at_utc": "2026-09-27T21:12:42+00:00",
+  "generated_at_utc": "2026-09-27T21:20:02+00:00",
   "output_path": "/home/user/wnba-pbpstats-2026-pipeline/analysis/injuries/data/processed/forecast_availability_context_2026.csv",
   "season": 2026
 }
