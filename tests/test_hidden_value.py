@@ -600,6 +600,41 @@ class AvailabilityIntegrationTest(unittest.TestCase):
         self.assertGreater(out.loc[100, "injury_vacated_mpg_team"], 0)  # counted despite non-injury
         self.assertEqual(out.loc[300, "injury_vacated_mpg_team"], 0)
 
+    def test_opportunity_credited_to_feed_team_not_last_played_team(self):
+        # Injured player 200's feed team is PHX, but they last played for CHI (roles). The vacated
+        # minutes must open up for PHX's players, not CHI's.
+        panel = pd.DataFrame(
+            {
+                "player_id": pd.array([100, 300], dtype="Int64"),
+                "team_abbreviation": ["CHI", "PHX"],
+                "position": ["G", "G"],
+                "is_out": [False, False],
+            }
+        )
+        injury = pd.DataFrame(
+            {
+                "pbpstats_player_id": pd.array([200], dtype="Int64"),
+                "player_id": ["200"],
+                "player_id_match": ["espn_athlete_id"],
+                "team_abbreviation": ["PHX"],  # current team per the feed
+                "is_out": [True],
+                "is_out_for_season": [True],
+                "absence_category": ["injury"],
+            }
+        )
+        roles = pd.DataFrame(
+            {
+                "player_id": pd.array([100, 200, 300], dtype="Int64"),
+                "team_abbreviation": ["CHI", "CHI", "PHX"],  # 200 last played for CHI
+                "position": ["G", "G", "G"],
+                "minutes": [300, 320, 300],
+                "games_played": [10, 10, 10],
+            }
+        )
+        out = build_injury_opportunity(panel, injury, roles).set_index("player_id")
+        self.assertEqual(out.loc[100, "injury_vacated_mpg_team"], 0)  # CHI (old team) gets nothing
+        self.assertGreater(out.loc[300, "injury_vacated_mpg_team"], 0)  # PHX (feed team) gets it
+
     def test_position_map_from_rosters_and_crosswalk(self):
         game_rosters = pd.DataFrame(
             {

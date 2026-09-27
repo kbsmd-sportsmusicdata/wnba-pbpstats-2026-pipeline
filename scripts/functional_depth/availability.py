@@ -88,13 +88,15 @@ def attach_current_availability(
     injured = injured[frees_rotation_minutes(injured)]
     if injured.empty:
         return out
-    injured = injured[["pbpstats_player_id", "is_out_for_season", "athlete_display_name"]].rename(
+    # Attribute the absence to the injury feed's CURRENT team (a player who changed teams is missing
+    # from the team that has them now, not the one they last played for); take only the minutes from
+    # the game layer as the size of the vacated role.
+    injured = injured[["pbpstats_player_id", "team_abbreviation", "is_out_for_season", "athlete_display_name"]].rename(
         columns={"pbpstats_player_id": "player_id"}
     )
     injured["player_id"] = pd.to_numeric(injured["player_id"], errors="coerce").astype("Int64")
-    # Team and minutes come from the game layer -- the same source the depth score is built on -- so
-    # an injured player's minutes land on the team the score credited them to.
-    injured = injured.merge(mpg[["player_id", "team_abbreviation", "mpg"]], on="player_id", how="left")
+    injured = injured.merge(mpg[["player_id", "mpg"]], on="player_id", how="left")
+    injured["team_abbreviation"] = injured["team_abbreviation"].replace("", np.nan)
     injured = injured.dropna(subset=["team_abbreviation", "mpg"])
     if injured.empty:
         return out

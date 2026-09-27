@@ -184,13 +184,15 @@ def build_injury_opportunity(
     injured = injured[frees_rotation_minutes(injured)]
     if injured.empty:
         return out
-    # Take team, position and minutes from the feature table (the same source the panel uses), so
-    # an injured player's position matches the panel players competing for their minutes.
-    drop_cols = ("player_id", "player_id_match", "team_abbreviation", "position", "athlete_position")
+    # Attribute the vacancy to the injury feed's CURRENT team (a player who changed teams frees a
+    # spot on the team that has them now, not the one they last played for); take only position and
+    # minutes from the feature-side roles, so the injured player's position matches the panel's.
+    drop_cols = ("player_id", "player_id_match", "position", "athlete_position")
     injured = injured.drop(columns=[c for c in drop_cols if c in injured.columns])
     injured = injured.rename(columns={"pbpstats_player_id": "player_id"})
     injured["player_id"] = pd.to_numeric(injured["player_id"], errors="coerce").astype("Int64")
-    injured = injured.merge(roles[["player_id", "team_abbreviation", "position", "mpg"]], on="player_id", how="left")
+    injured = injured.merge(roles[["player_id", "position", "mpg"]], on="player_id", how="left")
+    injured["team_abbreviation"] = injured["team_abbreviation"].replace("", np.nan)
     injured = injured.dropna(subset=["team_abbreviation", "mpg"])
     if injured.empty:
         return out

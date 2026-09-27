@@ -185,6 +185,28 @@ class CurrentAvailabilityTest(unittest.TestCase):
         self.assertTrue((out["current_availability"] == "Intact").all())
         self.assertTrue((out["rotation_minutes_out"] == 0.0).all())
 
+    def test_absence_attributed_to_feed_team_not_last_played_team(self):
+        # Player 100 last played for AAA (game layer) but the injury feed lists them on CCC now.
+        # The absence must land on CCC (their current team), with the role size from the game layer.
+        depth = pd.DataFrame({"team_abbreviation": ["AAA", "CCC"]})
+        injury = pd.DataFrame(
+            {
+                "pbpstats_player_id": pd.array([100], dtype="Int64"),
+                "player_id": ["100"],
+                "team_abbreviation": ["CCC"],  # current team per the feed
+                "athlete_display_name": ["Traded Star"],
+                "is_out": [True],
+                "is_out_for_season": [True],
+                "absence_category": ["injury"],
+            }
+        )
+        out = attach_current_availability(
+            depth, self._player_game(), injury, depleted_share=0.10, thinned_share=0.05
+        ).set_index("team_abbreviation")
+        self.assertEqual(out.loc["AAA", "rotation_minutes_out"], 0.0)  # not the old team
+        self.assertAlmostEqual(out.loc["CCC", "rotation_minutes_out"], 30.0)  # feed team, game-layer MPG
+        self.assertIn("Traded Star", out.loc["CCC", "players_out_now_names"])
+
     def test_short_term_non_injury_absence_excluded(self):
         # A short-term non-injury absence (e.g. national-team duty) returns; it does not free minutes.
         depth = pd.DataFrame({"team_abbreviation": ["BBB"]})
