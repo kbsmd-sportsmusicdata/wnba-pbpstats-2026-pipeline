@@ -1,0 +1,16 @@
+season,cutoff_date,team_id,team_abbreviation,current_rank,expected_final_rank,playoff_probability,top4_probability,players_out,players_out_for_season,injury_absences,rotation_minutes_out,rotation_minutes_out_share,out_for_season_names,players_out_names,availability_flag
+2026,2026-09-23,8,MIN,1,1.0,1,1,3,0,2,41.20847166666667,0.206,,Anastasiia Olairi Kosu; Elena Buenavida; Olivia Miles,Minor absences
+2026,2026-09-23,129689,GS,2,2.1441,1,1,1,1,0,0.0,0.0,Iliana Rupert,Iliana Rupert,Key player lost for season
+2026,2026-09-23,17,LV,3,2.8559,1,1,2,0,2,39.649698120300755,0.1982,,Dana Evans; NaLyssa Smith,Minor absences
+2026,2026-09-23,20,ATL,4,4.0,1,1,3,1,2,47.96255607235142,0.2398,Brionna Jones,Angel Reese; Brionna Jones; Matilde Villa,Key player lost for season
+2026,2026-09-23,5,IND,5,5.401,1,0,2,0,2,40.72582455128205,0.2036,,Aliyah Boston; Tyasha Harris,Minor absences
+2026,2026-09-23,16,WSH,6,5.599,1,0,1,0,1,29.425969767441863,0.1471,,Shakira Austin,Minor absences
+2026,2026-09-23,3,DAL,7,7.0,1,0,4,1,3,60.946639375000004,0.3047,Azzi Fudd,Alanna Smith; Alysha Clark; Azzi Fudd; Costanza Verona,Depleted
+2026,2026-09-23,9,NY,8,8.0,1,0,4,1,3,77.91020339040804,0.3896,Satou Sabally,Breanna Stewart; Elizabeth Balogun; Jonquel Jones; Satou Sabally,Depleted
+2026,2026-09-23,132052,POR,9,9.672300000000002,0,0,6,3,5,71.14290589238348,0.3557,Luisa Geiselsoder; Sania Feagin; Sarah Ashlee Barker,Holly Winterburn; Luisa Geiselsoder; Nyadiew Puoch; Sania Feagin; Sarah Ashlee Barker; Teja Oblak,Depleted
+2026,2026-09-23,11,PHX,10,10.2079,0,0,3,2,1,30.544129411764704,0.1527,Jovana Nogic; Kelsey Plum,Jovana Nogic; Kara Dunn; Kelsey Plum,Depleted
+2026,2026-09-23,19,CHI,11,10.7893,0,0,6,2,6,140.9848440719697,0.7049,Rickea Jackson; Skylar Diggins,Aicha Coulibaly; Azura Stevens; DiJonai Carrington; Natasha Cloud; Rickea Jackson; Skylar Diggins,Depleted
+2026,2026-09-23,6,LA,12,11.3305,0,0,4,0,2,22.018130322580646,0.1101,,Aaliyah Nye; Cameron Brink; Ndjakalenga Mwenentanda; Shyanne Sellers,Minor absences
+2026,2026-09-23,131935,TOR,13,13.0,0,0,7,3,4,107.49706557539682,0.5375,Aneesah Morrow; Brittney Sykes; Marina Mabrey,Aneesah Morrow; Brittney Sykes; Kamila Borkowska; Maria Conde; Maria Gakdeng; Marina Mabrey; Temi Fagbenle,Depleted
+2026,2026-09-23,18,CON,14,14.0,0,0,5,1,5,98.7139506961507,0.4936,Kennedy Burke,Brittney Griner; Kennedy Burke; Olivia Nelson-Ododa; Rayah Marshall; Saniya Rivers,Depleted
+2026,2026-09-23,14,SEA,15,15.0,0,0,4,2,3,50.77105524825784,0.2539,Ezi Magbegor; Katie Lou Samuelson,Ezi Magbegor; Katie Lou Samuelson; Taina Mair; Zia Cooke,Depleted

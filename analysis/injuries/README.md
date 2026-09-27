@@ -15,6 +15,7 @@ other analysis runs on.
 | `injury_report_current_2026.csv` | player | Most recent snapshot, one row per player: normalized `availability_status`, injury type/side, expected return, resolved `player_id` |
 | `team_availability_2026.csv` | team | Current rollup — counts out / out-for-season / day-to-day, injury vs non-injury, names |
 | `injury_report_history_2026.csv` | player × snapshot | Every snapshot in the feed, normalized, for trend work |
+| `forecast_availability_context_2026.csv` | team | Playoff-forecast odds beside current injury load, with a health flag (see below) |
 | `run_manifest_2026.json` | run | Source manifest, config hash, id-match rate, availability stats |
 
 ## Key derived fields
@@ -40,6 +41,21 @@ python scripts/build_injury_report.py \
 
 Options: `--injuries-path`, `--crosswalk-path`, `--output-root`. CI equivalent is the **Injury
 Report** workflow.
+
+### Forecast × availability companion
+
+```bash
+python scripts/build_forecast_availability_context.py \
+  --config analysis/injuries/config/forecast_availability_config.json
+```
+
+This joins the standings / playoff forecast's own output (`forecast_summary.csv`, on the shared ESPN
+`team_id`) to the current injury report and writes `forecast_availability_context_2026.csv` —
+projected seed and playoff odds beside each team's injury load, minutes-weighted from the game layer,
+with an `availability_flag` (`Healthy` / `Minor absences` / `Key player lost for season` / `Depleted`
+/ `Depleted contender`, the last reserved for teams still live in the playoff race). It reads the
+forecast's committed output only; it does not touch the Monte Carlo simulation or its renderers, and
+produces nothing when either the forecast or the feed is absent.
 
 ## Two things to keep in mind
 

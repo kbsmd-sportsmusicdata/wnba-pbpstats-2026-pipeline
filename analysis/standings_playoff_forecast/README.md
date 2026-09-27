@@ -116,3 +116,12 @@ Run the forecast test suite:
 ```bash
 python -m unittest discover -s tests -p "test_standings_playoff_forecast*.py"
 ```
+
+## Related: current availability
+
+The simulation is deliberately blind to injuries — health is too volatile to model without adding
+noise. For a descriptive read of *which contenders are depleted right now*, the
+[injury / availability report](../injuries/README.md) ships a companion
+(`build_forecast_availability_context.py`) that joins this forecast's `forecast_summary.csv` to the
+current injury feed on the shared ESPN `team_id`. It is read-only over the forecast output and never
+feeds back into the model.

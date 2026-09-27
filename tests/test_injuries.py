@@ -10,6 +10,7 @@ import pandas as pd
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 
+from injuries.forecast_context import build_forecast_availability_context  # noqa: E402
 from injuries.report import (  # noqa: E402
     attach_player_ids,
     build_current_report,
@@ -193,6 +194,58 @@ class TeamAvailabilityTest(unittest.TestCase):
         self.assertEqual(row["injury_absences"], 2)
         self.assertEqual(row["non_injury_absences"], 1)
         self.assertIn("Star Out", row["out_for_season_names"])
+
+
+class ForecastAvailabilityContextTest(unittest.TestCase):
+    def _forecast(self):
+        return pd.DataFrame(
+            {
+                "season": [2026, 2026, 2026],
+                "cutoff_date": ["2026-09-23"] * 3,
+                "team_id": [11, 8, 3],  # PHX, MIN, DAL (ESPN ids)
+                "team_abbreviation": ["PHX", "MIN", "DAL"],
+                "current_rank": [10, 1, 7],
+                "expected_final_rank": [10.2, 1.0, 7.0],
+                "playoff_probability": [0.40, 1.0, 0.55],  # PHX & DAL in the race, MIN locked
+                "top4_probability": [0.0, 1.0, 0.1],
+            }
+        )
+
+    def _injury_current(self):
+        raw = pd.DataFrame(
+            [
+                _raw_row(athlete_id=1, team_id=11, athlete_display_name="Star A", detail_fantasy_status="OFS", detail_type="Knee"),
+                _raw_row(athlete_id=2, team_id=11, athlete_display_name="Star B", detail_fantasy_status="OFS", detail_type="Leg"),
+                _raw_row(athlete_id=3, team_id=3, athlete_display_name="Wing C", detail_fantasy_status="OUT", detail_type="Ankle"),
+            ]
+        )
+        current = build_current_report(raw)
+        current["pbpstats_player_id"] = pd.array([1, 2, 3], dtype="Int64")
+        current["player_id"] = ["1", "2", "3"]
+        current["player_id_match"] = "espn_athlete_id"
+        return current
+
+    def test_join_and_flags(self):
+        mpg = pd.DataFrame({"player_id": pd.array([1, 2, 3], dtype="Int64"), "mpg": [30.0, 20.0, 15.0]})
+        context = build_forecast_availability_context(self._forecast(), self._injury_current(), mpg).set_index(
+            "team_abbreviation"
+        )
+        # PHX: two season-ending injuries and in the playoff race -> depleted contender.
+        self.assertEqual(context.loc["PHX", "players_out_for_season"], 2)
+        self.assertAlmostEqual(context.loc["PHX", "rotation_minutes_out"], 50.0)
+        self.assertEqual(context.loc["PHX", "availability_flag"], "Depleted contender")
+        # MIN carries no injuries -> healthy.
+        self.assertEqual(context.loc["MIN", "availability_flag"], "Healthy")
+        # DAL has one short-term injury absence.
+        self.assertEqual(context.loc["DAL", "players_out"], 1)
+
+    def test_missing_forecast_yields_empty(self):
+        self.assertTrue(build_forecast_availability_context(pd.DataFrame(), self._injury_current()).empty)
+
+    def test_missing_injuries_leaves_teams_healthy(self):
+        context = build_forecast_availability_context(self._forecast(), pd.DataFrame())
+        self.assertEqual(len(context), 3)
+        self.assertTrue((context["availability_flag"] == "Healthy").all())
 
 
 class BuildScriptIntegrationTest(unittest.TestCase):

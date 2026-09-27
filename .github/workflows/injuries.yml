@@ -52,6 +52,12 @@ jobs:
             --config "$CONFIG_PATH" \
             --injuries-path "$INJURIES_PATH"
 
+      - name: Build forecast availability context
+        run: |
+          python scripts/build_forecast_availability_context.py \
+            --config analysis/injuries/config/forecast_availability_config.json \
+            --injuries-path "$INJURIES_PATH"
+
       - name: Commit generated injury report outputs if requested
         if: ${{ inputs.commit_outputs }}
         run: |
