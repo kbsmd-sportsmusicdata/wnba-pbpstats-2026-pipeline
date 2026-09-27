@@ -49,13 +49,13 @@
   },
   "config_hash": "55a2cfe4d129b408c4b08033021baf724a78a87ec3bd1f4377a20984a4c6bc1a",
   "config_path": "analysis/hidden_value/config/hidden_value_config.json",
-  "generated_at_utc": "2026-09-27T21:06:35+00:00",
+  "generated_at_utc": "2026-09-27T21:12:19+00:00",
   "outputs": {
     "hidden_value_board_2026.csv": 193,
     "hidden_value_components_2026.csv": 965,
     "player_trajectory_2026.csv": 212
   },
-  "run_id": "20260927T210635+0000",
+  "run_id": "20260927T211219+0000",
   "season": 2026,
   "source_manifest": {
     "game_rosters": {

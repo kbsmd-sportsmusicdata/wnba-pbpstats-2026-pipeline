@@ -13,13 +13,13 @@
   },
   "config_hash": "bc71292c26ce6dae73c1c1b16ca7b33a11d5afcc29cc678e0be9437b203fc4ac",
   "config_path": "analysis/functional_depth/config/functional_depth_config.json",
-  "generated_at_utc": "2026-09-27T20:57:17+00:00",
+  "generated_at_utc": "2026-09-27T21:12:41+00:00",
   "outputs": {
     "functional_depth_2026.csv": 15,
     "functional_depth_components_2026.csv": 75,
     "functional_depth_strip_2026.csv": 15
   },
-  "run_id": "20260927T205717+0000",
+  "run_id": "20260927T211241+0000",
   "season": 2026,
   "source_manifest": {
     "bench_net_rating": {

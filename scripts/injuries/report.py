@@ -249,6 +249,12 @@ def normalize_injuries(injuries: pd.DataFrame) -> pd.DataFrame:
     out["injury_side"] = frame.get("detail_side").map(_clean) if "detail_side" in frame else ""
     out["injury_date"] = frame.get("injury_date").map(_clean) if "injury_date" in frame else ""
     out["expected_return_date"] = frame.get("detail_return_date").map(_clean) if "detail_return_date" in frame else ""
+    # ESPN files a next-season placeholder (2027-05-01) as the return date for indefinite/short-term
+    # OUT rows; it is not a real ETA (it sits identically on season-enders and day-to-day ankles), so
+    # a return date after the current season is blanked rather than published as an expected return.
+    return_year = pd.to_datetime(out["expected_return_date"], errors="coerce").dt.year
+    season_year = pd.to_numeric(out["season"], errors="coerce")
+    out.loc[return_year.notna() & season_year.notna() & (return_year > season_year), "expected_return_date"] = ""
     out["short_comment"] = frame.get("short_comment").map(_clean) if "short_comment" in frame else ""
     return out[columns].reset_index(drop=True)
 

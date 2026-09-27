@@ -114,6 +114,18 @@ class SeasonEndingDetectionTest(unittest.TestCase):
         self.assertEqual(row["availability_status"], "Out for season")
         self.assertTrue(row["is_out_for_season"])
 
+    def test_placeholder_return_date_is_blanked(self):
+        # ESPN's 2027-05-01 next-season placeholder is not a real ETA and must not be published.
+        raw = pd.DataFrame(
+            [
+                _raw_row(athlete_id=1, detail_fantasy_status="OUT", detail_return_date="2027-05-01"),
+                _raw_row(athlete_id=2, detail_fantasy_status="OUT", detail_return_date="2026-09-27"),
+            ]
+        )
+        current = build_current_report(raw).set_index("athlete_id")
+        self.assertEqual(current.loc[1, "expected_return_date"], "")  # placeholder blanked
+        self.assertEqual(current.loc[2, "expected_return_date"], "2026-09-27")  # real in-season ETA kept
+
     def test_return_date_placeholder_does_not_trigger_season_ending(self):
         # A short-term OUT with the 2027-05-01 placeholder return date must stay "Out", not OFS.
         raw = pd.DataFrame(
