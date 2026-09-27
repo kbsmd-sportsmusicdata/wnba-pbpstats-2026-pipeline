@@ -635,6 +635,40 @@ class AvailabilityIntegrationTest(unittest.TestCase):
         self.assertEqual(out.loc[100, "injury_vacated_mpg_team"], 0)  # CHI (old team) gets nothing
         self.assertGreater(out.loc[300, "injury_vacated_mpg_team"], 0)  # PHX (feed team) gets it
 
+    def test_opportunity_degrades_without_position_columns(self):
+        # No position anywhere (e.g. game rosters absent): must fall back to team-level weighting,
+        # not crash on a missing column.
+        panel = pd.DataFrame(
+            {
+                "player_id": pd.array([100], dtype="Int64"),
+                "team_abbreviation": ["CHI"],
+                "is_out": [False],
+            }
+        )
+        injury = pd.DataFrame(
+            {
+                "pbpstats_player_id": pd.array([200], dtype="Int64"),
+                "player_id": ["200"],
+                "player_id_match": ["espn_athlete_id"],
+                "team_abbreviation": ["CHI"],
+                "is_out": [True],
+                "is_out_for_season": [False],
+                "absence_category": ["injury"],
+            }
+        )
+        roles = pd.DataFrame(
+            {
+                "player_id": pd.array([200], dtype="Int64"),
+                "team_abbreviation": ["CHI"],
+                "minutes": [320],
+                "games_played": [10],
+            }
+        )
+        out = build_injury_opportunity(panel, injury, roles).set_index("player_id")
+        self.assertGreater(out.loc[100, "injury_vacated_mpg_team"], 0)
+        self.assertEqual(out.loc[100, "injury_vacated_mpg_position"], 0.0)
+        self.assertFalse(pd.isna(out.loc[100, "injury_opportunity_score"]))
+
     def test_position_map_from_rosters_and_crosswalk(self):
         game_rosters = pd.DataFrame(
             {

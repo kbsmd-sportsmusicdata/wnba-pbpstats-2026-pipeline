@@ -35,6 +35,21 @@ _AVAILABILITY_COLUMNS = {
 }
 
 
+def _position_initial(frame: pd.DataFrame) -> pd.Series:
+    """First letter (G/F/C) of each row's position, or null when unknown.
+
+    Robust to a missing ``position`` column: a player with no known position contributes to no
+    same-position vacancy group (the groupby drops nulls), so opportunity falls back to the
+    team-level weight instead of crashing the build. Null throughout when the frame carries no
+    position at all (e.g. no game rosters were loaded).
+    """
+    if "position" not in frame.columns:
+        return pd.Series(pd.NA, index=frame.index, dtype="object")
+    position = frame["position"]
+    initial = position.astype("string").str.upper().str[0]
+    return initial.where(position.notna(), other=pd.NA)
+
+
 def build_position_map(game_rosters: pd.DataFrame, crosswalk: pd.DataFrame) -> dict:
     """Map pbpstats ``player_id`` -> position (G/F/C) via the ESPN game rosters and the crosswalk.
 
@@ -75,6 +90,10 @@ def build_position_map(game_rosters: pd.DataFrame, crosswalk: pd.DataFrame) -> d
 def apply_position_map(frame: pd.DataFrame, position_map: dict) -> pd.DataFrame:
     """Populate/refresh a ``position`` column from a player_id -> position map, keeping any existing."""
     out = frame.copy()
+    # Guarantee the column exists even when there is nothing to map, so downstream position logic
+    # never has to guard against its absence.
+    if "position" not in out.columns:
+        out["position"] = pd.NA
     if not position_map or "player_id" not in out.columns:
         return out
     ids = pd.to_numeric(out["player_id"], errors="coerce").astype("Int64")
@@ -174,7 +193,7 @@ def build_injury_opportunity(
     roles["mpg"] = np.where(
         roles["games_played"].fillna(0) > 0, roles["minutes"] / roles["games_played"], np.nan
     )
-    roles["position"] = roles.get("position").astype(str).str.upper().str[0]
+    roles["position"] = _position_initial(roles)
 
     # Minutes open up from any injury and from any season-long absence (a teammate gone for the
     # year frees their role whether it is an injury or a departure); short-term non-injury
@@ -202,7 +221,7 @@ def build_injury_opportunity(
     position_vacated = injured.groupby(["team_abbreviation", "position"])["mpg"].sum()
 
     team_series = out["team_abbreviation"]
-    position_series = out.get("position").astype(str).str.upper().str[0]
+    position_series = _position_initial(out)
     out["injury_vacated_mpg_team"] = team_series.map(team_vacated).fillna(0.0)
     out["injured_teammates_out"] = team_series.map(team_count).fillna(0).astype(int)
     out["injury_vacated_mpg_position"] = [
