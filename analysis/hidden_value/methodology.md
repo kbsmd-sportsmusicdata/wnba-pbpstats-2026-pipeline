@@ -228,10 +228,12 @@ deliberately outside the scoring:
   return date where the feed has one. The composite weights do not move; nothing here re-ranks the
   board, it annotates it.
 
-- **Injury opportunity.** When a player is out with an *injury* (national-team duty, personal and
-  coach's-decision absences are excluded, since they do not reliably free minutes), the minutes they
-  held do not vanish — they flow to whoever is next on the depth chart. `injury_opportunity_score`
-  sums the per-game minutes vacated by injured teammates, weighted to reward same-position vacancies
+- **Injury opportunity.** When a teammate's absence durably frees their minutes — any injury, plus a
+  season-long absence of any category (a player gone for the year opens the same room whether it is
+  an injury or a departure); only short-term non-injury absences such as national-team duty or a
+  coach's decision are excluded — those minutes do not vanish; they flow to whoever is next on the
+  depth chart. `injury_opportunity_score` sums the per-game minutes vacated, weighted to reward
+  same-position vacancies
   (a sidelined guard helps the guards behind them most), and scores it 0–100 among players who are
   themselves available. This is the same "role expanding" mechanism the board already values on the
   trajectory side, now with a named cause. It is reported as context — in the note and a summary

@@ -5,15 +5,19 @@ starters sit -- depth *on paper*, over the season. They do not know who is avail
 that reads as deep can still be thin *right now* if several rotation players are hurt.
 
 This overlay closes that gap without touching the score: for each team it measures how many
-rotation minutes are currently vacated by injury (per-game minutes of injured rotation players as a
-share of a 200-minute game), so a reader can hold "deep on paper" and "thin right now" side by side.
-It is additive and optional -- with no injury feed, every team reads fully available.
+rotation minutes are currently vacated by a durable absence -- any injury, plus a season-long
+absence of any category (a player gone for the year frees their minutes whether it is an injury or a
+departure) -- as a share of a 200-minute game, so a reader can hold "deep on paper" and "thin right
+now" side by side. It is additive and optional -- with no injury feed, every team reads fully
+available.
 """
 
 from __future__ import annotations
 
 import numpy as np
 import pandas as pd
+
+from injuries.report import frees_rotation_minutes
 
 
 _AVAILABILITY_COLUMNS = {
@@ -77,12 +81,11 @@ def attach_current_availability(
     if mpg.empty:
         return out
 
+    # Vacated minutes count any injury plus season-long absences of any category (a player gone
+    # for the year frees their minutes); short-term non-injury absences do not.
     injured = injury_current.copy()
-    injured = injured[
-        injured["pbpstats_player_id"].notna()
-        & injured.get("is_out").fillna(False)
-        & injured.get("absence_category").eq("injury")
-    ]
+    injured = injured[injured["pbpstats_player_id"].notna() & injured.get("is_out").fillna(False)]
+    injured = injured[frees_rotation_minutes(injured)]
     if injured.empty:
         return out
     injured = injured[["pbpstats_player_id", "is_out_for_season", "athlete_display_name"]].rename(

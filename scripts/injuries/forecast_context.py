@@ -17,6 +17,8 @@ from typing import Optional
 import numpy as np
 import pandas as pd
 
+from .report import frees_rotation_minutes
+
 
 CONTEXT_COLUMNS = [
     "season",
@@ -69,6 +71,10 @@ def _team_injury_rollup(injury_current: pd.DataFrame, player_mpg: Optional[pd.Da
     rows = []
     for team_id, group in frame.groupby("team_id", sort=True):
         injury_group = group[group["absence_category"].eq("injury")]
+        # Vacated minutes count any injury plus season-long absences of any category (a player gone
+        # for the year frees their minutes whether it is an injury or a departure); short-term
+        # housekeeping does not.
+        frees_group = group[frees_rotation_minutes(group)]
         ofs = group[group["is_out_for_season"]]
         rows.append(
             {
@@ -76,8 +82,7 @@ def _team_injury_rollup(injury_current: pd.DataFrame, player_mpg: Optional[pd.Da
                 "players_out": int(len(group)),
                 "players_out_for_season": int(group["is_out_for_season"].sum()),
                 "injury_absences": int(len(injury_group)),
-                # Minutes count injury absences only -- housekeeping does not free a rotation spot.
-                "rotation_minutes_out": float(injury_group["mpg"].fillna(0.0).sum()),
+                "rotation_minutes_out": float(frees_group["mpg"].fillna(0.0).sum()),
                 "out_for_season_names": "; ".join(sorted(ofs["athlete_display_name"].tolist())),
                 "players_out_names": "; ".join(sorted(group["athlete_display_name"].tolist())),
             }

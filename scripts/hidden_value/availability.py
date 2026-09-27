@@ -19,6 +19,8 @@ from __future__ import annotations
 import numpy as np
 import pandas as pd
 
+from injuries.report import frees_rotation_minutes
+
 from .features import percentile
 
 
@@ -96,11 +98,13 @@ def build_injury_opportunity(
     ``position``, ``minutes``, ``games_played``) -- injured stars are scored on the role they held
     before going down, which is why the full feature table is used rather than the eligible panel.
 
-    For each team we sum the per-game minutes vacated by teammates who are currently out with an
-    *injury* (roster housekeeping -- national-team duty, coach's decisions -- is excluded, since it
-    does not reliably free minutes). The blend rewards same-position vacancies: a sidelined guard
-    helps the guards behind them most. The 0-100 score is a percentile among players who are
-    themselves available -- a player who is also out cannot seize the opening, so their score is null.
+    For each team we sum the per-game minutes vacated by teammates whose absence durably frees a
+    rotation spot -- any injury, plus anyone out for the season regardless of category (a teammate
+    gone for the year opens the same minutes whether it is an injury or a departure). Short-term
+    non-injury absences (national-team duty, a coach's decision) are excluded, since those minutes
+    return. The blend rewards same-position vacancies: a sidelined guard helps the guards behind
+    them most. The 0-100 score is a percentile among players who are themselves available -- a
+    player who is also out cannot seize the opening, so their score is null.
     """
     out = panel.copy()
     out["injury_vacated_mpg_team"] = 0.0
@@ -122,12 +126,12 @@ def build_injury_opportunity(
     )
     roles["position"] = roles.get("position").astype(str).str.upper().str[0]
 
+    # Minutes open up from any injury and from any season-long absence (a teammate gone for the
+    # year frees their role whether it is an injury or a departure); short-term non-injury
+    # absences -- national-team duty, a coach's decision -- do not, so they are excluded.
     injured = injury_current.copy()
-    injured = injured[
-        injured.get("pbpstats_player_id").notna()
-        & injured.get("is_out").fillna(False)
-        & injured.get("absence_category").eq("injury")
-    ]
+    injured = injured[injured.get("pbpstats_player_id").notna() & injured.get("is_out").fillna(False)]
+    injured = injured[frees_rotation_minutes(injured)]
     if injured.empty:
         return out
     # Take team, position and minutes from the feature table (the same source the panel uses), so

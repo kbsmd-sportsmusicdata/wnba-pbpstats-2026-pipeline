@@ -52,9 +52,11 @@ both readings at once:
 | `players_out_now`, `players_out_for_season_now` | Counts behind the label |
 
 A team can top the score on paper yet read `Depleted` right now — Connecticut, deepest by the
-season-long components, is currently missing roughly half its rotation minutes. National-team duty
-and other non-injury absences are excluded, since they do not reliably thin a playoff rotation. The
-overlay is additive and optional: with no feed, every team reads `Intact` and the score is unchanged.
+season-long components, is currently missing roughly half its rotation minutes. Vacated minutes
+count any injury plus season-long absences of any category (a player who has left the team for the
+year frees their minutes whether it is an injury or a departure); short-term non-injury absences —
+national-team duty, a coach's decision — are excluded, since those minutes come back. The overlay is
+additive and optional: with no feed, every team reads `Intact` and the score is unchanged.
 
 ## Two things to keep in mind
 

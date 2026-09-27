@@ -72,12 +72,12 @@ def build_outputs(config: Dict[str, Any]) -> Dict[str, Any]:
     player_game = _read(path_from_config(config.get("player_game_path", "")))
 
     stats: Dict[str, Any] = {}
-    if forecast.empty:
-        stats["status"] = "forecast_summary_missing"
-        context = pd.DataFrame()
-    elif injuries.empty:
-        stats["status"] = "injuries_missing"
-        context = pd.DataFrame()
+    if forecast.empty or injuries.empty:
+        stats["status"] = "forecast_summary_missing" if forecast.empty else "injuries_missing"
+        # Remove any previously committed table so a missing-input run cannot leave stale data that
+        # the summary or a downstream commit would present as freshly produced.
+        if context_path.exists():
+            context_path.unlink()
     else:
         injury_current = attach_player_ids(build_current_report(injuries), crosswalk)
         context = build_forecast_availability_context(forecast, injury_current, _player_mpg(player_game))
@@ -107,10 +107,18 @@ def build_outputs(config: Dict[str, Any]) -> Dict[str, Any]:
 
 def build_summary(config: Dict[str, Any]) -> str:
     output_root = path_from_config(config.get("output_root", "analysis/injuries"))
-    context_path = output_root / "data" / "processed" / "forecast_availability_context_2026.csv"
+    processed = output_root / "data" / "processed"
+    context_path = processed / "forecast_availability_context_2026.csv"
+    manifest_path = processed / "forecast_availability_context_manifest_2026.json"
     lines = ["## Forecast × Availability Context", ""]
-    if not context_path.exists():
-        lines.append("No context table produced (forecast or injury feed missing).")
+
+    # Trust the manifest from this run, not the mere presence of a file: a prior run's table may
+    # still be on disk after a missing-input run, and it must not be reported as freshly produced.
+    status = None
+    if manifest_path.exists():
+        status = json.loads(manifest_path.read_text(encoding="utf-8")).get("analysis_stats", {}).get("status")
+    if status != "ok" or not context_path.exists():
+        lines.append(f"No context table produced this run (status: `{status or 'unknown'}`).")
         return "\n".join(lines)
 
     context = pd.read_csv(context_path)

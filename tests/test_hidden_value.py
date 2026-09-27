@@ -560,6 +560,41 @@ class AvailabilityIntegrationTest(unittest.TestCase):
         # An out CHI player is not credited with opportunity they cannot seize.
         self.assertTrue(pd.isna(out.loc[400, "injury_opportunity_score"]))
 
+    def test_season_long_non_injury_absence_creates_opportunity(self):
+        # A CHI guard (200) is out for the season for a non-injury reason (left the team). Those
+        # minutes are gone for the year and open up for the guard behind them (100), same as an injury.
+        panel = pd.DataFrame(
+            {
+                "player_id": pd.array([100, 300], dtype="Int64"),
+                "team_abbreviation": ["CHI", "PHX"],
+                "position": ["G", "G"],
+                "is_out": [False, False],
+            }
+        )
+        injury = pd.DataFrame(
+            {
+                "pbpstats_player_id": pd.array([200], dtype="Int64"),
+                "player_id": ["200"],
+                "player_id_match": ["espn_athlete_id"],
+                "team_abbreviation": ["CHI"],
+                "is_out": [True],
+                "is_out_for_season": [True],
+                "absence_category": ["non_injury"],  # departed the team for the year
+            }
+        )
+        roles = pd.DataFrame(
+            {
+                "player_id": pd.array([100, 200, 300], dtype="Int64"),
+                "team_abbreviation": ["CHI", "CHI", "PHX"],
+                "position": ["G", "G", "G"],
+                "minutes": [300, 320, 300],
+                "games_played": [10, 10, 10],
+            }
+        )
+        out = build_injury_opportunity(panel, injury, roles).set_index("player_id")
+        self.assertGreater(out.loc[100, "injury_vacated_mpg_team"], 0)  # counted despite non-injury
+        self.assertEqual(out.loc[300, "injury_vacated_mpg_team"], 0)
+
     def test_note_leads_with_out_for_season_flag(self):
         row = pd.Series(
             {

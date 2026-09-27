@@ -239,6 +239,17 @@ class ForecastAvailabilityContextTest(unittest.TestCase):
         # DAL has one short-term injury absence.
         self.assertEqual(context.loc["DAL", "players_out"], 1)
 
+    def test_season_long_non_injury_counts_in_rotation_minutes(self):
+        # A player out for the season for a non-injury reason (left the team) still frees the minutes.
+        current = self._injury_current()
+        current.loc[current["athlete_display_name"] == "Star A", "absence_category"] = "non_injury"
+        mpg = pd.DataFrame({"player_id": pd.array([1, 2, 3], dtype="Int64"), "mpg": [30.0, 20.0, 15.0]})
+        context = build_forecast_availability_context(self._forecast(), current, mpg).set_index("team_abbreviation")
+        # PHX still counts both season-ending absences (50 mpg) despite one being non-injury.
+        self.assertAlmostEqual(context.loc["PHX", "rotation_minutes_out"], 50.0)
+        # injury_absences stays injury-only (Star B), so the count and the minutes differ by design.
+        self.assertEqual(context.loc["PHX", "injury_absences"], 1)
+
     def test_missing_forecast_yields_empty(self):
         self.assertTrue(build_forecast_availability_context(pd.DataFrame(), self._injury_current()).empty)
 
@@ -246,6 +257,33 @@ class ForecastAvailabilityContextTest(unittest.TestCase):
         context = build_forecast_availability_context(self._forecast(), pd.DataFrame())
         self.assertEqual(len(context), 3)
         self.assertTrue((context["availability_flag"] == "Healthy").all())
+
+
+class ForecastContextStaleOutputTest(unittest.TestCase):
+    def test_missing_input_clears_stale_table_and_summary(self):
+        import build_forecast_availability_context as builder
+
+        with tempfile.TemporaryDirectory() as tmp:
+            output_root = Path(tmp)
+            processed = output_root / "data" / "processed"
+            processed.mkdir(parents=True)
+            stale = processed / "forecast_availability_context_2026.csv"
+            stale.write_text("team_abbreviation,availability_flag\nPHX,Depleted\n", encoding="utf-8")
+
+            config = {
+                "output_root": str(output_root),
+                "forecast_summary_path": str(output_root / "does_not_exist.csv"),
+                "injuries_path": str(output_root / "also_missing.parquet"),
+                "crosswalk_path": str(output_root / "missing_crosswalk.csv"),
+                "player_game_path": str(output_root / "missing_game.parquet"),
+                "_config_path": str(output_root / "config.json"),
+            }
+            manifest = builder.build_outputs(config)
+            self.assertEqual(manifest["analysis_stats"]["status"], "forecast_summary_missing")
+            # The stale table is removed so it cannot be presented or committed as freshly produced.
+            self.assertFalse(stale.exists())
+            summary = builder.build_summary(config)
+            self.assertIn("No context table produced", summary)
 
 
 class BuildScriptIntegrationTest(unittest.TestCase):

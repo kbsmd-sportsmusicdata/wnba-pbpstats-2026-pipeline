@@ -185,13 +185,25 @@ class CurrentAvailabilityTest(unittest.TestCase):
         self.assertTrue((out["current_availability"] == "Intact").all())
         self.assertTrue((out["rotation_minutes_out"] == 0.0).all())
 
-    def test_non_injury_absence_excluded(self):
-        depth = pd.DataFrame({"team_abbreviation": ["AAA"]})
-        injury = self._injury_current().iloc[:1].copy()
-        injury["absence_category"] = "non_injury"  # e.g. national-team duty
+    def test_short_term_non_injury_absence_excluded(self):
+        # A short-term non-injury absence (e.g. national-team duty) returns; it does not free minutes.
+        depth = pd.DataFrame({"team_abbreviation": ["BBB"]})
+        injury = self._injury_current().iloc[1:].copy()  # player 200: out, not season-ending
+        injury["absence_category"] = "non_injury"
         out = attach_current_availability(depth, self._player_game(), injury).set_index("team_abbreviation")
-        self.assertEqual(out.loc["AAA", "current_availability"], "Intact")
-        self.assertEqual(out.loc["AAA", "rotation_minutes_out"], 0.0)
+        self.assertEqual(out.loc["BBB", "current_availability"], "Intact")
+        self.assertEqual(out.loc["BBB", "rotation_minutes_out"], 0.0)
+
+    def test_season_long_non_injury_absence_counted(self):
+        # A season-ending departure (out for season, non-injury) durably frees the minutes and counts.
+        depth = pd.DataFrame({"team_abbreviation": ["AAA"]})
+        injury = self._injury_current().iloc[:1].copy()  # player 100: out for season, 30 mpg
+        injury["absence_category"] = "non_injury"  # e.g. left the team for the year
+        out = attach_current_availability(
+            depth, self._player_game(), injury, depleted_share=0.10, thinned_share=0.05
+        ).set_index("team_abbreviation")
+        self.assertAlmostEqual(out.loc["AAA", "rotation_minutes_out"], 30.0)
+        self.assertEqual(out.loc["AAA", "current_availability"], "Depleted")
 
 
 if __name__ == "__main__":

@@ -124,6 +124,22 @@ def classify_absence_reason(detail_type: Any) -> str:
     return "non_injury" if reason in _NON_INJURY_REASONS else "injury"
 
 
+def frees_rotation_minutes(frame: pd.DataFrame) -> pd.Series:
+    """Rows whose absence durably frees the player's rotation minutes.
+
+    Any injury absence qualifies, and so does *any* player ruled out for the season regardless of
+    ESPN's reason category. A player who has left the team for the year (filed personal /
+    not-injury-related) vacates their minutes exactly as a season-ending injury does; only
+    short-term non-injury absences -- national-team duty, a one-game coach's decision -- are
+    excluded, because those minutes come back. Callers combine this with their own ``is_out``
+    filter; ``is_out_for_season`` already implies ``is_out``.
+    """
+    index = frame.index
+    category = frame["absence_category"] if "absence_category" in frame else pd.Series("", index=index)
+    ofs = frame["is_out_for_season"] if "is_out_for_season" in frame else pd.Series(False, index=index)
+    return category.eq("injury") | ofs.fillna(False).astype(bool)
+
+
 def _map_team_abbreviation(team_id: Any, team_display_name: Any) -> str:
     try:
         abbreviation = ESPN_TEAM_ID_TO_ABBREVIATION.get(int(team_id))
