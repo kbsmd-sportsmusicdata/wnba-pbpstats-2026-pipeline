@@ -1,0 +1,42 @@
+{
+  "analysis_stats": {
+    "as_of_date": "2026-09-26",
+    "player_id_match_rate": 0.9273,
+    "player_id_matched": 51,
+    "players_current": 55,
+    "players_day_to_day": 0,
+    "players_out": 55,
+    "players_out_for_season": 17,
+    "snapshots": 19,
+    "status": "ok",
+    "teams_affected": 15
+  },
+  "config_hash": "3a36f18bc369be0ae520bc6812fa2849d47a42d11c421019d4afb2156688bb8f",
+  "config_path": "analysis/injuries/config/injuries_config.json",
+  "generated_at_utc": "2026-09-27T18:58:51+00:00",
+  "outputs": {
+    "injury_report_current_2026.csv": 55,
+    "injury_report_history_2026.csv": 820,
+    "team_availability_2026.csv": 15
+  },
+  "run_id": "20260927T185851+0000",
+  "season": 2026,
+  "source_manifest": {
+    "crosswalk": {
+      "columns": 21,
+      "modified_at_utc": "2026-09-27T18:49:02+00:00",
+      "path": "/home/user/wnba-pbpstats-2026-pipeline/analysis/role_fulfillment_matrix/config/player_eligibility_2026.csv",
+      "rows": 235,
+      "size_bytes": 90995,
+      "status": "resolved"
+    },
+    "injuries": {
+      "columns": 27,
+      "modified_at_utc": "2026-09-27T18:56:07+00:00",
+      "path": "/home/user/wnba-pbpstats-2026-pipeline/data/raw/injuries/injuries_2026.parquet",
+      "rows": 820,
+      "size_bytes": 41244,
+      "status": "resolved"
+    }
+  }
+}

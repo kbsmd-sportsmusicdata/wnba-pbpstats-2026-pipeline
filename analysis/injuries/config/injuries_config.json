@@ -1,0 +1,7 @@
+{
+  "season": 2026,
+  "injuries_path": "data/raw/injuries/injuries_2026.parquet",
+  "crosswalk_path": "analysis/role_fulfillment_matrix/config/player_eligibility_2026.csv",
+  "output_root": "analysis/injuries",
+  "as_of": null
+}
