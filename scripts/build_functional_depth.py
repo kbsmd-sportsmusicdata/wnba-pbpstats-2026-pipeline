@@ -30,7 +30,9 @@ from functional_depth.data_sources import (
     utc_now_iso,
     write_github_step_summary,
 )
+from functional_depth.availability import attach_current_availability
 from functional_depth.score import build_functional_depth, build_strip, components_long
+from injuries.report import attach_player_ids, build_current_report
 
 
 def output_paths(output_root: Path) -> Dict[str, Path]:
@@ -62,6 +64,18 @@ def build_outputs(config: Dict[str, Any]) -> Dict[str, Any]:
     if depth.empty:
         stats["status"] = "player_game_missing"
     else:
+        # Overlay current availability: depth on paper vs. depth right now. Additive, optional.
+        injury_current = pd.DataFrame()
+        if not sources.injuries.empty:
+            injury_current = attach_player_ids(build_current_report(sources.injuries), sources.injury_crosswalk)
+        availability_config = config.get("injuries", {})
+        depth = attach_current_availability(
+            depth,
+            sources.player_game,
+            injury_current,
+            thinned_share=float(availability_config.get("thinned_share", 0.10)),
+            depleted_share=float(availability_config.get("depleted_share", 0.25)),
+        )
         strip = build_strip(depth)
         components = components_long(depth)
         row_counts["functional_depth_2026.csv"] = _write(paths["depth"], depth)
@@ -74,6 +88,11 @@ def build_outputs(config: Dict[str, Any]) -> Dict[str, Any]:
                 "teams_with_possession_components": int(depth["possession_components_available"].sum()),
                 "star_dependent": int((depth["depth_profile"] == "star_dependent").sum()),
                 "distributed_resilience": int((depth["depth_profile"] == "distributed_resilience").sum()),
+                "availability": {
+                    "injury_feed_available": bool(not injury_current.empty),
+                    "teams_depleted": int((depth["current_availability"] == "Depleted").sum()),
+                    "teams_thinned": int((depth["current_availability"] == "Thinned").sum()),
+                },
             }
         )
 
@@ -108,23 +127,39 @@ def build_summary(output_root: Path) -> str:
             "",
         ]
     )
+    availability = stats.get("availability")
+    if availability and availability.get("injury_feed_available"):
+        lines.append(
+            f"- Availability now: `{availability.get('teams_depleted')}` depleted, "
+            f"`{availability.get('teams_thinned')}` thinned by injury"
+        )
+        lines.append("")
+
     if paths["depth"].exists():
         depth = pd.read_csv(paths["depth"])
         if not depth.empty:
-            lines.extend(
-                [
-                    "| Rank | Team | Depth | Profile | Top scorer share | Components |",
-                    "| ---: | --- | ---: | --- | ---: | ---: |",
-                ]
-            )
+            has_availability = "current_availability" in depth.columns
+            header = "| Rank | Team | Depth | Profile | Top scorer share | Components |"
+            rule = "| ---: | --- | ---: | --- | ---: | ---: |"
+            if has_availability:
+                header += " Availability now |"
+                rule += " --- |"
+            lines.extend([header, rule])
             for _, row in depth.head(15).iterrows():
                 share = row.get("top_scorer_share")
                 share_text = f"{share:.0%}" if pd.notna(share) else "—"
-                lines.append(
+                line = (
                     f"| {int(row['depth_rank'])} | {row['team_abbreviation']} | "
                     f"{row['functional_depth_score']:.1f} | {row.get('depth_profile', '')} | "
                     f"{share_text} | {int(row['components_used'])}/5 |"
                 )
+                if has_availability:
+                    label = str(row.get("current_availability") or "Intact")
+                    out_share = row.get("rotation_minutes_out_share")
+                    if pd.notna(out_share) and out_share > 0:
+                        label += f" ({out_share:.0%} MPG out)"
+                    line += f" {label} |"
+                lines.append(line)
             lines.append("")
     return "\n".join(lines)
 

@@ -31,6 +31,8 @@ SEASON = 2026
 class LoadedSources:
     player_game: pd.DataFrame
     bench_net_rating: pd.DataFrame
+    injuries: pd.DataFrame = field(default_factory=pd.DataFrame)
+    injury_crosswalk: pd.DataFrame = field(default_factory=pd.DataFrame)
     source_manifest: Dict[str, Dict[str, Any]] = field(default_factory=dict)
 
 
@@ -127,11 +129,24 @@ def load_sources(config: Dict[str, Any]) -> LoadedSources:
     game_layer_root = path_from_config(config.get("game_layer_root", "data/processed"))
     impact_root = path_from_config(config.get("possession_impact_root", "analysis/possession_impact"))
 
+    injuries_config = config.get("injuries", {})
+    injuries_path = path_from_config(
+        injuries_config.get("injuries_path", "data/raw/injuries/injuries_2026.parquet")
+    )
+    crosswalk_path = path_from_config(
+        injuries_config.get(
+            "crosswalk_path", "analysis/role_fulfillment_matrix/config/player_eligibility_2026.csv"
+        )
+    )
+
     targets = {
         "player_game": game_layer_root
         / source_files.get("player_game", f"wnba_pbpstats_player_game/season={season}/player_game.parquet"),
         "bench_net_rating": impact_root
         / source_files.get("bench_net_rating", "data/processed/bench_net_rating_2026.csv"),
+        # Optional availability overlay: a missing feed leaves every team fully available.
+        "injuries": injuries_path,
+        "injury_crosswalk": crosswalk_path,
     }
 
     frames: Dict[str, pd.DataFrame] = {}

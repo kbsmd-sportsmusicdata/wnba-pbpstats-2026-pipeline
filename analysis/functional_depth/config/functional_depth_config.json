@@ -17,5 +17,11 @@
       "replacement_resilience": 0.20,
       "performance_floor": 0.20
     }
+  },
+  "injuries": {
+    "injuries_path": "data/raw/injuries/injuries_2026.parquet",
+    "crosswalk_path": "analysis/role_fulfillment_matrix/config/player_eligibility_2026.csv",
+    "thinned_share": 0.10,
+    "depleted_share": 0.25
   }
 }

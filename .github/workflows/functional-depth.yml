@@ -44,7 +44,7 @@ jobs:
 
       - name: Run Functional Depth tests
         if: ${{ inputs.run_tests }}
-        run: python -m unittest tests/test_functional_depth.py
+        run: python -m unittest tests/test_functional_depth.py tests/test_injuries.py
 
       - name: Rebuild upstream inputs
         if: ${{ inputs.rebuild_dependencies }}

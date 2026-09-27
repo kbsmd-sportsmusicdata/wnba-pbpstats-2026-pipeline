@@ -17,6 +17,7 @@ from functional_depth.metrics import (  # noqa: E402
     role_redundancy,
     rotation_trust,
 )
+from functional_depth.availability import attach_current_availability, build_player_mpg  # noqa: E402
 from functional_depth.score import build_functional_depth, build_strip, components_long  # noqa: E402
 
 
@@ -129,6 +130,68 @@ class ScoreTest(unittest.TestCase):
         self.assertEqual(len(long), len(depth) * 5)
         poss = long[long["possession_fed"]]["component"].unique()
         self.assertEqual(set(poss), {"replacement_resilience", "performance_floor"})
+
+
+class CurrentAvailabilityTest(unittest.TestCase):
+    def _player_game(self):
+        rows = []
+        # AAA: one 30-mpg player (100) and one 20-mpg player (101); BBB: one 25-mpg player (200).
+        for pid, team, mpg in ((100, "AAA", 30.0), (101, "AAA", 20.0), (200, "BBB", 25.0)):
+            for g in range(4):
+                rows.append(
+                    {
+                        "player_id": str(pid),
+                        "team_abbreviation": team,
+                        "game_id": f"{team}-{g}",
+                        "game_date": f"2026-09-0{g + 1}",
+                        "minutes": mpg,
+                    }
+                )
+        return pd.DataFrame(rows)
+
+    def _injury_current(self):
+        return pd.DataFrame(
+            {
+                "pbpstats_player_id": pd.array([100, 200], dtype="Int64"),
+                "player_id": ["100", "200"],
+                "team_abbreviation": ["AAA", "BBB"],
+                "athlete_display_name": ["Star Out", "Role Out"],
+                "is_out": [True, True],
+                "is_out_for_season": [True, False],
+                "absence_category": ["injury", "injury"],
+            }
+        )
+
+    def test_build_player_mpg(self):
+        mpg = build_player_mpg(self._player_game()).set_index("player_id")
+        self.assertAlmostEqual(float(mpg.loc[100, "mpg"]), 30.0)
+        self.assertEqual(mpg.loc[100, "team_abbreviation"], "AAA")
+
+    def test_attach_flags_depleted_team(self):
+        depth = pd.DataFrame({"team_abbreviation": ["AAA", "BBB"]})
+        out = attach_current_availability(
+            depth, self._player_game(), self._injury_current(), depleted_share=0.10, thinned_share=0.05
+        ).set_index("team_abbreviation")
+        # AAA lost a 30-mpg player -> 30/200 = 15% of a game's minutes out.
+        self.assertAlmostEqual(out.loc["AAA", "rotation_minutes_out"], 30.0)
+        self.assertAlmostEqual(out.loc["AAA", "rotation_minutes_out_share"], 0.15)
+        self.assertEqual(out.loc["AAA", "current_availability"], "Depleted")
+        self.assertEqual(int(out.loc["AAA", "players_out_for_season_now"]), 1)
+        self.assertIn("Star Out", out.loc["AAA", "players_out_now_names"])
+
+    def test_missing_feed_leaves_teams_intact(self):
+        depth = pd.DataFrame({"team_abbreviation": ["AAA", "BBB"]})
+        out = attach_current_availability(depth, self._player_game(), pd.DataFrame())
+        self.assertTrue((out["current_availability"] == "Intact").all())
+        self.assertTrue((out["rotation_minutes_out"] == 0.0).all())
+
+    def test_non_injury_absence_excluded(self):
+        depth = pd.DataFrame({"team_abbreviation": ["AAA"]})
+        injury = self._injury_current().iloc[:1].copy()
+        injury["absence_category"] = "non_injury"  # e.g. national-team duty
+        out = attach_current_availability(depth, self._player_game(), injury).set_index("team_abbreviation")
+        self.assertEqual(out.loc["AAA", "current_availability"], "Intact")
+        self.assertEqual(out.loc["AAA", "rotation_minutes_out"], 0.0)
 
 
 if __name__ == "__main__":
