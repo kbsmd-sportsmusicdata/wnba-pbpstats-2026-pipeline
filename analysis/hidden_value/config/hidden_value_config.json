@@ -11,6 +11,11 @@
     "possessions": "wnba_possessions_2026.parquet",
     "player_impact": "wnba_player_impact_2026.parquet"
   },
+  "injuries": {
+    "injuries_path": "data/raw/injuries/injuries_2026.parquet",
+    "crosswalk_path": "analysis/role_fulfillment_matrix/config/player_eligibility_2026.csv",
+    "opportunity_position_weight": 0.5
+  },
   "eligibility": {
     "min_total_possessions": 300,
     "min_games_played": 8,

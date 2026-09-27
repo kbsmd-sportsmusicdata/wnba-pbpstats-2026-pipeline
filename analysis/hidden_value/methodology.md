@@ -214,6 +214,34 @@ label should say so rather than the reader having to check a column.
 Minimum 300 total possessions and 8 games. Players between 300 and 800 possessions are kept
 but flagged `Low sample`. 176 of 226 players clear the floor, 151 of those are `Reliable`.
 
+## Availability And Injury Opportunity
+
+The board reads the shared injury / availability report (`analysis/injuries`, keyed back to the
+pbpstats `player_id` through the reviewed role-fulfillment crosswalk). It enters in two ways, both
+deliberately outside the scoring:
+
+- **Availability flag.** Each player carries `availability_status` and an `actionable` flag. The
+  flag is false only for players ruled out for the season. Their computed skill signal is left
+  intact — a season-ended player who out-produced their role still tells you something true about
+  the player — but the `watchlist_note` leads with `OUT FOR SEASON` so the row is never mistaken for
+  a live pickup. A short-term `Out` or `Day-to-day` player stays actionable, flagged with an expected
+  return date where the feed has one. The composite weights do not move; nothing here re-ranks the
+  board, it annotates it.
+
+- **Injury opportunity.** When a player is out with an *injury* (national-team duty, personal and
+  coach's-decision absences are excluded, since they do not reliably free minutes), the minutes they
+  held do not vanish — they flow to whoever is next on the depth chart. `injury_opportunity_score`
+  sums the per-game minutes vacated by injured teammates, weighted to reward same-position vacancies
+  (a sidelined guard helps the guards behind them most), and scores it 0–100 among players who are
+  themselves available. This is the same "role expanding" mechanism the board already values on the
+  trajectory side, now with a named cause. It is reported as context — in the note and a summary
+  section — not blended into `hidden_value_score`, because the size of the *opportunity* is a
+  different claim from the quality of the *player*, and conflating them would let a decimated roster
+  inflate a thin skill signal.
+
+The feed is optional: with it missing, every player reads `Available`, `injury_opportunity_score` is
+null, and the board is identical to a pre-injury run.
+
 ## Known Limitations
 
 - **Impact is mostly RAPM, which lags.** It reflects games through 2026-07-22 while the
@@ -226,4 +254,7 @@ but flagged `Low sample`. 176 of 226 players clear the floor, 151 of those are `
   empirical fit to playoff outcomes.
 - Start rate comes from opening-possession lineups, so an unusual opening five counts as a
   start.
-- No injury or availability information beyond games played.
+- Injury opportunity is a minutes-vacated proxy, not a lineup-level projection: it does not know
+  which backup a coach will actually promote, only how much room has opened up at each position.
+- The availability feed is snapshot-bound — it reflects the latest date in the committed injury
+  report, and a player whose status changed after that snapshot reads as of the snapshot.

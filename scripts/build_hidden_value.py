@@ -16,6 +16,7 @@ from typing import Any, Dict
 import numpy as np
 import pandas as pd
 
+from hidden_value.availability import attach_availability, build_injury_opportunity
 from hidden_value.board import build_board, build_component_long, fit_role_model
 from hidden_value.data_sources import (
     apply_runtime_overrides,
@@ -38,6 +39,7 @@ from hidden_value.features import (
 )
 from hidden_value.game_form import build_game_trajectories
 from hidden_value.trajectory import build_player_trajectories
+from injuries.report import attach_player_ids, build_current_report
 
 
 def output_paths(output_root: Path) -> Dict[str, Path]:
@@ -170,6 +172,38 @@ def build_outputs(config: Dict[str, Any]) -> Dict[str, Any]:
     panel["trajectory_raw"] = trend_parts.mean(axis=1, skipna=True)
     panel["volatility_raw"] = pd.to_numeric(panel.get("on_court_net_rating_volatility"), errors="coerce")
 
+    # Injury context: annotate availability (so a season-ended player is not sold as a live pickup)
+    # and score the opportunity injured teammates open up. Both are additive -- a missing feed leaves
+    # the panel untouched -- and neither changes the composite weights.
+    injuries_config = config.get("injuries", {})
+    injury_current = pd.DataFrame()
+    if not sources.injuries.empty:
+        injury_current = attach_player_ids(build_current_report(sources.injuries), sources.injury_crosswalk)
+    player_roles = pd.DataFrame(
+        {
+            "player_id": pd.to_numeric(sources.player_features.get("entity_id"), errors="coerce").astype("Int64"),
+            "team_abbreviation": sources.player_features.get("team_abbreviation"),
+            "position": sources.player_features.get("position"),
+            "minutes": pd.to_numeric(sources.player_features.get("minutes"), errors="coerce"),
+            "games_played": pd.to_numeric(sources.player_features.get("games_played"), errors="coerce"),
+        }
+    )
+    panel = attach_availability(panel, injury_current)
+    panel = build_injury_opportunity(
+        panel,
+        injury_current,
+        player_roles,
+        position_weight=float(injuries_config.get("opportunity_position_weight", 0.5)),
+    )
+    stats["availability"] = {
+        "injury_feed_available": bool(not injury_current.empty),
+        "players_out_for_season": int(panel["is_out_for_season"].sum()),
+        "players_out": int(panel["is_out"].sum()),
+        "players_day_to_day": int(panel["is_day_to_day"].sum()),
+        "non_actionable": int((~panel["actionable"]).sum()),
+        "injury_opportunity_flagged": int((pd.to_numeric(panel["injury_opportunity_score"], errors="coerce") >= 75).sum()),
+    }
+
     board = build_board(panel, weights=config.get("weights", {}), labels=config.get("labels", {}))
     components = build_component_long(board)
 
@@ -221,9 +255,16 @@ def build_summary(output_root: Path) -> str:
             f"- Players scored: `{stats.get('players_scored')}` (`{stats.get('players_reliable')}` reliable)",
             f"- Role model R²: `{role.get('r_squared')}` over `{role.get('players_fitted')}` players",
             f"- Tracks: `{stats.get('track_counts')}`",
-            "",
         ]
     )
+    availability = stats.get("availability")
+    if availability and availability.get("injury_feed_available"):
+        lines.append(
+            f"- Availability: `{availability.get('players_out')}` out "
+            f"(`{availability.get('players_out_for_season')}` for season, flagged non-actionable), "
+            f"`{availability.get('injury_opportunity_flagged')}` gaining minutes from teammate injuries"
+        )
+    lines.append("")
 
     if paths["board"].exists():
         board = pd.read_csv(paths["board"])
@@ -235,17 +276,48 @@ def build_summary(output_root: Path) -> str:
                 [
                     f"### {track}",
                     "",
-                    "| Player | Team | Score | Role resid | Trend | Fit | Conviction |",
-                    "| --- | --- | ---: | ---: | ---: | ---: | --- |",
+                    "| Player | Team | Score | Role resid | Trend | Fit | Conviction | Availability |",
+                    "| --- | --- | ---: | ---: | ---: | ---: | --- | --- |",
                 ]
             )
             for _, row in subset.iterrows():
+                availability_label = str(row.get("availability_status") or "Available")
+                if not row.get("actionable", True):
+                    availability_label += " ⛔"
                 lines.append(
                     f"| {row.get('player_name')} | {row.get('team_abbreviation')} | "
                     f"{row['hidden_value_score']:.1f} | {row['role_residual_score']:.0f} | "
-                    f"{row['trajectory_score']:.0f} | {row['playoff_fit_score']:.0f} | {row['conviction']} |"
+                    f"{row['trajectory_score']:.0f} | {row['playoff_fit_score']:.0f} | {row['conviction']} | "
+                    f"{availability_label} |"
                 )
             lines.append("")
+
+        # Players an injury has pushed into a larger role -- the opportunity the feed surfaces.
+        if "injury_opportunity_score" in board.columns:
+            opportunity = board[
+                (pd.to_numeric(board["injury_opportunity_score"], errors="coerce") >= 75)
+                & board.get("actionable", True)
+            ].sort_values("injury_opportunity_score", ascending=False).head(8)
+            if not opportunity.empty:
+                lines.extend(
+                    [
+                        "### Opportunity from injuries",
+                        "",
+                        "Available players whose team has lost rotation minutes to injury. "
+                        "Opp score weights same-position vacancies; vacated MPG is the team total.",
+                        "",
+                        "| Player | Team | HV score | Opp score | Vacated MPG | Teammates out |",
+                        "| --- | --- | ---: | ---: | ---: | ---: |",
+                    ]
+                )
+                for _, row in opportunity.iterrows():
+                    lines.append(
+                        f"| {row.get('player_name')} | {row.get('team_abbreviation')} | "
+                        f"{row['hidden_value_score']:.1f} | {row['injury_opportunity_score']:.0f} | "
+                        f"{row.get('injury_vacated_mpg_team', 0):.0f} | "
+                        f"{int(row.get('injured_teammates_out', 0))} |"
+                    )
+                lines.append("")
     return "\n".join(lines)
 
 
