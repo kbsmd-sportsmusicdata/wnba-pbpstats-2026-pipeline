@@ -17,6 +17,7 @@ from injuries.report import (  # noqa: E402
     build_team_availability,
     classify_absence_reason,
     latest_as_of,
+    mentions_season_ending,
     normalize_availability_status,
     normalize_injuries,
     normalize_player_name,
@@ -84,6 +85,51 @@ class NameNormalizationTest(unittest.TestCase):
     def test_accents_and_punctuation_folded(self):
         self.assertEqual(normalize_player_name("A'ja Wilson"), "ajawilson")
         self.assertEqual(normalize_player_name("Luisa Geiselsöder"), "luisageiselsoder")
+
+
+class SeasonEndingDetectionTest(unittest.TestCase):
+    def test_phrases_matched_and_traps_rejected(self):
+        self.assertTrue(mentions_season_ending("will be sidelined for the rest of the season"))
+        self.assertTrue(mentions_season_ending("out for the 2026 WNBA season"))
+        self.assertTrue(mentions_season_ending("suffered a season-ending injury"))
+        # Single-game phrasings that merely contain "season"/"game" must not match.
+        self.assertFalse(mentions_season_ending("out for the season finale Thursday"))
+        self.assertFalse(mentions_season_ending("ruled out for the remainder of Thursday's game"))
+        self.assertFalse(mentions_season_ending("out for Thursday's game against the Sky"))
+
+    def test_out_status_upgraded_to_season_ending_by_comment(self):
+        # ESPN left the status as OUT, but the comment confirms a season-ender (the NaLyssa case).
+        raw = pd.DataFrame(
+            [
+                _raw_row(
+                    athlete_id=99,
+                    detail_fantasy_status="OUT",
+                    detail_type="Leg",
+                    short_comment="Smith will be sidelined for the rest of the season after a leg injury.",
+                )
+            ]
+        )
+        current = build_current_report(raw)
+        row = current.iloc[0]
+        self.assertEqual(row["availability_status"], "Out for season")
+        self.assertTrue(row["is_out_for_season"])
+
+    def test_return_date_placeholder_does_not_trigger_season_ending(self):
+        # A short-term OUT with the 2027-05-01 placeholder return date must stay "Out", not OFS.
+        raw = pd.DataFrame(
+            [
+                _raw_row(
+                    athlete_id=98,
+                    detail_fantasy_status="OUT",
+                    detail_type="Ankle",
+                    detail_return_date="2027-05-01",
+                    short_comment="Player (ankle) is out for Thursday's game against Golden State.",
+                )
+            ]
+        )
+        row = build_current_report(raw).iloc[0]
+        self.assertEqual(row["availability_status"], "Out")
+        self.assertFalse(row["is_out_for_season"])
 
 
 class CurrentReportTest(unittest.TestCase):
@@ -257,6 +303,32 @@ class ForecastAvailabilityContextTest(unittest.TestCase):
         context = build_forecast_availability_context(self._forecast(), pd.DataFrame())
         self.assertEqual(len(context), 3)
         self.assertTrue((context["availability_flag"] == "Healthy").all())
+
+
+class InjuryReportStaleOutputTest(unittest.TestCase):
+    def test_missing_feed_clears_stale_tables(self):
+        import build_injury_report as builder
+
+        with tempfile.TemporaryDirectory() as tmp:
+            output_root = Path(tmp)
+            processed = output_root / "data" / "processed"
+            processed.mkdir(parents=True)
+            stale = processed / "injury_report_current_2026.csv"
+            stale.write_text("athlete_display_name,availability_status\nX,Out\n", encoding="utf-8")
+            (processed / "team_availability_2026.csv").write_text("team_abbreviation\nPHX\n", encoding="utf-8")
+            (processed / "injury_report_history_2026.csv").write_text("as_of_date\n2026-09-26\n", encoding="utf-8")
+
+            config = {
+                "output_root": str(output_root),
+                "injuries_path": str(output_root / "missing.parquet"),
+                "crosswalk_path": str(output_root / "missing.csv"),
+                "_config_path": str(output_root / "config.json"),
+            }
+            manifest = builder.build_outputs(config)
+            self.assertEqual(manifest["analysis_stats"]["status"], "injuries_missing")
+            self.assertFalse(stale.exists())
+            self.assertFalse((processed / "team_availability_2026.csv").exists())
+            self.assertFalse((processed / "injury_report_history_2026.csv").exists())
 
 
 class ForecastContextStaleOutputTest(unittest.TestCase):

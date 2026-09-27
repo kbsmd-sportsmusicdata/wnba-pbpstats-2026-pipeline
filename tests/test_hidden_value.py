@@ -12,7 +12,12 @@ import pandas as pd
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 
-from hidden_value.availability import attach_availability, build_injury_opportunity  # noqa: E402
+from hidden_value.availability import (  # noqa: E402
+    apply_position_map,
+    attach_availability,
+    build_injury_opportunity,
+    build_position_map,
+)
 from hidden_value.board import _note, build_board, fit_role_model, standardize  # noqa: E402
 from hidden_value.features import (  # noqa: E402
     apply_eligibility,
@@ -594,6 +599,61 @@ class AvailabilityIntegrationTest(unittest.TestCase):
         out = build_injury_opportunity(panel, injury, roles).set_index("player_id")
         self.assertGreater(out.loc[100, "injury_vacated_mpg_team"], 0)  # counted despite non-injury
         self.assertEqual(out.loc[300, "injury_vacated_mpg_team"], 0)
+
+    def test_position_map_from_rosters_and_crosswalk(self):
+        game_rosters = pd.DataFrame(
+            {
+                "athlete_id": [3065570, 3065570, 2529622],  # first athlete appears twice (mode)
+                "athlete_position": ["G", "G", "F"],
+            }
+        )
+        crosswalk = pd.DataFrame(
+            {
+                "player_id": ["100", "200", "espn:9"],  # non-numeric id is skipped
+                "espn_athlete_id": [3065570, 2529622, 9],
+            }
+        )
+        mapping = build_position_map(game_rosters, crosswalk)
+        self.assertEqual(mapping, {100: "G", 200: "F"})
+
+        panel = pd.DataFrame({"player_id": pd.array([100, 200, 300], dtype="Int64"), "position": [None, None, None]})
+        out = apply_position_map(panel, mapping).set_index("player_id")
+        self.assertEqual(out.loc[100, "position"], "G")
+        self.assertEqual(out.loc[200, "position"], "F")
+        self.assertTrue(pd.isna(out.loc[300, "position"]))
+
+    def test_position_map_enables_same_position_differentiation(self):
+        # With positions present, a guard vacancy lifts the guard behind them above a forward.
+        panel = pd.DataFrame(
+            {
+                "player_id": pd.array([100, 101], dtype="Int64"),
+                "team_abbreviation": ["CHI", "CHI"],
+                "position": ["G", "F"],
+                "is_out": [False, False],
+            }
+        )
+        injury = pd.DataFrame(
+            {
+                "pbpstats_player_id": pd.array([200], dtype="Int64"),
+                "player_id": ["200"],
+                "player_id_match": ["espn_athlete_id"],
+                "team_abbreviation": ["CHI"],
+                "is_out": [True],
+                "is_out_for_season": [False],
+                "absence_category": ["injury"],
+            }
+        )
+        roles = pd.DataFrame(
+            {
+                "player_id": pd.array([100, 101, 200], dtype="Int64"),
+                "team_abbreviation": ["CHI", "CHI", "CHI"],
+                "position": ["G", "F", "G"],
+                "minutes": [300, 300, 320],
+                "games_played": [10, 10, 10],
+            }
+        )
+        out = build_injury_opportunity(panel, injury, roles).set_index("player_id")
+        self.assertGreater(out.loc[100, "injury_opportunity_score"], out.loc[101, "injury_opportunity_score"])
 
     def test_note_leads_with_out_for_season_flag(self):
         row = pd.Series(

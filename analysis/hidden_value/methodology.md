@@ -234,8 +234,9 @@ deliberately outside the scoring:
   coach's decision are excluded — those minutes do not vanish; they flow to whoever is next on the
   depth chart. `injury_opportunity_score` sums the per-game minutes vacated, weighted to reward
   same-position vacancies
-  (a sidelined guard helps the guards behind them most), and scores it 0–100 among players who are
-  themselves available. This is the same "role expanding" mechanism the board already values on the
+  (a sidelined guard helps the guards behind them most; positions are sourced from the ESPN game
+  rosters through the crosswalk, since the pbpstats feature table carries none), and scores it 0–100
+  among players who are themselves available. This is the same "role expanding" mechanism the board already values on the
   trajectory side, now with a named cause. It is reported as context — in the note and a summary
   section — not blended into `hidden_value_score`, because the size of the *opportunity* is a
   different claim from the quality of the *player*, and conflating them would let a decimated roster

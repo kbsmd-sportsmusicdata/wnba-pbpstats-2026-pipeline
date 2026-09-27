@@ -24,6 +24,7 @@ class LoadedSources:
     player_game: pd.DataFrame = field(default_factory=pd.DataFrame)
     injuries: pd.DataFrame = field(default_factory=pd.DataFrame)
     injury_crosswalk: pd.DataFrame = field(default_factory=pd.DataFrame)
+    game_rosters: pd.DataFrame = field(default_factory=pd.DataFrame)
     source_manifest: Dict[str, Dict[str, Any]] = field(default_factory=dict)
 
 
@@ -151,6 +152,9 @@ def load_sources(config: Dict[str, Any]) -> LoadedSources:
         # unchanged rather than failing the run.
         "injuries": injuries_path,
         "injury_crosswalk": crosswalk_path,
+        # Positions for same-position injury-opportunity weighting: the pbpstats features carry no
+        # position, so the game rosters supply it (joined to player_id through the crosswalk).
+        "game_rosters": sports_root / source_files.get("game_rosters", "game_rosters_2026.parquet"),
     }
 
     frames: Dict[str, pd.DataFrame] = {}

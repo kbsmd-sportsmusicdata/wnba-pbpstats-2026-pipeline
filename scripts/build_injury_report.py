@@ -69,6 +69,11 @@ def build_outputs(config: Dict[str, Any]) -> Dict[str, Any]:
 
     if sources.injuries.empty:
         stats["status"] = "injuries_missing"
+        # Remove any tables from a prior successful run so a missing-feed run cannot leave stale
+        # CSVs that still look current to consumers reading them directly (or get committed as such).
+        for key in ("current", "team", "history"):
+            if paths[key].exists():
+                paths[key].unlink()
     else:
         history = normalize_injuries(sources.injuries)
         current = build_current_report(sources.injuries, as_of=config.get("as_of"))

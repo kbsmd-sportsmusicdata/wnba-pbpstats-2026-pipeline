@@ -16,7 +16,12 @@ from typing import Any, Dict
 import numpy as np
 import pandas as pd
 
-from hidden_value.availability import attach_availability, build_injury_opportunity
+from hidden_value.availability import (
+    apply_position_map,
+    attach_availability,
+    build_injury_opportunity,
+    build_position_map,
+)
 from hidden_value.board import build_board, build_component_long, fit_role_model
 from hidden_value.data_sources import (
     apply_runtime_overrides,
@@ -188,6 +193,11 @@ def build_outputs(config: Dict[str, Any]) -> Dict[str, Any]:
             "games_played": pd.to_numeric(sources.player_features.get("games_played"), errors="coerce"),
         }
     )
+    # The features carry no position; source it from the game rosters so same-position opportunity
+    # weighting has something to key on (both the panel and the injured-teammate roles).
+    position_map = build_position_map(sources.game_rosters, sources.injury_crosswalk)
+    panel = apply_position_map(panel, position_map)
+    player_roles = apply_position_map(player_roles, position_map)
     panel = attach_availability(panel, injury_current)
     panel = build_injury_opportunity(
         panel,
@@ -197,6 +207,7 @@ def build_outputs(config: Dict[str, Any]) -> Dict[str, Any]:
     )
     stats["availability"] = {
         "injury_feed_available": bool(not injury_current.empty),
+        "positions_resolved": int(len(position_map)),
         "players_out_for_season": int(panel["is_out_for_season"].sum()),
         "players_out": int(panel["is_out"].sum()),
         "players_day_to_day": int(panel["is_day_to_day"].sum()),

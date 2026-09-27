@@ -35,6 +35,56 @@ _AVAILABILITY_COLUMNS = {
 }
 
 
+def build_position_map(game_rosters: pd.DataFrame, crosswalk: pd.DataFrame) -> dict:
+    """Map pbpstats ``player_id`` -> position (G/F/C) via the ESPN game rosters and the crosswalk.
+
+    The pbpstats feature table has no position column, so same-position opportunity weighting has
+    nothing to key on without this. Positions come from the ESPN game rosters (keyed on
+    ``athlete_id``) and are joined to ``player_id`` through the reviewed crosswalk.
+    """
+    if game_rosters is None or game_rosters.empty or crosswalk is None or crosswalk.empty:
+        return {}
+    if "athlete_id" not in game_rosters.columns or "athlete_position" not in game_rosters.columns:
+        return {}
+
+    rosters = game_rosters[["athlete_id", "athlete_position"]].copy()
+    rosters["athlete_id"] = pd.to_numeric(rosters["athlete_id"], errors="coerce").astype("Int64")
+    rosters = rosters.dropna(subset=["athlete_id"])
+    rosters["athlete_position"] = rosters["athlete_position"].astype(str).str.upper().str[0]
+    rosters = rosters[rosters["athlete_position"].isin(("G", "F", "C"))]
+    if rosters.empty:
+        return {}
+    position_by_athlete = rosters.groupby("athlete_id")["athlete_position"].agg(
+        lambda values: values.mode().iloc[0] if not values.mode().empty else values.iloc[0]
+    )
+
+    xwalk = crosswalk.copy()
+    if "espn_athlete_id" not in xwalk.columns or "player_id" not in xwalk.columns:
+        return {}
+    xwalk["espn_athlete_id"] = pd.to_numeric(xwalk["espn_athlete_id"], errors="coerce").astype("Int64")
+    xwalk["pid_numeric"] = pd.to_numeric(xwalk["player_id"], errors="coerce").astype("Int64")
+
+    result: dict = {}
+    for row in xwalk.dropna(subset=["espn_athlete_id", "pid_numeric"]).itertuples(index=False):
+        position = position_by_athlete.get(getattr(row, "espn_athlete_id"))
+        if isinstance(position, str) and position:
+            result[int(getattr(row, "pid_numeric"))] = position
+    return result
+
+
+def apply_position_map(frame: pd.DataFrame, position_map: dict) -> pd.DataFrame:
+    """Populate/refresh a ``position`` column from a player_id -> position map, keeping any existing."""
+    out = frame.copy()
+    if not position_map or "player_id" not in out.columns:
+        return out
+    ids = pd.to_numeric(out["player_id"], errors="coerce").astype("Int64")
+    mapped = ids.map(lambda value: position_map.get(int(value)) if pd.notna(value) else None)
+    existing = out["position"] if "position" in out.columns else pd.Series(pd.NA, index=out.index)
+    existing = existing.where(existing.notna() & existing.astype(str).str.strip().ne(""), other=pd.NA)
+    out["position"] = existing.fillna(mapped)
+    return out
+
+
 def attach_availability(panel: pd.DataFrame, injury_current: pd.DataFrame) -> pd.DataFrame:
     """Annotate each panel player with current availability, defaulting to Available.
 

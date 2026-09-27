@@ -79,6 +79,37 @@ _NON_INJURY_REASONS = {
     "rest",
 }
 
+# ESPN's ``detail_fantasy_status`` is the clean season-ending flag (``OFS``), but it is sometimes
+# left as ``OUT`` for a confirmed season-ender (e.g. NaLyssa Smith). The expected-return date is no
+# help -- it is a ``2027-05-01`` placeholder on most late-season ``OUT`` rows -- so the fallback is
+# the comment text. The pattern requires the period itself to be the season/year and rejects the
+# single-game traps ("out for the season *finale*", "remainder of *the game*").
+_SEASON_ENDING_RE = re.compile(
+    r"(?:"
+    r"(?:rest|remainder|balance) of (?:the )?(?:\d{4} )?(?:wnba )?season"
+    r"|out for the (?:\d{4} )?(?:wnba )?season"
+    r"|miss(?:ing|es|ed)? the (?:rest|remainder|balance) of the (?:\d{4} )?(?:wnba )?season"
+    r"|will miss the (?:\d{4} )?(?:wnba )?season"
+    r"|(?:done|shut down|sidelined) for the (?:rest of the )?(?:season|year)"
+    r"|season[- ]ending"
+    r")(?!\s+(?:finale|opener|debut|game))",
+    re.IGNORECASE,
+)
+
+
+def mentions_season_ending(*texts: Any) -> bool:
+    """True when a comment states the player is out for the rest of the season/year.
+
+    Deliberately conservative: it matches explicit season-ending language and rejects the
+    single-game phrasings that merely contain the word "season" (a "season finale", the
+    "remainder of the game").
+    """
+    for text in texts:
+        cleaned = _clean(text)
+        if cleaned and _SEASON_ENDING_RE.search(cleaned):
+            return True
+    return False
+
 
 def normalize_player_name(value: Any) -> str:
     """Accent-fold and strip a name to a stable join key (matches the RFM crosswalk builder)."""
@@ -196,6 +227,17 @@ def normalize_injuries(injuries: pd.DataFrame) -> pd.DataFrame:
         normalize_availability_status(status, fantasy)
         for status, fantasy in zip(frame.get("status"), frame.get("detail_fantasy_status"))
     ]
+    # Upgrade to season-ending when the comment says so even though ESPN left the status as OUT.
+    short_comments = frame.get("short_comment")
+    long_comments = frame.get("long_comment")
+    season_ending = [
+        mentions_season_ending(
+            short_comments.iloc[i] if short_comments is not None else "",
+            long_comments.iloc[i] if long_comments is not None else "",
+        )
+        for i in range(len(frame))
+    ]
+    out.loc[pd.Series(season_ending, index=out.index), "availability_status"] = "Out for season"
     out["availability_rank"] = out["availability_status"].map(_AVAILABILITY_RANK).astype("Int64")
     out["is_out_for_season"] = out["availability_status"].eq("Out for season")
     out["is_day_to_day"] = out["availability_status"].eq("Day-to-day")
