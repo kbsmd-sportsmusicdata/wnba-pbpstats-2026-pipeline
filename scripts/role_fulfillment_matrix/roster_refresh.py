@@ -328,7 +328,11 @@ def build_roster_refresh_candidate(
 
     historical_ids = set(historical["athlete_id"])
     current_ids = set(current["athlete_id"])
-    candidate = historical.set_index("athlete_id", drop=False).copy()
+    # Object dtype so per-cell assignment accepts the mixed types (int season, bool active, ...) that
+    # the ESPN roster rows carry. pandas 3.0 infers string columns as a strict ``str`` dtype that
+    # rejects a non-string cell value; the frame is re-normalized and written to CSV below, so its
+    # working dtype is immaterial.
+    candidate = historical.set_index("athlete_id", drop=False).astype(object)
     changes = []
 
     for _, active_row in current.iterrows():
@@ -490,7 +494,9 @@ def promote_roster_refresh_candidate(
     core = _complete_player_core(pending_player_core)
     if core["athlete_id"].duplicated().any():
         raise RosterRefreshError("pending player core contains duplicate athlete IDs")
-    core = core.set_index("athlete_id", drop=False)
+    # Object dtype so the per-cell departure assignments below accept mixed types under pandas 3.0's
+    # strict string dtype; the frame is re-normalized to PLAYER_CORE_COLUMNS before return.
+    core = core.set_index("athlete_id", drop=False).astype(object)
     unresolved_ids = set(
         core.loc[core["status_type"].eq("pending-roster-review"), "athlete_id"]
     )
