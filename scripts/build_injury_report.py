@@ -85,7 +85,13 @@ def build_outputs(config: Dict[str, Any]) -> Dict[str, Any]:
             "team_availability_2026.csv": _write(paths["team"], team),
             "injury_report_history_2026.csv": _write(paths["history"], history),
         }
-        matched = int((current["player_id_match"] != "unmatched").sum()) if not current.empty else 0
+        # Count only rows that resolve to a real numeric pbpstats id. A crosswalk hit on an
+        # ESPN roster-only sentinel (``espn:<id>``) leaves ``pbpstats_player_id`` null and does
+        # not join to pbpstats consumers, so it must not inflate the pbpstats id match rate.
+        matched = int(current["pbpstats_player_id"].notna().sum()) if not current.empty else 0
+        crosswalk_matched = (
+            int((current["player_id_match"] != "unmatched").sum()) if not current.empty else 0
+        )
         stats.update(
             {
                 "status": "ok",
@@ -93,6 +99,7 @@ def build_outputs(config: Dict[str, Any]) -> Dict[str, Any]:
                 "players_current": int(len(current)),
                 "player_id_matched": matched,
                 "player_id_match_rate": round(matched / len(current), 4) if len(current) else None,
+                "identity_crosswalk_matched": crosswalk_matched,
                 "players_out": int(current["is_out"].sum()) if not current.empty else 0,
                 "players_out_for_season": int(current["is_out_for_season"].sum()) if not current.empty else 0,
                 "players_day_to_day": int(current["is_day_to_day"].sum()) if not current.empty else 0,
