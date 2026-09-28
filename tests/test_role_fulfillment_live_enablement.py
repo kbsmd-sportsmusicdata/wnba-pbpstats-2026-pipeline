@@ -49,7 +49,7 @@ class LiveEnablementConfigTest(unittest.TestCase):
             config["output_root"],
             "analysis/role_fulfillment_matrix/live",
         )
-        self.assertEqual(config["sources"]["roster_source_as_of"], "2026-08-25")
+        self.assertEqual(config["sources"]["roster_source_as_of"], "2026-09-28")
         self.assertEqual(config["sources"]["roster_addenda"], [])
         authorize_execution(config)
 
@@ -74,9 +74,9 @@ class LiveEnablementConfigTest(unittest.TestCase):
         )
         self.assertEqual(approval["roster_freshness_safeguard"], {
             "status": "approved_refreshed_base",
-            "base_source_as_of": "2026-08-25",
+            "base_source_as_of": "2026-09-28",
             "validation_basis": "oldest_contributing_snapshot",
-            "execution_status": "fresh_through_2026-08-23_standings_cutoff",
+            "execution_status": "fresh_through_2026-09-23_standings_cutoff",
         })
         self.assertEqual(approval["eligibility_coverage_update"], {
             "review_status": "approved",
