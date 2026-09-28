@@ -7,7 +7,7 @@
       "players_day_to_day": 0,
       "players_out": 40,
       "players_out_for_season": 15,
-      "positions_resolved": 228
+      "positions_resolved": 237
     },
     "conviction_counts": {
       "Moderate": 29,
@@ -49,13 +49,13 @@
   },
   "config_hash": "55a2cfe4d129b408c4b08033021baf724a78a87ec3bd1f4377a20984a4c6bc1a",
   "config_path": "analysis/hidden_value/config/hidden_value_config.json",
-  "generated_at_utc": "2026-09-27T21:20:01+00:00",
+  "generated_at_utc": "2026-09-28T15:55:44+00:00",
   "outputs": {
     "hidden_value_board_2026.csv": 193,
     "hidden_value_components_2026.csv": 965,
     "player_trajectory_2026.csv": 212
   },
-  "run_id": "20260927T212001+0000",
+  "run_id": "20260928T155544+0000",
   "season": 2026,
   "source_manifest": {
     "game_rosters": {
@@ -76,10 +76,10 @@
     },
     "injury_crosswalk": {
       "columns": 21,
-      "modified_at_utc": "2026-09-27T18:49:02+00:00",
+      "modified_at_utc": "2026-09-28T15:33:52+00:00",
       "path": "/home/user/wnba-pbpstats-2026-pipeline/analysis/role_fulfillment_matrix/config/player_eligibility_2026.csv",
-      "rows": 235,
-      "size_bytes": 90995,
+      "rows": 242,
+      "size_bytes": 93651,
       "status": "resolved"
     },
     "player_features": {
