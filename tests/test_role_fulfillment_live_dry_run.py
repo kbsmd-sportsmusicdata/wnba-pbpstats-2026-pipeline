@@ -855,7 +855,7 @@ class LiveDryRunOutputTest(unittest.TestCase):
 
         self.assertEqual(manifest["dry_run_gate_status"], "review_ready")
         self.assertEqual(manifest["dry_run_gate_blockers"], [])
-        self.assertEqual(manifest["players_scored"], 10)
+        self.assertEqual(manifest["players_scored"], 7)
         self.assertEqual(
             manifest["adapter_audit"]["source_only_assignments"],
             ["espn:4398589", "espn:5208984"],
@@ -864,19 +864,23 @@ class LiveDryRunOutputTest(unittest.TestCase):
             funnel.loc["Elena Buenavida", "exclusion_reason"],
             "insufficient_recent_sample",
         )
+        # Standings drift to the 2026-09-23 cutoff moved several teams out of the
+        # contender window, so these players now fall out as non-contenders.
         self.assertEqual(
             funnel.loc["Elizabeth Balogun", "exclusion_reason"],
-            "insufficient_recent_sample",
+            "non_contender_team",
         )
         self.assertEqual(funnel.loc["Kara Dunn", "exclusion_reason"], "non_contender_team")
         self.assertEqual(
             funnel.loc["Marine Fauthoux", "exclusion_reason"],
-            "insufficient_recent_possessions",
+            "non_contender_team",
         )
         self.assertEqual(scores["score_status"].value_counts().to_dict(), {
-            "dry_run_scored": 10,
-            "season_context_only": 5,
-            "inactive_suppressed": 3,
+            "season_context_only": 12,
+            "dry_run_scored": 7,
+            "inactive_suppressed": 2,
+            "unavailable": 1,
+            "insufficient_role_evidence": 1,
         })
 
     def test_promoted_base_roster_is_fresh_and_has_reviewed_identity_coverage(self):

@@ -26,6 +26,9 @@
     "basis": "Re-approves the fingerprint for the 244-row 2026-09-28 roster against the 2026-09-23 standings cutoff.",
     "roster_source_as_of": "2026-09-28",
     "standings_cutoff": "2026-09-23",
+    "player_core_rows": 244,
+    "active_players": 218,
+    "refreshed_dry_run": "latest_dry_run_rerun",
     "eligibility_repromotion": "analysis/role_fulfillment_matrix/data/review/eligibility_approval_manifest_2026.json",
     "role_assignment_review": "analysis/role_fulfillment_matrix/data/review/role_assignment_approval_manifest_2026.json",
     "role_assignment_scope": "Reviewed role assignments for the Washington (contender at rank 6) and Golden State rostered players that the refreshed standings surfaced as contender candidates.",
@@ -44,44 +47,46 @@
     "review_sha256": "c78929c760d0e6c53dea264b885409ed0bdc55216284c9e8eaed3afe78fd7ba3"
   },
   "latest_dry_run_rerun": {
-    "generated_at_utc": "2026-08-26T03:13:48+00:00",
+    "generated_at_utc": "2026-09-29T18:33:00+00:00",
     "review_status": "approved",
     "approved_by": "Krystal Beasley",
-    "approved_at": "2026-08-25",
+    "approved_at": "2026-09-29",
+    "roster_source_as_of": "2026-09-28",
+    "standings_cutoff": "2026-09-23",
     "dry_run_gate_status": "review_ready",
     "dry_run_gate_blockers": [],
     "source_only_assignments_sample_suppressed": 2,
     "result_counts": {
-      "dry_run_scored": 10,
-      "season_context_only": 5,
-      "inactive_suppressed": 3
+      "dry_run_scored": 7,
+      "season_context_only": 12,
+      "inactive_suppressed": 2
     },
     "live_output_enabled": false,
     "scheduling_enabled": false,
     "artifacts": [
       {
         "path": "analysis/role_fulfillment_matrix/data/review/live_dry_run/data/processed/run_manifest_2026.json",
-        "sha256": "78eb5436bf61808b2b56f365c595535cc4f7daa1a7c7875a3fa01dd46de85c66"
+        "sha256": "b56aefe4b09955a39abaddd81203ade8655ced2bc5bd57d3eb9589b6be33ea47"
       },
       {
         "path": "analysis/role_fulfillment_matrix/data/review/live_dry_run/data/processed/candidate_funnel_2026.csv",
-        "sha256": "33b15afcac0a99787a790b83ac4eaec9fafec5d280c38e3c33e53cc7d3d763c5"
+        "sha256": "128a0ec46e55ddd33de94ce7efb595aef757ca36433574bef3cf0f59e9ecdffe"
       },
       {
         "path": "analysis/role_fulfillment_matrix/data/review/live_dry_run/data/processed/role_fulfillment_matrix_2026.csv",
-        "sha256": "709f206b88f9671dab0e24a797b1e95ff9433f13216cf1d1f547b1ce40f8dd2e"
+        "sha256": "d59525c388eeacb045e0d4ceeccbec9db1ad0caf16b8bb40db99f4fcead133c7"
       },
       {
         "path": "analysis/role_fulfillment_matrix/data/review/live_dry_run/data/processed/role_fulfillment_evidence_2026.json",
-        "sha256": "3682902f979e7f9456eb00b11aa0ccb705b54bc87d0cfe0a00ae24f75e9eaf2e"
+        "sha256": "616d8f212c14897d08ac92ed7ecbc575ed749886b71041fc2753a5fc944a85d9"
       },
       {
         "path": "analysis/role_fulfillment_matrix/data/review/live_dry_run/role_fulfillment_matrix_live_dry_run_validation.md",
-        "sha256": "13944cd7e7572e82c19bf3721e4cbe2b4fe3d398411617df43b31b6368f5eb8b"
+        "sha256": "8e7157ad8313bb8f63f705600bd38f606efa957cace677b21ef96f473739ffba"
       },
       {
         "path": "analysis/role_fulfillment_matrix/data/review/live_dry_run/deliverables/role_fulfillment_matrix/index.html",
-        "sha256": "27a6d3f0cedd3e2cc04868423bdd9db5fc682fb838d7de196ebb5841bb496aa3"
+        "sha256": "cf85e2340a208a27cfaaf4eb7681d0c564fefa79889dc19182b350d90b75aa98"
       }
     ]
   },
@@ -90,8 +95,8 @@
     "approved_by": "Krystal Beasley",
     "approved_at": "2026-08-25",
     "promotion_manifest": "analysis/role_fulfillment_matrix/data/review/roster_refresh_2026-08-25/roster_refresh_promotion_manifest_2026-08-25.json",
-    "player_core_rows": 244,
-    "active_players": 218,
+    "player_core_rows": 237,
+    "active_players": 211,
     "roster_addenda": [],
     "manual_live_run_authorized": false
   },

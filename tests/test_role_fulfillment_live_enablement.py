@@ -97,12 +97,12 @@ class LiveEnablementConfigTest(unittest.TestCase):
         rerun = approval["latest_dry_run_rerun"]
         self.assertEqual(rerun["review_status"], "approved")
         self.assertEqual(rerun["approved_by"], "Krystal Beasley")
-        self.assertEqual(rerun["approved_at"], "2026-08-25")
+        self.assertEqual(rerun["approved_at"], "2026-09-29")
         self.assertEqual(rerun["dry_run_gate_status"], "review_ready")
         self.assertEqual(rerun["result_counts"], {
-            "dry_run_scored": 10,
-            "season_context_only": 5,
-            "inactive_suppressed": 3,
+            "dry_run_scored": 7,
+            "season_context_only": 12,
+            "inactive_suppressed": 2,
         })
         self.assertFalse(rerun["live_output_enabled"])
         self.assertFalse(rerun["scheduling_enabled"])
