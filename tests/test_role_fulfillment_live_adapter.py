@@ -187,7 +187,7 @@ class PBPStatsAdapterTest(unittest.TestCase):
             report = (Path(tmp) / "role_fulfillment_matrix_live_adapter_validation.md").read_text()
             output_names = {path.name for path in Path(tmp).iterdir()}
         self.assertEqual(manifest["status"], "review_ready")
-        self.assertEqual(manifest["candidate_coverage"], {"matched": 38, "expected": 38})
+        self.assertEqual(manifest["candidate_coverage"], {"matched": 50, "expected": 50})
         self.assertEqual(manifest["source_only_assignments"], 2)
         self.assertEqual(manifest["parity_players"], 11)
         self.assertEqual(manifest["parity_matches"], 11)

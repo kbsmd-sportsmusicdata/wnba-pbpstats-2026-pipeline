@@ -72,8 +72,8 @@ class DataContractTest(unittest.TestCase):
             "interior_finisher_rim_runner",
         }
 
-        self.assertEqual(len(assignments), 40)
-        self.assertEqual(assignments["player_id"].nunique(), 40)
+        self.assertEqual(len(assignments), 52)
+        self.assertEqual(assignments["player_id"].nunique(), 52)
         self.assertEqual(set(assignments["review_status"]), {"reviewed"})
         self.assertTrue(set(assignments["role_code"]).issubset(allowed_roles))
         self.assertTrue(
@@ -108,19 +108,20 @@ class DataContractTest(unittest.TestCase):
         self.assertAlmostEqual(elizabeth["assignment_confidence"], 0.70)
 
         manifest = json.loads(ROLE_ASSIGNMENT_MANIFEST.read_text())
-        self.assertEqual(manifest["reviewed_assignment_rows"], 40)
+        self.assertEqual(manifest["reviewed_assignment_rows"], 52)
         self.assertEqual(manifest["reviewed_team_counts"]["MIN"], 10)
         self.assertEqual(manifest["reviewed_team_counts"]["NYL"], 7)
         self.assertEqual(manifest["reviewed_team_counts"]["IND"], 6)
+        self.assertEqual(manifest["reviewed_team_counts"]["WAS"], 11)
         self.assertEqual(
             manifest["reviewed_primary_role_counts"]["perimeter_scorer_spacer"],
-            13,
+            17,
         )
         self.assertEqual(
             manifest["reviewed_primary_role_counts"]["interior_finisher_rim_runner"],
-            7,
+            9,
         )
-        self.assertEqual(manifest["last_updated_at"], "2026-08-25")
+        self.assertEqual(manifest["last_updated_at"], "2026-09-29")
         self.assertEqual(manifest["live_scoring_status"], "enabled_manual_only")
         self.assertEqual(manifest["remaining_blockers"], [])
         self.assertEqual(

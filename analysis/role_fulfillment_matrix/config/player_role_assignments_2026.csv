@@ -39,3 +39,15 @@ player_id,player_name,team_abbreviation,role_code,secondary_role_code,assignment
 1642826,Aubrey Griffin,NYL,downhill_pressure_wing,,0.25,reviewed,Krystal Beasley,2026-08-22,Reviewed low-confidence hypothesis with inactive score suppression
 espn:5208984,Elena Buenavida,MIN,secondary_creator_connector,,0.70,reviewed,Krystal Beasley,2026-08-25,Reviewed from FIBA playmaking profile; current-team live score withheld until WNBA sample meets safeguards
 espn:4398589,Elizabeth Balogun,NYL,perimeter_scorer_spacer,,0.70,reviewed,Krystal Beasley,2026-08-25,Reviewed from 2026 FIBA three-point volume; current-team live score withheld until WNBA sample meets safeguards
+1642781,Georgia Amoore,WAS,lead_creator,perimeter_scorer_spacer,0.75,reviewed,Krystal Beasley,2026-09-29,Reviewed lead ball-handler; team-high assist rate with high three-point volume
+1642785,Sonia Citron,WAS,perimeter_scorer_spacer,secondary_creator_connector,0.85,reviewed,Krystal Beasley,2026-09-29,Reviewed dual-role wing; top-5 gravity all season with consistent scoring and creation
+1642792,Kiki Iriafen,WAS,interior_finisher_rim_runner,interior_hub_rebounder,0.80,reviewed,Krystal Beasley,2026-09-29,Reviewed starting interior scorer/rebounder; rim-focused with low three volume
+1643427,Lauren Betts,WAS,interior_finisher_rim_runner,interior_hub_rebounder,0.65,reviewed,Krystal Beasley,2026-09-29,Reviewed rim-running center; shot-blocker and highly assisted finisher
+1643430,Cotie McMahon,WAS,downhill_pressure_wing,secondary_creator_connector,0.65,reviewed,Krystal Beasley,2026-09-29,Reviewed attacking wing; drives to the rim with secondary playmaking
+1643455,Angela Dugalic,WAS,perimeter_scorer_spacer,interior_hub_rebounder,0.60,reviewed,Krystal Beasley,2026-09-29,Reviewed stretch forward; high three volume plus rebounding
+1643467,Cassandre Prosper,WAS,perimeter_scorer_spacer,downhill_pressure_wing,0.55,reviewed,Krystal Beasley,2026-09-29,Reviewed spot-up wing; catch-and-shoot and mostly assisted
+1643644,Alicia Florez,WAS,secondary_creator_connector,perimeter_scorer_spacer,0.50,reviewed,Krystal Beasley,2026-09-29,Reviewed connector guard; balanced shot mix
+1642802,Lucy Olsen,WAS,perimeter_scorer_spacer,secondary_creator_connector,0.50,reviewed,Krystal Beasley,2026-09-29,Reviewed combo scorer; high three volume in a bench role
+1643450,Rori Harmon,WAS,secondary_creator_connector,,0.35,reviewed,Krystal Beasley,2026-09-29,Reviewed defense-first point guard; live score withheld until offensive sample grows
+1643440,Darianna Littlepage-Buggs,WAS,downhill_pressure_wing,interior_hub_rebounder,0.25,reviewed,Krystal Beasley,2026-09-29,Reviewed with limited-sample safeguard; live score deferred until sample grows
+1643832,Aminata Gueye,GSV,interior_hub_rebounder,interior_finisher_rim_runner,0.20,reviewed,Krystal Beasley,2026-09-29,Reviewed with limited-sample safeguard; live score deferred until sample grows

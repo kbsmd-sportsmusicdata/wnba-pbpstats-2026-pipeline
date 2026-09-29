@@ -2,11 +2,11 @@
   "adapter_audit": {
     "blockers": [],
     "candidate_coverage": {
-      "expected": 38,
-      "matched": 38
+      "expected": 50,
+      "matched": 50
     },
     "candidate_refresh_failures": [],
-    "coverage_through": "2026-08-24",
+    "coverage_through": "2026-09-24",
     "failure_ledger_rows": 0,
     "global_refresh_failures": 0,
     "locked_parity_matches": 11,
@@ -19,8 +19,8 @@
       "recent_start": "2026-08-07"
     },
     "manifest_refresh_failures": 0,
-    "recent_end": "2026-08-23",
-    "source_max_game_date": "2026-08-24",
+    "recent_end": "2026-09-22",
+    "source_max_game_date": "2026-09-24",
     "source_only_assignments": [
       "espn:4398589",
       "espn:5208984"
@@ -30,25 +30,25 @@
       "2 reviewed ESPN-only role assignments are sample-suppressed until a reviewed PBPStats identity is available"
     ]
   },
-  "analysis_cutoff_date": "2026-08-24",
-  "config_hash": "322cb02c8f9cb73d96441d5b9a1081bc405393b245f79b34171be4b32987bd29",
+  "analysis_cutoff_date": "2026-09-23",
+  "config_hash": "cab2833b15003955e89fddd670122f12b7186f9fd9ff7d7cc8eb387c0c73d9db",
   "config_path": "analysis/role_fulfillment_matrix/config/live_config.template.json",
   "dry_run_gate_blockers": [],
   "dry_run_gate_status": "review_ready",
   "execution_mode": null,
   "formula_version": "rfm-live-v1",
   "funnel_counts": {
-    "candidates_included": 18,
+    "candidates_included": 23,
     "excluded_inactive_role_review_deferred": 1,
-    "excluded_insufficient_recent_possessions": 5,
-    "excluded_insufficient_recent_sample": 16,
-    "excluded_non_contender_team": 142,
-    "excluded_not_age_experience_eligible": 52,
-    "excluded_not_currently_rostered": 3,
-    "players_considered": 237,
-    "players_scored": 10
+    "excluded_insufficient_recent_possessions": 3,
+    "excluded_insufficient_recent_sample": 18,
+    "excluded_non_contender_team": 148,
+    "excluded_not_age_experience_eligible": 49,
+    "excluded_not_currently_rostered": 2,
+    "players_considered": 244,
+    "players_scored": 7
   },
-  "generated_at_utc": "2026-08-26T03:13:48+00:00",
+  "generated_at_utc": "2026-09-29T18:44:10+00:00",
   "live_output_enabled": false,
   "live_scoring_blockers": [
     "final reviewer approval and explicit live-output enablement"
@@ -57,29 +57,29 @@
   "manual_run_id": null,
   "mode": "live_dry_run",
   "output_rows": {
-    "candidate_funnel_2026.csv": 237,
-    "role_fulfillment_evidence_2026.json": 103,
-    "role_fulfillment_matrix_2026.csv": 18
+    "candidate_funnel_2026.csv": 244,
+    "role_fulfillment_evidence_2026.json": 93,
+    "role_fulfillment_matrix_2026.csv": 23
   },
-  "players_scored": 10,
+  "players_scored": 7,
   "scheduling_enabled": false,
   "season": 2026,
   "source_manifest": {
     "eligibility": {
       "columns": 21,
       "path": "analysis/role_fulfillment_matrix/config/player_eligibility_2026.csv",
-      "rows": 235,
+      "rows": 242,
       "status": "reviewed_real_data"
     },
     "player_game": {
       "audit": {
         "blockers": [],
         "candidate_coverage": {
-          "expected": 38,
-          "matched": 38
+          "expected": 50,
+          "matched": 50
         },
         "candidate_refresh_failures": [],
-        "coverage_through": "2026-08-24",
+        "coverage_through": "2026-09-24",
         "failure_ledger_rows": 0,
         "global_refresh_failures": 0,
         "locked_parity_matches": 11,
@@ -92,8 +92,8 @@
           "recent_start": "2026-08-07"
         },
         "manifest_refresh_failures": 0,
-        "recent_end": "2026-08-23",
-        "source_max_game_date": "2026-08-24",
+        "recent_end": "2026-09-22",
+        "source_max_game_date": "2026-09-24",
         "source_only_assignments": [
           "espn:4398589",
           "espn:5208984"
@@ -109,42 +109,42 @@
       "manifest_path": "data/pbpstats_2026_player_game_logs/ingest_manifest.json",
       "path": "data/pbpstats_2026_player_game_logs/player_game_logs_wnba_2026_regular_season.csv",
       "quality": {
-        "canonical_game_ids": 283,
-        "canonical_player_ids": 229,
-        "canonical_player_rows": 5611,
+        "canonical_game_ids": 330,
+        "canonical_player_ids": 238,
+        "canonical_player_rows": 6586,
         "excluded_nonparticipation_rows": 1,
-        "source_game_ids": 283,
-        "source_max_game_date": "2026-08-24",
-        "source_player_ids": 229,
-        "source_player_rows": 5612,
-        "team_join_expected": 5611,
-        "team_join_matched": 5611,
+        "source_game_ids": 330,
+        "source_max_game_date": "2026-09-24",
+        "source_player_ids": 238,
+        "source_player_rows": 6587,
+        "team_join_expected": 6586,
+        "team_join_matched": 6586,
         "zero_filled_cells": {
-          "Assists": 1602,
-          "AtRimFGA": 1767,
-          "AtRimFGM": 2387,
+          "Assists": 1883,
+          "AtRimFGA": 2126,
+          "AtRimFGM": 2854,
           "DefPoss": 4,
-          "FG2A": 814,
-          "FG2M": 1574,
-          "FG3A": 1377,
-          "FG3M": 2989,
-          "FTA": 2461,
-          "FtPoints": 2631,
-          "OffPoss": 14,
-          "OffRebounds": 2935,
-          "Points": 810,
-          "Rebounds": 887,
-          "Turnovers": 1914
+          "FG2A": 953,
+          "FG2M": 1860,
+          "FG3A": 1613,
+          "FG3M": 3507,
+          "FTA": 2923,
+          "FtPoints": 3121,
+          "OffPoss": 16,
+          "OffRebounds": 3441,
+          "Points": 961,
+          "Rebounds": 1052,
+          "Turnovers": 2275
         }
       },
-      "rows": 5611,
+      "rows": 6586,
       "status": "reviewed_live_adapter",
       "team_path": "data/pbpstats_2026_player_game_logs/team_game_logs_wnba_2026_regular_season.csv"
     },
     "role_assignments": {
       "columns": 10,
       "path": "analysis/role_fulfillment_matrix/config/player_role_assignments_2026.csv",
-      "rows": 40,
+      "rows": 52,
       "status": "reviewed_real_data"
     },
     "role_definitions": {
@@ -159,15 +159,15 @@
       "path": "analysis/role_fulfillment_matrix/data/live_inputs/player_core_2026.csv",
       "quality": {
         "active_eligibility_players_unmatched": 0,
-        "active_players": 211,
-        "current_core_players": 237,
+        "active_players": 218,
+        "current_core_players": 244,
         "eligibility_players_unmatched": 2,
         "free_agents": 20,
         "inactive_players": 6,
-        "newest_source_as_of": "2026-08-25",
-        "oldest_source_as_of": "2026-08-25",
-        "reviewed_players_matched": 235,
-        "source_as_of": "2026-08-25",
+        "newest_source_as_of": "2026-09-28",
+        "oldest_source_as_of": "2026-09-28",
+        "reviewed_players_matched": 242,
+        "source_as_of": "2026-09-28",
         "source_snapshot_count": 1,
         "unmatched_active_eligibility_players": [],
         "unmatched_eligibility_players": [
@@ -175,8 +175,8 @@
           "Shey Peddy"
         ]
       },
-      "rows": 237,
-      "source_as_of": "2026-08-25",
+      "rows": 244,
+      "source_as_of": "2026-09-28",
       "status": "current_roster_with_eligibility_coverage"
     },
     "standings": {
@@ -184,7 +184,7 @@
       "manifest_path": "analysis/standings_playoff_forecast/data/processed/season=2026/latest/run_manifest.json",
       "path": "analysis/standings_playoff_forecast/data/processed/season=2026/latest/current_standings.csv",
       "quality": {
-        "cutoff_date": "2026-08-24",
+        "cutoff_date": "2026-09-23",
         "normalized_team_codes": 6,
         "teams": 15
       },
@@ -193,9 +193,9 @@
     }
   },
   "windows": {
-    "baseline_end": "2026-08-09",
-    "baseline_start": "2026-07-27",
-    "recent_end": "2026-08-23",
-    "recent_start": "2026-08-10"
+    "baseline_end": "2026-09-08",
+    "baseline_start": "2026-08-26",
+    "recent_end": "2026-09-22",
+    "recent_start": "2026-09-09"
   }
 }
