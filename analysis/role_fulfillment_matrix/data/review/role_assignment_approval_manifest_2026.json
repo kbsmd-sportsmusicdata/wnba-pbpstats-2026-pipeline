@@ -3,29 +3,30 @@
   "review_status": "reviewed",
   "approved_by": "Krystal Beasley",
   "approved_at": "2026-08-22",
-  "last_updated_at": "2026-08-25",
+  "last_updated_at": "2026-09-29",
   "assignment_policy": {
     "primary_role": "required_and_scored_after_threshold_approval",
     "secondary_role": "optional_and_unscored",
     "inactive_without_role": "deferred_until_active",
     "taxonomy_role_count": 6
   },
-  "reviewed_assignment_rows": 40,
+  "reviewed_assignment_rows": 52,
   "reviewed_team_counts": {
     "ATL": 8,
-    "GSV": 6,
+    "GSV": 7,
     "IND": 6,
     "LVA": 3,
     "MIN": 10,
-    "NYL": 7
+    "NYL": 7,
+    "WAS": 11
   },
   "reviewed_primary_role_counts": {
-    "downhill_pressure_wing": 5,
-    "interior_finisher_rim_runner": 7,
-    "interior_hub_rebounder": 4,
-    "lead_creator": 2,
-    "perimeter_scorer_spacer": 13,
-    "secondary_creator_connector": 9
+    "downhill_pressure_wing": 7,
+    "interior_finisher_rim_runner": 9,
+    "interior_hub_rebounder": 5,
+    "lead_creator": 3,
+    "perimeter_scorer_spacer": 17,
+    "secondary_creator_connector": 11
   },
   "excluded_free_agents": [
     "Alex Fowler",
@@ -34,7 +35,7 @@
   ],
   "reviewed_output": {
     "path": "analysis/role_fulfillment_matrix/config/player_role_assignments_2026.csv",
-    "sha256": "2fc9982f204366e71a907e2950462b1d10eb38b5f28ecd9ca7e3c847ffff1871"
+    "sha256": "40d583416e3232b147da060bbd9f5e6dc774581e2701c5497fda3383e3f30528"
   },
   "supplemental_reviews": [
     {
@@ -79,6 +80,32 @@
       "assignment_confidence": 0.70,
       "live_score_safeguard": "current_team_sample_required",
       "review_path": "analysis/role_fulfillment_matrix/data/review/remaining_gate_review_2026-08-25.md"
+    },
+    {
+      "reviewed_at": "2026-09-29",
+      "reviewed_by": "Krystal Beasley",
+      "player_name": "Rori Harmon",
+      "primary_role": "secondary_creator_connector",
+      "assignment_confidence": 0.35,
+      "live_score_safeguard": "confidence_below_live_threshold"
+    },
+    {
+      "reviewed_at": "2026-09-29",
+      "reviewed_by": "Krystal Beasley",
+      "player_name": "Darianna Littlepage-Buggs",
+      "primary_role": "downhill_pressure_wing",
+      "secondary_role": "interior_hub_rebounder",
+      "assignment_confidence": 0.25,
+      "live_score_safeguard": "insufficient_recent_sample"
+    },
+    {
+      "reviewed_at": "2026-09-29",
+      "reviewed_by": "Krystal Beasley",
+      "player_name": "Aminata Gueye",
+      "primary_role": "interior_hub_rebounder",
+      "secondary_role": "interior_finisher_rim_runner",
+      "assignment_confidence": 0.20,
+      "live_score_safeguard": "insufficient_recent_sample"
     }
   ],
   "sample_policy": {
