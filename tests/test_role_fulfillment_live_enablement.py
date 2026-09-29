@@ -103,7 +103,11 @@ class LiveEnablementConfigTest(unittest.TestCase):
             "dry_run_scored": 7,
             "season_context_only": 12,
             "inactive_suppressed": 2,
+            "unavailable": 1,
+            "insufficient_role_evidence": 1,
         })
+        self.assertEqual(rerun["candidates_included"], 23)
+        self.assertEqual(sum(rerun["result_counts"].values()), 23)
         self.assertFalse(rerun["live_output_enabled"])
         self.assertFalse(rerun["scheduling_enabled"])
         for item in rerun["artifacts"]:

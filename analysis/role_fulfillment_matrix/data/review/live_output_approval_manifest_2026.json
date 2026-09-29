@@ -56,10 +56,13 @@
     "dry_run_gate_status": "review_ready",
     "dry_run_gate_blockers": [],
     "source_only_assignments_sample_suppressed": 2,
+    "candidates_included": 23,
     "result_counts": {
       "dry_run_scored": 7,
       "season_context_only": 12,
-      "inactive_suppressed": 2
+      "inactive_suppressed": 2,
+      "unavailable": 1,
+      "insufficient_role_evidence": 1
     },
     "live_output_enabled": false,
     "scheduling_enabled": false,
@@ -82,7 +85,7 @@
       },
       {
         "path": "analysis/role_fulfillment_matrix/data/review/live_dry_run/role_fulfillment_matrix_live_dry_run_validation.md",
-        "sha256": "8e7157ad8313bb8f63f705600bd38f606efa957cace677b21ef96f473739ffba"
+        "sha256": "e5d8cbd08cfd00385691147260f9747d64de61f1ecd9dfc63fd7d429372cba7e"
       },
       {
         "path": "analysis/role_fulfillment_matrix/data/review/live_dry_run/deliverables/role_fulfillment_matrix/index.html",

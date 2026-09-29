@@ -1,6 +1,6 @@
 # Role Fulfillment Matrix — Live Dry-Run Validation
 
-Review status: **pending reviewer approval**
+Review status: **approved by Krystal Beasley, 2026-09-29**
 
 Live output remains disabled. This package exercises the approved real-data path only.
 
@@ -15,6 +15,14 @@ Live output remains disabled. This package exercises the approved real-data path
 - Candidates included: 23
 - Players with all three scores: 7
 - End-to-end gate status: `review_ready`
+
+Candidate outcomes (23 included):
+
+- `dry_run_scored`: 7
+- `season_context_only`: 12
+- `inactive_suppressed`: 2
+- `unavailable`: 1
+- `insufficient_role_evidence`: 1
 
 ## Source gate
 
@@ -34,8 +42,8 @@ Warnings:
 
 - Janiah Barker (LVA): role assignment deferred while inactive; reactivation restores the review blocker.
 
-## Remaining gate
+## Review outcome
 
-- Review candidate affiliation, sample status, scores, and evidence provenance.
-- Approval of this report is required before any explicit live-output enablement.
+- Candidate affiliation, sample status, scores, and evidence provenance reviewed and approved by Krystal Beasley, 2026-09-29.
+- This approval covers the dry-run package only; explicit live-output enablement remains a separate gate and is not granted here.
 - No schedule, commit, forecast-dashboard integration, or publishing occurs here.
