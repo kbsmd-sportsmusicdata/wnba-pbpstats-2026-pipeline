@@ -22,6 +22,9 @@ class LoadedSources:
     possessions: pd.DataFrame
     player_impact: pd.DataFrame
     player_game: pd.DataFrame = field(default_factory=pd.DataFrame)
+    injuries: pd.DataFrame = field(default_factory=pd.DataFrame)
+    injury_crosswalk: pd.DataFrame = field(default_factory=pd.DataFrame)
+    game_rosters: pd.DataFrame = field(default_factory=pd.DataFrame)
     source_manifest: Dict[str, Dict[str, Any]] = field(default_factory=dict)
 
 
@@ -127,6 +130,16 @@ def load_sources(config: Dict[str, Any]) -> LoadedSources:
         config.get("player_game_layer", f"data/processed/wnba_pbpstats_player_game/season={season}/player_game.parquet")
     )
 
+    injuries_config = config.get("injuries", {})
+    injuries_path = path_from_config(
+        injuries_config.get("injuries_path", "data/raw/injuries/injuries_2026.parquet")
+    )
+    crosswalk_path = path_from_config(
+        injuries_config.get(
+            "crosswalk_path", "analysis/role_fulfillment_matrix/config/player_eligibility_2026.csv"
+        )
+    )
+
     targets = {
         "player_features": pbp_root / "features_latest" / season / "player_totals_features_latest.csv",
         "team_features": pbp_root / "features_latest" / season / "team_totals_features_latest.csv",
@@ -135,6 +148,13 @@ def load_sources(config: Dict[str, Any]) -> LoadedSources:
         "possessions": sports_root / source_files.get("possessions", "wnba_possessions_2026.parquet"),
         "player_impact": sports_root / source_files.get("player_impact", "wnba_player_impact_2026.parquet"),
         "player_game": game_layer,
+        # Injuries are optional context, not a scoring input: a missing feed leaves the board
+        # unchanged rather than failing the run.
+        "injuries": injuries_path,
+        "injury_crosswalk": crosswalk_path,
+        # Positions for same-position injury-opportunity weighting: the pbpstats features carry no
+        # position, so the game rosters supply it (joined to player_id through the crosswalk).
+        "game_rosters": sports_root / source_files.get("game_rosters", "game_rosters_2026.parquet"),
     }
 
     frames: Dict[str, pd.DataFrame] = {}

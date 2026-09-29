@@ -1,0 +1,8 @@
+{
+  "season": 2026,
+  "forecast_summary_path": "analysis/standings_playoff_forecast/data/processed/season=2026/latest/forecast_summary.csv",
+  "injuries_path": "data/raw/injuries/injuries_2026.parquet",
+  "crosswalk_path": "analysis/role_fulfillment_matrix/config/player_eligibility_2026.csv",
+  "player_game_path": "data/processed/wnba_pbpstats_player_game/season=2026/player_game.parquet",
+  "output_root": "analysis/injuries"
+}

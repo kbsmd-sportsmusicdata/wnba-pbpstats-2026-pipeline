@@ -65,6 +65,24 @@ this team's production shaped", while the composite folds in the possession-fed 
 A team can be distributed in its box score yet have a poor deep-bench floor, and the two views show
 that.
 
+## Current availability overlay
+
+The five components are season-long: they describe how production is *distributed and resilient*, not
+who can play tonight. The build overlays the shared injury/availability report to add a point-in-time
+reading. For each team it takes the rotation players whose absence durably frees their minutes, sums
+their per-game minutes from the same game layer the score is built on, and reports that as a share of
+a 200-minute game (`rotation_minutes_out_share`), bucketed into `Intact` / `Thinned` (≥10%) /
+`Depleted` (≥25%).
+
+A durable absence is any injury, plus a season-long absence of *any* category — a player ruled out
+for the season frees their minutes whether ESPN files it as an injury or as a departure (e.g. Jovana
+Nogic leaving Phoenix for the year counts). Only *short-term* non-injury absences — national-team
+duty (frequent in this FIBA World Cup window), a one-game coach's decision — are excluded, since
+those minutes come back and would otherwise flag half the league as depleted mid-tournament. The
+overlay never changes the depth score or the sub-scores; it is a separate column set so "deep on
+paper" and "thin right now" can be read together. Injured players are resolved to the pbpstats id
+through the reviewed role-fulfillment crosswalk, and with no feed present every team reads `Intact`.
+
 ## Depth is orthogonal to quality
 
 The score says nothing about how good a team is. A weak team with no star will look distributed; a

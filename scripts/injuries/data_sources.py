@@ -1,15 +1,15 @@
-"""Inputs for the Functional Depth Score.
+"""Inputs for the WNBA 2026 injury / availability report.
 
-Depth is scored as a playoff variable, not a roster adjective, so the inputs are the two layers
-that describe *how a team's production is distributed and how it holds up when starters sit*:
+Two sources, both already in the repo:
 
-* the shared per-game player layer (``data/processed/wnba_pbpstats_player_game``) -- current, and
-  the source for production distribution, rotation trust and role redundancy;
-* the possession-impact bench net ratings (``analysis/possession_impact``) -- possession-level, the
-  source for replacement resilience and the performance floor. This feed lags the game layer, so
-  those two components carry an availability flag rather than being silently dropped.
+* the raw ESPN injury feed (``data/raw/injuries/injuries_2026.parquet``) -- one row per
+  (injury, snapshot date), keyed on ESPN ``athlete_id``;
+* the reviewed identity crosswalk the role-fulfillment matrix maintains
+  (``analysis/role_fulfillment_matrix/config/player_eligibility_2026.csv``) -- the bridge from
+  ESPN ``athlete_id`` to the pbpstats ``player_id`` every other analysis runs on.
 
-Both are joined on team abbreviation, which the two feeds share.
+The crosswalk is optional: without it the report still builds and simply leaves ``player_id``
+unresolved, so the availability view never becomes a hard dependency of a downstream run.
 """
 
 from __future__ import annotations
@@ -29,10 +29,8 @@ SEASON = 2026
 
 @dataclass
 class LoadedSources:
-    player_game: pd.DataFrame
-    bench_net_rating: pd.DataFrame
-    injuries: pd.DataFrame = field(default_factory=pd.DataFrame)
-    injury_crosswalk: pd.DataFrame = field(default_factory=pd.DataFrame)
+    injuries: pd.DataFrame
+    crosswalk: pd.DataFrame = field(default_factory=pd.DataFrame)
     source_manifest: Dict[str, Dict[str, Any]] = field(default_factory=dict)
 
 
@@ -70,22 +68,22 @@ def path_from_config(value: str | Path, root: Optional[Path] = None) -> Path:
 def apply_runtime_overrides(
     config: Dict[str, Any],
     *,
-    game_layer_root: Optional[str] = None,
-    possession_impact_root: Optional[str] = None,
+    injuries_path: Optional[str] = None,
+    crosswalk_path: Optional[str] = None,
     output_root: Optional[str] = None,
 ) -> Dict[str, Any]:
     updated = dict(config)
-    if game_layer_root:
-        updated["game_layer_root"] = game_layer_root
-    if possession_impact_root:
-        updated["possession_impact_root"] = possession_impact_root
+    if injuries_path:
+        updated["injuries_path"] = injuries_path
+    if crosswalk_path:
+        updated["crosswalk_path"] = crosswalk_path
     if output_root:
         updated["output_root"] = output_root
     return updated
 
 
 def resolve_output_root(config: Dict[str, Any]) -> Path:
-    return path_from_config(config.get("output_root", "analysis/functional_depth"))
+    return path_from_config(config.get("output_root", "analysis/injuries"))
 
 
 def ensure_output_dirs(output_root: Path) -> Dict[str, Path]:
@@ -107,10 +105,7 @@ def _file_record(path: Optional[Path], df: pd.DataFrame) -> Dict[str, Any]:
         record["modified_at_utc"] = (
             datetime.fromtimestamp(stat.st_mtime, tz=timezone.utc).replace(microsecond=0).isoformat()
         )
-    if "coverage_through" in df.columns and not df.empty:
-        values = df["coverage_through"].dropna().unique()
-        if len(values):
-            record["coverage_through"] = str(values[0])
+        record["size_bytes"] = stat.st_size
     return record
 
 
@@ -123,40 +118,18 @@ def _read(path: Path) -> pd.DataFrame:
 
 
 def load_sources(config: Dict[str, Any]) -> LoadedSources:
-    season = str(config.get("season", SEASON))
-    source_files = config.get("source_files", {})
-
-    game_layer_root = path_from_config(config.get("game_layer_root", "data/processed"))
-    impact_root = path_from_config(config.get("possession_impact_root", "analysis/possession_impact"))
-
-    injuries_config = config.get("injuries", {})
-    injuries_path = path_from_config(
-        injuries_config.get("injuries_path", "data/raw/injuries/injuries_2026.parquet")
-    )
+    injuries_path = path_from_config(config.get("injuries_path", "data/raw/injuries/injuries_2026.parquet"))
     crosswalk_path = path_from_config(
-        injuries_config.get(
-            "crosswalk_path", "analysis/role_fulfillment_matrix/config/player_eligibility_2026.csv"
-        )
+        config.get("crosswalk_path", "analysis/role_fulfillment_matrix/config/player_eligibility_2026.csv")
     )
 
-    targets = {
-        "player_game": game_layer_root
-        / source_files.get("player_game", f"wnba_pbpstats_player_game/season={season}/player_game.parquet"),
-        "bench_net_rating": impact_root
-        / source_files.get("bench_net_rating", "data/processed/bench_net_rating_2026.csv"),
-        # Optional availability overlay: a missing feed leaves every team fully available.
-        "injuries": injuries_path,
-        "injury_crosswalk": crosswalk_path,
-    }
-
-    frames: Dict[str, pd.DataFrame] = {}
     manifest: Dict[str, Dict[str, Any]] = {}
-    for key, path in targets.items():
-        frame = _read(path)
-        frames[key] = frame
-        manifest[key] = _file_record(path if path.exists() else None, frame)
+    injuries = _read(injuries_path)
+    manifest["injuries"] = _file_record(injuries_path if injuries_path.exists() else None, injuries)
+    crosswalk = _read(crosswalk_path)
+    manifest["crosswalk"] = _file_record(crosswalk_path if crosswalk_path.exists() else None, crosswalk)
 
-    return LoadedSources(source_manifest=manifest, **frames)
+    return LoadedSources(injuries=injuries, crosswalk=crosswalk, source_manifest=manifest)
 
 
 def write_github_step_summary(markdown: str) -> None:

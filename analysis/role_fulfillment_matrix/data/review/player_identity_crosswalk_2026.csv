@@ -1,6 +1,7 @@
 normalized_name,player_id,pbpstats_player_name,team_abbreviation,latest_game_date,espn_athlete_id,espn_player_name,experience_years,source_url,match_status,match_method,exclusion_reason
 aaliyahedwards,1642290,Aaliyah Edwards,CON,2026-08-13,4433408,Aaliyah Edwards,3,https://www.espn.com/wnba/player/bio/_/id/4433408/aaliyah-edwards,matched,normalized_full_name_exact,
 aaliyahnye,1642801,Aaliyah Nye,ATL,2026-08-20,4597509,Aaliyah Nye,2,https://www.espn.com/wnba/player/bio/_/id/4597509/aaliyah-nye,matched,normalized_full_name_exact,
+aarimcdonald,1630462,Aari McDonald,MIN,2026-09-24,4066553,Aari McDonald,4,https://www.espn.com/wnba/player/bio/_/id/4066553/aari-mcdonald,matched,normalized_full_name_exact,
 aichacoulibaly,1642786,Aicha Coulibaly,CHI,2026-08-16,4433433,Aicha Coulibaly,0,https://www.espn.com/wnba/player/bio/_/id/4433433/aicha-coulibaly,matched,normalized_full_name_exact,
 ajawilson,1628932,A'ja Wilson,LVA,2026-08-20,3149391,A'ja Wilson,9,https://www.espn.com/wnba/player/bio/_/id/3149391/aja-wilson,matched,normalized_full_name_exact,
 alannasmith,1629501,Alanna Smith,DAL,2026-08-20,3913881,Alanna Smith,8,https://www.espn.com/wnba/player/bio/_/id/3913881/alanna-smith,matched,normalized_full_name_exact,
@@ -12,6 +13,7 @@ aliyahboston,1641648,Aliyah Boston,IND,2026-08-20,4432831,Aliyah Boston,4,https:
 allishagray,1628277,Allisha Gray,ATL,2026-08-20,3058901,Allisha Gray,10,https://www.espn.com/wnba/player/bio/_/id/3058901/allisha-gray,matched,normalized_full_name_exact,
 alyshaclark,202252,Alysha Clark,DAL,2026-08-20,924,Alysha Clark,14,https://www.espn.com/wnba/player/bio/_/id/924/alysha-clark,matched,normalized_full_name_exact,
 alyssathomas,203826,Alyssa Thomas,PHX,2026-08-16,2529140,Alyssa Thomas,13,https://www.espn.com/wnba/player/bio/_/id/2529140/alyssa-thomas,matched,normalized_full_name_exact,
+aminatagueye,1643832,Aminata Gueye,GSV,2026-09-24,5447776,Aminata Gueye,0,https://www.espn.com/wnba/player/bio/_/id/5447776/aminata-gueye,matched,normalized_full_name_exact,
 amyokonkwo,1629539,Amy Okonkwo,ATL,2026-06-27,3142242,Amy Okonkwo,1,https://www.espn.com/wnba/player/bio/_/id/3142242/amy-okonkwo,matched,normalized_full_name_exact,
 anastasiiaolairikosu,1642797,Anastasiia Olairi Kosu,MIN,2026-07-30,5278237,Anastasiia Olairi Kosu,2,https://www.espn.com/wnba/player/bio/_/id/5278237/anastasiia-olairi-kosu,matched,normalized_full_name_exact,
 aneesahmorrow,1642800,Aneesah Morrow,TOR,2026-08-19,4684384,Aneesah Morrow,2,https://www.espn.com/wnba/player/bio/_/id/4684384/aneesah-morrow,matched,normalized_full_name_exact,
@@ -43,11 +45,13 @@ carlaleite,1642304,Carla Leite,PDX,2026-08-16,5208982,Carla Leite,2,https://www.
 cassandreprosper,1643467,Cassandre Prosper,WAS,2026-08-19,5122345,Cassandre Prosper,0,https://www.espn.com/wnba/player/bio/_/id/5122345/cassandre-prosper,matched,normalized_full_name_exact,
 ceciliazandalasini,1628508,Cecilia Zandalasini,GSV,2026-08-19,4257500,Cecilia Zandalasini,5,https://www.espn.com/wnba/player/bio/_/id/4257500/cecilia-zandalasini,matched,normalized_full_name_exact,
 chancegray,1643462,Chance Gray,LAS,2026-08-20,5105729,Chance Gray,0,https://www.espn.com/wnba/player/bio/_/id/5105729/chance-gray,matched,normalized_full_name_exact,
+charismaosborne,1642294,Charisma Osborne,PDX,2026-09-22,4433293,Charisma Osborne,1,https://www.espn.com/wnba/player/bio/_/id/4433293/charisma-osborne,matched,normalized_full_name_exact,
 charlisselegerwalker,1643449,Charlisse Leger-Walker,CON,2026-08-20,4703609,Charlisse Leger-Walker,0,https://www.espn.com/wnba/player/bio/_/id/4703609/charlisse-leger-walker,matched,normalized_full_name_exact,
 chelseagray,203833,Chelsea Gray,LVA,2026-08-20,2529122,Chelsea Gray,12,https://www.espn.com/wnba/player/bio/_/id/2529122/chelsea-gray,matched,normalized_full_name_exact,
 chennedycarter,1630150,Chennedy Carter,LVA,2026-07-05,4280892,Chennedy Carter,4,https://www.espn.com/wnba/player/bio/_/id/4280892/chennedy-carter,matched,normalized_full_name_exact,
 cheyenneparkertyus,204323,Cheyenne Parker-Tyus,LVA,2026-08-20,2529458,Cheyenne Parker-Tyus,12,https://www.espn.com/wnba/player/bio/_/id/2529458/cheyenne-parker-tyus,matched,normalized_full_name_exact,
 chloebibby,1631064,Chloe Bibby,CHI,2026-07-30,4280877,Chloe Bibby,2,https://www.espn.com/wnba/player/bio/_/id/4280877/chloe-bibby,matched,normalized_full_name_exact,
+christynwilliams,1631090,Christyn Williams,DAL,2026-09-23,4398965,Christyn Williams,1,https://www.espn.com/wnba/player/bio/_/id/4398965/christyn-williams,matched,normalized_full_name_exact,
 costanzaverona,1643424,Costanza Verona,DAL,2026-06-09,5345473,Costanza Verona,0,https://www.espn.com/wnba/player/bio/_/id/5345473/costanza-verona,matched,normalized_full_name_exact,
 cotiemcmahon,1643430,Cotie McMahon,WAS,2026-08-19,4583144,Cotie McMahon,0,https://www.espn.com/wnba/player/bio/_/id/4583144/cotie-mcmahon,matched,normalized_full_name_exact,
 courtneyvandersloot,202664,Courtney Vandersloot,CHI,2026-08-18,981,Courtney Vandersloot,16,https://www.espn.com/wnba/player/bio/_/id/981/courtney-vandersloot,matched,normalized_full_name_exact,
@@ -105,8 +109,10 @@ justinepissott,1643495,Justine Pissott,LVA,2026-08-20,4682855,Justine Pissott,0,
 kahleahcopper,1627674,Kahleah Copper,PHX,2026-08-16,2998938,Kahleah Copper,11,https://www.espn.com/wnba/player/bio/_/id/2998938/kahleah-copper,matched,normalized_full_name_exact,
 kailacharles,1630097,Kaila Charles,GSV,2026-08-19,4065780,Kaila Charles,6,https://www.espn.com/wnba/player/bio/_/id/4065780/kaila-charles,matched,normalized_full_name_exact,
 kaitlynchen,1642822,Kaitlyn Chen,GSV,2026-08-19,4899328,Kaitlyn Chen,2,https://www.espn.com/wnba/player/bio/_/id/4899328/kaitlyn-chen,matched,normalized_full_name_exact,
+kalanibrown,1629480,Kalani Brown,LVA,2026-09-24,3916514,Kalani Brown,5,https://www.espn.com/wnba/player/bio/_/id/3916514/kalani-brown,matched,normalized_full_name_exact,
 kamiahsmalls,1630154,Kamiah Smalls,PDX,2026-05-14,4068346,Kamiah Smalls,3,https://www.espn.com/wnba/player/bio/_/id/4068346/kamiah-smalls,matched,normalized_full_name_exact,
 kamillacardoso,1642289,Kamilla Cardoso,CHI,2026-08-18,4433405,Kamilla Cardoso,3,https://www.espn.com/wnba/player/bio/_/id/4433405/kamilla-cardoso,matched,normalized_full_name_exact,
+karadunn,1643454,Kara Dunn,PHX,2026-09-21,4698730,Kara Dunn,0,https://www.espn.com/wnba/player/bio/_/id/4698730/kara-dunn,matched,normalized_full_name_exact,
 karliesamuelson,1628317,Karlie Samuelson,PDX,2026-08-16,3056730,Karlie Samuelson,8,https://www.espn.com/wnba/player/bio/_/id/3056730/karlie-samuelson,matched,normalized_full_name_exact,
 katemartin,1642324,Kate Martin,LAS,2026-08-20,4398907,Kate Martin,3,https://www.espn.com/wnba/player/bio/_/id/4398907/kate-martin,matched,normalized_full_name_exact,
 katielousamuelson,1629478,Katie Lou Samuelson,SEA,2026-08-16,3917453,Katie Lou Samuelson,6,https://www.espn.com/wnba/player/bio/_/id/3917453/katie-lou-samuelson,matched,normalized_full_name_exact,
@@ -122,6 +128,7 @@ kianurse,1628915,Kia Nurse,TOR,2026-08-19,3142327,Kia Nurse,8,https://www.espn.c
 kierstanbell,1631006,Kierstan Bell,LVA,2026-08-20,4433633,Kierstan Bell,5,https://www.espn.com/wnba/player/bio/_/id/4433633/kierstan-bell,matched,normalized_full_name_exact,
 kikiiriafen,1642792,Kiki Iriafen,WAS,2026-08-19,4898384,Kiki Iriafen,2,https://www.espn.com/wnba/player/bio/_/id/4898384/kiki-iriafen,matched,normalized_full_name_exact,
 kikirice,1643445,Kiki Rice,TOR,2026-08-19,4565505,Kiki Rice,0,https://www.espn.com/wnba/player/bio/_/id/4565505/kiki-rice,matched,normalized_full_name_exact,
+kitijalaksa,1629490,Kitija Laksa,DAL,2026-09-23,3920741,Kitija Laksa,1,https://www.espn.com/wnba/player/bio/_/id/3920741/kitija-laksa,matched,normalized_full_name_exact,
 kyaralinskens,1642768,Kyara Linskens,PHX,2026-08-09,4873359,Kyara Linskens,2,https://www.espn.com/wnba/player/bio/_/id/4873359/kyara-linskens,matched,normalized_full_name_exact,
 laeticiaamihere,1641656,Laeticia Amihere,GSV,2026-08-17,4432834,Laeticia Amihere,4,https://www.espn.com/wnba/player/bio/_/id/4432834/laeticia-amihere,matched,normalized_full_name_exact,
 laurajuskaite,1643420,Laura Juskaite,TOR,2026-08-19,5345444,Laura Juskaite,0,https://www.espn.com/wnba/player/bio/_/id/5345444/laura-juskaite,matched,normalized_full_name_exact,
@@ -140,6 +147,7 @@ mackenzieholmes,1642307,Mackenzie Holmes,SEA,2026-08-16,4433643,Mackenzie Holmes
 maddysiegrist,1641652,Maddy Siegrist,DAL,2026-08-20,4399415,Maddy Siegrist,4,https://www.espn.com/wnba/player/bio/_/id/4399415/maddy-siegrist,matched,normalized_full_name_exact,
 maddywestbeld,1642818,Maddy Westbeld,CHI,2026-07-12,4433424,Maddy Westbeld,2,https://www.espn.com/wnba/player/bio/_/id/4433424/maddy-westbeld,matched,normalized_full_name_exact,
 madinaokot,1643431,Madina Okot,ATL,2026-08-20,5108587,Madina Okot,0,https://www.espn.com/wnba/player/bio/_/id/5108587/madina-okot,matched,normalized_full_name_exact,
+madisonscott,1642810,Madison Scott,NYL,2026-09-23,4433416,Madison Scott,1,https://www.espn.com/wnba/player/bio/_/id/4433416/madison-scott,matched,normalized_full_name_exact,
 maiyamamoto,1642769,Mai Yamamoto,LVA,2026-08-20,5220104,Mai Yamamoto,0,https://www.espn.com/wnba/player/bio/_/id/5220104/mai-yamamoto,matched,normalized_full_name_exact,
 makaylatimpson,1642815,Makayla Timpson,IND,2026-08-20,4433546,Makayla Timpson,2,https://www.espn.com/wnba/player/bio/_/id/4433546/makayla-timpson,matched,normalized_full_name_exact,
 mariaconde,1629576,Maria Conde,TOR,2026-08-10,3910470,Maria Conde,0,https://www.espn.com/wnba/player/bio/_/id/3910470/maria-conde,matched,normalized_full_name_exact,
@@ -204,6 +212,7 @@ serahwilliams,1643436,Serah Williams,PDX,2026-08-16,5108550,Serah Williams,0,htt
 shakiraaustin,1631022,Shakira Austin,WAS,2026-08-19,4398911,Shakira Austin,5,https://www.espn.com/wnba/player/bio/_/id/4398911/shakira-austin,matched,normalized_full_name_exact,
 shatoriwalkerkimbrough,1628278,Shatori Walker-Kimbrough,ATL,2026-08-20,3058893,Shatori Walker-Kimbrough,10,https://www.espn.com/wnba/player/bio/_/id/3058893/shatori-walker-kimbrough,matched,normalized_full_name_exact,
 shayciezki,1643470,Shay Ciezki,PHX,2026-06-27,4688629,Shay Ciezki,0,https://www.espn.com/wnba/player/bio/_/id/4688629/shay-ciezki,matched,normalized_full_name_exact,
+shyannesellers,1642811,Shyanne Sellers,LAS,2026-09-20,4433808,Shyanne Sellers,0,https://www.espn.com/wnba/player/bio/_/id/4433808/shyanne-sellers,matched,normalized_full_name_exact,
 sikakone,1631021,Sika Kone,ATL,2026-08-20,5017721,Sika Kone,4,https://www.espn.com/wnba/player/bio/_/id/5017721/sika-kone,matched,normalized_full_name_exact,
 skylardiggins,203400,Skylar Diggins,CHI,2026-07-03,2491205,Skylar Diggins,12,https://www.espn.com/wnba/player/bio/_/id/2491205/skylar-diggins,matched,normalized_full_name_exact,
 soniacitron,1642785,Sonia Citron,WAS,2026-08-19,4433524,Sonia Citron,2,https://www.espn.com/wnba/player/bio/_/id/4433524/sonia-citron,matched,normalized_full_name_exact,
@@ -228,11 +237,9 @@ valerianeayayi,204468,Valeriane Ayayi,PHX,2026-08-16,3919496,Valeriane Ayayi,2,h
 veronicaburton,1631007,Veronica Burton,GSV,2026-08-19,4398935,Veronica Burton,5,https://www.espn.com/wnba/player/bio/_/id/4398935/veronica-burton,matched,normalized_full_name_exact,
 zaaygreen,1642791,Zaay Green,TOR,2026-08-19,4398766,Zaay Green,0,https://www.espn.com/wnba/player/bio/_/id/4398766/zaay-green,matched,normalized_full_name_exact,
 ziacooke,1641660,Zia Cooke,SEA,2026-08-16,4432832,Zia Cooke,4,https://www.espn.com/wnba/player/bio/_/id/4432832/zia-cooke,matched,normalized_full_name_exact,
-christynwilliams,espn:4398965,,DAL,,4398965,Christyn Williams,1,https://www.espn.com/wnba/player/bio/_/id/4398965/christyn-williams,source_only,espn_roster_identity_reviewed,no_pbpstats_game_record
 dulcyfankammendjiadeu,,,,,4594527,Dulcy Fankam Mendjiadeu,2,https://www.espn.com/wnba/player/bio/_/id/4594527/dulcy-fankam-mendjiadeu,source_only,normalized_full_name_exact,no_pbpstats_game_record
 elenabuenavida,espn:5208984,,MIN,,5208984,Elena Buenavida,0,https://www.espn.com/wnba/player/bio/_/id/5208984/elena-buenavida,source_only,espn_roster_identity_reviewed,no_pbpstats_game_record
 elizabethbalogun,espn:4398589,,NYL,,4398589,Elizabeth Balogun,0,https://www.espn.com/wnba/player/bio/_/id/4398589/elizabeth-balogun,source_only,espn_roster_identity_reviewed,no_pbpstats_game_record
 ilianarupert,espn:4790263,,GSV,,4790263,Iliana Rupert,4,https://www.espn.com/wnba/player/bio/_/id/4790263/iliana-rupert,source_only,espn_roster_identity_reviewed,no_pbpstats_game_record
 janiahbarker,espn:4565501,,LVA,,4565501,Janiah Barker,0,https://www.espn.com/wnba/player/bio/_/id/4565501/janiah-barker,source_only,espn_roster_identity_reviewed,no_pbpstats_game_record
-karadunn,espn:4698730,,PHX,,4698730,Kara Dunn,0,https://www.espn.com/wnba/player/bio/_/id/4698730/kara-dunn,source_only,espn_roster_identity_reviewed,no_pbpstats_game_record
 sheypeddy,,,,,1107,Shey Peddy,6,https://www.espn.com/wnba/player/bio/_/id/1107/shey-peddy,source_only,normalized_full_name_exact,no_pbpstats_game_record

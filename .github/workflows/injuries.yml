@@ -1,32 +1,32 @@
-name: Functional Depth
+name: Injury Report
 
 on:
   workflow_dispatch:
     inputs:
       run_tests:
-        description: "Run functional depth tests before building"
+        description: "Run injury report tests before building"
         required: true
         type: boolean
         default: true
-      rebuild_dependencies:
-        description: "Rebuild the game layer and possession impact first"
-        required: true
-        type: boolean
-        default: false
       commit_outputs:
-        description: "Commit generated analysis/functional_depth outputs"
+        description: "Commit generated analysis/injuries outputs"
         required: true
         type: boolean
         default: false
+      injuries_path:
+        description: "Raw ESPN injury feed (parquet)"
+        required: true
+        type: string
+        default: "data/raw/injuries/injuries_2026.parquet"
 
 jobs:
-  functional-depth:
+  injuries:
     runs-on: ubuntu-latest
     permissions:
       contents: write
     env:
-      CONFIG_PATH: analysis/functional_depth/config/functional_depth_config.json
-      IMPACT_CONFIG_PATH: analysis/possession_impact/config/possession_impact_config.json
+      CONFIG_PATH: analysis/injuries/config/injuries_config.json
+      INJURIES_PATH: ${{ inputs.injuries_path }}
 
     steps:
       - name: Check out repository
@@ -42,30 +42,33 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Run Functional Depth tests
+      - name: Run Injury Report tests
         if: ${{ inputs.run_tests }}
-        run: python -m unittest tests/test_functional_depth.py tests/test_injuries.py
+        run: python -m unittest tests/test_injuries.py
 
-      - name: Rebuild upstream inputs
-        if: ${{ inputs.rebuild_dependencies }}
+      - name: Build injury report
         run: |
-          python scripts/build_wnba_game_layer_2026.py
-          python scripts/build_possession_impact.py --config "$IMPACT_CONFIG_PATH"
+          python scripts/build_injury_report.py \
+            --config "$CONFIG_PATH" \
+            --injuries-path "$INJURIES_PATH"
 
-      - name: Build functional depth score
-        run: python scripts/build_functional_depth.py --config "$CONFIG_PATH"
+      - name: Build forecast availability context
+        run: |
+          python scripts/build_forecast_availability_context.py \
+            --config analysis/injuries/config/forecast_availability_config.json \
+            --injuries-path "$INJURIES_PATH"
 
-      - name: Commit generated functional depth outputs if requested
+      - name: Commit generated injury report outputs if requested
         if: ${{ inputs.commit_outputs }}
         run: |
-          git add analysis/functional_depth
+          git add analysis/injuries
           if git diff --cached --quiet; then
-            echo "No Functional Depth output changes to commit"
+            echo "No Injury Report output changes to commit"
             exit 0
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit -m "chore: refresh functional depth score"
+          git commit -m "chore: refresh injury report"
           # main can move while this run is in flight; rebase before pushing, retrying with backoff.
           for attempt in 1 2 3 4 5; do
             if git push origin HEAD:"${GITHUB_REF_NAME}"; then exit 0; fi

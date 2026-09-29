@@ -496,19 +496,19 @@ class ApprovedEligibilityArtifactTest(unittest.TestCase):
         self.assertTrue(APPROVED_ELIGIBILITY.exists(), "approved eligibility table is missing")
         eligibility = pd.read_csv(APPROVED_ELIGIBILITY)
 
-        self.assertEqual(len(eligibility), 235)
-        self.assertEqual(eligibility["player_id"].nunique(), 235)
-        self.assertEqual(eligibility["espn_athlete_id"].nunique(), 235)
+        self.assertEqual(len(eligibility), 242)
+        self.assertEqual(eligibility["player_id"].nunique(), 242)
+        self.assertEqual(eligibility["espn_athlete_id"].nunique(), 242)
         self.assertTrue((eligibility["eligible_flag"] == (eligibility["experience_years"] <= 3)).all())
         self.assertEqual(set(eligibility["review_status"]), {"reviewed"})
         self.assertEqual(set(eligibility["reviewed_by"]), {"Krystal Beasley"})
         self.assertEqual(
             set(eligibility["reviewed_at"]),
-            {"2026-08-22", "2026-08-23", "2026-08-24", "2026-08-25"},
+            {"2026-08-22", "2026-08-23", "2026-08-24", "2026-08-25", "2026-09-28"},
         )
 
         refreshed = eligibility.set_index("player_name").loc[
-            ["Elizabeth Balogun", "Christyn Williams", "Elena Buenavida"]
+            ["Elizabeth Balogun", "Elena Buenavida"]
         ]
         self.assertEqual(set(refreshed["review_status"]), {"reviewed"})
         self.assertEqual(set(refreshed["reviewed_by"]), {"Krystal Beasley"})
@@ -519,11 +519,11 @@ class ApprovedEligibilityArtifactTest(unittest.TestCase):
             {"espn_roster_identity_no_pbpstats_record"},
         )
         kara = eligibility.set_index("player_name").loc["Kara Dunn"]
-        self.assertEqual(kara["player_id"], "espn:4698730")
+        self.assertEqual(kara["player_id"], "1643454")
         self.assertEqual(kara["experience_years"], 0)
         self.assertTrue(bool(kara["eligible_flag"]))
-        self.assertEqual(kara["reviewed_at"], "2026-08-25")
-        self.assertEqual(kara["identity_match_method"], "espn_roster_identity_no_pbpstats_record")
+        self.assertEqual(kara["reviewed_at"], "2026-09-28")
+        self.assertEqual(kara["identity_match_method"], "normalized_full_name_exact")
 
         pending = pd.read_csv(PENDING_ELIGIBILITY)
         review_fields = ["review_status", "reviewed_by", "reviewed_at"]
@@ -565,10 +565,10 @@ class ApprovedEligibilityArtifactTest(unittest.TestCase):
         self.assertEqual(manifest["review_status"], "reviewed")
         self.assertEqual(manifest["approved_by"], "Krystal Beasley")
         self.assertEqual(manifest["approved_at"], "2026-08-22")
-        self.assertEqual(manifest["last_updated_at"], "2026-08-25")
-        self.assertEqual(manifest["approved_rows"], 235)
-        self.assertEqual(manifest["eligible_players"], 127)
-        self.assertEqual(manifest["ineligible_players"], 108)
+        self.assertEqual(manifest["last_updated_at"], "2026-09-28")
+        self.assertEqual(manifest["approved_rows"], 242)
+        self.assertEqual(manifest["eligible_players"], 132)
+        self.assertEqual(manifest["ineligible_players"], 110)
         self.assertEqual(manifest["live_eligibility_status"], "approved")
         self.assertEqual(manifest["live_scoring_status"], "enabled_manual_only")
         self.assertEqual(manifest["remaining_blockers"], [])
@@ -588,7 +588,7 @@ class ApprovedEligibilityArtifactTest(unittest.TestCase):
             manifest["build_manifest"]["sha256"],
             hashlib.sha256(BUILD_MANIFEST.read_bytes()).hexdigest(),
         )
-        self.assertEqual(len(manifest["supplemental_reviews"]), 4)
+        self.assertEqual(len(manifest["supplemental_reviews"]), 5)
         supplement = manifest["supplemental_reviews"][0]
         self.assertEqual(supplement["reviewed_at"], "2026-08-23")
         self.assertEqual(supplement["rows"], 2)

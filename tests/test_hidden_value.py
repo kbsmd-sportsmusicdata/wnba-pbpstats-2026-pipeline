@@ -12,7 +12,13 @@ import pandas as pd
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 
-from hidden_value.board import build_board, fit_role_model, standardize  # noqa: E402
+from hidden_value.availability import (  # noqa: E402
+    apply_position_map,
+    attach_availability,
+    build_injury_opportunity,
+    build_position_map,
+)
+from hidden_value.board import _note, build_board, fit_role_model, standardize  # noqa: E402
 from hidden_value.features import (  # noqa: E402
     apply_eligibility,
     build_playoff_fit,
@@ -480,6 +486,254 @@ class BuilderEndToEndTest(unittest.TestCase):
                 (tmpdir / "analysis" / "data" / "processed" / "run_manifest_2026.json").read_text(encoding="utf-8")
             )
             self.assertEqual(manifest["analysis_stats"]["status"], "player_features_missing")
+
+
+class AvailabilityIntegrationTest(unittest.TestCase):
+    def _injury_current(self):
+        # Shape matches injuries.report.attach_player_ids output.
+        return pd.DataFrame(
+            {
+                "pbpstats_player_id": pd.array([100, 200, 300], dtype="Int64"),
+                "player_id": ["100", "200", "300"],
+                "player_id_match": ["espn_athlete_id"] * 3,
+                "team_abbreviation": ["CHI", "CHI", "PHX"],
+                "athlete_position": ["G", "F", "G"],
+                "availability_status": ["Out for season", "Out", "Day-to-day"],
+                "is_out": [True, True, False],
+                "is_out_for_season": [True, False, False],
+                "is_day_to_day": [False, False, True],
+                "absence_category": ["injury", "injury", "injury"],
+                "absence_reason": ["Knee", "Ankle", "Illness"],
+                "expected_return_date": ["2027-05-01", "2026-09-30", ""],
+            }
+        )
+
+    def test_attach_availability_flags_and_actionability(self):
+        panel = pd.DataFrame(
+            {"player_id": pd.array([100, 200, 999], dtype="Int64"), "team_abbreviation": ["CHI", "CHI", "IND"]}
+        )
+        out = attach_availability(panel, self._injury_current())
+        by_id = out.set_index("player_id")
+        self.assertEqual(by_id.loc[100, "availability_status"], "Out for season")
+        self.assertFalse(bool(by_id.loc[100, "actionable"]))  # season-ended -> not actionable
+        self.assertTrue(bool(by_id.loc[200, "actionable"]))  # short-term out is still actionable
+        self.assertEqual(by_id.loc[999, "availability_status"], "Available")
+        self.assertTrue(bool(by_id.loc[999, "actionable"]))
+
+    def test_missing_feed_leaves_panel_available(self):
+        panel = pd.DataFrame({"player_id": pd.array([1, 2], dtype="Int64"), "team_abbreviation": ["CHI", "PHX"]})
+        out = attach_availability(panel, pd.DataFrame())
+        self.assertTrue((out["availability_status"] == "Available").all())
+        self.assertTrue(out["actionable"].all())
+
+    def test_injury_opportunity_scores_available_teammates_only(self):
+        # Player 200 (a CHI guard) is out with an injury; 100 (CHI guard) and 101 (CHI forward) are
+        # available and compete for the vacated minutes, 300 (PHX) does not, and an out player gets no score.
+        panel = pd.DataFrame(
+            {
+                "player_id": pd.array([100, 101, 300, 400], dtype="Int64"),
+                "team_abbreviation": ["CHI", "CHI", "PHX", "CHI"],
+                "position": ["G", "F", "G", "G"],
+                "is_out": [False, False, False, True],
+            }
+        )
+        injury = pd.DataFrame(
+            {
+                "pbpstats_player_id": pd.array([200], dtype="Int64"),
+                "player_id": ["200"],
+                "player_id_match": ["espn_athlete_id"],
+                "team_abbreviation": ["CHI"],
+                "is_out": [True],
+                "absence_category": ["injury"],
+            }
+        )
+        roles = pd.DataFrame(
+            {
+                "player_id": pd.array([100, 101, 200, 300, 400], dtype="Int64"),
+                "team_abbreviation": ["CHI", "CHI", "CHI", "PHX", "CHI"],
+                "position": ["G", "F", "G", "G", "G"],
+                "minutes": [300, 300, 320, 300, 100],
+                "games_played": [10, 10, 10, 10, 10],
+            }
+        )
+        out = build_injury_opportunity(panel, injury, roles).set_index("player_id")
+        # CHI players see the vacated minutes; PHX sees none.
+        self.assertGreater(out.loc[100, "injury_vacated_mpg_team"], 0)
+        self.assertEqual(out.loc[300, "injury_vacated_mpg_team"], 0)
+        # Same-position CHI guard scores above the CHI forward.
+        self.assertGreater(out.loc[100, "injury_opportunity_score"], out.loc[101, "injury_opportunity_score"])
+        # An out CHI player is not credited with opportunity they cannot seize.
+        self.assertTrue(pd.isna(out.loc[400, "injury_opportunity_score"]))
+
+    def test_season_long_non_injury_absence_creates_opportunity(self):
+        # A CHI guard (200) is out for the season for a non-injury reason (left the team). Those
+        # minutes are gone for the year and open up for the guard behind them (100), same as an injury.
+        panel = pd.DataFrame(
+            {
+                "player_id": pd.array([100, 300], dtype="Int64"),
+                "team_abbreviation": ["CHI", "PHX"],
+                "position": ["G", "G"],
+                "is_out": [False, False],
+            }
+        )
+        injury = pd.DataFrame(
+            {
+                "pbpstats_player_id": pd.array([200], dtype="Int64"),
+                "player_id": ["200"],
+                "player_id_match": ["espn_athlete_id"],
+                "team_abbreviation": ["CHI"],
+                "is_out": [True],
+                "is_out_for_season": [True],
+                "absence_category": ["non_injury"],  # departed the team for the year
+            }
+        )
+        roles = pd.DataFrame(
+            {
+                "player_id": pd.array([100, 200, 300], dtype="Int64"),
+                "team_abbreviation": ["CHI", "CHI", "PHX"],
+                "position": ["G", "G", "G"],
+                "minutes": [300, 320, 300],
+                "games_played": [10, 10, 10],
+            }
+        )
+        out = build_injury_opportunity(panel, injury, roles).set_index("player_id")
+        self.assertGreater(out.loc[100, "injury_vacated_mpg_team"], 0)  # counted despite non-injury
+        self.assertEqual(out.loc[300, "injury_vacated_mpg_team"], 0)
+
+    def test_opportunity_credited_to_feed_team_not_last_played_team(self):
+        # Injured player 200's feed team is PHX, but they last played for CHI (roles). The vacated
+        # minutes must open up for PHX's players, not CHI's.
+        panel = pd.DataFrame(
+            {
+                "player_id": pd.array([100, 300], dtype="Int64"),
+                "team_abbreviation": ["CHI", "PHX"],
+                "position": ["G", "G"],
+                "is_out": [False, False],
+            }
+        )
+        injury = pd.DataFrame(
+            {
+                "pbpstats_player_id": pd.array([200], dtype="Int64"),
+                "player_id": ["200"],
+                "player_id_match": ["espn_athlete_id"],
+                "team_abbreviation": ["PHX"],  # current team per the feed
+                "is_out": [True],
+                "is_out_for_season": [True],
+                "absence_category": ["injury"],
+            }
+        )
+        roles = pd.DataFrame(
+            {
+                "player_id": pd.array([100, 200, 300], dtype="Int64"),
+                "team_abbreviation": ["CHI", "CHI", "PHX"],  # 200 last played for CHI
+                "position": ["G", "G", "G"],
+                "minutes": [300, 320, 300],
+                "games_played": [10, 10, 10],
+            }
+        )
+        out = build_injury_opportunity(panel, injury, roles).set_index("player_id")
+        self.assertEqual(out.loc[100, "injury_vacated_mpg_team"], 0)  # CHI (old team) gets nothing
+        self.assertGreater(out.loc[300, "injury_vacated_mpg_team"], 0)  # PHX (feed team) gets it
+
+    def test_opportunity_degrades_without_position_columns(self):
+        # No position anywhere (e.g. game rosters absent): must fall back to team-level weighting,
+        # not crash on a missing column.
+        panel = pd.DataFrame(
+            {
+                "player_id": pd.array([100], dtype="Int64"),
+                "team_abbreviation": ["CHI"],
+                "is_out": [False],
+            }
+        )
+        injury = pd.DataFrame(
+            {
+                "pbpstats_player_id": pd.array([200], dtype="Int64"),
+                "player_id": ["200"],
+                "player_id_match": ["espn_athlete_id"],
+                "team_abbreviation": ["CHI"],
+                "is_out": [True],
+                "is_out_for_season": [False],
+                "absence_category": ["injury"],
+            }
+        )
+        roles = pd.DataFrame(
+            {
+                "player_id": pd.array([200], dtype="Int64"),
+                "team_abbreviation": ["CHI"],
+                "minutes": [320],
+                "games_played": [10],
+            }
+        )
+        out = build_injury_opportunity(panel, injury, roles).set_index("player_id")
+        self.assertGreater(out.loc[100, "injury_vacated_mpg_team"], 0)
+        self.assertEqual(out.loc[100, "injury_vacated_mpg_position"], 0.0)
+        self.assertFalse(pd.isna(out.loc[100, "injury_opportunity_score"]))
+
+    def test_position_map_from_rosters_and_crosswalk(self):
+        game_rosters = pd.DataFrame(
+            {
+                "athlete_id": [3065570, 3065570, 2529622],  # first athlete appears twice (mode)
+                "athlete_position": ["G", "G", "F"],
+            }
+        )
+        crosswalk = pd.DataFrame(
+            {
+                "player_id": ["100", "200", "espn:9"],  # non-numeric id is skipped
+                "espn_athlete_id": [3065570, 2529622, 9],
+            }
+        )
+        mapping = build_position_map(game_rosters, crosswalk)
+        self.assertEqual(mapping, {100: "G", 200: "F"})
+
+        panel = pd.DataFrame({"player_id": pd.array([100, 200, 300], dtype="Int64"), "position": [None, None, None]})
+        out = apply_position_map(panel, mapping).set_index("player_id")
+        self.assertEqual(out.loc[100, "position"], "G")
+        self.assertEqual(out.loc[200, "position"], "F")
+        self.assertTrue(pd.isna(out.loc[300, "position"]))
+
+    def test_position_map_enables_same_position_differentiation(self):
+        # With positions present, a guard vacancy lifts the guard behind them above a forward.
+        panel = pd.DataFrame(
+            {
+                "player_id": pd.array([100, 101], dtype="Int64"),
+                "team_abbreviation": ["CHI", "CHI"],
+                "position": ["G", "F"],
+                "is_out": [False, False],
+            }
+        )
+        injury = pd.DataFrame(
+            {
+                "pbpstats_player_id": pd.array([200], dtype="Int64"),
+                "player_id": ["200"],
+                "player_id_match": ["espn_athlete_id"],
+                "team_abbreviation": ["CHI"],
+                "is_out": [True],
+                "is_out_for_season": [False],
+                "absence_category": ["injury"],
+            }
+        )
+        roles = pd.DataFrame(
+            {
+                "player_id": pd.array([100, 101, 200], dtype="Int64"),
+                "team_abbreviation": ["CHI", "CHI", "CHI"],
+                "position": ["G", "F", "G"],
+                "minutes": [300, 300, 320],
+                "games_played": [10, 10, 10],
+            }
+        )
+        out = build_injury_opportunity(panel, injury, roles).set_index("player_id")
+        self.assertGreater(out.loc[100, "injury_opportunity_score"], out.loc[101, "injury_opportunity_score"])
+
+    def test_note_leads_with_out_for_season_flag(self):
+        row = pd.Series(
+            {
+                "board_track": "Underrated Now",
+                "role_residual_score": 95.0,
+                "is_out_for_season": True,
+                "is_out": True,
+            }
+        )
+        self.assertTrue(_note(row).startswith("OUT FOR SEASON"))
 
 
 if __name__ == "__main__":

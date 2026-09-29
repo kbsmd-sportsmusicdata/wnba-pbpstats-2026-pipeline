@@ -23,7 +23,7 @@ always means deeper), then blended by configured weights into `functional_depth_
 
 | File | Grain | What it is |
 |---|---|---|
-| `functional_depth_2026.csv` | team | Headline: component metrics, five sub-scores, composite, rank, profile |
+| `functional_depth_2026.csv` | team | Headline: component metrics, five sub-scores, composite, rank, profile, current availability |
 | `functional_depth_components_2026.csv` | team × component | Long form of the five sub-scores, ready to plot |
 | `functional_depth_strip_2026.csv` | team | The one-axis star-dependency ↔ distributed-resilience strip |
 | `run_manifest_2026.json` | run | Source manifest, config hash, availability stats |
@@ -37,6 +37,26 @@ python scripts/build_functional_depth.py \
 
 Options: `--game-layer-root`, `--possession-impact-root`, `--output-root`. CI equivalent is the
 **Functional Depth** workflow.
+
+## Depth on paper vs. depth right now
+
+The five components describe depth *over the season*; they do not know who is available tonight. The
+build overlays the shared [injury / availability report](../injuries/README.md) so a reader can hold
+both readings at once:
+
+| Column | Meaning |
+|---|---|
+| `rotation_minutes_out` | Per-game minutes vacated by rotation players currently out with an injury |
+| `rotation_minutes_out_share` | Those minutes as a share of a 200-minute game |
+| `current_availability` | `Intact` / `Thinned` (≥10% MPG out) / `Depleted` (≥25% MPG out) |
+| `players_out_now`, `players_out_for_season_now` | Counts behind the label |
+
+A team can top the score on paper yet read `Depleted` right now — Connecticut, deepest by the
+season-long components, is currently missing roughly half its rotation minutes. Vacated minutes
+count any injury plus season-long absences of any category (a player who has left the team for the
+year frees their minutes whether it is an injury or a departure); short-term non-injury absences —
+national-team duty, a coach's decision — are excluded, since those minutes come back. The overlay is
+additive and optional: with no feed, every team reads `Intact` and the score is unchanged.
 
 ## Two things to keep in mind
 

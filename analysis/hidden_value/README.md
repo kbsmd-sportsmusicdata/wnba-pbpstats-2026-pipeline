@@ -47,7 +47,23 @@ which one they are looking at:
 | `regression_upside_score` | Shot quality running ahead of results, plus free-throw prior on three-point room |
 | `playoff_fit_score` | Skills weighted for a shorter rotation and half-court game |
 | `conviction` | Strong / Moderate / Monitor; low-sample players are downgraded one step |
-| `watchlist_note` | One line saying why the player is on the board |
+| `availability_status` | `Available` / `Out` / `Out for season` / `Day-to-day`, from the shared injury feed |
+| `actionable` | False only for players ruled out for the season — skill signal still shown, but not a live pickup |
+| `injury_opportunity_score` | 0–100 among available players: minutes opening up as injured teammates sit, weighted to their position |
+| `watchlist_note` | One line saying why the player is on the board (leads with an availability flag when sidelined) |
+
+## Injury context
+
+The board reads the shared [injury / availability report](../injuries/README.md) so it never sells
+a sidelined player as a live pickup, and so it can see opportunity opening up:
+
+- **Availability is a flag, not a score change.** A season-ended player keeps their computed skill
+  signal — it is real and worth recording — but is marked `actionable = false` and their
+  `watchlist_note` leads with `OUT FOR SEASON`. The composite weights are untouched.
+- **Injury opportunity is context.** When starters go down, their minutes flow to whoever is next;
+  `injury_opportunity_score` measures how much has opened up on a player's team, weighted toward
+  their own position. It is surfaced in the note and a summary section, not folded into the score.
+- **Optional.** With the feed missing, every player reads `Available` and the board is unchanged.
 
 ## Reading This Correctly
 
@@ -67,7 +83,7 @@ which one they are looking at:
 - Trajectory weight set from held-out testing, not judgement: the composite now correlates
   0.09 with the trend and 0.62 / 0.60 / 0.57 with the three level-based components.
 - Top 25 spans 13 teams rather than clustering on the league's best.
-- 31 unit tests: `python -m unittest tests/test_hidden_value.py`.
+- 35 unit tests: `python -m unittest tests/test_hidden_value.py`.
 
 Full method, the design decision behind the team term, and limitations:
 [`methodology.md`](methodology.md).

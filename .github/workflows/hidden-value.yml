@@ -57,7 +57,7 @@ jobs:
 
       - name: Run Hidden Value tests
         if: ${{ inputs.run_tests }}
-        run: python -m unittest tests/test_hidden_value.py tests/test_hidden_value_game_form.py
+        run: python -m unittest tests/test_hidden_value.py tests/test_hidden_value_game_form.py tests/test_injuries.py
 
       - name: Rebuild upstream analyses
         if: ${{ inputs.rebuild_dependencies }}

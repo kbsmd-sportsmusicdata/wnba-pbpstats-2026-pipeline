@@ -63,7 +63,7 @@ class LiveDryRunGovernanceTest(unittest.TestCase):
             },
         )
         self.assertFalse(config["live_output_enabled"])
-        self.assertEqual(config["sources"]["roster_source_as_of"], "2026-08-25")
+        self.assertEqual(config["sources"]["roster_source_as_of"], "2026-09-28")
         self.assertEqual(config["sources"]["roster_addenda"], [])
 
     def test_cutoff_policy_derives_non_overlapping_fourteen_day_windows(self):
@@ -897,13 +897,13 @@ class LiveDryRunOutputTest(unittest.TestCase):
             cutoff_date=standings_manifest["cutoff_date"],
         )
 
-        self.assertEqual(len(result.roster), 237)
-        self.assertEqual(result.quality["active_players"], 211)
-        self.assertEqual(result.quality["reviewed_players_matched"], 235)
+        self.assertEqual(len(result.roster), 244)
+        self.assertEqual(result.quality["active_players"], 218)
+        self.assertEqual(result.quality["reviewed_players_matched"], 242)
         self.assertEqual(result.quality["eligibility_players_unmatched"], 2)
         self.assertEqual(result.quality["active_eligibility_players_unmatched"], 0)
-        self.assertEqual(result.quality["oldest_source_as_of"], "2026-08-25")
-        self.assertEqual(result.quality["newest_source_as_of"], "2026-08-25")
+        self.assertEqual(result.quality["oldest_source_as_of"], "2026-09-28")
+        self.assertEqual(result.quality["newest_source_as_of"], "2026-09-28")
         self.assertEqual(result.quality["source_snapshot_count"], 1)
         self.assertEqual(sources["roster_addenda"], [])
 
@@ -919,7 +919,7 @@ class LiveDryRunOutputTest(unittest.TestCase):
         eligibility = pd.read_csv(ROOT / sources["eligibility"], dtype=str)
 
         require_pbp_eligibility_coverage(population, eligibility)
-        self.assertEqual(eligibility["player_id"].nunique(), 235)
+        self.assertEqual(eligibility["player_id"].nunique(), 242)
 
 
 if __name__ == "__main__":

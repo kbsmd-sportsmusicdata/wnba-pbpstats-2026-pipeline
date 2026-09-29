@@ -181,9 +181,22 @@ def _note(row: pd.Series) -> str:
     if pd.notna(row.get("on_court_poss_share_slope")) and row["on_court_poss_share_slope"] > 0:
         # The one trend that does persist, though it predicts opportunity, not production.
         reasons.append("role expanding")
+    if pd.notna(row.get("injury_opportunity_score")) and row["injury_opportunity_score"] >= 75:
+        reasons.append("minutes opening up from teammate injuries")
     if not reasons:
         reasons.append("balanced profile, no single standout signal")
-    return f"{row.get('board_track')}: " + ", ".join(reasons)
+    note = f"{row.get('board_track')}: " + ", ".join(reasons)
+
+    # An availability flag leads the note so a sidelined player is never read as a live pickup.
+    if row.get("is_out_for_season"):
+        return f"OUT FOR SEASON — skill signal only, not actionable. {note}"
+    if row.get("is_out"):
+        eta = str(row.get("expected_return_date") or "").strip()
+        eta_text = f", expected back {eta}" if eta else ""
+        return f"Currently out{eta_text}. {note}"
+    if row.get("is_day_to_day"):
+        return f"Day-to-day. {note}"
+    return note
 
 
 def build_component_long(board: pd.DataFrame) -> pd.DataFrame:
