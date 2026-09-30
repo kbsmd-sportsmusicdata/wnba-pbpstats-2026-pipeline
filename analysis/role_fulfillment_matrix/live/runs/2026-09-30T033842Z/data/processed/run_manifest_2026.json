@@ -1,0 +1,199 @@
+{
+  "adapter_audit": {
+    "blockers": [],
+    "candidate_coverage": {
+      "expected": 50,
+      "matched": 50
+    },
+    "candidate_refresh_failures": [],
+    "coverage_through": "2026-09-24",
+    "failure_ledger_rows": 0,
+    "global_refresh_failures": 0,
+    "locked_parity_matches": 11,
+    "locked_parity_max_abs_difference": 4.878044634892831e-10,
+    "locked_parity_players": 11,
+    "locked_parity_windows": {
+      "baseline_end": "2026-08-06",
+      "baseline_start": "2026-07-24",
+      "recent_end": "2026-08-20",
+      "recent_start": "2026-08-07"
+    },
+    "manifest_refresh_failures": 0,
+    "recent_end": "2026-09-22",
+    "source_max_game_date": "2026-09-24",
+    "source_only_assignments": [
+      "espn:4398589",
+      "espn:5208984"
+    ],
+    "status": "review_ready",
+    "warnings": [
+      "2 reviewed ESPN-only role assignments are sample-suppressed until a reviewed PBPStats identity is available"
+    ]
+  },
+  "analysis_cutoff_date": "2026-09-23",
+  "config_hash": "819598f43b7d7542909a571e20f54879160d154853420dd51b5944e0e82de283",
+  "config_path": "analysis/role_fulfillment_matrix/config/live_config.json",
+  "dry_run_gate_blockers": [],
+  "dry_run_gate_status": "not_applicable",
+  "execution_mode": "manual_only",
+  "formula_version": "rfm-live-v1",
+  "funnel_counts": {
+    "candidates_included": 23,
+    "excluded_inactive_role_review_deferred": 1,
+    "excluded_insufficient_recent_possessions": 3,
+    "excluded_insufficient_recent_sample": 18,
+    "excluded_non_contender_team": 148,
+    "excluded_not_age_experience_eligible": 49,
+    "excluded_not_currently_rostered": 2,
+    "players_considered": 244,
+    "players_scored": 7
+  },
+  "generated_at_utc": "2026-09-30T03:38:43+00:00",
+  "live_output_enabled": true,
+  "live_scoring_blockers": [],
+  "live_scoring_status": "live_enabled",
+  "manual_run_id": "2026-09-30T033842Z",
+  "mode": "live",
+  "output_rows": {
+    "candidate_funnel_2026.csv": 244,
+    "role_fulfillment_evidence_2026.json": 93,
+    "role_fulfillment_matrix_2026.csv": 23
+  },
+  "players_scored": 7,
+  "scheduling_enabled": false,
+  "season": 2026,
+  "source_manifest": {
+    "eligibility": {
+      "columns": 21,
+      "path": "analysis/role_fulfillment_matrix/config/player_eligibility_2026.csv",
+      "rows": 242,
+      "status": "reviewed_real_data"
+    },
+    "player_game": {
+      "audit": {
+        "blockers": [],
+        "candidate_coverage": {
+          "expected": 50,
+          "matched": 50
+        },
+        "candidate_refresh_failures": [],
+        "coverage_through": "2026-09-24",
+        "failure_ledger_rows": 0,
+        "global_refresh_failures": 0,
+        "locked_parity_matches": 11,
+        "locked_parity_max_abs_difference": 4.878044634892831e-10,
+        "locked_parity_players": 11,
+        "locked_parity_windows": {
+          "baseline_end": "2026-08-06",
+          "baseline_start": "2026-07-24",
+          "recent_end": "2026-08-20",
+          "recent_start": "2026-08-07"
+        },
+        "manifest_refresh_failures": 0,
+        "recent_end": "2026-09-22",
+        "source_max_game_date": "2026-09-24",
+        "source_only_assignments": [
+          "espn:4398589",
+          "espn:5208984"
+        ],
+        "status": "review_ready",
+        "warnings": [
+          "2 reviewed ESPN-only role assignments are sample-suppressed until a reviewed PBPStats identity is available"
+        ]
+      },
+      "columns": 23,
+      "failure_ledger_path": "data/pbpstats_2026_player_game_logs/player_game_logs_failures.json",
+      "locked_parity_path": "tests/fixtures/role_fulfillment_matrix/live_v1_11_player_inputs.csv",
+      "manifest_path": "data/pbpstats_2026_player_game_logs/ingest_manifest.json",
+      "path": "data/pbpstats_2026_player_game_logs/player_game_logs_wnba_2026_regular_season.csv",
+      "quality": {
+        "canonical_game_ids": 330,
+        "canonical_player_ids": 238,
+        "canonical_player_rows": 6586,
+        "excluded_nonparticipation_rows": 1,
+        "source_game_ids": 330,
+        "source_max_game_date": "2026-09-24",
+        "source_player_ids": 238,
+        "source_player_rows": 6587,
+        "team_join_expected": 6586,
+        "team_join_matched": 6586,
+        "zero_filled_cells": {
+          "Assists": 1883,
+          "AtRimFGA": 2126,
+          "AtRimFGM": 2854,
+          "DefPoss": 4,
+          "FG2A": 953,
+          "FG2M": 1860,
+          "FG3A": 1613,
+          "FG3M": 3507,
+          "FTA": 2923,
+          "FtPoints": 3121,
+          "OffPoss": 16,
+          "OffRebounds": 3441,
+          "Points": 961,
+          "Rebounds": 1052,
+          "Turnovers": 2275
+        }
+      },
+      "rows": 6586,
+      "status": "reviewed_live_adapter",
+      "team_path": "data/pbpstats_2026_player_game_logs/team_game_logs_wnba_2026_regular_season.csv"
+    },
+    "role_assignments": {
+      "columns": 10,
+      "path": "analysis/role_fulfillment_matrix/config/player_role_assignments_2026.csv",
+      "rows": 52,
+      "status": "reviewed_real_data"
+    },
+    "role_definitions": {
+      "columns": null,
+      "path": "analysis/role_fulfillment_matrix/config/role_definitions_live_v1.json",
+      "rows": 6,
+      "status": "approved_live_configuration"
+    },
+    "roster_status": {
+      "addenda": [],
+      "columns": 9,
+      "path": "analysis/role_fulfillment_matrix/data/live_inputs/player_core_2026.csv",
+      "quality": {
+        "active_eligibility_players_unmatched": 0,
+        "active_players": 218,
+        "current_core_players": 244,
+        "eligibility_players_unmatched": 2,
+        "free_agents": 20,
+        "inactive_players": 6,
+        "newest_source_as_of": "2026-09-28",
+        "oldest_source_as_of": "2026-09-28",
+        "reviewed_players_matched": 242,
+        "source_as_of": "2026-09-28",
+        "source_snapshot_count": 1,
+        "unmatched_active_eligibility_players": [],
+        "unmatched_eligibility_players": [
+          "Dulcy Fankam Mendjiadeu",
+          "Shey Peddy"
+        ]
+      },
+      "rows": 244,
+      "source_as_of": "2026-09-28",
+      "status": "current_roster_with_eligibility_coverage"
+    },
+    "standings": {
+      "columns": 4,
+      "manifest_path": "analysis/standings_playoff_forecast/data/processed/season=2026/latest/run_manifest.json",
+      "path": "analysis/standings_playoff_forecast/data/processed/season=2026/latest/current_standings.csv",
+      "quality": {
+        "cutoff_date": "2026-09-23",
+        "normalized_team_codes": 6,
+        "teams": 15
+      },
+      "rows": 15,
+      "status": "validated_forecast_output"
+    }
+  },
+  "windows": {
+    "baseline_end": "2026-09-08",
+    "baseline_start": "2026-08-26",
+    "recent_end": "2026-09-22",
+    "recent_start": "2026-09-09"
+  }
+}

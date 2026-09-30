@@ -9,7 +9,7 @@
   "review_status": "reviewed",
   "approved_by": "Krystal Beasley",
   "approved_at": "2026-08-22",
-  "last_updated_at": "2026-09-28",
+  "last_updated_at": "2026-09-30",
   "approved_rows": 242,
   "eligible_players": 132,
   "ineligible_players": 110,
@@ -19,7 +19,7 @@
   },
   "crosswalk": {
     "path": "analysis/role_fulfillment_matrix/data/review/player_identity_crosswalk_2026.csv",
-    "sha256": "938869e09068304ea5ee3933137ade225967a23533280ee15c867f41edf5a7e4"
+    "sha256": "a7e3708d31bdc27b5a9e156e9aad29115b35e75c66ded3804fe12fe083e1028e"
   },
   "build_manifest": {
     "path": "analysis/role_fulfillment_matrix/data/review/eligibility_build_manifest_2026.json",
@@ -27,7 +27,7 @@
   },
   "approved_output": {
     "path": "analysis/role_fulfillment_matrix/config/player_eligibility_2026.csv",
-    "sha256": "3d0d10302c775f395d1580447ec9de11f2e75c4aecfec9b62b817ff52ade88e6"
+    "sha256": "ec2b9c2465c751b0431abe37cbc2dda21140d0ea541f1261b8f56c0437ea6438"
   },
   "supplemental_reviews": [
     {
@@ -76,6 +76,20 @@
       "player_core_path": "analysis/role_fulfillment_matrix/data/live_inputs/player_core_2026.csv",
       "player_core_sha256": "1d772aeb9c1b11313a0ca2706597c84451f546761f3b3dabbadebcd4874f6209",
       "identity_scope": "Current PBPStats coverage promotion: 7 new active players (Aari McDonald, Aminata Gueye, Charisma Osborne, Kalani Brown, Kitija Laksa, Madison Scott, Shyanne Sellers) plus Christyn Williams and Kara Dunn promoted from ESPN roster-only to PBPStats-matched"
+    },
+    {
+      "reviewed_at": "2026-09-30",
+      "reviewed_by": "Krystal Beasley",
+      "rows": 1,
+      "player_name": "Alicia Florez",
+      "player_id": "1643644",
+      "correction_type": "espn_athlete_id_reassignment",
+      "espn_athlete_id_from": "5349415",
+      "espn_athlete_id_to": "5208985",
+      "player_core_path": "analysis/role_fulfillment_matrix/data/live_inputs/player_core_2026.csv",
+      "player_core_sha256": "d8d469ff392852d1229ecb963478c9af5da8c31e0fcdc698f06cc4aefe61afa0",
+      "frozen_pending_evidence_preserved": true,
+      "identity_scope": "ESPN reassigned Alicia Florez's athlete_id after the 2026-08-22 scrape. The frozen pending build evidence (player_eligibility_2026.pending.csv) retains the original 5349415 as historically accurate; the current approved eligibility, identity crosswalk, and player_core are corrected to 5208985. Her PBPStats player_id (1643644) and all statistics are unchanged."
     }
   ],
   "live_eligibility_status": "approved",
