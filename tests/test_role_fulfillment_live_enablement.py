@@ -136,6 +136,51 @@ class LiveEnablementConfigTest(unittest.TestCase):
             path = ROOT / item["path"]
             self.assertEqual(item["sha256"], hashlib.sha256(path.read_bytes()).hexdigest())
 
+    def test_current_standings_manual_live_run_is_recorded_without_touching_baseline(self):
+        approval = json.loads(LIVE_OUTPUT_APPROVAL.read_text())
+        run = approval["current_standings_manual_live_run"]
+        self.assertEqual(run["review_status"], "approved")
+        self.assertEqual(run["approved_by"], "Krystal Beasley")
+        self.assertEqual(run["approved_at"], "2026-09-30")
+        self.assertEqual(run["manual_run_id"], "2026-09-30T033842Z")
+        self.assertEqual(run["live_scoring_status"], "live_enabled")
+        self.assertTrue(run["live_output_enabled"])
+        self.assertEqual(run["execution_mode"], "manual_only")
+        self.assertFalse(run["scheduling_enabled"])
+        self.assertFalse(run["supersedes_prior_baseline"])
+        self.assertEqual(run["players_considered"], 244)
+        self.assertEqual(run["candidates_included"], 23)
+        self.assertEqual(run["result_counts"], {
+            "live_scored": 7,
+            "season_context_only": 12,
+            "inactive_suppressed": 2,
+            "unavailable": 1,
+            "insufficient_role_evidence": 1,
+        })
+        self.assertEqual(sum(run["result_counts"].values()), run["candidates_included"])
+
+        config = json.loads(LIVE_CONFIG.read_text())
+        self.assertEqual(run["approved_config_sha256"], live_config_fingerprint(config))
+
+        for item in run["artifacts"]:
+            path = ROOT / item["path"]
+            self.assertTrue(path.exists(), item["path"])
+            self.assertEqual(item["sha256"], hashlib.sha256(path.read_bytes()).hexdigest())
+
+        review = approval["current_standings_manual_live_run_review"]
+        self.assertEqual(review["review_status"], "approved")
+        self.assertEqual(review["scheduling_status"], "disabled_not_approved")
+        self.assertTrue((ROOT / review["report_path"]).exists())
+
+        # The immutable 2026-08-23 baseline run is untouched by the new publish.
+        baseline = approval["manual_live_run"]
+        self.assertEqual(baseline["generated_at_utc"], "2026-08-23T23:37:49+00:00")
+        self.assertEqual(baseline["result_counts"], {
+            "live_scored": 11,
+            "season_context_only": 5,
+            "inactive_suppressed": 3,
+        })
+
     def test_live_authorization_rejects_changes_to_reviewed_inputs_or_formulas(self):
         approved = json.loads(LIVE_CONFIG.read_text())
         approved["end_to_end_review_status"] = "approved_19_player_review"

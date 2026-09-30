@@ -164,5 +164,61 @@
         "sha256": "9897b6212162dfe265d13f399835233fc8df8084ad62898faa5e2bd2fdc96574"
       }
     ]
+  },
+  "current_standings_manual_live_run_review": {
+    "review_status": "approved",
+    "approved_by": "Krystal Beasley",
+    "approved_at": "2026-09-30",
+    "report_path": "analysis/role_fulfillment_matrix/data/review/manual_live_run_post_review_2026-09-30.md",
+    "scheduling_status": "disabled_not_approved"
+  },
+  "current_standings_manual_live_run": {
+    "review_status": "approved",
+    "approved_by": "Krystal Beasley",
+    "approved_at": "2026-09-30",
+    "basis": "Manual live publish for the current 244-row 2026-09-28 roster against the 2026-09-23 standings cutoff, following the merged dry-run approval. Does not overwrite the immutable 2026-08-23 baseline manual_live_run.",
+    "generated_at_utc": "2026-09-30T03:38:43+00:00",
+    "manual_run_id": "2026-09-30T033842Z",
+    "approved_config_sha256": "ab66f6fe921351cef308beffe0014262dabb54b2e1b6ce95834cafa5230ce623",
+    "roster_source_as_of": "2026-09-28",
+    "standings_cutoff": "2026-09-23",
+    "live_scoring_status": "live_enabled",
+    "live_output_enabled": true,
+    "execution_mode": "manual_only",
+    "scheduling_enabled": false,
+    "scheduling_status": "disabled_not_approved",
+    "supersedes_prior_baseline": false,
+    "prior_baseline_manual_run": "manual_live_run",
+    "players_considered": 244,
+    "candidates_included": 23,
+    "result_counts": {
+      "live_scored": 7,
+      "season_context_only": 12,
+      "inactive_suppressed": 2,
+      "unavailable": 1,
+      "insufficient_role_evidence": 1
+    },
+    "artifacts": [
+      {
+        "path": "analysis/role_fulfillment_matrix/live/runs/2026-09-30T033842Z/data/processed/run_manifest_2026.json",
+        "sha256": "591a3b28e5290e67adeb04449de05e31b62d217a5a934325881ae690d6954030"
+      },
+      {
+        "path": "analysis/role_fulfillment_matrix/live/runs/2026-09-30T033842Z/data/processed/candidate_funnel_2026.csv",
+        "sha256": "9d433c398eb9633a30a7b481aac3e85c2b7c5d2c47030a2453c4fb62a1ac0221"
+      },
+      {
+        "path": "analysis/role_fulfillment_matrix/live/runs/2026-09-30T033842Z/data/processed/role_fulfillment_matrix_2026.csv",
+        "sha256": "2355ba6cfb1d7051e731211319550bc735299142e2e0d5b24410e641e8a9c488"
+      },
+      {
+        "path": "analysis/role_fulfillment_matrix/live/runs/2026-09-30T033842Z/data/processed/role_fulfillment_evidence_2026.json",
+        "sha256": "417c0fa9330069eed43fb49d99e50c31dae16d13d01819366ca128d2a1f14948"
+      },
+      {
+        "path": "analysis/role_fulfillment_matrix/live/runs/2026-09-30T033842Z/deliverables/role_fulfillment_matrix/index.html",
+        "sha256": "fd8b75a32835151cadeb701e2379f7a3b884f32d438294ace7d4c31ebdb5f9f3"
+      }
+    ]
   }
 }
