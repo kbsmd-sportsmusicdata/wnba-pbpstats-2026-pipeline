@@ -504,8 +504,23 @@ class ApprovedEligibilityArtifactTest(unittest.TestCase):
         self.assertEqual(set(eligibility["reviewed_by"]), {"Krystal Beasley"})
         self.assertEqual(
             set(eligibility["reviewed_at"]),
-            {"2026-08-22", "2026-08-23", "2026-08-24", "2026-08-25", "2026-09-28"},
+            {
+                "2026-08-22",
+                "2026-08-23",
+                "2026-08-24",
+                "2026-08-25",
+                "2026-09-28",
+                "2026-09-30",
+            },
         )
+
+        # Alicia Florez's ESPN athlete_id was reassigned after the 2026-08-22
+        # scrape; the approved table carries the corrected id (re-reviewed
+        # 2026-09-30) while the frozen pending evidence keeps the original.
+        florez = eligibility.set_index(eligibility["player_id"].astype(str)).loc["1643644"]
+        self.assertEqual(int(florez["espn_athlete_id"]), 5208985)
+        self.assertEqual(florez["reviewed_at"], "2026-09-30")
+        self.assertIn("id/5208985/", florez["source_url"])
 
         refreshed = eligibility.set_index("player_name").loc[
             ["Elizabeth Balogun", "Elena Buenavida"]
@@ -527,11 +542,36 @@ class ApprovedEligibilityArtifactTest(unittest.TestCase):
 
         pending = pd.read_csv(PENDING_ELIGIBILITY)
         review_fields = ["review_status", "reviewed_by", "reviewed_at"]
-        pending_ids = set(pending["player_id"].astype(str))
+
+        # Alicia Florez (player_id 1643644) is the one manifest-recorded ESPN
+        # athlete_id reassignment: the frozen pending evidence keeps the
+        # original id (5349415) while the approved table carries the corrected
+        # id (5208985). Her row is exempt from the frozen-evidence equality and
+        # verified explicitly instead so the correction stays auditable.
+        corrected_player_id = "1643644"
+        pending_florez = pending[
+            pending["player_id"].astype(str) == corrected_player_id
+        ].iloc[0]
+        approved_florez = eligibility[
+            eligibility["player_id"].astype(str) == corrected_player_id
+        ].iloc[0]
+        self.assertEqual(str(pending_florez["espn_athlete_id"]), "5349415")
+        self.assertEqual(str(approved_florez["espn_athlete_id"]), "5208985")
+        differing = {
+            column
+            for column in pending.columns
+            if column not in review_fields
+            and str(pending_florez[column]) != str(approved_florez[column])
+        }
+        self.assertEqual(differing, {"espn_athlete_id", "source_url"})
+
+        pending_ids = set(pending["player_id"].astype(str)) - {corrected_player_id}
         original_approved = eligibility[
             eligibility["player_id"].astype(str).isin(pending_ids)
         ].drop(columns=review_fields).reset_index(drop=True)
-        pending_without_review = pending.drop(columns=review_fields)
+        pending_without_review = pending[
+            ~pending["player_id"].astype(str).eq(corrected_player_id)
+        ].drop(columns=review_fields).reset_index(drop=True)
         original_approved["player_id"] = original_approved["player_id"].astype(str)
         pending_without_review["player_id"] = pending_without_review["player_id"].astype(str)
         pd.testing.assert_frame_equal(
@@ -565,7 +605,7 @@ class ApprovedEligibilityArtifactTest(unittest.TestCase):
         self.assertEqual(manifest["review_status"], "reviewed")
         self.assertEqual(manifest["approved_by"], "Krystal Beasley")
         self.assertEqual(manifest["approved_at"], "2026-08-22")
-        self.assertEqual(manifest["last_updated_at"], "2026-09-28")
+        self.assertEqual(manifest["last_updated_at"], "2026-09-30")
         self.assertEqual(manifest["approved_rows"], 242)
         self.assertEqual(manifest["eligible_players"], 132)
         self.assertEqual(manifest["ineligible_players"], 110)
@@ -588,7 +628,7 @@ class ApprovedEligibilityArtifactTest(unittest.TestCase):
             manifest["build_manifest"]["sha256"],
             hashlib.sha256(BUILD_MANIFEST.read_bytes()).hexdigest(),
         )
-        self.assertEqual(len(manifest["supplemental_reviews"]), 5)
+        self.assertEqual(len(manifest["supplemental_reviews"]), 6)
         supplement = manifest["supplemental_reviews"][0]
         self.assertEqual(supplement["reviewed_at"], "2026-08-23")
         self.assertEqual(supplement["rows"], 2)
@@ -615,6 +655,19 @@ class ApprovedEligibilityArtifactTest(unittest.TestCase):
         self.assertEqual(kara_supplement["reviewed_at"], "2026-08-25")
         self.assertEqual(kara_supplement["rows"], 1)
         self.assertEqual(kara_supplement["player_name"], "Kara Dunn")
+        florez_correction = manifest["supplemental_reviews"][5]
+        self.assertEqual(florez_correction["reviewed_at"], "2026-09-30")
+        self.assertEqual(florez_correction["player_name"], "Alicia Florez")
+        self.assertEqual(florez_correction["correction_type"], "espn_athlete_id_reassignment")
+        self.assertEqual(florez_correction["espn_athlete_id_from"], "5349415")
+        self.assertEqual(florez_correction["espn_athlete_id_to"], "5208985")
+        self.assertTrue(florez_correction["frozen_pending_evidence_preserved"])
+        self.assertEqual(
+            florez_correction["player_core_sha256"],
+            hashlib.sha256(
+                (ROOT / florez_correction["player_core_path"]).read_bytes()
+            ).hexdigest(),
+        )
 
     def test_dry_run_config_references_approved_eligibility_without_enabling_output(self):
         live_config_path = (
