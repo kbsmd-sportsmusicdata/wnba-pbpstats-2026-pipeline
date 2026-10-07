@@ -54,10 +54,10 @@
       "url": "https://github.com/sportsdataverse/sportsdataverse-data/releases/download/espn_wnba_player_season_stats/player_season_stats_2026.parquet"
     },
     {
-      "column_count": 77,
+      "column_count": 79,
       "filename": "schedule_2026.parquet",
       "row_count": 360,
-      "sha256": "95804caf53a042eeb6770cf0377dc7425f41c91100e3788a0fccaea5197ddcf2",
+      "sha256": "217a02d1ccbbb2524ad6de8b6919ee4d14ab9112b386511776d5869b12831e3c",
       "size_note": "~91-97 KB",
       "source": "ESPN",
       "success": true,
@@ -127,7 +127,7 @@
       "column_count": 28,
       "filename": "wnba_player_impact_2026.parquet",
       "row_count": 328,
-      "sha256": "f82271d99d2f6af62e8affaea9adbdf387db26bcb703e2e491b7925ae05b88f6",
+      "sha256": "687f77dde961603e20294d8176cb090081304b128f1ac96bd8ebf98a89c4f568",
       "size_note": "~42 KB",
       "source": "SportsDataverse",
       "success": true,
