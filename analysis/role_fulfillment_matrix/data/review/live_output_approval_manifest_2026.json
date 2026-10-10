@@ -47,10 +47,12 @@
     "review_sha256": "c78929c760d0e6c53dea264b885409ed0bdc55216284c9e8eaed3afe78fd7ba3"
   },
   "latest_dry_run_rerun": {
-    "generated_at_utc": "2026-09-29T18:44:10+00:00",
+    "generated_at_utc": "2026-09-30T04:47:18+00:00",
     "review_status": "approved",
     "approved_by": "Krystal Beasley",
     "approved_at": "2026-09-29",
+    "regenerated_at": "2026-09-30",
+    "regeneration_note": "Regenerated to carry the corrected Alicia Florez ESPN athlete_id (5208985); scores, counts, and statuses are unchanged from the 2026-09-29 approval.",
     "roster_source_as_of": "2026-09-28",
     "standings_cutoff": "2026-09-23",
     "dry_run_gate_status": "review_ready",
@@ -69,15 +71,15 @@
     "artifacts": [
       {
         "path": "analysis/role_fulfillment_matrix/data/review/live_dry_run/data/processed/run_manifest_2026.json",
-        "sha256": "b56aefe4b09955a39abaddd81203ade8655ced2bc5bd57d3eb9589b6be33ea47"
+        "sha256": "01614208d49496216efdab24fd0f84fb11268dd4b8312c2ec2353c8ee615c2e7"
       },
       {
         "path": "analysis/role_fulfillment_matrix/data/review/live_dry_run/data/processed/candidate_funnel_2026.csv",
-        "sha256": "128a0ec46e55ddd33de94ce7efb595aef757ca36433574bef3cf0f59e9ecdffe"
+        "sha256": "9d433c398eb9633a30a7b481aac3e85c2b7c5d2c47030a2453c4fb62a1ac0221"
       },
       {
         "path": "analysis/role_fulfillment_matrix/data/review/live_dry_run/data/processed/role_fulfillment_matrix_2026.csv",
-        "sha256": "d59525c388eeacb045e0d4ceeccbec9db1ad0caf16b8bb40db99f4fcead133c7"
+        "sha256": "a23a14fc8bc11a1ea2da59444cae2e93d54e32672b4389b18b3c8e23a0a04cbd"
       },
       {
         "path": "analysis/role_fulfillment_matrix/data/review/live_dry_run/data/processed/role_fulfillment_evidence_2026.json",
@@ -85,11 +87,11 @@
       },
       {
         "path": "analysis/role_fulfillment_matrix/data/review/live_dry_run/role_fulfillment_matrix_live_dry_run_validation.md",
-        "sha256": "e5d8cbd08cfd00385691147260f9747d64de61f1ecd9dfc63fd7d429372cba7e"
+        "sha256": "03a4b5b10181d1a39eadcdee4840e3ae0c1b4cb465ae4cccac4f1c852df6b81d"
       },
       {
         "path": "analysis/role_fulfillment_matrix/data/review/live_dry_run/deliverables/role_fulfillment_matrix/index.html",
-        "sha256": "cf85e2340a208a27cfaaf4eb7681d0c564fefa79889dc19182b350d90b75aa98"
+        "sha256": "74dcd71c4daae708b96b434f953d28fd996de5a2fad7db9b1e18545d65851abc"
       }
     ]
   },
