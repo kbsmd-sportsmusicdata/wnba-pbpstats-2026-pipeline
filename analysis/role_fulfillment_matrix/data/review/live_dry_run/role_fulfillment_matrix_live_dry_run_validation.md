@@ -2,6 +2,8 @@
 
 Review status: **approved by Krystal Beasley, 2026-09-29**
 
+Regenerated 2026-09-30 to carry the corrected Alicia Florez ESPN athlete_id (5208985); the analytical package (scores, counts, and statuses) is unchanged from the 2026-09-29 approval.
+
 Live output remains disabled. This package exercises the approved real-data path only.
 
 ## Run boundary
