@@ -1,0 +1,42 @@
+{
+  "single_row_table_data": {
+    "Name": "Antonia Delaere",
+    "ShortName": "Antonia Delaere",
+    "TeamAbbreviation": "MIN",
+    "SecondsPlayed": 149.0,
+    "GamesPlayed": 1,
+    "Minutes": 2,
+    "PlusMinus": 1,
+    "OffPoss": 4,
+    "DefPoss": 6,
+    "PenaltyOffPoss": 4,
+    "PenaltyDefPoss": 6,
+    "SecondChanceOffPoss": 1,
+    "TotalPoss": 10,
+    "OpponentPoints": 4,
+    "PenaltyOffPossExcludingTakeFouls": 4,
+    "OnOffRtg": 125.0,
+    "OnDefRtg": 66.66666666666667,
+    "PenaltyOffPossPct": 1.0
+  },
+  "multi_row_table_data": [
+    {
+      "Minutes": "02:29",
+      "PlusMinus": 1,
+      "OffPoss": 4,
+      "DefPoss": 6,
+      "PenaltyOffPoss": 4,
+      "PenaltyDefPoss": 6,
+      "SecondChanceOffPoss": 1,
+      "TotalPoss": 10,
+      "PenaltyOffPossExcludingTakeFouls": 4,
+      "OnOffRtg": 125.0,
+      "OnDefRtg": 66.66666666666667,
+      "PenaltyOffPossPct": 1.0,
+      "Date": "2026-09-27",
+      "GameId": "1042600101",
+      "Team": "MIN",
+      "Opponent": "NYL"
+    }
+  ]
+}

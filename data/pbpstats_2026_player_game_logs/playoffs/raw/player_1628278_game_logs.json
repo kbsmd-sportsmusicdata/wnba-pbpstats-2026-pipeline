@@ -1,0 +1,72 @@
+{
+  "single_row_table_data": {
+    "Name": "Shatori Walker-Kimbrough",
+    "ShortName": "Shatori Walker-Kimbrough",
+    "TeamAbbreviation": "ATL",
+    "SecondsPlayed": 204.2,
+    "GamesPlayed": 3,
+    "Minutes": 3,
+    "PlusMinus": 4,
+    "OffPoss": 6,
+    "DefPoss": 9,
+    "PenaltyOffPoss": 6,
+    "PenaltyDefPoss": 5,
+    "SecondChanceOffPoss": 1,
+    "TotalPoss": 15,
+    "OpponentPoints": 4,
+    "PenaltyOffPossExcludingTakeFouls": 6,
+    "OnOffRtg": 133.33333333333334,
+    "OnDefRtg": 44.44444444444444,
+    "PenaltyOffPossPct": 1.0
+  },
+  "multi_row_table_data": [
+    {
+      "Minutes": "01:04",
+      "OffPoss": 1,
+      "DefPoss": 2,
+      "PenaltyOffPoss": 1,
+      "PenaltyDefPoss": 1,
+      "SecondChanceOffPoss": 1,
+      "TotalPoss": 3,
+      "PenaltyOffPossExcludingTakeFouls": 1,
+      "PenaltyOffPossPct": 1.0,
+      "Date": "2026-09-30",
+      "GameId": "1042600132",
+      "Team": "ATL",
+      "Opponent": "WAS"
+    },
+    {
+      "Minutes": "00:44",
+      "PlusMinus": -2,
+      "OffPoss": 1,
+      "DefPoss": 3,
+      "PenaltyOffPoss": 1,
+      "PenaltyDefPoss": 3,
+      "TotalPoss": 4,
+      "PenaltyOffPossExcludingTakeFouls": 1,
+      "OnDefRtg": 66.66666666666667,
+      "PenaltyOffPossPct": 1.0,
+      "Date": "2026-10-19",
+      "GameId": "1042600302",
+      "Team": "ATL",
+      "Opponent": "GSV"
+    },
+    {
+      "Minutes": "01:36",
+      "PlusMinus": 6,
+      "OffPoss": 4,
+      "DefPoss": 4,
+      "PenaltyOffPoss": 4,
+      "PenaltyDefPoss": 1,
+      "TotalPoss": 8,
+      "PenaltyOffPossExcludingTakeFouls": 4,
+      "OnOffRtg": 200.0,
+      "OnDefRtg": 50.0,
+      "PenaltyOffPossPct": 1.0,
+      "Date": "2026-10-21",
+      "GameId": "1042600303",
+      "Team": "ATL",
+      "Opponent": "GSV"
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+[
+  {
+    "player_id": "1629491",
+    "name": "Jessica Shepard",
+    "error": "failed to fetch /get-game-logs/wnba after 5 attempts: retryable status 500"
+  },
+  {
+    "player_id": "1642302",
+    "name": "Isobel Borlase",
+    "error": "failed to fetch /get-game-logs/wnba after 5 attempts: retryable status 500"
+  },
+  {
+    "player_id": "1643644",
+    "name": "Alicia Florez",
+    "error": "failed to fetch /get-game-logs/wnba after 5 attempts: retryable status 500"
+  },
+  {
+    "player_id": "203833",
+    "name": "Chelsea Gray",
+    "error": "failed to fetch /get-game-logs/wnba after 5 attempts: retryable status 500"
+  },
+  {
+    "player_id": "204329",
+    "name": "Kiah Stokes",
+    "error": "failed to fetch /get-game-logs/wnba after 5 attempts: retryable status 500"
+  }
+]

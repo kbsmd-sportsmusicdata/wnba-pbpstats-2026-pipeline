@@ -1,0 +1,60 @@
+{
+  "single_row_table_data": {
+    "Name": "Angela Dugalic",
+    "ShortName": "Angela Dugalic",
+    "TeamAbbreviation": "WAS",
+    "SecondsPlayed": 127.0,
+    "GamesPlayed": 2,
+    "Minutes": 2,
+    "PlusMinus": -2,
+    "OffPoss": 3,
+    "DefPoss": 4,
+    "PenaltyDefPoss": 2,
+    "TotalPoss": 7,
+    "Arc3FGA": 1,
+    "FG3A": 1,
+    "OpponentPoints": 2,
+    "NonHeaveArc3FGA": 1,
+    "OnDefRtg": 50.0,
+    "FG3APct": 1.0,
+    "Usage": 33.333333333333336,
+    "Arc3Frequency": 1.0,
+    "AtRimFG3AFrequency": 1.0,
+    "ShotQualityAvg": 0.4485,
+    "Avg3ptShotDistance": 25.9
+  },
+  "multi_row_table_data": [
+    {
+      "Minutes": "01:03",
+      "PlusMinus": -2,
+      "OffPoss": 2,
+      "DefPoss": 2,
+      "TotalPoss": 4,
+      "OnDefRtg": 100.0,
+      "Date": "2026-09-27",
+      "GameId": "1042600131",
+      "Team": "WAS",
+      "Opponent": "ATL"
+    },
+    {
+      "Minutes": "01:04",
+      "OffPoss": 1,
+      "DefPoss": 2,
+      "PenaltyDefPoss": 2,
+      "TotalPoss": 3,
+      "Arc3FGA": 1,
+      "FG3A": 1,
+      "NonHeaveArc3FGA": 1,
+      "FG3APct": 1.0,
+      "Usage": 100.0,
+      "Arc3Frequency": 1.0,
+      "AtRimFG3AFrequency": 1.0,
+      "ShotQualityAvg": 0.4485,
+      "Avg3ptShotDistance": 25.9,
+      "Date": "2026-09-30",
+      "GameId": "1042600132",
+      "Team": "WAS",
+      "Opponent": "ATL"
+    }
+  ]
+}
