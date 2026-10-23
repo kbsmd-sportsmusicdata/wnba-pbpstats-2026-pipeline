@@ -150,6 +150,34 @@ These two paths are distinct from the forecast's own `data/processed/wnba_team_g
 python -m unittest tests.test_wnba_game_layer
 ```
 
+## Playoff Summary
+
+`scripts/build_playoff_summary.py` is a **descriptive** companion to the inferential regular-season tools (hidden value, functional depth, possession impact). Those fit role models, trend slopes and RAPM, which a handful of playoff games cannot support; this one instead reports *what happened* in the playoffs and *how it differs from the regular season*, with sample size on every row.
+
+```bash
+python scripts/build_playoff_summary.py
+```
+
+It reads the Playoffs game layer (and the Regular Season layer for deltas) and writes under `analysis/playoff_summary/`:
+
+```text
+analysis/playoff_summary/
+  player_playoff_splits.{csv,json}        # per player: counting stats as per-100, rates possession-weighted
+  team_playoff_splits.{csv,json}          # per team
+  player_rs_vs_playoff_delta.{csv,json}   # players in both samples: RS rate, playoff rate, delta
+  team_rs_vs_playoff_delta.{csv,json}
+  series_rollups.{csv,json}               # one row per series (unordered team pair) from the games spine
+  playoff_leaderboard.md                  # two curated boards: Scoring & efficiency, and Defense & rebounding
+  playoff_rs_vs_playoff_movers.md         # biggest RS->playoff risers & fallers on the headline metric
+  playoff_summary_manifest.json
+```
+
+Conventions: counting stats are summed and expressed **per 100 possessions** (the primary comparison basis); already-computed rates are possession-weighted; headline shooting rates (TS%, eFG%, FG%, 3P%) are recomputed from summed makes/attempts rather than averaged per game. The thin-sample threshold is `min_playoff_games` in `analysis/playoff_summary/config/playoff_summary_config.json` (default 2); it is applied as a filterable **`meets_min_games`** flag column — rows are never dropped. Only players meeting it appear in the ranked Markdown boards. The risers/fallers board ranks the RS→playoff delta of a configurable headline metric (`movers_metric`, default `points_per100`; `movers_top_n` rows each way). If the Playoffs game layer has not been ingested yet, the build **skips cleanly**.
+
+```bash
+python -m unittest tests.test_playoff_summary
+```
+
 ## GitHub Actions
 
 The workflow at `.github/workflows/pbpstats-wnba-2026.yml` supports:
@@ -157,6 +185,6 @@ The workflow at `.github/workflows/pbpstats-wnba-2026.yml` supports:
 - `workflow_dispatch` for manual runs, with a **Season type(s)** dropdown (`Regular Season`, `Playoffs`, or `Both`) that drives both the game-log ingest step and the shared game-layer build step
 - a daily in-season schedule during May through October
 
-Scheduled runs have no dispatch input, so they fall back to `Regular Season`. The dropdown drives the game-log ingest and the game-layer build (which skips a season type whose logs were not ingested); the pull/clean and features steps are current-season (Regular Season) and are unchanged.
+Scheduled runs have no dispatch input, so they fall back to `Regular Season`. The dropdown drives the game-log ingest and the game-layer build (which skips a season type whose logs were not ingested); the pull/clean and features steps are current-season (Regular Season) and are unchanged. The playoff-summary step runs after the game layer and self-skips when no playoffs have been ingested, so it refreshes automatically whenever a `Playoffs`/`Both` run produces the playoff layer.
 
-The workflow runs the pull/clean, features, game-log ingest, and game-layer steps, then stages and commits only generated CSV/JSON files under `data/pbpstats_wnba_2026/` and `data/pbpstats_2026_player_game_logs/`, plus the game-layer parquet under `data/processed/` (the recursive `find`/`git add` picks up the `playoffs/` subdirectories too).
+The workflow runs the pull/clean, features, game-log ingest, game-layer, and playoff-summary steps, then stages and commits only generated CSV/JSON files under `data/pbpstats_wnba_2026/` and `data/pbpstats_2026_player_game_logs/`, the game-layer parquet under `data/processed/`, and the playoff-summary outputs under `analysis/playoff_summary/` (the recursive `find`/`git add` picks up the `playoffs/` subdirectories too).

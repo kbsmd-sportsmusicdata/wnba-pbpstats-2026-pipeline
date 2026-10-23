@@ -55,10 +55,15 @@ jobs:
           SEASON_TYPE: ${{ inputs.season_type || 'Regular Season' }}
         run: python scripts/build_wnba_game_layer_2026.py --season-type "$SEASON_TYPE"
 
+      - name: Build playoff summary (RS-vs-playoff splits, deltas, series)
+        # Reads the playoff game layer produced above; self-skips cleanly when no playoffs have
+        # been ingested, so Regular-Season-only runs are a no-op here.
+        run: python scripts/build_playoff_summary.py
+
       - name: Commit generated outputs if changed
         run: |
           find data/pbpstats_wnba_2026 data/pbpstats_2026_player_game_logs -type f \( -name '*.csv' -o -name '*.json' \) -print0 | xargs -0 git add
-          git add -A data/processed/wnba_pbpstats_player_game data/processed/wnba_pbpstats_team_game
+          git add -A data/processed/wnba_pbpstats_player_game data/processed/wnba_pbpstats_team_game analysis/playoff_summary
           if git diff --cached --quiet; then
             echo "No generated file changes to commit"
             exit 0
