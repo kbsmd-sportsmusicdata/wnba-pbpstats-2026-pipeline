@@ -150,7 +150,8 @@
     "PlayerId": "1627668",
     "PlayerName": "Breanna Stewart",
     "TeamId": "1611661313",
-    "TeamAbbreviation": "NYL"
+    "TeamAbbreviation": "NYL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "40:00",
@@ -294,7 +295,8 @@
     "PlayerId": "1627668",
     "PlayerName": "Breanna Stewart",
     "TeamId": "1611661313",
-    "TeamAbbreviation": "NYL"
+    "TeamAbbreviation": "NYL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "40:00",
@@ -406,7 +408,8 @@
     "PlayerId": "1627668",
     "PlayerName": "Breanna Stewart",
     "TeamId": "1611661313",
-    "TeamAbbreviation": "NYL"
+    "TeamAbbreviation": "NYL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "43:00",
@@ -555,7 +558,8 @@
     "PlayerId": "1627668",
     "PlayerName": "Breanna Stewart",
     "TeamId": "1611661313",
-    "TeamAbbreviation": "NYL"
+    "TeamAbbreviation": "NYL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "39:03",
@@ -701,7 +705,8 @@
     "PlayerId": "1627668",
     "PlayerName": "Breanna Stewart",
     "TeamId": "1611661313",
-    "TeamAbbreviation": "NYL"
+    "TeamAbbreviation": "NYL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "25:52",
@@ -804,7 +809,8 @@
     "PlayerId": "1627673",
     "PlayerName": "Jonquel Jones",
     "TeamId": "1611661313",
-    "TeamAbbreviation": "NYL"
+    "TeamAbbreviation": "NYL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "31:30",
@@ -944,7 +950,8 @@
     "PlayerId": "1627673",
     "PlayerName": "Jonquel Jones",
     "TeamId": "1611661313",
-    "TeamAbbreviation": "NYL"
+    "TeamAbbreviation": "NYL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "31:38",
@@ -1073,7 +1080,8 @@
     "PlayerId": "1627673",
     "PlayerName": "Jonquel Jones",
     "TeamId": "1611661313",
-    "TeamAbbreviation": "NYL"
+    "TeamAbbreviation": "NYL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "37:59",
@@ -1208,7 +1216,8 @@
     "PlayerId": "1627673",
     "PlayerName": "Jonquel Jones",
     "TeamId": "1611661313",
-    "TeamAbbreviation": "NYL"
+    "TeamAbbreviation": "NYL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "38:32",
@@ -1356,7 +1365,8 @@
     "PlayerId": "1627673",
     "PlayerName": "Jonquel Jones",
     "TeamId": "1611661313",
-    "TeamAbbreviation": "NYL"
+    "TeamAbbreviation": "NYL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "35:07",
@@ -1465,7 +1475,8 @@
     "PlayerId": "1627675",
     "PlayerName": "Courtney Williams",
     "TeamId": "1611661324",
-    "TeamAbbreviation": "MIN"
+    "TeamAbbreviation": "MIN",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "37:56",
@@ -1594,7 +1605,8 @@
     "PlayerId": "1627675",
     "PlayerName": "Courtney Williams",
     "TeamId": "1611661324",
-    "TeamAbbreviation": "MIN"
+    "TeamAbbreviation": "MIN",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "18:40",
@@ -1700,7 +1712,8 @@
     "PlayerId": "1628269",
     "PlayerName": "Nia Brodie",
     "TeamId": "1611661324",
-    "TeamAbbreviation": "MIN"
+    "TeamAbbreviation": "MIN",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "23:58",
@@ -1831,7 +1844,8 @@
     "PlayerId": "1628269",
     "PlayerName": "Nia Brodie",
     "TeamId": "1611661324",
-    "TeamAbbreviation": "MIN"
+    "TeamAbbreviation": "MIN",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "34:47",
@@ -1952,7 +1966,8 @@
     "PlayerId": "1628277",
     "PlayerName": "Allisha Gray",
     "TeamId": "1611661330",
-    "TeamAbbreviation": "ATL"
+    "TeamAbbreviation": "ATL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "34:57",
@@ -2099,7 +2114,8 @@
     "PlayerId": "1628277",
     "PlayerName": "Allisha Gray",
     "TeamId": "1611661330",
-    "TeamAbbreviation": "ATL"
+    "TeamAbbreviation": "ATL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "10:47",
@@ -2165,7 +2181,8 @@
     "PlayerId": "1628277",
     "PlayerName": "Allisha Gray",
     "TeamId": "1611661330",
-    "TeamAbbreviation": "ATL"
+    "TeamAbbreviation": "ATL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "33:09",
@@ -2293,7 +2310,8 @@
     "PlayerId": "1628277",
     "PlayerName": "Allisha Gray",
     "TeamId": "1611661330",
-    "TeamAbbreviation": "ATL"
+    "TeamAbbreviation": "ATL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "34:27",
@@ -2426,7 +2444,8 @@
     "PlayerId": "1628277",
     "PlayerName": "Allisha Gray",
     "TeamId": "1611661330",
-    "TeamAbbreviation": "ATL"
+    "TeamAbbreviation": "ATL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "29:08",
@@ -2518,7 +2537,8 @@
     "PlayerId": "1628277",
     "PlayerName": "Allisha Gray",
     "TeamId": "1611661330",
-    "TeamAbbreviation": "ATL"
+    "TeamAbbreviation": "ATL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "01:04",
@@ -2537,7 +2557,8 @@
     "PlayerId": "1628278",
     "PlayerName": "Shatori Walker-Kimbrough",
     "TeamId": "1611661330",
-    "TeamAbbreviation": "ATL"
+    "TeamAbbreviation": "ATL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "00:44",
@@ -2557,7 +2578,8 @@
     "PlayerId": "1628278",
     "PlayerName": "Shatori Walker-Kimbrough",
     "TeamId": "1611661330",
-    "TeamAbbreviation": "ATL"
+    "TeamAbbreviation": "ATL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "01:36",
@@ -2578,7 +2600,8 @@
     "PlayerId": "1628278",
     "PlayerName": "Shatori Walker-Kimbrough",
     "TeamId": "1611661330",
-    "TeamAbbreviation": "ATL"
+    "TeamAbbreviation": "ATL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "15:52",
@@ -2702,7 +2725,8 @@
     "PlayerId": "1628508",
     "PlayerName": "Cecilia Zandalasini",
     "TeamId": "1611661331",
-    "TeamAbbreviation": "GSV"
+    "TeamAbbreviation": "GSV",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "18:56",
@@ -2784,7 +2808,8 @@
     "PlayerId": "1628508",
     "PlayerName": "Cecilia Zandalasini",
     "TeamId": "1611661331",
-    "TeamAbbreviation": "GSV"
+    "TeamAbbreviation": "GSV",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "15:36",
@@ -2856,7 +2881,8 @@
     "PlayerId": "1628508",
     "PlayerName": "Cecilia Zandalasini",
     "TeamId": "1611661331",
-    "TeamAbbreviation": "GSV"
+    "TeamAbbreviation": "GSV",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "17:43",
@@ -2944,7 +2970,8 @@
     "PlayerId": "1628508",
     "PlayerName": "Cecilia Zandalasini",
     "TeamId": "1611661331",
-    "TeamAbbreviation": "GSV"
+    "TeamAbbreviation": "GSV",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "20:18",
@@ -3027,7 +3054,8 @@
     "PlayerId": "1628508",
     "PlayerName": "Cecilia Zandalasini",
     "TeamId": "1611661331",
-    "TeamAbbreviation": "GSV"
+    "TeamAbbreviation": "GSV",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "25:29",
@@ -3120,7 +3148,8 @@
     "PlayerId": "1628508",
     "PlayerName": "Cecilia Zandalasini",
     "TeamId": "1611661331",
-    "TeamAbbreviation": "GSV"
+    "TeamAbbreviation": "GSV",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "21:39",
@@ -3218,7 +3247,8 @@
     "PlayerId": "1628508",
     "PlayerName": "Cecilia Zandalasini",
     "TeamId": "1611661331",
-    "TeamAbbreviation": "GSV"
+    "TeamAbbreviation": "GSV",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "17:01",
@@ -3317,7 +3347,8 @@
     "PlayerId": "1628508",
     "PlayerName": "Cecilia Zandalasini",
     "TeamId": "1611661331",
-    "TeamAbbreviation": "GSV"
+    "TeamAbbreviation": "GSV",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "20:32",
@@ -3416,7 +3447,8 @@
     "PlayerId": "1628508",
     "PlayerName": "Cecilia Zandalasini",
     "TeamId": "1611661331",
-    "TeamAbbreviation": "GSV"
+    "TeamAbbreviation": "GSV",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "11:52",
@@ -3485,7 +3517,8 @@
     "PlayerId": "1628881",
     "PlayerName": "Monique Billings",
     "TeamId": "1611661325",
-    "TeamAbbreviation": "IND"
+    "TeamAbbreviation": "IND",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "08:59",
@@ -3547,7 +3580,8 @@
     "PlayerId": "1628881",
     "PlayerName": "Monique Billings",
     "TeamId": "1611661325",
-    "TeamAbbreviation": "IND"
+    "TeamAbbreviation": "IND",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "08:10",
@@ -3587,7 +3621,8 @@
     "PlayerId": "1628881",
     "PlayerName": "Monique Billings",
     "TeamId": "1611661325",
-    "TeamAbbreviation": "IND"
+    "TeamAbbreviation": "IND",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "36:14",
@@ -3691,7 +3726,8 @@
     "PlayerId": "1628886",
     "PlayerName": "Jordin Canada",
     "TeamId": "1611661330",
-    "TeamAbbreviation": "ATL"
+    "TeamAbbreviation": "ATL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "35:02",
@@ -3841,7 +3877,8 @@
     "PlayerId": "1628886",
     "PlayerName": "Jordin Canada",
     "TeamId": "1611661330",
-    "TeamAbbreviation": "ATL"
+    "TeamAbbreviation": "ATL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "31:53",
@@ -3987,7 +4024,8 @@
     "PlayerId": "1628886",
     "PlayerName": "Jordin Canada",
     "TeamId": "1611661330",
-    "TeamAbbreviation": "ATL"
+    "TeamAbbreviation": "ATL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "39:20",
@@ -4115,7 +4153,8 @@
     "PlayerId": "1628886",
     "PlayerName": "Jordin Canada",
     "TeamId": "1611661330",
-    "TeamAbbreviation": "ATL"
+    "TeamAbbreviation": "ATL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "38:26",
@@ -4232,7 +4271,8 @@
     "PlayerId": "1628886",
     "PlayerName": "Jordin Canada",
     "TeamId": "1611661330",
-    "TeamAbbreviation": "ATL"
+    "TeamAbbreviation": "ATL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "38:18",
@@ -4331,7 +4371,8 @@
     "PlayerId": "1628886",
     "PlayerName": "Jordin Canada",
     "TeamId": "1611661330",
-    "TeamAbbreviation": "ATL"
+    "TeamAbbreviation": "ATL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "35:39",
@@ -4469,7 +4510,8 @@
     "PlayerId": "1628886",
     "PlayerName": "Jordin Canada",
     "TeamId": "1611661330",
-    "TeamAbbreviation": "ATL"
+    "TeamAbbreviation": "ATL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "32:41",
@@ -4584,7 +4626,8 @@
     "PlayerId": "1628886",
     "PlayerName": "Jordin Canada",
     "TeamId": "1611661330",
-    "TeamAbbreviation": "ATL"
+    "TeamAbbreviation": "ATL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "12:47",
@@ -4648,7 +4691,8 @@
     "PlayerId": "1628899",
     "PlayerName": "Myisha Hines-Allen",
     "TeamId": "1611661325",
-    "TeamAbbreviation": "IND"
+    "TeamAbbreviation": "IND",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "19:35",
@@ -4750,7 +4794,8 @@
     "PlayerId": "1628899",
     "PlayerName": "Myisha Hines-Allen",
     "TeamId": "1611661325",
-    "TeamAbbreviation": "IND"
+    "TeamAbbreviation": "IND",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "30:23",
@@ -4865,7 +4910,8 @@
     "PlayerId": "1628909",
     "PlayerName": "Kelsey Mitchell",
     "TeamId": "1611661325",
-    "TeamAbbreviation": "IND"
+    "TeamAbbreviation": "IND",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "34:19",
@@ -4983,7 +5029,8 @@
     "PlayerId": "1628909",
     "PlayerName": "Kelsey Mitchell",
     "TeamId": "1611661325",
-    "TeamAbbreviation": "IND"
+    "TeamAbbreviation": "IND",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "36:13",
@@ -5123,7 +5170,8 @@
     "PlayerId": "1628909",
     "PlayerName": "Kelsey Mitchell",
     "TeamId": "1611661325",
-    "TeamAbbreviation": "IND"
+    "TeamAbbreviation": "IND",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "03:58",
@@ -5155,7 +5203,8 @@
     "PlayerId": "1628920",
     "PlayerName": "Mercedes Russell",
     "TeamId": "1611661325",
-    "TeamAbbreviation": "IND"
+    "TeamAbbreviation": "IND",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "27:24",
@@ -5278,7 +5327,8 @@
     "PlayerId": "1628931",
     "PlayerName": "Gabby Williams",
     "TeamId": "1611661331",
-    "TeamAbbreviation": "GSV"
+    "TeamAbbreviation": "GSV",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "36:54",
@@ -5409,7 +5459,8 @@
     "PlayerId": "1628931",
     "PlayerName": "Gabby Williams",
     "TeamId": "1611661331",
-    "TeamAbbreviation": "GSV"
+    "TeamAbbreviation": "GSV",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "30:36",
@@ -5547,7 +5598,8 @@
     "PlayerId": "1628931",
     "PlayerName": "Gabby Williams",
     "TeamId": "1611661331",
-    "TeamAbbreviation": "GSV"
+    "TeamAbbreviation": "GSV",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "33:34",
@@ -5690,7 +5742,8 @@
     "PlayerId": "1628931",
     "PlayerName": "Gabby Williams",
     "TeamId": "1611661331",
-    "TeamAbbreviation": "GSV"
+    "TeamAbbreviation": "GSV",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "29:41",
@@ -5794,7 +5847,8 @@
     "PlayerId": "1628931",
     "PlayerName": "Gabby Williams",
     "TeamId": "1611661331",
-    "TeamAbbreviation": "GSV"
+    "TeamAbbreviation": "GSV",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "28:32",
@@ -5901,7 +5955,8 @@
     "PlayerId": "1628931",
     "PlayerName": "Gabby Williams",
     "TeamId": "1611661331",
-    "TeamAbbreviation": "GSV"
+    "TeamAbbreviation": "GSV",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "33:21",
@@ -6026,7 +6081,8 @@
     "PlayerId": "1628931",
     "PlayerName": "Gabby Williams",
     "TeamId": "1611661331",
-    "TeamAbbreviation": "GSV"
+    "TeamAbbreviation": "GSV",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "26:57",
@@ -6143,7 +6199,8 @@
     "PlayerId": "1628931",
     "PlayerName": "Gabby Williams",
     "TeamId": "1611661331",
-    "TeamAbbreviation": "GSV"
+    "TeamAbbreviation": "GSV",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "34:21",
@@ -6265,7 +6322,8 @@
     "PlayerId": "1628931",
     "PlayerName": "Gabby Williams",
     "TeamId": "1611661331",
-    "TeamAbbreviation": "GSV"
+    "TeamAbbreviation": "GSV",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "34:54",
@@ -6428,7 +6486,8 @@
     "PlayerId": "1628932",
     "PlayerName": "A'ja Wilson",
     "TeamId": "1611661319",
-    "TeamAbbreviation": "LVA"
+    "TeamAbbreviation": "LVA",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "34:04",
@@ -6542,7 +6601,8 @@
     "PlayerId": "1628932",
     "PlayerName": "A'ja Wilson",
     "TeamId": "1611661319",
-    "TeamAbbreviation": "LVA"
+    "TeamAbbreviation": "LVA",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "37:05",
@@ -6685,7 +6745,8 @@
     "PlayerId": "1628932",
     "PlayerName": "A'ja Wilson",
     "TeamId": "1611661319",
-    "TeamAbbreviation": "LVA"
+    "TeamAbbreviation": "LVA",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "35:14",
@@ -6782,7 +6843,8 @@
     "PlayerId": "1628932",
     "PlayerName": "A'ja Wilson",
     "TeamId": "1611661319",
-    "TeamAbbreviation": "LVA"
+    "TeamAbbreviation": "LVA",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "36:05",
@@ -6905,7 +6967,8 @@
     "PlayerId": "1628932",
     "PlayerName": "A'ja Wilson",
     "TeamId": "1611661319",
-    "TeamAbbreviation": "LVA"
+    "TeamAbbreviation": "LVA",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "42:30",
@@ -7050,7 +7113,8 @@
     "PlayerId": "1628932",
     "PlayerName": "A'ja Wilson",
     "TeamId": "1611661319",
-    "TeamAbbreviation": "LVA"
+    "TeamAbbreviation": "LVA",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "28:09",
@@ -7159,7 +7223,8 @@
     "PlayerId": "1629477",
     "PlayerName": "Sabrina Ionescu",
     "TeamId": "1611661313",
-    "TeamAbbreviation": "NYL"
+    "TeamAbbreviation": "NYL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "32:53",
@@ -7284,7 +7349,8 @@
     "PlayerId": "1629477",
     "PlayerName": "Sabrina Ionescu",
     "TeamId": "1611661313",
-    "TeamAbbreviation": "NYL"
+    "TeamAbbreviation": "NYL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "33:57",
@@ -7408,7 +7474,8 @@
     "PlayerId": "1629477",
     "PlayerName": "Sabrina Ionescu",
     "TeamId": "1611661313",
-    "TeamAbbreviation": "NYL"
+    "TeamAbbreviation": "NYL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "38:21",
@@ -7522,7 +7589,8 @@
     "PlayerId": "1629477",
     "PlayerName": "Sabrina Ionescu",
     "TeamId": "1611661313",
-    "TeamAbbreviation": "NYL"
+    "TeamAbbreviation": "NYL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "35:44",
@@ -7633,7 +7701,8 @@
     "PlayerId": "1629477",
     "PlayerName": "Sabrina Ionescu",
     "TeamId": "1611661313",
-    "TeamAbbreviation": "NYL"
+    "TeamAbbreviation": "NYL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "01:05",
@@ -7654,7 +7723,8 @@
     "PlayerId": "1629480",
     "PlayerName": "Kalani Brown",
     "TeamId": "1611661319",
-    "TeamAbbreviation": "LVA"
+    "TeamAbbreviation": "LVA",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "00:44",
@@ -7672,7 +7742,8 @@
     "PlayerId": "1629480",
     "PlayerName": "Kalani Brown",
     "TeamId": "1611661319",
-    "TeamAbbreviation": "LVA"
+    "TeamAbbreviation": "LVA",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "02:41",
@@ -7745,7 +7816,8 @@
     "PlayerId": "1629480",
     "PlayerName": "Kalani Brown",
     "TeamId": "1611661319",
-    "TeamAbbreviation": "LVA"
+    "TeamAbbreviation": "LVA",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "23:37",
@@ -7836,7 +7908,8 @@
     "PlayerId": "1629480",
     "PlayerName": "Kalani Brown",
     "TeamId": "1611661319",
-    "TeamAbbreviation": "LVA"
+    "TeamAbbreviation": "LVA",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "17:18",
@@ -7947,7 +8020,8 @@
     "PlayerId": "1629480",
     "PlayerName": "Kalani Brown",
     "TeamId": "1611661319",
-    "TeamAbbreviation": "LVA"
+    "TeamAbbreviation": "LVA",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "25:27",
@@ -8028,7 +8102,8 @@
     "PlayerId": "1629481",
     "PlayerName": "Arike Ogunbowale",
     "TeamId": "1611661321",
-    "TeamAbbreviation": "DAL"
+    "TeamAbbreviation": "DAL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "42:02",
@@ -8192,7 +8267,8 @@
     "PlayerId": "1629481",
     "PlayerName": "Arike Ogunbowale",
     "TeamId": "1611661321",
-    "TeamAbbreviation": "DAL"
+    "TeamAbbreviation": "DAL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "33:56",
@@ -8343,7 +8419,8 @@
     "PlayerId": "1629481",
     "PlayerName": "Arike Ogunbowale",
     "TeamId": "1611661321",
-    "TeamAbbreviation": "DAL"
+    "TeamAbbreviation": "DAL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "28:43",
@@ -8415,7 +8492,8 @@
     "PlayerId": "1629482",
     "PlayerName": "Sophie Cunningham",
     "TeamId": "1611661325",
-    "TeamAbbreviation": "IND"
+    "TeamAbbreviation": "IND",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "23:28",
@@ -8491,7 +8569,8 @@
     "PlayerId": "1629482",
     "PlayerName": "Sophie Cunningham",
     "TeamId": "1611661325",
-    "TeamAbbreviation": "IND"
+    "TeamAbbreviation": "IND",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "23:46",
@@ -8565,7 +8644,8 @@
     "PlayerId": "1629482",
     "PlayerName": "Sophie Cunningham",
     "TeamId": "1611661325",
-    "TeamAbbreviation": "IND"
+    "TeamAbbreviation": "IND",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "32:54",
@@ -8679,7 +8759,8 @@
     "PlayerId": "1629483",
     "PlayerName": "Napheesa Collier",
     "TeamId": "1611661324",
-    "TeamAbbreviation": "MIN"
+    "TeamAbbreviation": "MIN",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "33:09",
@@ -8789,7 +8870,8 @@
     "PlayerId": "1629483",
     "PlayerName": "Napheesa Collier",
     "TeamId": "1611661324",
-    "TeamAbbreviation": "MIN"
+    "TeamAbbreviation": "MIN",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "08:17",
@@ -8818,7 +8900,8 @@
     "PlayerId": "1629488",
     "PlayerName": "Brianna Turner",
     "TeamId": "1611661319",
-    "TeamAbbreviation": "LVA"
+    "TeamAbbreviation": "LVA",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "07:49",
@@ -8856,7 +8939,8 @@
     "PlayerId": "1629488",
     "PlayerName": "Brianna Turner",
     "TeamId": "1611661319",
-    "TeamAbbreviation": "LVA"
+    "TeamAbbreviation": "LVA",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "16:43",
@@ -8893,7 +8977,8 @@
     "PlayerId": "1629488",
     "PlayerName": "Brianna Turner",
     "TeamId": "1611661319",
-    "TeamAbbreviation": "LVA"
+    "TeamAbbreviation": "LVA",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "17:29",
@@ -8956,7 +9041,8 @@
     "PlayerId": "1629488",
     "PlayerName": "Brianna Turner",
     "TeamId": "1611661319",
-    "TeamAbbreviation": "LVA"
+    "TeamAbbreviation": "LVA",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "11:19",
@@ -8983,7 +9069,8 @@
     "PlayerId": "1629488",
     "PlayerName": "Brianna Turner",
     "TeamId": "1611661319",
-    "TeamAbbreviation": "LVA"
+    "TeamAbbreviation": "LVA",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "05:12",
@@ -9010,7 +9097,8 @@
     "PlayerId": "1629488",
     "PlayerName": "Brianna Turner",
     "TeamId": "1611661319",
-    "TeamAbbreviation": "LVA"
+    "TeamAbbreviation": "LVA",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "15:09",
@@ -9092,7 +9180,8 @@
     "PlayerId": "1629490",
     "PlayerName": "Kitija Laksa",
     "TeamId": "1611661321",
-    "TeamAbbreviation": "DAL"
+    "TeamAbbreviation": "DAL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "33:47",
@@ -9222,7 +9311,8 @@
     "PlayerId": "1629498",
     "PlayerName": "Jackie Young",
     "TeamId": "1611661319",
-    "TeamAbbreviation": "LVA"
+    "TeamAbbreviation": "LVA",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "36:18",
@@ -9357,7 +9447,8 @@
     "PlayerId": "1629498",
     "PlayerName": "Jackie Young",
     "TeamId": "1611661319",
-    "TeamAbbreviation": "LVA"
+    "TeamAbbreviation": "LVA",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "40:00",
@@ -9467,7 +9558,8 @@
     "PlayerId": "1629498",
     "PlayerName": "Jackie Young",
     "TeamId": "1611661319",
-    "TeamAbbreviation": "LVA"
+    "TeamAbbreviation": "LVA",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "38:25",
@@ -9559,7 +9651,8 @@
     "PlayerId": "1629498",
     "PlayerName": "Jackie Young",
     "TeamId": "1611661319",
-    "TeamAbbreviation": "LVA"
+    "TeamAbbreviation": "LVA",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "36:51",
@@ -9656,7 +9749,8 @@
     "PlayerId": "1629498",
     "PlayerName": "Jackie Young",
     "TeamId": "1611661319",
-    "TeamAbbreviation": "LVA"
+    "TeamAbbreviation": "LVA",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "41:39",
@@ -9796,7 +9890,8 @@
     "PlayerId": "1629498",
     "PlayerName": "Jackie Young",
     "TeamId": "1611661319",
-    "TeamAbbreviation": "LVA"
+    "TeamAbbreviation": "LVA",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "09:34",
@@ -9848,7 +9943,8 @@
     "PlayerId": "1629546",
     "PlayerName": "Marine Johannes",
     "TeamId": "1611661313",
-    "TeamAbbreviation": "NYL"
+    "TeamAbbreviation": "NYL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "08:27",
@@ -9923,7 +10019,8 @@
     "PlayerId": "1629546",
     "PlayerName": "Marine Johannes",
     "TeamId": "1611661313",
-    "TeamAbbreviation": "NYL"
+    "TeamAbbreviation": "NYL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "09:21",
@@ -9976,7 +10073,8 @@
     "PlayerId": "1629546",
     "PlayerName": "Marine Johannes",
     "TeamId": "1611661313",
-    "TeamAbbreviation": "NYL"
+    "TeamAbbreviation": "NYL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "03:13",
@@ -10007,7 +10105,8 @@
     "PlayerId": "1629546",
     "PlayerName": "Marine Johannes",
     "TeamId": "1611661313",
-    "TeamAbbreviation": "NYL"
+    "TeamAbbreviation": "NYL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "04:16",
@@ -10034,7 +10133,8 @@
     "PlayerId": "1629546",
     "PlayerName": "Marine Johannes",
     "TeamId": "1611661313",
-    "TeamAbbreviation": "NYL"
+    "TeamAbbreviation": "NYL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "11:38",
@@ -10117,7 +10217,8 @@
     "PlayerId": "1629566",
     "PlayerName": "Han Xu",
     "TeamId": "1611661313",
-    "TeamAbbreviation": "NYL"
+    "TeamAbbreviation": "NYL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "08:29",
@@ -10179,7 +10280,8 @@
     "PlayerId": "1629566",
     "PlayerName": "Han Xu",
     "TeamId": "1611661313",
-    "TeamAbbreviation": "NYL"
+    "TeamAbbreviation": "NYL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "08:21",
@@ -10241,7 +10343,8 @@
     "PlayerId": "1629566",
     "PlayerName": "Han Xu",
     "TeamId": "1611661313",
-    "TeamAbbreviation": "NYL"
+    "TeamAbbreviation": "NYL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "06:56",
@@ -10277,7 +10380,8 @@
     "PlayerId": "1629566",
     "PlayerName": "Han Xu",
     "TeamId": "1611661313",
-    "TeamAbbreviation": "NYL"
+    "TeamAbbreviation": "NYL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "05:32",
@@ -10322,7 +10426,8 @@
     "PlayerId": "1629566",
     "PlayerName": "Han Xu",
     "TeamId": "1611661313",
-    "TeamAbbreviation": "NYL"
+    "TeamAbbreviation": "NYL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "16:05",
@@ -10413,7 +10518,8 @@
     "PlayerId": "1629574",
     "PlayerName": "Li Yueru",
     "TeamId": "1611661321",
-    "TeamAbbreviation": "DAL"
+    "TeamAbbreviation": "DAL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "19:08",
@@ -10502,7 +10608,8 @@
     "PlayerId": "1630097",
     "PlayerName": "Kaila Charles",
     "TeamId": "1611661331",
-    "TeamAbbreviation": "GSV"
+    "TeamAbbreviation": "GSV",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "22:55",
@@ -10629,7 +10736,8 @@
     "PlayerId": "1630097",
     "PlayerName": "Kaila Charles",
     "TeamId": "1611661331",
-    "TeamAbbreviation": "GSV"
+    "TeamAbbreviation": "GSV",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "27:30",
@@ -10755,7 +10863,8 @@
     "PlayerId": "1630097",
     "PlayerName": "Kaila Charles",
     "TeamId": "1611661331",
-    "TeamAbbreviation": "GSV"
+    "TeamAbbreviation": "GSV",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "17:40",
@@ -10844,7 +10953,8 @@
     "PlayerId": "1630097",
     "PlayerName": "Kaila Charles",
     "TeamId": "1611661331",
-    "TeamAbbreviation": "GSV"
+    "TeamAbbreviation": "GSV",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "16:58",
@@ -10922,7 +11032,8 @@
     "PlayerId": "1630097",
     "PlayerName": "Kaila Charles",
     "TeamId": "1611661331",
-    "TeamAbbreviation": "GSV"
+    "TeamAbbreviation": "GSV",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "16:51",
@@ -11023,7 +11134,8 @@
     "PlayerId": "1630097",
     "PlayerName": "Kaila Charles",
     "TeamId": "1611661331",
-    "TeamAbbreviation": "GSV"
+    "TeamAbbreviation": "GSV",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "30:16",
@@ -11148,7 +11260,8 @@
     "PlayerId": "1630097",
     "PlayerName": "Kaila Charles",
     "TeamId": "1611661331",
-    "TeamAbbreviation": "GSV"
+    "TeamAbbreviation": "GSV",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "26:19",
@@ -11247,7 +11360,8 @@
     "PlayerId": "1630097",
     "PlayerName": "Kaila Charles",
     "TeamId": "1611661331",
-    "TeamAbbreviation": "GSV"
+    "TeamAbbreviation": "GSV",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "14:45",
@@ -11317,7 +11431,8 @@
     "PlayerId": "1630097",
     "PlayerName": "Kaila Charles",
     "TeamId": "1611661331",
-    "TeamAbbreviation": "GSV"
+    "TeamAbbreviation": "GSV",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "34:14",
@@ -11442,7 +11557,8 @@
     "PlayerId": "1630142",
     "PlayerName": "Leonie Fiebich",
     "TeamId": "1611661313",
-    "TeamAbbreviation": "NYL"
+    "TeamAbbreviation": "NYL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "29:15",
@@ -11543,7 +11659,8 @@
     "PlayerId": "1630142",
     "PlayerName": "Leonie Fiebich",
     "TeamId": "1611661313",
-    "TeamAbbreviation": "NYL"
+    "TeamAbbreviation": "NYL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "35:41",
@@ -11640,7 +11757,8 @@
     "PlayerId": "1630142",
     "PlayerName": "Leonie Fiebich",
     "TeamId": "1611661313",
-    "TeamAbbreviation": "NYL"
+    "TeamAbbreviation": "NYL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "42:47",
@@ -11725,7 +11843,8 @@
     "PlayerId": "1630142",
     "PlayerName": "Leonie Fiebich",
     "TeamId": "1611661313",
-    "TeamAbbreviation": "NYL"
+    "TeamAbbreviation": "NYL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "36:53",
@@ -11856,7 +11975,8 @@
     "PlayerId": "1630142",
     "PlayerName": "Leonie Fiebich",
     "TeamId": "1611661313",
-    "TeamAbbreviation": "NYL"
+    "TeamAbbreviation": "NYL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "02:29",
@@ -11886,7 +12006,8 @@
     "PlayerId": "1630384",
     "PlayerName": "Raquel Carrera",
     "TeamId": "1611661313",
-    "TeamAbbreviation": "NYL"
+    "TeamAbbreviation": "NYL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "20:07",
@@ -11953,7 +12074,8 @@
     "PlayerId": "1630386",
     "PlayerName": "Awak Kuier",
     "TeamId": "1611661321",
-    "TeamAbbreviation": "DAL"
+    "TeamAbbreviation": "DAL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "28:45",
@@ -12060,7 +12182,8 @@
     "PlayerId": "1630386",
     "PlayerName": "Awak Kuier",
     "TeamId": "1611661321",
-    "TeamAbbreviation": "DAL"
+    "TeamAbbreviation": "DAL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "33:16",
@@ -12142,7 +12265,8 @@
     "PlayerId": "1630386",
     "PlayerName": "Awak Kuier",
     "TeamId": "1611661321",
-    "TeamAbbreviation": "DAL"
+    "TeamAbbreviation": "DAL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "17:39",
@@ -12231,7 +12355,8 @@
     "PlayerId": "1630389",
     "PlayerName": "Dana Evans",
     "TeamId": "1611661319",
-    "TeamAbbreviation": "LVA"
+    "TeamAbbreviation": "LVA",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "26:43",
@@ -12324,7 +12449,8 @@
     "PlayerId": "1630389",
     "PlayerName": "Dana Evans",
     "TeamId": "1611661319",
-    "TeamAbbreviation": "LVA"
+    "TeamAbbreviation": "LVA",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "26:00",
@@ -12436,7 +12562,8 @@
     "PlayerId": "1630446",
     "PlayerName": "Michaela Onyenwere",
     "TeamId": "1611661322",
-    "TeamAbbreviation": "WAS"
+    "TeamAbbreviation": "WAS",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "18:13",
@@ -12558,7 +12685,8 @@
     "PlayerId": "1630446",
     "PlayerName": "Michaela Onyenwere",
     "TeamId": "1611661322",
-    "TeamAbbreviation": "WAS"
+    "TeamAbbreviation": "WAS",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "01:59",
@@ -12600,7 +12728,8 @@
     "PlayerId": "1630462",
     "PlayerName": "Aari McDonald",
     "TeamId": "1611661324",
-    "TeamAbbreviation": "MIN"
+    "TeamAbbreviation": "MIN",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "14:16",
@@ -12689,7 +12818,8 @@
     "PlayerId": "1630462",
     "PlayerName": "Aari McDonald",
     "TeamId": "1611661324",
-    "TeamAbbreviation": "MIN"
+    "TeamAbbreviation": "MIN",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "02:29",
@@ -12738,7 +12868,8 @@
     "PlayerId": "1630469",
     "PlayerName": "Marine Fauthoux",
     "TeamId": "1611661313",
-    "TeamAbbreviation": "NYL"
+    "TeamAbbreviation": "NYL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "11:31",
@@ -12790,7 +12921,8 @@
     "PlayerId": "1630469",
     "PlayerName": "Marine Fauthoux",
     "TeamId": "1611661313",
-    "TeamAbbreviation": "NYL"
+    "TeamAbbreviation": "NYL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "30:50",
@@ -12924,7 +13056,8 @@
     "PlayerId": "1630469",
     "PlayerName": "Marine Fauthoux",
     "TeamId": "1611661313",
-    "TeamAbbreviation": "NYL"
+    "TeamAbbreviation": "NYL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "31:40",
@@ -13024,7 +13157,8 @@
     "PlayerId": "1630469",
     "PlayerName": "Marine Fauthoux",
     "TeamId": "1611661313",
-    "TeamAbbreviation": "NYL"
+    "TeamAbbreviation": "NYL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "12:27",
@@ -13062,7 +13196,8 @@
     "PlayerId": "1630471",
     "PlayerName": "Maya Caldwell",
     "TeamId": "1611661324",
-    "TeamAbbreviation": "MIN"
+    "TeamAbbreviation": "MIN",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "08:24",
@@ -13117,7 +13252,8 @@
     "PlayerId": "1630471",
     "PlayerName": "Maya Caldwell",
     "TeamId": "1611661324",
-    "TeamAbbreviation": "MIN"
+    "TeamAbbreviation": "MIN",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "02:29",
@@ -13145,7 +13281,8 @@
     "PlayerId": "1630993",
     "PlayerName": "Anneli Maley",
     "TeamId": "1611661313",
-    "TeamAbbreviation": "NYL"
+    "TeamAbbreviation": "NYL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "01:51",
@@ -13169,7 +13306,8 @@
     "PlayerId": "1631006",
     "PlayerName": "Kierstan Bell",
     "TeamId": "1611661319",
-    "TeamAbbreviation": "LVA"
+    "TeamAbbreviation": "LVA",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "00:44",
@@ -13187,7 +13325,8 @@
     "PlayerId": "1631006",
     "PlayerName": "Kierstan Bell",
     "TeamId": "1611661319",
-    "TeamAbbreviation": "LVA"
+    "TeamAbbreviation": "LVA",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "20:49",
@@ -13246,7 +13385,8 @@
     "PlayerId": "1631006",
     "PlayerName": "Kierstan Bell",
     "TeamId": "1611661319",
-    "TeamAbbreviation": "LVA"
+    "TeamAbbreviation": "LVA",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "00:50",
@@ -13267,7 +13407,8 @@
     "PlayerId": "1631006",
     "PlayerName": "Kierstan Bell",
     "TeamId": "1611661319",
-    "TeamAbbreviation": "LVA"
+    "TeamAbbreviation": "LVA",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "22:53",
@@ -13370,7 +13511,8 @@
     "PlayerId": "1631007",
     "PlayerName": "Veronica Burton",
     "TeamId": "1611661331",
-    "TeamAbbreviation": "GSV"
+    "TeamAbbreviation": "GSV",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "36:43",
@@ -13496,7 +13638,8 @@
     "PlayerId": "1631007",
     "PlayerName": "Veronica Burton",
     "TeamId": "1611661331",
-    "TeamAbbreviation": "GSV"
+    "TeamAbbreviation": "GSV",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "36:39",
@@ -13638,7 +13781,8 @@
     "PlayerId": "1631007",
     "PlayerName": "Veronica Burton",
     "TeamId": "1611661331",
-    "TeamAbbreviation": "GSV"
+    "TeamAbbreviation": "GSV",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "17:39",
@@ -13720,7 +13864,8 @@
     "PlayerId": "1631007",
     "PlayerName": "Veronica Burton",
     "TeamId": "1611661331",
-    "TeamAbbreviation": "GSV"
+    "TeamAbbreviation": "GSV",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "27:34",
@@ -13798,7 +13943,8 @@
     "PlayerId": "1631007",
     "PlayerName": "Veronica Burton",
     "TeamId": "1611661331",
-    "TeamAbbreviation": "GSV"
+    "TeamAbbreviation": "GSV",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "37:06",
@@ -13904,7 +14050,8 @@
     "PlayerId": "1631007",
     "PlayerName": "Veronica Burton",
     "TeamId": "1611661331",
-    "TeamAbbreviation": "GSV"
+    "TeamAbbreviation": "GSV",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "29:40",
@@ -14010,7 +14157,8 @@
     "PlayerId": "1631007",
     "PlayerName": "Veronica Burton",
     "TeamId": "1611661331",
-    "TeamAbbreviation": "GSV"
+    "TeamAbbreviation": "GSV",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "24:13",
@@ -14149,7 +14297,8 @@
     "PlayerId": "1631007",
     "PlayerName": "Veronica Burton",
     "TeamId": "1611661331",
-    "TeamAbbreviation": "GSV"
+    "TeamAbbreviation": "GSV",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "29:23",
@@ -14249,7 +14398,8 @@
     "PlayerId": "1631007",
     "PlayerName": "Veronica Burton",
     "TeamId": "1611661331",
-    "TeamAbbreviation": "GSV"
+    "TeamAbbreviation": "GSV",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "39:03",
@@ -14360,7 +14510,8 @@
     "PlayerId": "1631009",
     "PlayerName": "Rhyne Howard",
     "TeamId": "1611661330",
-    "TeamAbbreviation": "ATL"
+    "TeamAbbreviation": "ATL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "30:08",
@@ -14490,7 +14641,8 @@
     "PlayerId": "1631009",
     "PlayerName": "Rhyne Howard",
     "TeamId": "1611661330",
-    "TeamAbbreviation": "ATL"
+    "TeamAbbreviation": "ATL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "40:00",
@@ -14627,7 +14779,8 @@
     "PlayerId": "1631009",
     "PlayerName": "Rhyne Howard",
     "TeamId": "1611661330",
-    "TeamAbbreviation": "ATL"
+    "TeamAbbreviation": "ATL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "43:38",
@@ -14767,7 +14920,8 @@
     "PlayerId": "1631009",
     "PlayerName": "Rhyne Howard",
     "TeamId": "1611661330",
-    "TeamAbbreviation": "ATL"
+    "TeamAbbreviation": "ATL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "38:15",
@@ -14893,7 +15047,8 @@
     "PlayerId": "1631009",
     "PlayerName": "Rhyne Howard",
     "TeamId": "1611661330",
-    "TeamAbbreviation": "ATL"
+    "TeamAbbreviation": "ATL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "38:03",
@@ -15007,7 +15162,8 @@
     "PlayerId": "1631009",
     "PlayerName": "Rhyne Howard",
     "TeamId": "1611661330",
-    "TeamAbbreviation": "ATL"
+    "TeamAbbreviation": "ATL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "27:28",
@@ -15113,7 +15269,8 @@
     "PlayerId": "1631009",
     "PlayerName": "Rhyne Howard",
     "TeamId": "1611661330",
-    "TeamAbbreviation": "ATL"
+    "TeamAbbreviation": "ATL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "27:07",
@@ -15245,7 +15402,8 @@
     "PlayerId": "1631009",
     "PlayerName": "Rhyne Howard",
     "TeamId": "1611661330",
-    "TeamAbbreviation": "ATL"
+    "TeamAbbreviation": "ATL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "01:04",
@@ -15278,7 +15436,8 @@
     "PlayerId": "1631021",
     "PlayerName": "Sika Kone",
     "TeamId": "1611661330",
-    "TeamAbbreviation": "ATL"
+    "TeamAbbreviation": "ATL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "01:36",
@@ -15362,7 +15521,8 @@
     "PlayerId": "1631021",
     "PlayerName": "Sika Kone",
     "TeamId": "1611661330",
-    "TeamAbbreviation": "ATL"
+    "TeamAbbreviation": "ATL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "33:33",
@@ -15470,7 +15630,8 @@
     "PlayerId": "1631022",
     "PlayerName": "Shakira Austin",
     "TeamId": "1611661322",
-    "TeamAbbreviation": "WAS"
+    "TeamAbbreviation": "WAS",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "32:30",
@@ -15579,7 +15740,8 @@
     "PlayerId": "1631022",
     "PlayerName": "Shakira Austin",
     "TeamId": "1611661322",
-    "TeamAbbreviation": "WAS"
+    "TeamAbbreviation": "WAS",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "20:31",
@@ -15662,7 +15824,8 @@
     "PlayerId": "1631044",
     "PlayerName": "Naz Hillmon",
     "TeamId": "1611661330",
-    "TeamAbbreviation": "ATL"
+    "TeamAbbreviation": "ATL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "33:17",
@@ -15766,7 +15929,8 @@
     "PlayerId": "1631044",
     "PlayerName": "Naz Hillmon",
     "TeamId": "1611661330",
-    "TeamAbbreviation": "ATL"
+    "TeamAbbreviation": "ATL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "36:38",
@@ -15842,7 +16006,8 @@
     "PlayerId": "1631044",
     "PlayerName": "Naz Hillmon",
     "TeamId": "1611661330",
-    "TeamAbbreviation": "ATL"
+    "TeamAbbreviation": "ATL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "43:30",
@@ -15952,7 +16117,8 @@
     "PlayerId": "1631044",
     "PlayerName": "Naz Hillmon",
     "TeamId": "1611661330",
-    "TeamAbbreviation": "ATL"
+    "TeamAbbreviation": "ATL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "31:45",
@@ -16038,7 +16204,8 @@
     "PlayerId": "1631044",
     "PlayerName": "Naz Hillmon",
     "TeamId": "1611661330",
-    "TeamAbbreviation": "ATL"
+    "TeamAbbreviation": "ATL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "29:46",
@@ -16112,7 +16279,8 @@
     "PlayerId": "1631044",
     "PlayerName": "Naz Hillmon",
     "TeamId": "1611661330",
-    "TeamAbbreviation": "ATL"
+    "TeamAbbreviation": "ATL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "30:23",
@@ -16184,7 +16352,8 @@
     "PlayerId": "1631044",
     "PlayerName": "Naz Hillmon",
     "TeamId": "1611661330",
-    "TeamAbbreviation": "ATL"
+    "TeamAbbreviation": "ATL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "26:59",
@@ -16297,7 +16466,8 @@
     "PlayerId": "1631044",
     "PlayerName": "Naz Hillmon",
     "TeamId": "1611661330",
-    "TeamAbbreviation": "ATL"
+    "TeamAbbreviation": "ATL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "02:29",
@@ -16382,7 +16552,8 @@
     "PlayerId": "1631064",
     "PlayerName": "Chloe Bibby",
     "TeamId": "1611661324",
-    "TeamAbbreviation": "MIN"
+    "TeamAbbreviation": "MIN",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "17:32",
@@ -16457,7 +16628,8 @@
     "PlayerId": "1631086",
     "PlayerName": "Lexie Hull",
     "TeamId": "1611661325",
-    "TeamAbbreviation": "IND"
+    "TeamAbbreviation": "IND",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "26:22",
@@ -16545,7 +16717,8 @@
     "PlayerId": "1631086",
     "PlayerName": "Lexie Hull",
     "TeamId": "1611661325",
-    "TeamAbbreviation": "IND"
+    "TeamAbbreviation": "IND",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "13:27",
@@ -16589,7 +16762,8 @@
     "PlayerId": "1631086",
     "PlayerName": "Lexie Hull",
     "TeamId": "1611661325",
-    "TeamAbbreviation": "IND"
+    "TeamAbbreviation": "IND",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "29:02",
@@ -16694,7 +16868,8 @@
     "PlayerId": "1631136",
     "PlayerName": "Pauline Astier",
     "TeamId": "1611661313",
-    "TeamAbbreviation": "NYL"
+    "TeamAbbreviation": "NYL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "33:11",
@@ -16798,7 +16973,8 @@
     "PlayerId": "1631136",
     "PlayerName": "Pauline Astier",
     "TeamId": "1611661313",
-    "TeamAbbreviation": "NYL"
+    "TeamAbbreviation": "NYL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "21:14",
@@ -16901,7 +17077,8 @@
     "PlayerId": "1631136",
     "PlayerName": "Pauline Astier",
     "TeamId": "1611661313",
-    "TeamAbbreviation": "NYL"
+    "TeamAbbreviation": "NYL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "14:05",
@@ -16973,7 +17150,8 @@
     "PlayerId": "1631136",
     "PlayerName": "Pauline Astier",
     "TeamId": "1611661313",
-    "TeamAbbreviation": "NYL"
+    "TeamAbbreviation": "NYL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "08:20",
@@ -17006,7 +17184,8 @@
     "PlayerId": "1631136",
     "PlayerName": "Pauline Astier",
     "TeamId": "1611661313",
-    "TeamAbbreviation": "NYL"
+    "TeamAbbreviation": "NYL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "25:02",
@@ -17131,7 +17310,8 @@
     "PlayerId": "1641648",
     "PlayerName": "Aliyah Boston",
     "TeamId": "1611661325",
-    "TeamAbbreviation": "IND"
+    "TeamAbbreviation": "IND",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "29:52",
@@ -17255,7 +17435,8 @@
     "PlayerId": "1641648",
     "PlayerName": "Aliyah Boston",
     "TeamId": "1611661325",
-    "TeamAbbreviation": "IND"
+    "TeamAbbreviation": "IND",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "31:31",
@@ -17393,7 +17574,8 @@
     "PlayerId": "1641648",
     "PlayerName": "Aliyah Boston",
     "TeamId": "1611661325",
-    "TeamAbbreviation": "IND"
+    "TeamAbbreviation": "IND",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "06:21",
@@ -17442,7 +17624,8 @@
     "PlayerId": "1641650",
     "PlayerName": "Haley Jones",
     "TeamId": "1611661321",
-    "TeamAbbreviation": "DAL"
+    "TeamAbbreviation": "DAL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "20:45",
@@ -17552,7 +17735,8 @@
     "PlayerId": "1641652",
     "PlayerName": "Maddy Siegrist",
     "TeamId": "1611661321",
-    "TeamAbbreviation": "DAL"
+    "TeamAbbreviation": "DAL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "09:38",
@@ -17603,7 +17787,8 @@
     "PlayerId": "1641652",
     "PlayerName": "Maddy Siegrist",
     "TeamId": "1611661321",
-    "TeamAbbreviation": "DAL"
+    "TeamAbbreviation": "DAL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "09:56",
@@ -17647,7 +17832,8 @@
     "PlayerId": "1641652",
     "PlayerName": "Maddy Siegrist",
     "TeamId": "1611661321",
-    "TeamAbbreviation": "DAL"
+    "TeamAbbreviation": "DAL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "06:04",
@@ -17688,7 +17874,8 @@
     "PlayerId": "1641656",
     "PlayerName": "Laeticia Amihere",
     "TeamId": "1611661331",
-    "TeamAbbreviation": "GSV"
+    "TeamAbbreviation": "GSV",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "14:12",
@@ -17768,7 +17955,8 @@
     "PlayerId": "1641656",
     "PlayerName": "Laeticia Amihere",
     "TeamId": "1611661331",
-    "TeamAbbreviation": "GSV"
+    "TeamAbbreviation": "GSV",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "08:16",
@@ -17831,7 +18019,8 @@
     "PlayerId": "1641656",
     "PlayerName": "Laeticia Amihere",
     "TeamId": "1611661331",
-    "TeamAbbreviation": "GSV"
+    "TeamAbbreviation": "GSV",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "01:59",
@@ -17858,7 +18047,8 @@
     "PlayerId": "1641656",
     "PlayerName": "Laeticia Amihere",
     "TeamId": "1611661331",
-    "TeamAbbreviation": "GSV"
+    "TeamAbbreviation": "GSV",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "07:44",
@@ -17896,7 +18086,8 @@
     "PlayerId": "1641657",
     "PlayerName": "Dorka Juhasz",
     "TeamId": "1611661324",
-    "TeamAbbreviation": "MIN"
+    "TeamAbbreviation": "MIN",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "11:07",
@@ -17921,7 +18112,8 @@
     "PlayerId": "1641657",
     "PlayerName": "Dorka Juhasz",
     "TeamId": "1611661324",
-    "TeamAbbreviation": "MIN"
+    "TeamAbbreviation": "MIN",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "34:21",
@@ -18053,7 +18245,8 @@
     "PlayerId": "1642286",
     "PlayerName": "Caitlin Clark",
     "TeamId": "1611661325",
-    "TeamAbbreviation": "IND"
+    "TeamAbbreviation": "IND",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "33:19",
@@ -18180,7 +18373,8 @@
     "PlayerId": "1642286",
     "PlayerName": "Caitlin Clark",
     "TeamId": "1611661325",
-    "TeamAbbreviation": "IND"
+    "TeamAbbreviation": "IND",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "36:42",
@@ -18307,7 +18501,8 @@
     "PlayerId": "1642286",
     "PlayerName": "Caitlin Clark",
     "TeamId": "1611661325",
-    "TeamAbbreviation": "IND"
+    "TeamAbbreviation": "IND",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "30:27",
@@ -18451,7 +18646,8 @@
     "PlayerId": "1642291",
     "PlayerName": "Angel Reese",
     "TeamId": "1611661330",
-    "TeamAbbreviation": "ATL"
+    "TeamAbbreviation": "ATL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "27:53",
@@ -18556,7 +18752,8 @@
     "PlayerId": "1642291",
     "PlayerName": "Angel Reese",
     "TeamId": "1611661330",
-    "TeamAbbreviation": "ATL"
+    "TeamAbbreviation": "ATL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "33:47",
@@ -18682,7 +18879,8 @@
     "PlayerId": "1642291",
     "PlayerName": "Angel Reese",
     "TeamId": "1611661330",
-    "TeamAbbreviation": "ATL"
+    "TeamAbbreviation": "ATL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "39:06",
@@ -18834,7 +19032,8 @@
     "PlayerId": "1642291",
     "PlayerName": "Angel Reese",
     "TeamId": "1611661330",
-    "TeamAbbreviation": "ATL"
+    "TeamAbbreviation": "ATL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "37:28",
@@ -18987,7 +19186,8 @@
     "PlayerId": "1642291",
     "PlayerName": "Angel Reese",
     "TeamId": "1611661330",
-    "TeamAbbreviation": "ATL"
+    "TeamAbbreviation": "ATL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "34:52",
@@ -19111,7 +19311,8 @@
     "PlayerId": "1642291",
     "PlayerName": "Angel Reese",
     "TeamId": "1611661330",
-    "TeamAbbreviation": "ATL"
+    "TeamAbbreviation": "ATL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "33:48",
@@ -19272,7 +19473,8 @@
     "PlayerId": "1642291",
     "PlayerName": "Angel Reese",
     "TeamId": "1611661330",
-    "TeamAbbreviation": "ATL"
+    "TeamAbbreviation": "ATL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "34:25",
@@ -19408,7 +19610,8 @@
     "PlayerId": "1642291",
     "PlayerName": "Angel Reese",
     "TeamId": "1611661330",
-    "TeamAbbreviation": "ATL"
+    "TeamAbbreviation": "ATL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "21:02",
@@ -19489,7 +19692,8 @@
     "PlayerId": "1642767",
     "PlayerName": "Janelle Salaun",
     "TeamId": "1611661331",
-    "TeamAbbreviation": "GSV"
+    "TeamAbbreviation": "GSV",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "30:06",
@@ -19612,7 +19816,8 @@
     "PlayerId": "1642767",
     "PlayerName": "Janelle Salaun",
     "TeamId": "1611661331",
-    "TeamAbbreviation": "GSV"
+    "TeamAbbreviation": "GSV",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "07:33",
@@ -19666,7 +19871,8 @@
     "PlayerId": "1642767",
     "PlayerName": "Janelle Salaun",
     "TeamId": "1611661331",
-    "TeamAbbreviation": "GSV"
+    "TeamAbbreviation": "GSV",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "05:58",
@@ -19706,7 +19912,8 @@
     "PlayerId": "1642767",
     "PlayerName": "Janelle Salaun",
     "TeamId": "1611661331",
-    "TeamAbbreviation": "GSV"
+    "TeamAbbreviation": "GSV",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "03:57",
@@ -19759,7 +19966,8 @@
     "PlayerId": "1642767",
     "PlayerName": "Janelle Salaun",
     "TeamId": "1611661331",
-    "TeamAbbreviation": "GSV"
+    "TeamAbbreviation": "GSV",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "09:38",
@@ -19812,7 +20020,8 @@
     "PlayerId": "1642767",
     "PlayerName": "Janelle Salaun",
     "TeamId": "1611661331",
-    "TeamAbbreviation": "GSV"
+    "TeamAbbreviation": "GSV",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "04:42",
@@ -19840,7 +20049,8 @@
     "PlayerId": "1642767",
     "PlayerName": "Janelle Salaun",
     "TeamId": "1611661331",
-    "TeamAbbreviation": "GSV"
+    "TeamAbbreviation": "GSV",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "04:14",
@@ -19883,7 +20093,8 @@
     "PlayerId": "1642767",
     "PlayerName": "Janelle Salaun",
     "TeamId": "1611661331",
-    "TeamAbbreviation": "GSV"
+    "TeamAbbreviation": "GSV",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "12:01",
@@ -19997,7 +20208,8 @@
     "PlayerId": "1642767",
     "PlayerName": "Janelle Salaun",
     "TeamId": "1611661331",
-    "TeamAbbreviation": "GSV"
+    "TeamAbbreviation": "GSV",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "13:24",
@@ -20073,7 +20285,8 @@
     "PlayerId": "1642769",
     "PlayerName": "Mai Yamamoto",
     "TeamId": "1611661319",
-    "TeamAbbreviation": "LVA"
+    "TeamAbbreviation": "LVA",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "09:48",
@@ -20122,7 +20335,8 @@
     "PlayerId": "1642769",
     "PlayerName": "Mai Yamamoto",
     "TeamId": "1611661319",
-    "TeamAbbreviation": "LVA"
+    "TeamAbbreviation": "LVA",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "08:57",
@@ -20169,7 +20383,8 @@
     "PlayerId": "1642769",
     "PlayerName": "Mai Yamamoto",
     "TeamId": "1611661319",
-    "TeamAbbreviation": "LVA"
+    "TeamAbbreviation": "LVA",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "18:56",
@@ -20249,7 +20464,8 @@
     "PlayerId": "1642769",
     "PlayerName": "Mai Yamamoto",
     "TeamId": "1611661319",
-    "TeamAbbreviation": "LVA"
+    "TeamAbbreviation": "LVA",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "03:34",
@@ -20281,7 +20497,8 @@
     "PlayerId": "1642769",
     "PlayerName": "Mai Yamamoto",
     "TeamId": "1611661319",
-    "TeamAbbreviation": "LVA"
+    "TeamAbbreviation": "LVA",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "24:16",
@@ -20395,7 +20612,8 @@
     "PlayerId": "1642781",
     "PlayerName": "Georgia Amoore",
     "TeamId": "1611661322",
-    "TeamAbbreviation": "WAS"
+    "TeamAbbreviation": "WAS",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "28:15",
@@ -20486,7 +20704,8 @@
     "PlayerId": "1642781",
     "PlayerName": "Georgia Amoore",
     "TeamId": "1611661322",
-    "TeamAbbreviation": "WAS"
+    "TeamAbbreviation": "WAS",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "25:03",
@@ -20602,7 +20821,8 @@
     "PlayerId": "1642784",
     "PlayerName": "Paige Bueckers",
     "TeamId": "1611661321",
-    "TeamAbbreviation": "DAL"
+    "TeamAbbreviation": "DAL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "43:21",
@@ -20717,7 +20937,8 @@
     "PlayerId": "1642784",
     "PlayerName": "Paige Bueckers",
     "TeamId": "1611661321",
-    "TeamAbbreviation": "DAL"
+    "TeamAbbreviation": "DAL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "38:06",
@@ -20828,7 +21049,8 @@
     "PlayerId": "1642784",
     "PlayerName": "Paige Bueckers",
     "TeamId": "1611661321",
-    "TeamAbbreviation": "DAL"
+    "TeamAbbreviation": "DAL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "35:05",
@@ -20971,7 +21193,8 @@
     "PlayerId": "1642785",
     "PlayerName": "Sonia Citron",
     "TeamId": "1611661322",
-    "TeamAbbreviation": "WAS"
+    "TeamAbbreviation": "WAS",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "37:56",
@@ -21098,7 +21321,8 @@
     "PlayerId": "1642785",
     "PlayerName": "Sonia Citron",
     "TeamId": "1611661322",
-    "TeamAbbreviation": "WAS"
+    "TeamAbbreviation": "WAS",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "22:40",
@@ -21226,7 +21450,8 @@
     "PlayerId": "1642792",
     "PlayerName": "Kiki Iriafen",
     "TeamId": "1611661322",
-    "TeamAbbreviation": "WAS"
+    "TeamAbbreviation": "WAS",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "35:27",
@@ -21369,7 +21594,8 @@
     "PlayerId": "1642792",
     "PlayerName": "Kiki Iriafen",
     "TeamId": "1611661322",
-    "TeamAbbreviation": "WAS"
+    "TeamAbbreviation": "WAS",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "12:56",
@@ -21456,7 +21682,8 @@
     "PlayerId": "1642793",
     "PlayerName": "Aziaha James",
     "TeamId": "1611661321",
-    "TeamAbbreviation": "DAL"
+    "TeamAbbreviation": "DAL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "18:20",
@@ -21558,7 +21785,8 @@
     "PlayerId": "1642793",
     "PlayerName": "Aziaha James",
     "TeamId": "1611661321",
-    "TeamAbbreviation": "DAL"
+    "TeamAbbreviation": "DAL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "07:51",
@@ -21618,7 +21846,8 @@
     "PlayerId": "1642793",
     "PlayerName": "Aziaha James",
     "TeamId": "1611661321",
-    "TeamAbbreviation": "DAL"
+    "TeamAbbreviation": "DAL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "03:06",
@@ -21660,7 +21889,8 @@
     "PlayerId": "1642794",
     "PlayerName": "Juste Jocyte",
     "TeamId": "1611661331",
-    "TeamAbbreviation": "GSV"
+    "TeamAbbreviation": "GSV",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "01:59",
@@ -21682,7 +21912,8 @@
     "PlayerId": "1642794",
     "PlayerName": "Juste Jocyte",
     "TeamId": "1611661331",
-    "TeamAbbreviation": "GSV"
+    "TeamAbbreviation": "GSV",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "03:46",
@@ -21701,7 +21932,8 @@
     "PlayerId": "1642804",
     "PlayerName": "Te-Hina Paopao",
     "TeamId": "1611661330",
-    "TeamAbbreviation": "ATL"
+    "TeamAbbreviation": "ATL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "02:32",
@@ -21720,7 +21952,8 @@
     "PlayerId": "1642804",
     "PlayerName": "Te-Hina Paopao",
     "TeamId": "1611661330",
-    "TeamAbbreviation": "ATL"
+    "TeamAbbreviation": "ATL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "03:59",
@@ -21774,7 +22007,8 @@
     "PlayerId": "1642804",
     "PlayerName": "Te-Hina Paopao",
     "TeamId": "1611661330",
-    "TeamAbbreviation": "ATL"
+    "TeamAbbreviation": "ATL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "10:24",
@@ -21849,7 +22083,8 @@
     "PlayerId": "1642804",
     "PlayerName": "Te-Hina Paopao",
     "TeamId": "1611661330",
-    "TeamAbbreviation": "ATL"
+    "TeamAbbreviation": "ATL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "02:49",
@@ -21879,7 +22114,8 @@
     "PlayerId": "1642804",
     "PlayerName": "Te-Hina Paopao",
     "TeamId": "1611661330",
-    "TeamAbbreviation": "ATL"
+    "TeamAbbreviation": "ATL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "01:36",
@@ -21917,7 +22153,8 @@
     "PlayerId": "1642804",
     "PlayerName": "Te-Hina Paopao",
     "TeamId": "1611661330",
-    "TeamAbbreviation": "ATL"
+    "TeamAbbreviation": "ATL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "24:43",
@@ -22000,7 +22237,8 @@
     "PlayerId": "1642815",
     "PlayerName": "Makayla Timpson",
     "TeamId": "1611661325",
-    "TeamAbbreviation": "IND"
+    "TeamAbbreviation": "IND",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "09:11",
@@ -22066,7 +22304,8 @@
     "PlayerId": "1642815",
     "PlayerName": "Makayla Timpson",
     "TeamId": "1611661325",
-    "TeamAbbreviation": "IND"
+    "TeamAbbreviation": "IND",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "11:46",
@@ -22154,7 +22393,8 @@
     "PlayerId": "1642815",
     "PlayerName": "Makayla Timpson",
     "TeamId": "1611661325",
-    "TeamAbbreviation": "IND"
+    "TeamAbbreviation": "IND",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "17:07",
@@ -22263,7 +22503,8 @@
     "PlayerId": "1642822",
     "PlayerName": "Kaitlyn Chen",
     "TeamId": "1611661331",
-    "TeamAbbreviation": "GSV"
+    "TeamAbbreviation": "GSV",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "08:16",
@@ -22323,7 +22564,8 @@
     "PlayerId": "1642822",
     "PlayerName": "Kaitlyn Chen",
     "TeamId": "1611661331",
-    "TeamAbbreviation": "GSV"
+    "TeamAbbreviation": "GSV",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "06:52",
@@ -22371,7 +22613,8 @@
     "PlayerId": "1642822",
     "PlayerName": "Kaitlyn Chen",
     "TeamId": "1611661331",
-    "TeamAbbreviation": "GSV"
+    "TeamAbbreviation": "GSV",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "22:21",
@@ -22483,7 +22726,8 @@
     "PlayerId": "1642822",
     "PlayerName": "Kaitlyn Chen",
     "TeamId": "1611661331",
-    "TeamAbbreviation": "GSV"
+    "TeamAbbreviation": "GSV",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "12:25",
@@ -22553,7 +22797,8 @@
     "PlayerId": "1642822",
     "PlayerName": "Kaitlyn Chen",
     "TeamId": "1611661331",
-    "TeamAbbreviation": "GSV"
+    "TeamAbbreviation": "GSV",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "07:53",
@@ -22633,7 +22878,8 @@
     "PlayerId": "1642822",
     "PlayerName": "Kaitlyn Chen",
     "TeamId": "1611661331",
-    "TeamAbbreviation": "GSV"
+    "TeamAbbreviation": "GSV",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "10:19",
@@ -22701,7 +22947,8 @@
     "PlayerId": "1642822",
     "PlayerName": "Kaitlyn Chen",
     "TeamId": "1611661331",
-    "TeamAbbreviation": "GSV"
+    "TeamAbbreviation": "GSV",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "17:42",
@@ -22779,7 +23026,8 @@
     "PlayerId": "1642822",
     "PlayerName": "Kaitlyn Chen",
     "TeamId": "1611661331",
-    "TeamAbbreviation": "GSV"
+    "TeamAbbreviation": "GSV",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "10:37",
@@ -22844,7 +23092,8 @@
     "PlayerId": "1642822",
     "PlayerName": "Kaitlyn Chen",
     "TeamId": "1611661331",
-    "TeamAbbreviation": "GSV"
+    "TeamAbbreviation": "GSV",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "30:27",
@@ -22963,7 +23212,8 @@
     "PlayerId": "1643426",
     "PlayerName": "Olivia Miles",
     "TeamId": "1611661324",
-    "TeamAbbreviation": "MIN"
+    "TeamAbbreviation": "MIN",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "16:45",
@@ -23053,7 +23303,8 @@
     "PlayerId": "1643426",
     "PlayerName": "Olivia Miles",
     "TeamId": "1611661324",
-    "TeamAbbreviation": "MIN"
+    "TeamAbbreviation": "MIN",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "22:44",
@@ -23128,7 +23379,8 @@
     "PlayerId": "1643427",
     "PlayerName": "Lauren Betts",
     "TeamId": "1611661322",
-    "TeamAbbreviation": "WAS"
+    "TeamAbbreviation": "WAS",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "10:59",
@@ -23176,7 +23428,8 @@
     "PlayerId": "1643427",
     "PlayerName": "Lauren Betts",
     "TeamId": "1611661322",
-    "TeamAbbreviation": "WAS"
+    "TeamAbbreviation": "WAS",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "19:35",
@@ -23256,7 +23509,8 @@
     "PlayerId": "1643430",
     "PlayerName": "Cotie McMahon",
     "TeamId": "1611661322",
-    "TeamAbbreviation": "WAS"
+    "TeamAbbreviation": "WAS",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "01:04",
@@ -23271,7 +23525,8 @@
     "PlayerId": "1643430",
     "PlayerName": "Cotie McMahon",
     "TeamId": "1611661322",
-    "TeamAbbreviation": "WAS"
+    "TeamAbbreviation": "WAS",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "07:02",
@@ -23346,7 +23601,8 @@
     "PlayerId": "1643431",
     "PlayerName": "Madina Okot",
     "TeamId": "1611661330",
-    "TeamAbbreviation": "ATL"
+    "TeamAbbreviation": "ATL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "03:55",
@@ -23378,7 +23634,8 @@
     "PlayerId": "1643431",
     "PlayerName": "Madina Okot",
     "TeamId": "1611661330",
-    "TeamAbbreviation": "ATL"
+    "TeamAbbreviation": "ATL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "02:07",
@@ -23412,7 +23669,8 @@
     "PlayerId": "1643431",
     "PlayerName": "Madina Okot",
     "TeamId": "1611661330",
-    "TeamAbbreviation": "ATL"
+    "TeamAbbreviation": "ATL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "00:57",
@@ -23436,7 +23694,8 @@
     "PlayerId": "1643431",
     "PlayerName": "Madina Okot",
     "TeamId": "1611661330",
-    "TeamAbbreviation": "ATL"
+    "TeamAbbreviation": "ATL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "00:00",
@@ -23453,7 +23712,8 @@
     "PlayerId": "1643431",
     "PlayerName": "Madina Okot",
     "TeamId": "1611661330",
-    "TeamAbbreviation": "ATL"
+    "TeamAbbreviation": "ATL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "00:37",
@@ -23477,7 +23737,8 @@
     "PlayerId": "1643431",
     "PlayerName": "Madina Okot",
     "TeamId": "1611661330",
-    "TeamAbbreviation": "ATL"
+    "TeamAbbreviation": "ATL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "01:36",
@@ -23543,7 +23804,8 @@
     "PlayerId": "1643431",
     "PlayerName": "Madina Okot",
     "TeamId": "1611661330",
-    "TeamAbbreviation": "ATL"
+    "TeamAbbreviation": "ATL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "21:33",
@@ -23638,7 +23900,8 @@
     "PlayerId": "1643433",
     "PlayerName": "Raven Johnson",
     "TeamId": "1611661325",
-    "TeamAbbreviation": "IND"
+    "TeamAbbreviation": "IND",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "21:41",
@@ -23725,7 +23988,8 @@
     "PlayerId": "1643433",
     "PlayerName": "Raven Johnson",
     "TeamId": "1611661325",
-    "TeamAbbreviation": "IND"
+    "TeamAbbreviation": "IND",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "18:48",
@@ -23801,7 +24065,8 @@
     "PlayerId": "1643433",
     "PlayerName": "Raven Johnson",
     "TeamId": "1611661325",
-    "TeamAbbreviation": "IND"
+    "TeamAbbreviation": "IND",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "01:51",
@@ -23837,7 +24102,8 @@
     "PlayerId": "1643453",
     "PlayerName": "Grace VanSlooten",
     "TeamId": "1611661325",
-    "TeamAbbreviation": "IND"
+    "TeamAbbreviation": "IND",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "01:03",
@@ -23853,7 +24119,8 @@
     "PlayerId": "1643455",
     "PlayerName": "Angela Dugalic",
     "TeamId": "1611661322",
-    "TeamAbbreviation": "WAS"
+    "TeamAbbreviation": "WAS",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "01:04",
@@ -23877,7 +24144,8 @@
     "PlayerId": "1643455",
     "PlayerName": "Angela Dugalic",
     "TeamId": "1611661322",
-    "TeamAbbreviation": "WAS"
+    "TeamAbbreviation": "WAS",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "01:04",
@@ -23918,7 +24186,8 @@
     "PlayerId": "1643467",
     "PlayerName": "Cassandre Prosper",
     "TeamId": "1611661322",
-    "TeamAbbreviation": "WAS"
+    "TeamAbbreviation": "WAS",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "21:13",
@@ -24040,7 +24309,8 @@
     "PlayerId": "1643467",
     "PlayerName": "Cassandre Prosper",
     "TeamId": "1611661322",
-    "TeamAbbreviation": "WAS"
+    "TeamAbbreviation": "WAS",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "02:29",
@@ -24062,7 +24332,8 @@
     "PlayerId": "1643489",
     "PlayerName": "Antonia Delaere",
     "TeamId": "1611661324",
-    "TeamAbbreviation": "MIN"
+    "TeamAbbreviation": "MIN",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "01:05",
@@ -24083,7 +24354,8 @@
     "PlayerId": "1643495",
     "PlayerName": "Justine Pissott",
     "TeamId": "1611661319",
-    "TeamAbbreviation": "LVA"
+    "TeamAbbreviation": "LVA",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "00:44",
@@ -24101,7 +24373,8 @@
     "PlayerId": "1643495",
     "PlayerName": "Justine Pissott",
     "TeamId": "1611661319",
-    "TeamAbbreviation": "LVA"
+    "TeamAbbreviation": "LVA",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "01:35",
@@ -24128,7 +24401,8 @@
     "PlayerId": "1643495",
     "PlayerName": "Justine Pissott",
     "TeamId": "1611661319",
-    "TeamAbbreviation": "LVA"
+    "TeamAbbreviation": "LVA",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "02:14",
@@ -24175,7 +24449,8 @@
     "PlayerId": "1643495",
     "PlayerName": "Justine Pissott",
     "TeamId": "1611661319",
-    "TeamAbbreviation": "LVA"
+    "TeamAbbreviation": "LVA",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "10:00",
@@ -24250,7 +24525,8 @@
     "PlayerId": "1643832",
     "PlayerName": "Aminata Gueye",
     "TeamId": "1611661331",
-    "TeamAbbreviation": "GSV"
+    "TeamAbbreviation": "GSV",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "12:32",
@@ -24351,7 +24627,8 @@
     "PlayerId": "1643832",
     "PlayerName": "Aminata Gueye",
     "TeamId": "1611661331",
-    "TeamAbbreviation": "GSV"
+    "TeamAbbreviation": "GSV",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "13:25",
@@ -24446,7 +24723,8 @@
     "PlayerId": "1643832",
     "PlayerName": "Aminata Gueye",
     "TeamId": "1611661331",
-    "TeamAbbreviation": "GSV"
+    "TeamAbbreviation": "GSV",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "07:05",
@@ -24489,7 +24767,8 @@
     "PlayerId": "1643832",
     "PlayerName": "Aminata Gueye",
     "TeamId": "1611661331",
-    "TeamAbbreviation": "GSV"
+    "TeamAbbreviation": "GSV",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "01:20",
@@ -24525,7 +24804,8 @@
     "PlayerId": "1643832",
     "PlayerName": "Aminata Gueye",
     "TeamId": "1611661331",
-    "TeamAbbreviation": "GSV"
+    "TeamAbbreviation": "GSV",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "11:07",
@@ -24602,7 +24882,8 @@
     "PlayerId": "1643832",
     "PlayerName": "Aminata Gueye",
     "TeamId": "1611661331",
-    "TeamAbbreviation": "GSV"
+    "TeamAbbreviation": "GSV",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "21:59",
@@ -24711,7 +24992,8 @@
     "PlayerId": "201886",
     "PlayerName": "DeWanna Bonner",
     "TeamId": "1611661330",
-    "TeamAbbreviation": "ATL"
+    "TeamAbbreviation": "ATL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "13:51",
@@ -24788,7 +25070,8 @@
     "PlayerId": "201886",
     "PlayerName": "DeWanna Bonner",
     "TeamId": "1611661330",
-    "TeamAbbreviation": "ATL"
+    "TeamAbbreviation": "ATL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "30:22",
@@ -24928,7 +25211,8 @@
     "PlayerId": "201886",
     "PlayerName": "DeWanna Bonner",
     "TeamId": "1611661330",
-    "TeamAbbreviation": "ATL"
+    "TeamAbbreviation": "ATL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "34:27",
@@ -25058,7 +25342,8 @@
     "PlayerId": "201886",
     "PlayerName": "DeWanna Bonner",
     "TeamId": "1611661330",
-    "TeamAbbreviation": "ATL"
+    "TeamAbbreviation": "ATL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "31:42",
@@ -25185,7 +25470,8 @@
     "PlayerId": "201886",
     "PlayerName": "DeWanna Bonner",
     "TeamId": "1611661330",
-    "TeamAbbreviation": "ATL"
+    "TeamAbbreviation": "ATL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "13:24",
@@ -25240,7 +25526,8 @@
     "PlayerId": "201886",
     "PlayerName": "DeWanna Bonner",
     "TeamId": "1611661330",
-    "TeamAbbreviation": "ATL"
+    "TeamAbbreviation": "ATL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "19:57",
@@ -25331,7 +25618,8 @@
     "PlayerId": "201886",
     "PlayerName": "DeWanna Bonner",
     "TeamId": "1611661330",
-    "TeamAbbreviation": "ATL"
+    "TeamAbbreviation": "ATL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "17:00",
@@ -25434,7 +25722,8 @@
     "PlayerId": "201886",
     "PlayerName": "DeWanna Bonner",
     "TeamId": "1611661330",
-    "TeamAbbreviation": "ATL"
+    "TeamAbbreviation": "ATL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "19:14",
@@ -25525,7 +25814,8 @@
     "PlayerId": "202252",
     "PlayerName": "Alysha Clark",
     "TeamId": "1611661321",
-    "TeamAbbreviation": "DAL"
+    "TeamAbbreviation": "DAL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "30:56",
@@ -25645,7 +25935,8 @@
     "PlayerId": "202252",
     "PlayerName": "Alysha Clark",
     "TeamId": "1611661321",
-    "TeamAbbreviation": "DAL"
+    "TeamAbbreviation": "DAL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "25:07",
@@ -25723,7 +26014,8 @@
     "PlayerId": "202252",
     "PlayerName": "Alysha Clark",
     "TeamId": "1611661321",
-    "TeamAbbreviation": "DAL"
+    "TeamAbbreviation": "DAL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "18:38",
@@ -25830,7 +26122,8 @@
     "PlayerId": "203026",
     "PlayerName": "Tiffany Hayes",
     "TeamId": "1611661331",
-    "TeamAbbreviation": "GSV"
+    "TeamAbbreviation": "GSV",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "15:11",
@@ -25922,7 +26215,8 @@
     "PlayerId": "203026",
     "PlayerName": "Tiffany Hayes",
     "TeamId": "1611661331",
-    "TeamAbbreviation": "GSV"
+    "TeamAbbreviation": "GSV",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "26:45",
@@ -26059,7 +26353,8 @@
     "PlayerId": "203026",
     "PlayerName": "Tiffany Hayes",
     "TeamId": "1611661331",
-    "TeamAbbreviation": "GSV"
+    "TeamAbbreviation": "GSV",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "11:03",
@@ -26124,7 +26419,8 @@
     "PlayerId": "203026",
     "PlayerName": "Tiffany Hayes",
     "TeamId": "1611661331",
-    "TeamAbbreviation": "GSV"
+    "TeamAbbreviation": "GSV",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "16:31",
@@ -26257,7 +26553,8 @@
     "PlayerId": "203026",
     "PlayerName": "Tiffany Hayes",
     "TeamId": "1611661331",
-    "TeamAbbreviation": "GSV"
+    "TeamAbbreviation": "GSV",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "22:01",
@@ -26370,7 +26667,8 @@
     "PlayerId": "203026",
     "PlayerName": "Tiffany Hayes",
     "TeamId": "1611661331",
-    "TeamAbbreviation": "GSV"
+    "TeamAbbreviation": "GSV",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "23:53",
@@ -26470,7 +26768,8 @@
     "PlayerId": "203026",
     "PlayerName": "Tiffany Hayes",
     "TeamId": "1611661331",
-    "TeamAbbreviation": "GSV"
+    "TeamAbbreviation": "GSV",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "24:51",
@@ -26589,7 +26888,8 @@
     "PlayerId": "203026",
     "PlayerName": "Tiffany Hayes",
     "TeamId": "1611661331",
-    "TeamAbbreviation": "GSV"
+    "TeamAbbreviation": "GSV",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "23:50",
@@ -26694,7 +26994,8 @@
     "PlayerId": "203026",
     "PlayerName": "Tiffany Hayes",
     "TeamId": "1611661331",
-    "TeamAbbreviation": "GSV"
+    "TeamAbbreviation": "GSV",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "10:45",
@@ -26787,7 +27088,8 @@
     "PlayerId": "203822",
     "PlayerName": "Rebekah Gardner",
     "TeamId": "1611661313",
-    "TeamAbbreviation": "NYL"
+    "TeamAbbreviation": "NYL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "05:31",
@@ -26858,7 +27160,8 @@
     "PlayerId": "203822",
     "PlayerName": "Rebekah Gardner",
     "TeamId": "1611661313",
-    "TeamAbbreviation": "NYL"
+    "TeamAbbreviation": "NYL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "03:57",
@@ -26878,7 +27181,8 @@
     "PlayerId": "203822",
     "PlayerName": "Rebekah Gardner",
     "TeamId": "1611661313",
-    "TeamAbbreviation": "NYL"
+    "TeamAbbreviation": "NYL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "05:47",
@@ -26937,7 +27241,8 @@
     "PlayerId": "203822",
     "PlayerName": "Rebekah Gardner",
     "TeamId": "1611661313",
-    "TeamAbbreviation": "NYL"
+    "TeamAbbreviation": "NYL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "14:57",
@@ -27033,7 +27338,8 @@
     "PlayerId": "203824",
     "PlayerName": "Odyssey Sims",
     "TeamId": "1611661321",
-    "TeamAbbreviation": "DAL"
+    "TeamAbbreviation": "DAL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "11:09",
@@ -27112,7 +27418,8 @@
     "PlayerId": "203824",
     "PlayerName": "Odyssey Sims",
     "TeamId": "1611661321",
-    "TeamAbbreviation": "DAL"
+    "TeamAbbreviation": "DAL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "11:55",
@@ -27184,7 +27491,8 @@
     "PlayerId": "203824",
     "PlayerName": "Odyssey Sims",
     "TeamId": "1611661321",
-    "TeamAbbreviation": "DAL"
+    "TeamAbbreviation": "DAL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "37:31",
@@ -27286,7 +27594,8 @@
     "PlayerId": "203825",
     "PlayerName": "Kayla McBride",
     "TeamId": "1611661324",
-    "TeamAbbreviation": "MIN"
+    "TeamAbbreviation": "MIN",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "38:48",
@@ -27404,7 +27713,8 @@
     "PlayerId": "203825",
     "PlayerName": "Kayla McBride",
     "TeamId": "1611661324",
-    "TeamAbbreviation": "MIN"
+    "TeamAbbreviation": "MIN",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "18:13",
@@ -27507,7 +27817,8 @@
     "PlayerId": "203827",
     "PlayerName": "Natasha Howard",
     "TeamId": "1611661324",
-    "TeamAbbreviation": "MIN"
+    "TeamAbbreviation": "MIN",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "15:35",
@@ -27591,7 +27902,8 @@
     "PlayerId": "203827",
     "PlayerName": "Natasha Howard",
     "TeamId": "1611661324",
-    "TeamAbbreviation": "MIN"
+    "TeamAbbreviation": "MIN",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "28:22",
@@ -27692,7 +28004,8 @@
     "PlayerId": "203855",
     "PlayerName": "Stephanie Talbot",
     "TeamId": "1611661319",
-    "TeamAbbreviation": "LVA"
+    "TeamAbbreviation": "LVA",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "27:08",
@@ -27802,7 +28115,8 @@
     "PlayerId": "203855",
     "PlayerName": "Stephanie Talbot",
     "TeamId": "1611661319",
-    "TeamAbbreviation": "LVA"
+    "TeamAbbreviation": "LVA",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "20:56",
@@ -27927,7 +28241,8 @@
     "PlayerId": "203855",
     "PlayerName": "Stephanie Talbot",
     "TeamId": "1611661319",
-    "TeamAbbreviation": "LVA"
+    "TeamAbbreviation": "LVA",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "20:37",
@@ -27980,7 +28295,8 @@
     "PlayerId": "203855",
     "PlayerName": "Stephanie Talbot",
     "TeamId": "1611661319",
-    "TeamAbbreviation": "LVA"
+    "TeamAbbreviation": "LVA",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "18:33",
@@ -28071,7 +28387,8 @@
     "PlayerId": "203866",
     "PlayerName": "Kayla Thornton",
     "TeamId": "1611661331",
-    "TeamAbbreviation": "GSV"
+    "TeamAbbreviation": "GSV",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "30:58",
@@ -28177,7 +28494,8 @@
     "PlayerId": "203866",
     "PlayerName": "Kayla Thornton",
     "TeamId": "1611661331",
-    "TeamAbbreviation": "GSV"
+    "TeamAbbreviation": "GSV",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "13:42",
@@ -28219,7 +28537,8 @@
     "PlayerId": "203866",
     "PlayerName": "Kayla Thornton",
     "TeamId": "1611661331",
-    "TeamAbbreviation": "GSV"
+    "TeamAbbreviation": "GSV",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "34:02",
@@ -28324,7 +28643,8 @@
     "PlayerId": "203866",
     "PlayerName": "Kayla Thornton",
     "TeamId": "1611661331",
-    "TeamAbbreviation": "GSV"
+    "TeamAbbreviation": "GSV",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "30:20",
@@ -28421,7 +28741,8 @@
     "PlayerId": "203866",
     "PlayerName": "Kayla Thornton",
     "TeamId": "1611661331",
-    "TeamAbbreviation": "GSV"
+    "TeamAbbreviation": "GSV",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "32:50",
@@ -28560,7 +28881,8 @@
     "PlayerId": "203866",
     "PlayerName": "Kayla Thornton",
     "TeamId": "1611661331",
-    "TeamAbbreviation": "GSV"
+    "TeamAbbreviation": "GSV",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "07:10",
@@ -28611,7 +28933,8 @@
     "PlayerId": "203866",
     "PlayerName": "Kayla Thornton",
     "TeamId": "1611661331",
-    "TeamAbbreviation": "GSV"
+    "TeamAbbreviation": "GSV",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "18:43",
@@ -28687,7 +29010,8 @@
     "PlayerId": "203866",
     "PlayerName": "Kayla Thornton",
     "TeamId": "1611661331",
-    "TeamAbbreviation": "GSV"
+    "TeamAbbreviation": "GSV",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "13:16",
@@ -28737,7 +29061,8 @@
     "PlayerId": "203866",
     "PlayerName": "Kayla Thornton",
     "TeamId": "1611661331",
-    "TeamAbbreviation": "GSV"
+    "TeamAbbreviation": "GSV",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "05:46",
@@ -28769,7 +29094,8 @@
     "PlayerId": "204296",
     "PlayerName": "Rebecca Allen",
     "TeamId": "1611661313",
-    "TeamAbbreviation": "NYL"
+    "TeamAbbreviation": "NYL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "10:41",
@@ -28827,7 +29153,8 @@
     "PlayerId": "204296",
     "PlayerName": "Rebecca Allen",
     "TeamId": "1611661313",
-    "TeamAbbreviation": "NYL"
+    "TeamAbbreviation": "NYL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "04:19",
@@ -28855,7 +29182,8 @@
     "PlayerId": "204296",
     "PlayerName": "Rebecca Allen",
     "TeamId": "1611661313",
-    "TeamAbbreviation": "NYL"
+    "TeamAbbreviation": "NYL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "01:59",
@@ -28884,7 +29212,8 @@
     "PlayerId": "204296",
     "PlayerName": "Rebecca Allen",
     "TeamId": "1611661313",
-    "TeamAbbreviation": "NYL"
+    "TeamAbbreviation": "NYL",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "27:38",
@@ -28989,7 +29318,8 @@
     "PlayerId": "204319",
     "PlayerName": "Jewell Loyd",
     "TeamId": "1611661319",
-    "TeamAbbreviation": "LVA"
+    "TeamAbbreviation": "LVA",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "30:49",
@@ -29083,7 +29413,8 @@
     "PlayerId": "204319",
     "PlayerName": "Jewell Loyd",
     "TeamId": "1611661319",
-    "TeamAbbreviation": "LVA"
+    "TeamAbbreviation": "LVA",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "35:19",
@@ -29195,7 +29526,8 @@
     "PlayerId": "204319",
     "PlayerName": "Jewell Loyd",
     "TeamId": "1611661319",
-    "TeamAbbreviation": "LVA"
+    "TeamAbbreviation": "LVA",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "16:34",
@@ -29243,7 +29575,8 @@
     "PlayerId": "204319",
     "PlayerName": "Jewell Loyd",
     "TeamId": "1611661319",
-    "TeamAbbreviation": "LVA"
+    "TeamAbbreviation": "LVA",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "22:44",
@@ -29306,7 +29639,8 @@
     "PlayerId": "204319",
     "PlayerName": "Jewell Loyd",
     "TeamId": "1611661319",
-    "TeamAbbreviation": "LVA"
+    "TeamAbbreviation": "LVA",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "15:12",
@@ -29399,7 +29733,8 @@
     "PlayerId": "204323",
     "PlayerName": "Cheyenne Parker-Tyus",
     "TeamId": "1611661319",
-    "TeamAbbreviation": "LVA"
+    "TeamAbbreviation": "LVA",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "14:53",
@@ -29500,7 +29835,8 @@
     "PlayerId": "204323",
     "PlayerName": "Cheyenne Parker-Tyus",
     "TeamId": "1611661319",
-    "TeamAbbreviation": "LVA"
+    "TeamAbbreviation": "LVA",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "21:55",
@@ -29616,7 +29952,8 @@
     "PlayerId": "204323",
     "PlayerName": "Cheyenne Parker-Tyus",
     "TeamId": "1611661319",
-    "TeamAbbreviation": "LVA"
+    "TeamAbbreviation": "LVA",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "12:05",
@@ -29655,7 +29992,8 @@
     "PlayerId": "204323",
     "PlayerName": "Cheyenne Parker-Tyus",
     "TeamId": "1611661319",
-    "TeamAbbreviation": "LVA"
+    "TeamAbbreviation": "LVA",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "07:41",
@@ -29686,7 +30024,8 @@
     "PlayerId": "204323",
     "PlayerName": "Cheyenne Parker-Tyus",
     "TeamId": "1611661319",
-    "TeamAbbreviation": "LVA"
+    "TeamAbbreviation": "LVA",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "05:05",
@@ -29735,7 +30074,8 @@
     "PlayerId": "204323",
     "PlayerName": "Cheyenne Parker-Tyus",
     "TeamId": "1611661319",
-    "TeamAbbreviation": "LVA"
+    "TeamAbbreviation": "LVA",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "12:56",
@@ -29795,7 +30135,8 @@
     "PlayerId": "204335",
     "PlayerName": "Betnijah Laney-Hamilton",
     "TeamId": "1611661322",
-    "TeamAbbreviation": "WAS"
+    "TeamAbbreviation": "WAS",
+    "SeasonType": "Playoffs"
   },
   {
     "Minutes": "11:04",
@@ -29852,6 +30193,1762 @@
     "PlayerId": "204335",
     "PlayerName": "Betnijah Laney-Hamilton",
     "TeamId": "1611661322",
-    "TeamAbbreviation": "WAS"
+    "TeamAbbreviation": "WAS",
+    "SeasonType": "Playoffs"
+  },
+  {
+    "Minutes": "23:55",
+    "PlusMinus": -30,
+    "OffPoss": 43,
+    "DefPoss": 43,
+    "PenaltyOffPoss": 12,
+    "PenaltyDefPoss": 9,
+    "SecondChanceOffPoss": 3,
+    "TotalPoss": 86,
+    "AtRimFGA": 2,
+    "PenaltyAtRimFGA": 1,
+    "ShortMidRangeFGA": 3,
+    "LongMidRangeFGA": 2,
+    "FG2A": 7,
+    "PenaltyFG2A": 1,
+    "Fg2aBlocked": 1,
+    "TwoPtAssists": 1,
+    "ThreePtAssists": 2,
+    "Assists": 3,
+    "Arc3Assists": 2,
+    "ShortMidRangeAssists": 1,
+    "AssistPoints": 8,
+    "DefTwoPtRebounds": 3,
+    "DefRebounds": 3,
+    "Rebounds": 3,
+    "LiveBallTurnovers": 1,
+    "BadPassTurnovers": 1,
+    "DeadBallTurnovers": 2,
+    "Travels": 1,
+    "Turnovers": 3,
+    "ShootingFouls": 2,
+    "Fouls": 3,
+    "PenaltyOffPossExcludingTakeFouls": 12,
+    "Period2Fouls2Minutes": 2,
+    "Period3Fouls3Minutes": 3,
+    "OnOffRtg": 88.37209302325581,
+    "OnDefRtg": 158.13953488372093,
+    "FG2APctBlocked": 0.14285714285714285,
+    "ShortMidRangePctBlocked": 0.3333333333333333,
+    "Usage": 21.27659574468085,
+    "LiveBallTurnoverPct": 0.3333333333333333,
+    "DefTwoPtReboundPct": 0.3,
+    "DefFGReboundPct": 0.15789473684210525,
+    "DefAtRimReboundPct": 1.0,
+    "DefShortMidRangeReboundPct": 0.3333333333333333,
+    "AtRimFrequency": 0.2857142857142857,
+    "ShortMidRangeFrequency": 0.42857142857142855,
+    "LongMidRangeFrequency": 0.2857142857142857,
+    "PenaltyAtRimFrequency": 1.0,
+    "AtRimFG3AFrequency": 0.2857142857142857,
+    "ShotQualityAvg": 0.44065714285714286,
+    "PenaltyShotQualityAvg": 0.4839,
+    "Avg2ptShotDistance": 8.642857142857142,
+    "AtRimOffReboundedPct": 0.5,
+    "ShortMidRangeOffReboundedPct": 0.3333333333333333,
+    "PenaltyOffPossPct": 0.27906976744186046,
+    "Date": "2026-09-27",
+    "GameId": "1042600111",
+    "Team": "DAL",
+    "Opponent": "GSV",
+    "PlayerId": "1629491",
+    "PlayerName": "Jessica Shepard",
+    "TeamId": "1611661321",
+    "TeamAbbreviation": "DAL",
+    "SeasonType": "Playoffs"
+  },
+  {
+    "Minutes": "40:48",
+    "PlusMinus": 5,
+    "OffPoss": 79,
+    "DefPoss": 78,
+    "PenaltyOffPoss": 32,
+    "PenaltyDefPoss": 21,
+    "SecondChanceOffPoss": 7,
+    "TotalPoss": 157,
+    "AtRimFGM": 2,
+    "AtRimFGA": 3,
+    "PenaltyAtRimFGM": 1,
+    "PenaltyAtRimFGA": 2,
+    "ShortMidRangeFGA": 2,
+    "FG2M": 2,
+    "FG2A": 5,
+    "Points": 4,
+    "SecondChanceFG2A": 1,
+    "PenaltyFG2M": 1,
+    "PenaltyFG2A": 3,
+    "PenaltyPoints": 2,
+    "PtsAssisted2s": 2,
+    "PtsUnassisted2s": 2,
+    "TwoPtAssists": 3,
+    "ThreePtAssists": 3,
+    "Assists": 6,
+    "Arc3Assists": 3,
+    "AtRimAssists": 1,
+    "ShortMidRangeAssists": 1,
+    "LongMidRangeAssists": 1,
+    "AssistPoints": 15,
+    "OffThreePtRebounds": 1,
+    "OffTwoPtRebounds": 2,
+    "DefThreePtRebounds": 1,
+    "DefTwoPtRebounds": 4,
+    "DefRebounds": 5,
+    "OffRebounds": 3,
+    "Rebounds": 8,
+    "DeadBallTurnovers": 3,
+    "LostBallOutOfBoundsTurnovers": 1,
+    "Turnovers": 3,
+    "Fouls": 3,
+    "Offensive Fouls": 1,
+    "FoulsDrawn": 1,
+    "FirstChancePoints": 4,
+    "PenaltyPointsExcludingTakeFouls": 2,
+    "PenaltyOffPossExcludingTakeFouls": 31,
+    "Period2Fouls2Minutes": 2,
+    "Period3Fouls3Minutes": 6,
+    "OnOffRtg": 121.51898734177215,
+    "OnDefRtg": 116.66666666666666,
+    "Assisted2sPct": 0.5,
+    "NonPutbacksAssisted2sPct": 0.5,
+    "Fg2Pct": 0.4,
+    "PenaltyFg2Pct": 0.3333333333333333,
+    "EfgPct": 0.4,
+    "PenaltyEfgPct": 0.3333333333333333,
+    "TsPct": 0.4,
+    "PenaltyTsPct": 0.3333333333333333,
+    "Usage": 9.090909090909092,
+    "DefTwoPtReboundPct": 0.17391304347826086,
+    "OffTwoPtReboundPct": 0.1111111111111111,
+    "DefThreePtReboundPct": 0.06666666666666667,
+    "OffThreePtReboundPct": 0.1,
+    "DefFGReboundPct": 0.13157894736842105,
+    "OffFGReboundPct": 0.10714285714285714,
+    "OffShortMidRangeReboundPct": 0.125,
+    "OffLongMidRangeReboundPct": 0.16666666666666666,
+    "OffCorner3ReboundPct": 0.25,
+    "DefShortMidRangeReboundPct": 0.1111111111111111,
+    "DefLongMidRangeReboundPct": 0.3,
+    "DefCorner3ReboundPct": 0.5,
+    "AtRimFrequency": 0.6,
+    "AtRimAccuracy": 0.6666666666666666,
+    "UnblockedAtRimAccuracy": 0.6666666666666666,
+    "AtRimPctAssisted": 0.5,
+    "ShortMidRangeFrequency": 0.4,
+    "PenaltyAtRimFrequency": 0.6666666666666666,
+    "PenaltyAtRimAccuracy": 0.5,
+    "AtRimFG3AFrequency": 0.6,
+    "ShotQualityAvg": 0.43918,
+    "SecondChanceShotQualityAvg": 0.3816,
+    "PenaltyShotQualityAvg": 0.44976666666666665,
+    "PenaltyPointsPct": 0.5,
+    "Avg2ptShotDistance": 4.9799999999999995,
+    "ShortMidRangeOffReboundedPct": 0.5,
+    "PenaltyOffPossPct": 0.4050632911392405,
+    "Date": "2026-09-30",
+    "GameId": "1042600112",
+    "Team": "DAL",
+    "Opponent": "GSV",
+    "PlayerId": "1629491",
+    "PlayerName": "Jessica Shepard",
+    "TeamId": "1611661321",
+    "TeamAbbreviation": "DAL",
+    "SeasonType": "Playoffs"
+  },
+  {
+    "Minutes": "39:50",
+    "PlusMinus": -3,
+    "OffPoss": 67,
+    "DefPoss": 68,
+    "PenaltyOffPoss": 14,
+    "PenaltyDefPoss": 11,
+    "SecondChanceOffPoss": 8,
+    "TotalPoss": 135,
+    "AtRimFGM": 1,
+    "AtRimFGA": 1,
+    "PenaltyAtRimFGM": 1,
+    "PenaltyAtRimFGA": 1,
+    "ShortMidRangeFGM": 4,
+    "ShortMidRangeFGA": 5,
+    "LongMidRangeFGM": 1,
+    "LongMidRangeFGA": 4,
+    "Arc3FGA": 1,
+    "FG2M": 6,
+    "FG2A": 10,
+    "FG3A": 1,
+    "Points": 12,
+    "SecondChanceFG2M": 1,
+    "SecondChanceFG2A": 1,
+    "SecondChancePoints": 2,
+    "PenaltyFG2M": 1,
+    "PenaltyFG2A": 1,
+    "PenaltyPoints": 2,
+    "PtsAssisted2s": 2,
+    "PtsUnassisted2s": 10,
+    "NonHeaveArc3FGA": 1,
+    "Fg2aBlocked": 2,
+    "TwoPtAssists": 1,
+    "ThreePtAssists": 1,
+    "Assists": 2,
+    "Arc3Assists": 1,
+    "ShortMidRangeAssists": 1,
+    "AssistPoints": 5,
+    "OffThreePtRebounds": 1,
+    "OffTwoPtRebounds": 1,
+    "DefThreePtRebounds": 1,
+    "DefTwoPtRebounds": 8,
+    "FTDefRebounds": 1,
+    "DefRebounds": 10,
+    "OffRebounds": 2,
+    "Rebounds": 12,
+    "DeadBallTurnovers": 1,
+    "Turnovers": 1,
+    "Fouls": 2,
+    "Offensive Fouls": 1,
+    "FoulsDrawn": 2,
+    "Offensive Fouls Drawn": 1,
+    "FTA": 1,
+    "2pt And 1 Free Throw Trips": 1,
+    "TwoPtShootingFoulsDrawn": 1,
+    "FirstChancePoints": 10,
+    "PenaltyPointsExcludingTakeFouls": 2,
+    "PenaltyOffPossExcludingTakeFouls": 14,
+    "OnOffRtg": 107.46268656716417,
+    "OnDefRtg": 110.29411764705881,
+    "Assisted2sPct": 0.16666666666666666,
+    "NonPutbacksAssisted2sPct": 0.16666666666666666,
+    "Fg2Pct": 0.6,
+    "SecondChanceFg2Pct": 1.0,
+    "PenaltyFg2Pct": 1.0,
+    "EfgPct": 0.5454545454545454,
+    "SecondChanceEfgPct": 1.0,
+    "PenaltyEfgPct": 1.0,
+    "TsPct": 0.5454545454545454,
+    "SecondChanceTsPct": 1.0,
+    "PenaltyTsPct": 1.0,
+    "FG3APct": 0.09090909090909091,
+    "FG2APctBlocked": 0.2,
+    "ShortMidRangePctBlocked": 0.2,
+    "LongMidRangePctBlocked": 0.25,
+    "Usage": 16.0,
+    "DefFTReboundPct": 0.3333333333333333,
+    "DefTwoPtReboundPct": 0.26666666666666666,
+    "OffTwoPtReboundPct": 0.045454545454545456,
+    "DefThreePtReboundPct": 0.05,
+    "OffThreePtReboundPct": 0.1,
+    "DefFGReboundPct": 0.18,
+    "OffFGReboundPct": 0.0625,
+    "OffLongMidRangeReboundPct": 0.08333333333333333,
+    "OffArc3ReboundPct": 0.1,
+    "DefShortMidRangeReboundPct": 0.2692307692307692,
+    "DefLongMidRangeReboundPct": 0.3333333333333333,
+    "DefArc3ReboundPct": 0.05263157894736842,
+    "AtRimFrequency": 0.09090909090909091,
+    "AtRimAccuracy": 1.0,
+    "UnblockedAtRimAccuracy": 1.0,
+    "ShortMidRangeFrequency": 0.45454545454545453,
+    "ShortMidRangeAccuracy": 0.8,
+    "UnblockedShortMidRangeAccuracy": 1.0,
+    "ShortMidRangePctAssisted": 0.25,
+    "LongMidRangeFrequency": 0.36363636363636365,
+    "LongMidRangeAccuracy": 0.25,
+    "UnblockedLongMidRangeAccuracy": 0.3333333333333333,
+    "Arc3Frequency": 0.09090909090909091,
+    "PenaltyAtRimFrequency": 1.0,
+    "PenaltyAtRimAccuracy": 1.0,
+    "AtRimFG3AFrequency": 0.18181818181818182,
+    "ShotQualityAvg": 0.4047272727272727,
+    "SecondChanceShotQualityAvg": 0.3416,
+    "PenaltyShotQualityAvg": 0.72,
+    "ShootingFoulsDrawnPct": 0.09090909090909091,
+    "TwoPtShootingFoulsDrawnPct": 0.1,
+    "SecondChancePointsPct": 0.16666666666666666,
+    "PenaltyPointsPct": 0.16666666666666666,
+    "Avg2ptShotDistance": 9.8,
+    "Avg3ptShotDistance": 25.9,
+    "ThreePtOffReboundedPct": 1.0,
+    "PenaltyOffPossPct": 0.208955223880597,
+    "Date": "2026-10-02",
+    "GameId": "1042600113",
+    "Team": "DAL",
+    "Opponent": "GSV",
+    "PlayerId": "1629491",
+    "PlayerName": "Jessica Shepard",
+    "TeamId": "1611661321",
+    "TeamAbbreviation": "DAL",
+    "SeasonType": "Playoffs"
+  },
+  {
+    "Minutes": "06:09",
+    "PlusMinus": 5,
+    "OffPoss": 14,
+    "DefPoss": 14,
+    "PenaltyOffPoss": 8,
+    "PenaltyDefPoss": 5,
+    "SecondChanceOffPoss": 2,
+    "TotalPoss": 28,
+    "ShortMidRangeFGA": 1,
+    "FG2A": 1,
+    "PenaltyFG2A": 1,
+    "Fouls": 1,
+    "PenaltyOffPossExcludingTakeFouls": 8,
+    "OnOffRtg": 135.7142857142857,
+    "OnDefRtg": 99.99999999999999,
+    "Usage": 6.25,
+    "ShortMidRangeFrequency": 1.0,
+    "ShotQualityAvg": 0.41,
+    "PenaltyShotQualityAvg": 0.41,
+    "Avg2ptShotDistance": 6.8,
+    "PenaltyOffPossPct": 0.5714285714285714,
+    "Date": "2026-09-27",
+    "GameId": "1042600131",
+    "Team": "ATL",
+    "Opponent": "WAS",
+    "PlayerId": "1642302",
+    "PlayerName": "Isobel Borlase",
+    "TeamId": "1611661330",
+    "TeamAbbreviation": "ATL",
+    "SeasonType": "Playoffs"
+  },
+  {
+    "Minutes": "16:16",
+    "OffPoss": 31,
+    "DefPoss": 32,
+    "PenaltyOffPoss": 16,
+    "PenaltyDefPoss": 16,
+    "SecondChanceOffPoss": 2,
+    "TotalPoss": 63,
+    "AtRimFGM": 1,
+    "AtRimFGA": 2,
+    "LongMidRangeFGM": 1,
+    "LongMidRangeFGA": 1,
+    "FG2M": 2,
+    "FG2A": 3,
+    "FtPoints": 1,
+    "Points": 5,
+    "PenaltyFG2M": 1,
+    "PenaltyFG2A": 1,
+    "PenaltyPoints": 2,
+    "PtsAssisted2s": 4,
+    "ThreePtAssists": 3,
+    "Assists": 3,
+    "Arc3Assists": 2,
+    "Corner3Assists": 1,
+    "AssistPoints": 9,
+    "DefThreePtRebounds": 1,
+    "DefTwoPtRebounds": 1,
+    "DefRebounds": 2,
+    "Rebounds": 2,
+    "ShootingFouls": 2,
+    "Fouls": 3,
+    "FoulsDrawn": 1,
+    "FTA": 1,
+    "2pt And 1 Free Throw Trips": 1,
+    "TwoPtShootingFoulsDrawn": 1,
+    "FirstChancePoints": 5,
+    "PenaltyPointsExcludingTakeFouls": 2,
+    "PenaltyOffPossExcludingTakeFouls": 16,
+    "NonShootingPenaltyNonTakeFouls": 1,
+    "OnOffRtg": 109.6774193548387,
+    "OnDefRtg": 106.25,
+    "Assisted2sPct": 1.0,
+    "NonPutbacksAssisted2sPct": 1.0,
+    "Fg2Pct": 0.6666666666666666,
+    "PenaltyFg2Pct": 1.0,
+    "EfgPct": 0.6666666666666666,
+    "PenaltyEfgPct": 1.0,
+    "TsPct": 0.8333333333333334,
+    "PenaltyTsPct": 1.0,
+    "Usage": 9.09090909090909,
+    "DefTwoPtReboundPct": 0.09090909090909091,
+    "DefThreePtReboundPct": 0.2,
+    "DefFGReboundPct": 0.125,
+    "DefLongMidRangeReboundPct": 1.0,
+    "DefArc3ReboundPct": 0.3333333333333333,
+    "AtRimFrequency": 0.6666666666666666,
+    "AtRimAccuracy": 0.5,
+    "UnblockedAtRimAccuracy": 0.5,
+    "AtRimPctAssisted": 1.0,
+    "LongMidRangeFrequency": 0.3333333333333333,
+    "LongMidRangeAccuracy": 1.0,
+    "UnblockedLongMidRangeAccuracy": 1.0,
+    "LongMidRangePctAssisted": 1.0,
+    "AtRimFG3AFrequency": 0.6666666666666666,
+    "ShotQualityAvg": 0.5644,
+    "PenaltyShotQualityAvg": 0.3867,
+    "ShootingFoulsDrawnPct": 0.3333333333333333,
+    "TwoPtShootingFoulsDrawnPct": 0.3333333333333333,
+    "PenaltyPointsPct": 0.4,
+    "Avg2ptShotDistance": 8.133333333333333,
+    "PenaltyOffPossPct": 0.5161290322580645,
+    "Date": "2026-09-30",
+    "GameId": "1042600132",
+    "Team": "ATL",
+    "Opponent": "WAS",
+    "PlayerId": "1642302",
+    "PlayerName": "Isobel Borlase",
+    "TeamId": "1611661330",
+    "TeamAbbreviation": "ATL",
+    "SeasonType": "Playoffs"
+  },
+  {
+    "Minutes": "10:25",
+    "PlusMinus": 3,
+    "OffPoss": 21,
+    "DefPoss": 22,
+    "PenaltyOffPoss": 9,
+    "SecondChanceOffPoss": 1,
+    "TotalPoss": 43,
+    "Arc3FGA": 1,
+    "FG3A": 1,
+    "FtPoints": 2,
+    "Points": 2,
+    "PenaltyFtPoints": 2,
+    "PenaltyPoints": 2,
+    "NonHeaveArc3FGA": 1,
+    "DefTwoPtRebounds": 1,
+    "DefRebounds": 1,
+    "Rebounds": 1,
+    "LiveBallTurnovers": 1,
+    "LostBallTurnovers": 1,
+    "Turnovers": 1,
+    "PenaltyTurnovers": 1,
+    "FoulsDrawn": 1,
+    "Loose Ball Fouls Drawn": 1,
+    "FTA": 2,
+    "NonShootingFoulsDrawn": 1,
+    "FirstChancePoints": 2,
+    "PenaltyPointsExcludingTakeFouls": 2,
+    "PenaltyOffPossExcludingTakeFouls": 9,
+    "NonShootingPenaltyNonTakeFoulsDrawn": 1,
+    "OnOffRtg": 114.28571428571429,
+    "OnDefRtg": 95.45454545454545,
+    "TsPct": 0.5,
+    "PenaltyTsPct": 1.0,
+    "FG3APct": 1.0,
+    "Usage": 13.636363636363637,
+    "LiveBallTurnoverPct": 1.0,
+    "DefTwoPtReboundPct": 0.14285714285714285,
+    "DefFGReboundPct": 0.1,
+    "DefShortMidRangeReboundPct": 0.5,
+    "Arc3Frequency": 1.0,
+    "AtRimFG3AFrequency": 1.0,
+    "ShotQualityAvg": 0.5451,
+    "PenaltyPointsPct": 1.0,
+    "Avg3ptShotDistance": 24.1,
+    "ThreePtOffReboundedPct": 1.0,
+    "PenaltyOffPossPct": 0.42857142857142855,
+    "Date": "2026-10-04",
+    "GameId": "1042600201",
+    "Team": "ATL",
+    "Opponent": "NYL",
+    "PlayerId": "1642302",
+    "PlayerName": "Isobel Borlase",
+    "TeamId": "1611661330",
+    "TeamAbbreviation": "ATL",
+    "SeasonType": "Playoffs"
+  },
+  {
+    "Minutes": "13:37",
+    "PlusMinus": 1,
+    "OffPoss": 25,
+    "DefPoss": 24,
+    "PenaltyOffPoss": 10,
+    "PenaltyDefPoss": 4,
+    "SecondChanceOffPoss": 8,
+    "TotalPoss": 49,
+    "AtRimFGM": 1,
+    "AtRimFGA": 1,
+    "ShortMidRangeFGA": 2,
+    "LongMidRangeFGA": 1,
+    "Corner3FGM": 1,
+    "Corner3FGA": 1,
+    "SecondChanceCorner3FGM": 1,
+    "SecondChanceCorner3FGA": 1,
+    "Arc3FGM": 2,
+    "Arc3FGA": 4,
+    "SecondChanceArc3FGA": 2,
+    "PenaltyArc3FGM": 1,
+    "PenaltyArc3FGA": 1,
+    "FG2M": 1,
+    "FG2A": 4,
+    "FG3M": 3,
+    "FG3A": 5,
+    "Points": 11,
+    "SecondChanceFG2A": 1,
+    "SecondChanceFG3M": 1,
+    "SecondChanceFG3A": 3,
+    "SecondChancePoints": 3,
+    "PenaltyFG2A": 3,
+    "PenaltyFG3M": 1,
+    "PenaltyFG3A": 1,
+    "PenaltyPoints": 3,
+    "PtsUnassisted2s": 2,
+    "PtsAssisted3s": 9,
+    "NonHeaveArc3FGA": 4,
+    "NonHeaveArc3FGM": 2,
+    "OffThreePtRebounds": 2,
+    "DefThreePtRebounds": 1,
+    "DefTwoPtRebounds": 1,
+    "DefRebounds": 2,
+    "OffRebounds": 2,
+    "Rebounds": 4,
+    "Steals": 1,
+    "LostBallSteals": 1,
+    "ShootingFouls": 1,
+    "Fouls": 3,
+    "FirstChancePoints": 8,
+    "PenaltyPointsExcludingTakeFouls": 3,
+    "PenaltyOffPossExcludingTakeFouls": 10,
+    "Period3Fouls3Minutes": 1,
+    "OnOffRtg": 104.0,
+    "OnDefRtg": 104.16666666666667,
+    "Assisted3sPct": 1.0,
+    "Fg3Pct": 0.6,
+    "SecondChanceFg3Pct": 0.3333333333333333,
+    "PenaltyFg3Pct": 1.0,
+    "NonHeaveFg3Pct": 0.6,
+    "Fg2Pct": 0.25,
+    "EfgPct": 0.6111111111111112,
+    "SecondChanceEfgPct": 0.375,
+    "PenaltyEfgPct": 0.375,
+    "TsPct": 0.6111111111111112,
+    "SecondChanceTsPct": 0.375,
+    "PenaltyTsPct": 0.375,
+    "FG3APct": 0.5555555555555556,
+    "Usage": 25.714285714285715,
+    "DefTwoPtReboundPct": 0.2,
+    "DefThreePtReboundPct": 0.3333333333333333,
+    "OffThreePtReboundPct": 0.2857142857142857,
+    "DefFGReboundPct": 0.25,
+    "OffFGReboundPct": 0.09523809523809523,
+    "OffArc3ReboundPct": 0.3333333333333333,
+    "DefShortMidRangeReboundPct": 0.2,
+    "DefArc3ReboundPct": 0.5,
+    "AtRimFrequency": 0.1111111111111111,
+    "AtRimAccuracy": 1.0,
+    "UnblockedAtRimAccuracy": 1.0,
+    "ShortMidRangeFrequency": 0.2222222222222222,
+    "LongMidRangeFrequency": 0.1111111111111111,
+    "Corner3Frequency": 0.1111111111111111,
+    "Corner3Accuracy": 1.0,
+    "UnblockedCorner3Accuracy": 1.0,
+    "Corner3PctAssisted": 1.0,
+    "Arc3Frequency": 0.4444444444444444,
+    "Arc3Accuracy": 0.5,
+    "UnblockedArc3Accuracy": 0.5,
+    "Arc3PctAssisted": 1.0,
+    "SecondChanceCorner3Frequency": 0.25,
+    "SecondChanceCorner3Accuracy": 1.0,
+    "SecondChanceCorner3PctAssisted": 1.0,
+    "SecondChanceArc3Frequency": 0.5,
+    "PenaltyArc3Frequency": 0.25,
+    "PenaltyArc3Accuracy": 1.0,
+    "AtRimFG3AFrequency": 0.6666666666666666,
+    "NonHeaveArc3Accuracy": 0.5,
+    "ShotQualityAvg": 0.5116222222222222,
+    "SecondChanceShotQualityAvg": 0.4576833333333334,
+    "PenaltyShotQualityAvg": 0.425325,
+    "SecondChancePointsPct": 0.2727272727272727,
+    "PenaltyPointsPct": 0.2727272727272727,
+    "Avg2ptShotDistance": 9.475,
+    "Avg3ptShotDistance": 25.240000000000002,
+    "ShortMidRangeOffReboundedPct": 0.5,
+    "PenaltyOffPossPct": 0.4,
+    "Date": "2026-10-07",
+    "GameId": "1042600202",
+    "Team": "ATL",
+    "Opponent": "NYL",
+    "PlayerId": "1642302",
+    "PlayerName": "Isobel Borlase",
+    "TeamId": "1611661330",
+    "TeamAbbreviation": "ATL",
+    "SeasonType": "Playoffs"
+  },
+  {
+    "Minutes": "19:34",
+    "PlusMinus": -1,
+    "OffPoss": 36,
+    "DefPoss": 36,
+    "PenaltyOffPoss": 18,
+    "PenaltyDefPoss": 12,
+    "SecondChanceOffPoss": 6,
+    "TotalPoss": 72,
+    "ShortMidRangeFGM": 5,
+    "ShortMidRangeFGA": 5,
+    "Arc3FGA": 1,
+    "FG2M": 5,
+    "FG2A": 5,
+    "FG3A": 1,
+    "Points": 10,
+    "SecondChanceFG2M": 1,
+    "SecondChanceFG2A": 1,
+    "SecondChancePoints": 2,
+    "PenaltyFG2M": 3,
+    "PenaltyFG2A": 3,
+    "PenaltyPoints": 6,
+    "PtsAssisted2s": 6,
+    "PtsUnassisted2s": 4,
+    "NonHeaveArc3FGA": 1,
+    "TwoPtAssists": 1,
+    "Assists": 1,
+    "AtRimAssists": 1,
+    "AssistPoints": 2,
+    "DefThreePtRebounds": 2,
+    "DefRebounds": 2,
+    "Rebounds": 2,
+    "Steals": 2,
+    "BadPassSteals": 1,
+    "LostBallSteals": 1,
+    "DeadBallTurnovers": 1,
+    "Travels": 1,
+    "Turnovers": 1,
+    "ShootingFouls": 1,
+    "Fouls": 2,
+    "FoulsDrawn": 1,
+    "Offensive Fouls Drawn": 1,
+    "FirstChancePoints": 8,
+    "PenaltyPointsExcludingTakeFouls": 6,
+    "PenaltyOffPossExcludingTakeFouls": 18,
+    "OnOffRtg": 122.22222222222223,
+    "OnDefRtg": 125.0,
+    "Assisted2sPct": 0.6,
+    "NonPutbacksAssisted2sPct": 0.6,
+    "Fg2Pct": 1.0,
+    "SecondChanceFg2Pct": 1.0,
+    "PenaltyFg2Pct": 1.0,
+    "EfgPct": 0.8333333333333334,
+    "SecondChanceEfgPct": 1.0,
+    "PenaltyEfgPct": 1.0,
+    "TsPct": 0.8333333333333334,
+    "SecondChanceTsPct": 1.0,
+    "PenaltyTsPct": 1.0,
+    "FG3APct": 0.16666666666666666,
+    "Usage": 16.27906976744186,
+    "DefThreePtReboundPct": 0.2222222222222222,
+    "DefFGReboundPct": 0.14285714285714285,
+    "DefArc3ReboundPct": 0.3333333333333333,
+    "ShortMidRangeFrequency": 0.8333333333333334,
+    "ShortMidRangeAccuracy": 1.0,
+    "UnblockedShortMidRangeAccuracy": 1.0,
+    "ShortMidRangePctAssisted": 0.6,
+    "Arc3Frequency": 0.16666666666666666,
+    "AtRimFG3AFrequency": 0.16666666666666666,
+    "ShotQualityAvg": 0.39643333333333336,
+    "SecondChanceShotQualityAvg": 0.4872,
+    "PenaltyShotQualityAvg": 0.38326666666666664,
+    "SecondChancePointsPct": 0.2,
+    "PenaltyPointsPct": 0.6,
+    "Avg2ptShotDistance": 9.1,
+    "Avg3ptShotDistance": 27.0,
+    "PenaltyOffPossPct": 0.5,
+    "Date": "2026-10-09",
+    "GameId": "1042600203",
+    "Team": "ATL",
+    "Opponent": "NYL",
+    "PlayerId": "1642302",
+    "PlayerName": "Isobel Borlase",
+    "TeamId": "1611661330",
+    "TeamAbbreviation": "ATL",
+    "SeasonType": "Playoffs"
+  },
+  {
+    "Minutes": "12:26",
+    "PlusMinus": -3,
+    "OffPoss": 23,
+    "DefPoss": 25,
+    "PenaltyOffPoss": 3,
+    "SecondChanceOffPoss": 2,
+    "TotalPoss": 48,
+    "ShortMidRangeFGM": 2,
+    "ShortMidRangeFGA": 3,
+    "Corner3FGA": 1,
+    "Arc3FGA": 1,
+    "FG2M": 2,
+    "FG2A": 3,
+    "FG3A": 2,
+    "Points": 4,
+    "PtsAssisted2s": 4,
+    "NonHeaveArc3FGA": 1,
+    "TwoPtAssists": 1,
+    "Assists": 1,
+    "AtRimAssists": 1,
+    "AssistPoints": 2,
+    "DefThreePtRebounds": 1,
+    "DefTwoPtRebounds": 1,
+    "DefRebounds": 2,
+    "Rebounds": 2,
+    "Blocked2s": 1,
+    "BlockedAtRim": 1,
+    "Blocks": 1,
+    "RecoveredBlocks": 1,
+    "FirstChancePoints": 4,
+    "PenaltyOffPossExcludingTakeFouls": 3,
+    "OnOffRtg": 100.0,
+    "OnDefRtg": 104.0,
+    "Assisted2sPct": 1.0,
+    "NonPutbacksAssisted2sPct": 1.0,
+    "Fg2Pct": 0.6666666666666666,
+    "EfgPct": 0.4,
+    "TsPct": 0.4,
+    "FG3APct": 0.4,
+    "Usage": 19.23076923076923,
+    "DefTwoPtReboundPct": 0.09090909090909091,
+    "DefThreePtReboundPct": 0.2,
+    "DefFGReboundPct": 0.125,
+    "DefAtRimReboundPct": 0.2,
+    "DefArc3ReboundPct": 0.25,
+    "BlocksRecoveredPct": 1.0,
+    "ShortMidRangeFrequency": 0.6,
+    "ShortMidRangeAccuracy": 0.6666666666666666,
+    "UnblockedShortMidRangeAccuracy": 0.6666666666666666,
+    "ShortMidRangePctAssisted": 1.0,
+    "Corner3Frequency": 0.2,
+    "Arc3Frequency": 0.2,
+    "AtRimFG3AFrequency": 0.4,
+    "ShotQualityAvg": 0.48806000000000005,
+    "Avg2ptShotDistance": 6.033333333333334,
+    "Avg3ptShotDistance": 24.45,
+    "ShortMidRangeOffReboundedPct": 1.0,
+    "PenaltyOffPossPct": 0.13043478260869565,
+    "Date": "2026-10-17",
+    "GameId": "1042600301",
+    "Team": "ATL",
+    "Opponent": "GSV",
+    "PlayerId": "1642302",
+    "PlayerName": "Isobel Borlase",
+    "TeamId": "1611661330",
+    "TeamAbbreviation": "ATL",
+    "SeasonType": "Playoffs"
+  },
+  {
+    "Minutes": "16:55",
+    "PlusMinus": 9,
+    "OffPoss": 32,
+    "DefPoss": 33,
+    "PenaltyOffPoss": 6,
+    "PenaltyDefPoss": 13,
+    "SecondChanceOffPoss": 4,
+    "TotalPoss": 65,
+    "ShortMidRangeFGA": 2,
+    "Arc3FGA": 3,
+    "SecondChanceArc3FGA": 1,
+    "PenaltyArc3FGA": 1,
+    "FG2A": 2,
+    "FG3A": 3,
+    "FtPoints": 2,
+    "Points": 2,
+    "SecondChanceFG3A": 1,
+    "PenaltyFG3A": 1,
+    "PenaltyFtPoints": 2,
+    "PenaltyPoints": 2,
+    "NonHeaveArc3FGA": 3,
+    "Fg2aBlocked": 1,
+    "TwoPtAssists": 1,
+    "Assists": 1,
+    "AtRimAssists": 1,
+    "AssistPoints": 2,
+    "Steals": 1,
+    "BadPassSteals": 1,
+    "LiveBallTurnovers": 1,
+    "LostBallTurnovers": 1,
+    "Turnovers": 1,
+    "Fouls": 1,
+    "FoulsDrawn": 1,
+    "FTA": 2,
+    "TwoPtShootingFoulsDrawn": 1,
+    "Blocked2s": 1,
+    "BlockedShortMidRange": 1,
+    "Blocks": 1,
+    "RecoveredBlocks": 1,
+    "FirstChancePoints": 2,
+    "PenaltyPointsExcludingTakeFouls": 2,
+    "PenaltyOffPossExcludingTakeFouls": 6,
+    "OnOffRtg": 106.25,
+    "OnDefRtg": 75.75757575757575,
+    "TsPct": 0.16666666666666666,
+    "PenaltyTsPct": 0.5,
+    "FG3APct": 0.6,
+    "FG2APctBlocked": 0.5,
+    "ShortMidRangePctBlocked": 0.5,
+    "Usage": 18.42105263157895,
+    "LiveBallTurnoverPct": 1.0,
+    "BlocksRecoveredPct": 1.0,
+    "ShortMidRangeFrequency": 0.4,
+    "Arc3Frequency": 0.6,
+    "SecondChanceArc3Frequency": 1.0,
+    "PenaltyArc3Frequency": 1.0,
+    "AtRimFG3AFrequency": 0.6,
+    "ShotQualityAvg": 0.44184999999999997,
+    "SecondChanceShotQualityAvg": 0.4809,
+    "PenaltyShotQualityAvg": 0.39225,
+    "ShootingFoulsDrawnPct": 0.16666666666666666,
+    "TwoPtShootingFoulsDrawnPct": 0.3333333333333333,
+    "PenaltyPointsPct": 1.0,
+    "Avg2ptShotDistance": 8.25,
+    "Avg3ptShotDistance": 25.333333333333332,
+    "ShortMidRangeOffReboundedPct": 0.5,
+    "ThreePtOffReboundedPct": 0.3333333333333333,
+    "PenaltyOffPossPct": 0.1875,
+    "Date": "2026-10-19",
+    "GameId": "1042600302",
+    "Team": "ATL",
+    "Opponent": "GSV",
+    "PlayerId": "1642302",
+    "PlayerName": "Isobel Borlase",
+    "TeamId": "1611661330",
+    "TeamAbbreviation": "ATL",
+    "SeasonType": "Playoffs"
+  },
+  {
+    "Minutes": "26:15",
+    "PlusMinus": 21,
+    "OffPoss": 53,
+    "DefPoss": 53,
+    "PenaltyOffPoss": 27,
+    "PenaltyDefPoss": 12,
+    "SecondChanceOffPoss": 2,
+    "TotalPoss": 106,
+    "AtRimFGM": 2,
+    "AtRimFGA": 4,
+    "PenaltyAtRimFGM": 2,
+    "PenaltyAtRimFGA": 4,
+    "ShortMidRangeFGM": 2,
+    "ShortMidRangeFGA": 3,
+    "LongMidRangeFGA": 1,
+    "Arc3FGM": 1,
+    "Arc3FGA": 2,
+    "FG2M": 4,
+    "FG2A": 8,
+    "FG3M": 1,
+    "FG3A": 2,
+    "FtPoints": 1,
+    "Points": 12,
+    "PenaltyFG2M": 3,
+    "PenaltyFG2A": 7,
+    "PenaltyFtPoints": 1,
+    "PenaltyPoints": 7,
+    "PtsAssisted2s": 6,
+    "PtsUnassisted2s": 2,
+    "PtsUnassisted3s": 3,
+    "NonHeaveArc3FGA": 2,
+    "NonHeaveArc3FGM": 1,
+    "TwoPtAssists": 2,
+    "Assists": 2,
+    "AtRimAssists": 2,
+    "AssistPoints": 4,
+    "DefThreePtRebounds": 1,
+    "DefTwoPtRebounds": 4,
+    "DefRebounds": 5,
+    "Rebounds": 5,
+    "ShootingFouls": 1,
+    "Fouls": 2,
+    "Loose Ball Fouls": 1,
+    "FoulsDrawn": 2,
+    "Offensive Fouls Drawn": 1,
+    "FTA": 2,
+    "TwoPtShootingFoulsDrawn": 1,
+    "Blocked2s": 1,
+    "BlockedAtRim": 1,
+    "Blocks": 1,
+    "RecoveredBlocks": 1,
+    "FirstChancePoints": 12,
+    "PenaltyPointsExcludingTakeFouls": 7,
+    "PenaltyOffPossExcludingTakeFouls": 27,
+    "OnOffRtg": 128.30188679245282,
+    "OnDefRtg": 88.67924528301886,
+    "Assisted2sPct": 0.75,
+    "NonPutbacksAssisted2sPct": 0.75,
+    "Fg3Pct": 0.5,
+    "NonHeaveFg3Pct": 0.5,
+    "Fg2Pct": 0.5,
+    "PenaltyFg2Pct": 0.42857142857142855,
+    "EfgPct": 0.55,
+    "PenaltyEfgPct": 0.42857142857142855,
+    "TsPct": 0.5454545454545454,
+    "PenaltyTsPct": 0.4375,
+    "FG3APct": 0.2,
+    "Usage": 19.642857142857142,
+    "DefTwoPtReboundPct": 0.23529411764705882,
+    "DefThreePtReboundPct": 0.09090909090909091,
+    "DefFGReboundPct": 0.17857142857142858,
+    "DefAtRimReboundPct": 0.25,
+    "DefShortMidRangeReboundPct": 0.2857142857142857,
+    "DefCorner3ReboundPct": 0.5,
+    "BlocksRecoveredPct": 1.0,
+    "AtRimFrequency": 0.4,
+    "AtRimAccuracy": 0.5,
+    "UnblockedAtRimAccuracy": 0.5,
+    "AtRimPctAssisted": 0.5,
+    "ShortMidRangeFrequency": 0.3,
+    "ShortMidRangeAccuracy": 0.6666666666666666,
+    "UnblockedShortMidRangeAccuracy": 0.6666666666666666,
+    "ShortMidRangePctAssisted": 1.0,
+    "LongMidRangeFrequency": 0.1,
+    "Arc3Frequency": 0.2,
+    "Arc3Accuracy": 0.5,
+    "UnblockedArc3Accuracy": 0.5,
+    "PenaltyAtRimFrequency": 0.5714285714285714,
+    "PenaltyAtRimAccuracy": 0.5,
+    "AtRimFG3AFrequency": 0.6,
+    "NonHeaveArc3Accuracy": 0.5,
+    "ShotQualityAvg": 0.52057,
+    "PenaltyShotQualityAvg": 0.5211285714285714,
+    "ShootingFoulsDrawnPct": 0.09090909090909091,
+    "TwoPtShootingFoulsDrawnPct": 0.1111111111111111,
+    "PenaltyPointsPct": 0.5833333333333334,
+    "Avg2ptShotDistance": 6.0625,
+    "Avg3ptShotDistance": 24.05,
+    "PenaltyOffPossPct": 0.5094339622641509,
+    "Date": "2026-10-21",
+    "GameId": "1042600303",
+    "Team": "ATL",
+    "Opponent": "GSV",
+    "PlayerId": "1642302",
+    "PlayerName": "Isobel Borlase",
+    "TeamId": "1611661330",
+    "TeamAbbreviation": "ATL",
+    "SeasonType": "Playoffs"
+  },
+  {
+    "Minutes": "01:04",
+    "PlusMinus": -2,
+    "OffPoss": 2,
+    "DefPoss": 2,
+    "PenaltyOffPoss": 2,
+    "PenaltyDefPoss": 2,
+    "SecondChanceOffPoss": 1,
+    "TotalPoss": 4,
+    "PenaltyOffPossExcludingTakeFouls": 2,
+    "OnDefRtg": 100.0,
+    "PenaltyOffPossPct": 1.0,
+    "Date": "2026-09-27",
+    "GameId": "1042600131",
+    "Team": "WAS",
+    "Opponent": "ATL",
+    "PlayerId": "1643644",
+    "PlayerName": "Alicia Florez",
+    "TeamId": "1611661322",
+    "TeamAbbreviation": "WAS",
+    "SeasonType": "Playoffs"
+  },
+  {
+    "Minutes": "02:15",
+    "PlusMinus": -5,
+    "OffPoss": 4,
+    "DefPoss": 5,
+    "PenaltyOffPoss": 3,
+    "PenaltyDefPoss": 5,
+    "SecondChanceOffPoss": 1,
+    "TotalPoss": 9,
+    "Arc3FGA": 1,
+    "PenaltyArc3FGA": 1,
+    "FG3A": 1,
+    "PenaltyFG3A": 1,
+    "NonHeaveArc3FGA": 1,
+    "ShootingFouls": 1,
+    "Fouls": 1,
+    "PenaltyOffPossExcludingTakeFouls": 3,
+    "OnOffRtg": 50.0,
+    "OnDefRtg": 140.0,
+    "FG3APct": 1.0,
+    "Usage": 20.0,
+    "Arc3Frequency": 1.0,
+    "PenaltyArc3Frequency": 1.0,
+    "AtRimFG3AFrequency": 1.0,
+    "Avg3ptShotDistance": 36.7,
+    "ThreePtOffReboundedPct": 1.0,
+    "PenaltyOffPossPct": 0.75,
+    "Date": "2026-09-30",
+    "GameId": "1042600132",
+    "Team": "WAS",
+    "Opponent": "ATL",
+    "PlayerId": "1643644",
+    "PlayerName": "Alicia Florez",
+    "TeamId": "1611661322",
+    "TeamAbbreviation": "WAS",
+    "SeasonType": "Playoffs"
+  },
+  {
+    "Minutes": "20:11",
+    "PlusMinus": 20,
+    "OffPoss": 38,
+    "DefPoss": 38,
+    "PenaltyOffPoss": 13,
+    "PenaltyDefPoss": 8,
+    "SecondChanceOffPoss": 4,
+    "TotalPoss": 76,
+    "Arc3FGA": 2,
+    "PenaltyArc3FGA": 1,
+    "FG3A": 2,
+    "FtPoints": 2,
+    "Points": 2,
+    "PenaltyFG3A": 1,
+    "PenaltyFtPoints": 2,
+    "PenaltyPoints": 2,
+    "NonHeaveArc3FGA": 2,
+    "TwoPtAssists": 1,
+    "ThreePtAssists": 1,
+    "Assists": 2,
+    "Arc3Assists": 1,
+    "AtRimAssists": 1,
+    "AssistPoints": 5,
+    "OffTwoPtRebounds": 2,
+    "DefThreePtRebounds": 2,
+    "DefTwoPtRebounds": 4,
+    "DefRebounds": 6,
+    "OffRebounds": 2,
+    "Rebounds": 8,
+    "ShootingFouls": 1,
+    "Fouls": 1,
+    "FoulsDrawn": 2,
+    "Loose Ball Fouls Drawn": 1,
+    "FTA": 2,
+    "NonShootingFoulsDrawn": 1,
+    "Blocked2s": 1,
+    "BlockedShortMidRange": 1,
+    "Blocks": 1,
+    "RecoveredBlocks": 1,
+    "FirstChancePoints": 2,
+    "PenaltyPointsExcludingTakeFouls": 2,
+    "PenaltyOffPossExcludingTakeFouls": 13,
+    "NonShootingPenaltyNonTakeFoulsDrawn": 1,
+    "OnOffRtg": 155.26315789473685,
+    "OnDefRtg": 102.63157894736842,
+    "TsPct": 0.3333333333333333,
+    "PenaltyTsPct": 0.5,
+    "FG3APct": 1.0,
+    "Usage": 7.142857142857143,
+    "DefTwoPtReboundPct": 0.26666666666666666,
+    "OffTwoPtReboundPct": 0.2,
+    "DefThreePtReboundPct": 0.5,
+    "DefFGReboundPct": 0.3157894736842105,
+    "OffFGReboundPct": 0.1111111111111111,
+    "OffAtRimReboundPct": 0.5,
+    "OffLongMidRangeReboundPct": 0.3333333333333333,
+    "DefShortMidRangeReboundPct": 0.16666666666666666,
+    "DefLongMidRangeReboundPct": 0.75,
+    "DefArc3ReboundPct": 0.6666666666666666,
+    "BlocksRecoveredPct": 1.0,
+    "Arc3Frequency": 1.0,
+    "PenaltyArc3Frequency": 1.0,
+    "AtRimFG3AFrequency": 1.0,
+    "ShotQualityAvg": 0.5457,
+    "PenaltyShotQualityAvg": 0.5523,
+    "PenaltyPointsPct": 1.0,
+    "Avg3ptShotDistance": 25.6,
+    "PenaltyOffPossPct": 0.34210526315789475,
+    "Date": "2026-09-27",
+    "GameId": "1042600111",
+    "Team": "GSV",
+    "Opponent": "DAL",
+    "PlayerId": "204329",
+    "PlayerName": "Kiah Stokes",
+    "TeamId": "1611661331",
+    "TeamAbbreviation": "GSV",
+    "SeasonType": "Playoffs"
+  },
+  {
+    "Minutes": "24:57",
+    "PlusMinus": -12,
+    "OffPoss": 46,
+    "DefPoss": 51,
+    "PenaltyOffPoss": 10,
+    "PenaltyDefPoss": 20,
+    "SecondChanceOffPoss": 3,
+    "TotalPoss": 97,
+    "AtRimFGA": 1,
+    "FG2A": 1,
+    "TwoPtAssists": 1,
+    "Assists": 1,
+    "ShortMidRangeAssists": 1,
+    "AssistPoints": 2,
+    "DefThreePtRebounds": 1,
+    "DefTwoPtRebounds": 3,
+    "FTDefRebounds": 1,
+    "DefRebounds": 5,
+    "Rebounds": 5,
+    "ShootingFouls": 1,
+    "Fouls": 2,
+    "PenaltyOffPossExcludingTakeFouls": 10,
+    "NonShootingPenaltyNonTakeFouls": 1,
+    "OnOffRtg": 113.04347826086956,
+    "OnDefRtg": 125.49019607843137,
+    "Usage": 2.0408163265306123,
+    "DefFTReboundPct": 0.5,
+    "DefTwoPtReboundPct": 0.25,
+    "DefThreePtReboundPct": 0.3333333333333333,
+    "DefFGReboundPct": 0.26666666666666666,
+    "DefAtRimReboundPct": 1.0,
+    "DefShortMidRangeReboundPct": 0.4,
+    "DefArc3ReboundPct": 0.5,
+    "AtRimFrequency": 1.0,
+    "AtRimFG3AFrequency": 1.0,
+    "ShotQualityAvg": 0.4228,
+    "Avg2ptShotDistance": 3.7,
+    "PenaltyOffPossPct": 0.21739130434782608,
+    "Date": "2026-09-30",
+    "GameId": "1042600112",
+    "Team": "GSV",
+    "Opponent": "DAL",
+    "PlayerId": "204329",
+    "PlayerName": "Kiah Stokes",
+    "TeamId": "1611661331",
+    "TeamAbbreviation": "GSV",
+    "SeasonType": "Playoffs"
+  },
+  {
+    "Minutes": "34:45",
+    "PlusMinus": 5,
+    "OffPoss": 58,
+    "DefPoss": 61,
+    "PenaltyOffPoss": 9,
+    "PenaltyDefPoss": 17,
+    "SecondChanceOffPoss": 15,
+    "TotalPoss": 119,
+    "AtRimFGM": 1,
+    "AtRimFGA": 1,
+    "SecondChanceAtRimFGM": 1,
+    "SecondChanceAtRimFGA": 1,
+    "ShortMidRangeFGM": 2,
+    "ShortMidRangeFGA": 3,
+    "Arc3FGA": 1,
+    "FG2M": 3,
+    "FG2A": 4,
+    "FG3A": 1,
+    "Points": 6,
+    "SecondChanceFG2M": 1,
+    "SecondChanceFG2A": 1,
+    "SecondChancePoints": 2,
+    "PtsAssisted2s": 4,
+    "PtsUnassisted2s": 2,
+    "PtsPutbacks": 2,
+    "NonHeaveArc3FGA": 1,
+    "TwoPtAssists": 1,
+    "ThreePtAssists": 2,
+    "Assists": 3,
+    "Arc3Assists": 2,
+    "AtRimAssists": 1,
+    "AssistPoints": 8,
+    "OffThreePtRebounds": 2,
+    "OffTwoPtRebounds": 2,
+    "DefThreePtRebounds": 2,
+    "DefTwoPtRebounds": 7,
+    "DefRebounds": 9,
+    "OffRebounds": 4,
+    "Rebounds": 13,
+    "BadPassOutOfBoundsTurnovers": 1,
+    "DeadBallTurnovers": 1,
+    "Turnovers": 1,
+    "SecondChanceTurnovers": 1,
+    "ShootingFouls": 1,
+    "Fouls": 1,
+    "FoulsDrawn": 1,
+    "Blocked2s": 3,
+    "BlockedLongMidRange": 2,
+    "BlockedShortMidRange": 1,
+    "Blocks": 3,
+    "RecoveredBlocks": 3,
+    "FirstChancePoints": 4,
+    "PenaltyOffPossExcludingTakeFouls": 9,
+    "OnOffRtg": 112.06896551724138,
+    "OnDefRtg": 98.36065573770492,
+    "Assisted2sPct": 0.6666666666666666,
+    "NonPutbacksAssisted2sPct": 1.0,
+    "Fg2Pct": 0.75,
+    "SecondChanceFg2Pct": 1.0,
+    "EfgPct": 0.6,
+    "SecondChanceEfgPct": 1.0,
+    "TsPct": 0.6,
+    "SecondChanceTsPct": 1.0,
+    "FG3APct": 0.2,
+    "Usage": 7.594936708860759,
+    "DefTwoPtReboundPct": 0.3684210526315789,
+    "OffTwoPtReboundPct": 0.07407407407407407,
+    "DefThreePtReboundPct": 0.25,
+    "OffThreePtReboundPct": 0.1111111111111111,
+    "DefFGReboundPct": 0.3333333333333333,
+    "OffFGReboundPct": 0.08888888888888889,
+    "OffShortMidRangeReboundPct": 0.08695652173913043,
+    "OffArc3ReboundPct": 0.11764705882352941,
+    "DefShortMidRangeReboundPct": 0.5,
+    "DefLongMidRangeReboundPct": 0.2727272727272727,
+    "DefArc3ReboundPct": 0.25,
+    "BlocksRecoveredPct": 1.0,
+    "AtRimFrequency": 0.2,
+    "AtRimAccuracy": 1.0,
+    "UnblockedAtRimAccuracy": 1.0,
+    "ShortMidRangeFrequency": 0.6,
+    "ShortMidRangeAccuracy": 0.6666666666666666,
+    "UnblockedShortMidRangeAccuracy": 0.6666666666666666,
+    "ShortMidRangePctAssisted": 1.0,
+    "Arc3Frequency": 0.2,
+    "SecondChanceAtRimFrequency": 1.0,
+    "SecondChanceAtRimAccuracy": 1.0,
+    "AtRimFG3AFrequency": 0.4,
+    "ShotQualityAvg": 0.48871000000000003,
+    "SecondChanceShotQualityAvg": 0.6986,
+    "SecondChancePointsPct": 0.3333333333333333,
+    "Avg2ptShotDistance": 3.375,
+    "Avg3ptShotDistance": 24.6,
+    "ShortMidRangeOffReboundedPct": 1.0,
+    "PenaltyOffPossPct": 0.15517241379310345,
+    "Date": "2026-10-02",
+    "GameId": "1042600113",
+    "Team": "GSV",
+    "Opponent": "DAL",
+    "PlayerId": "204329",
+    "PlayerName": "Kiah Stokes",
+    "TeamId": "1611661331",
+    "TeamAbbreviation": "GSV",
+    "SeasonType": "Playoffs"
+  },
+  {
+    "Minutes": "27:28",
+    "PlusMinus": 6,
+    "OffPoss": 47,
+    "DefPoss": 47,
+    "PenaltyOffPoss": 3,
+    "PenaltyDefPoss": 6,
+    "SecondChanceOffPoss": 10,
+    "TotalPoss": 94,
+    "AtRimFGA": 1,
+    "SecondChanceAtRimFGA": 1,
+    "Corner3FGA": 1,
+    "SecondChanceCorner3FGA": 1,
+    "Arc3FGA": 1,
+    "FG2A": 1,
+    "FG3A": 2,
+    "SecondChanceFG2A": 1,
+    "SecondChanceFG3A": 1,
+    "NonHeaveArc3FGA": 1,
+    "ThreePtAssists": 2,
+    "Assists": 2,
+    "Arc3Assists": 1,
+    "Corner3Assists": 1,
+    "AssistPoints": 6,
+    "OffThreePtRebounds": 2,
+    "OffTwoPtRebounds": 5,
+    "DefThreePtRebounds": 3,
+    "DefTwoPtRebounds": 3,
+    "FTDefRebounds": 1,
+    "DefRebounds": 7,
+    "OffRebounds": 7,
+    "Rebounds": 14,
+    "SelfOReb": 1,
+    "LiveBallTurnovers": 1,
+    "LostBallTurnovers": 1,
+    "Turnovers": 1,
+    "SecondChanceTurnovers": 1,
+    "ShootingFouls": 2,
+    "Fouls": 5,
+    "Blocked2s": 4,
+    "BlockedAtRim": 1,
+    "BlockedShortMidRange": 3,
+    "Blocks": 4,
+    "RecoveredBlocks": 2,
+    "PenaltyOffPossExcludingTakeFouls": 3,
+    "Period2Fouls2Minutes": 1,
+    "Period4Fouls4Minutes": 1,
+    "Period4Fouls5Minutes": 2,
+    "OnOffRtg": 91.48936170212767,
+    "OnDefRtg": 78.72340425531915,
+    "FG3APct": 0.6666666666666666,
+    "Usage": 6.557377049180328,
+    "LiveBallTurnoverPct": 1.0,
+    "DefFTReboundPct": 1.0,
+    "DefTwoPtReboundPct": 0.14285714285714285,
+    "OffTwoPtReboundPct": 0.25,
+    "DefThreePtReboundPct": 0.3333333333333333,
+    "OffThreePtReboundPct": 0.13333333333333333,
+    "DefFGReboundPct": 0.2,
+    "OffFGReboundPct": 0.2,
+    "OffAtRimReboundPct": 0.16666666666666666,
+    "OffShortMidRangeReboundPct": 0.3333333333333333,
+    "OffLongMidRangeReboundPct": 0.2,
+    "OffArc3ReboundPct": 0.1,
+    "OffCorner3ReboundPct": 0.2,
+    "DefShortMidRangeReboundPct": 0.2222222222222222,
+    "DefLongMidRangeReboundPct": 0.1111111111111111,
+    "DefArc3ReboundPct": 0.3333333333333333,
+    "DefCorner3ReboundPct": 0.3333333333333333,
+    "SelfORebPct": 0.3333333333333333,
+    "BlocksRecoveredPct": 0.5,
+    "AtRimFrequency": 0.3333333333333333,
+    "Corner3Frequency": 0.3333333333333333,
+    "Arc3Frequency": 0.3333333333333333,
+    "SecondChanceAtRimFrequency": 0.5,
+    "SecondChanceCorner3Frequency": 0.5,
+    "AtRimFG3AFrequency": 1.0,
+    "ShotQualityAvg": 0.62545,
+    "Avg2ptShotDistance": 0.6,
+    "Avg3ptShotDistance": 23.35,
+    "ThreePtOffReboundedPct": 0.5,
+    "PenaltyOffPossPct": 0.06382978723404255,
+    "Date": "2026-10-04",
+    "GameId": "1042600211",
+    "Team": "GSV",
+    "Opponent": "LVA",
+    "PlayerId": "204329",
+    "PlayerName": "Kiah Stokes",
+    "TeamId": "1611661331",
+    "TeamAbbreviation": "GSV",
+    "SeasonType": "Playoffs"
+  },
+  {
+    "Minutes": "28:46",
+    "PlusMinus": -7,
+    "OffPoss": 48,
+    "DefPoss": 52,
+    "PenaltyOffPoss": 4,
+    "PenaltyDefPoss": 21,
+    "SecondChanceOffPoss": 5,
+    "TotalPoss": 100,
+    "Corner3FGA": 1,
+    "FG3A": 1,
+    "TwoPtAssists": 1,
+    "Assists": 1,
+    "ShortMidRangeAssists": 1,
+    "AssistPoints": 2,
+    "OffThreePtRebounds": 1,
+    "DefThreePtRebounds": 1,
+    "DefTwoPtRebounds": 5,
+    "DefRebounds": 6,
+    "OffRebounds": 1,
+    "Rebounds": 7,
+    "ShootingFouls": 4,
+    "Fouls": 5,
+    "Blocked2s": 1,
+    "BlockedAtRim": 1,
+    "Blocks": 1,
+    "RecoveredBlocks": 1,
+    "PenaltyOffPossExcludingTakeFouls": 3,
+    "Period2Fouls2Minutes": 1,
+    "Period3Fouls3Minutes": 1,
+    "Period3Fouls4Minutes": 3,
+    "Period4Fouls4Minutes": 5,
+    "Period4Fouls5Minutes": 4,
+    "OnOffRtg": 108.33333333333334,
+    "OnDefRtg": 113.46153846153845,
+    "FG3APct": 1.0,
+    "Usage": 1.8867924528301885,
+    "DefTwoPtReboundPct": 0.25,
+    "DefThreePtReboundPct": 0.2,
+    "OffThreePtReboundPct": 0.09090909090909091,
+    "DefFGReboundPct": 0.24,
+    "OffFGReboundPct": 0.05,
+    "OffArc3ReboundPct": 0.14285714285714285,
+    "DefAtRimReboundPct": 0.25,
+    "DefShortMidRangeReboundPct": 0.2857142857142857,
+    "DefLongMidRangeReboundPct": 0.2,
+    "DefCorner3ReboundPct": 0.3333333333333333,
+    "BlocksRecoveredPct": 1.0,
+    "Corner3Frequency": 1.0,
+    "AtRimFG3AFrequency": 1.0,
+    "ShotQualityAvg": 0.5616,
+    "Avg3ptShotDistance": 23.8,
+    "PenaltyOffPossPct": 0.08333333333333333,
+    "Date": "2026-10-07",
+    "GameId": "1042600212",
+    "Team": "GSV",
+    "Opponent": "LVA",
+    "PlayerId": "204329",
+    "PlayerName": "Kiah Stokes",
+    "TeamId": "1611661331",
+    "TeamAbbreviation": "GSV",
+    "SeasonType": "Playoffs"
+  },
+  {
+    "Minutes": "37:32",
+    "PlusMinus": 18,
+    "OffPoss": 69,
+    "DefPoss": 72,
+    "PenaltyOffPoss": 15,
+    "PenaltyDefPoss": 25,
+    "SecondChanceOffPoss": 8,
+    "TotalPoss": 141,
+    "AtRimFGM": 3,
+    "AtRimFGA": 3,
+    "ShortMidRangeFGM": 1,
+    "ShortMidRangeFGA": 1,
+    "Corner3FGM": 1,
+    "Corner3FGA": 1,
+    "FG2M": 4,
+    "FG2A": 4,
+    "FG3M": 1,
+    "FG3A": 1,
+    "Points": 11,
+    "PenaltyFG2M": 1,
+    "PenaltyFG2A": 1,
+    "PenaltyPoints": 2,
+    "PtsAssisted2s": 8,
+    "PtsAssisted3s": 3,
+    "TwoPtAssists": 2,
+    "ThreePtAssists": 1,
+    "Assists": 3,
+    "Arc3Assists": 1,
+    "ShortMidRangeAssists": 1,
+    "LongMidRangeAssists": 1,
+    "AssistPoints": 7,
+    "OffThreePtRebounds": 1,
+    "OffTwoPtRebounds": 1,
+    "DefThreePtRebounds": 1,
+    "DefTwoPtRebounds": 6,
+    "FTDefRebounds": 1,
+    "DefRebounds": 8,
+    "OffRebounds": 2,
+    "Rebounds": 10,
+    "Steals": 2,
+    "BadPassSteals": 2,
+    "DeadBallTurnovers": 1,
+    "LostBallOutOfBoundsTurnovers": 1,
+    "Turnovers": 1,
+    "ShootingFouls": 1,
+    "Fouls": 2,
+    "FoulsDrawn": 3,
+    "Loose Ball Fouls Drawn": 2,
+    "Blocked2s": 3,
+    "BlockedAtRim": 1,
+    "BlockedShortMidRange": 2,
+    "Blocks": 3,
+    "RecoveredBlocks": 1,
+    "FirstChancePoints": 11,
+    "PenaltyPointsExcludingTakeFouls": 2,
+    "PenaltyOffPossExcludingTakeFouls": 15,
+    "OnOffRtg": 113.04347826086958,
+    "OnDefRtg": 83.33333333333334,
+    "Assisted2sPct": 1.0,
+    "NonPutbacksAssisted2sPct": 1.0,
+    "Assisted3sPct": 1.0,
+    "Fg3Pct": 1.0,
+    "NonHeaveFg3Pct": 1.0,
+    "Fg2Pct": 1.0,
+    "PenaltyFg2Pct": 1.0,
+    "EfgPct": 1.1,
+    "PenaltyEfgPct": 1.0,
+    "TsPct": 1.1,
+    "PenaltyTsPct": 1.0,
+    "FG3APct": 0.2,
+    "Usage": 7.692307692307692,
+    "DefFTReboundPct": 1.0,
+    "DefTwoPtReboundPct": 0.23076923076923078,
+    "OffTwoPtReboundPct": 0.047619047619047616,
+    "DefThreePtReboundPct": 0.1,
+    "OffThreePtReboundPct": 0.09090909090909091,
+    "DefFGReboundPct": 0.19444444444444445,
+    "OffFGReboundPct": 0.0625,
+    "OffShortMidRangeReboundPct": 0.07142857142857142,
+    "OffCorner3ReboundPct": 0.5,
+    "DefAtRimReboundPct": 0.25,
+    "DefShortMidRangeReboundPct": 0.25,
+    "DefArc3ReboundPct": 0.16666666666666666,
+    "BlocksRecoveredPct": 0.3333333333333333,
+    "AtRimFrequency": 0.6,
+    "AtRimAccuracy": 1.0,
+    "UnblockedAtRimAccuracy": 1.0,
+    "AtRimPctAssisted": 1.0,
+    "ShortMidRangeFrequency": 0.2,
+    "ShortMidRangeAccuracy": 1.0,
+    "UnblockedShortMidRangeAccuracy": 1.0,
+    "ShortMidRangePctAssisted": 1.0,
+    "Corner3Frequency": 0.2,
+    "Corner3Accuracy": 1.0,
+    "UnblockedCorner3Accuracy": 1.0,
+    "Corner3PctAssisted": 1.0,
+    "AtRimFG3AFrequency": 0.8,
+    "ShotQualityAvg": 0.48646,
+    "PenaltyShotQualityAvg": 0.4078,
+    "PenaltyPointsPct": 0.18181818181818182,
+    "Avg2ptShotDistance": 3.45,
+    "Avg3ptShotDistance": 23.4,
+    "PenaltyOffPossPct": 0.21739130434782608,
+    "Date": "2026-10-09",
+    "GameId": "1042600213",
+    "Team": "GSV",
+    "Opponent": "LVA",
+    "PlayerId": "204329",
+    "PlayerName": "Kiah Stokes",
+    "TeamId": "1611661331",
+    "TeamAbbreviation": "GSV",
+    "SeasonType": "Playoffs"
+  },
+  {
+    "Minutes": "24:47",
+    "PlusMinus": 1,
+    "OffPoss": 47,
+    "DefPoss": 48,
+    "PenaltyOffPoss": 9,
+    "PenaltyDefPoss": 4,
+    "SecondChanceOffPoss": 9,
+    "TotalPoss": 95,
+    "AtRimFGM": 2,
+    "AtRimFGA": 4,
+    "SecondChanceAtRimFGA": 1,
+    "ShortMidRangeFGM": 2,
+    "ShortMidRangeFGA": 2,
+    "Arc3FGA": 1,
+    "SecondChanceArc3FGA": 1,
+    "FG2M": 4,
+    "FG2A": 6,
+    "FG3A": 1,
+    "FtPoints": 1,
+    "Points": 9,
+    "SecondChanceFG2M": 1,
+    "SecondChanceFG2A": 2,
+    "SecondChanceFG3A": 1,
+    "SecondChancePoints": 2,
+    "PenaltyFtPoints": 1,
+    "PenaltyPoints": 1,
+    "PtsAssisted2s": 6,
+    "PtsUnassisted2s": 2,
+    "PtsPutbacks": 2,
+    "NonHeaveArc3FGA": 1,
+    "Fg2aBlocked": 1,
+    "ThreePtAssists": 1,
+    "Assists": 1,
+    "Corner3Assists": 1,
+    "AssistPoints": 3,
+    "OffThreePtRebounds": 1,
+    "OffTwoPtRebounds": 2,
+    "DefThreePtRebounds": 2,
+    "DefTwoPtRebounds": 2,
+    "DefRebounds": 4,
+    "OffRebounds": 3,
+    "Rebounds": 7,
+    "ShootingFouls": 1,
+    "Fouls": 1,
+    "FoulsDrawn": 1,
+    "FTA": 2,
+    "NonShootingFoulsDrawn": 1,
+    "Blocked2s": 4,
+    "BlockedAtRim": 1,
+    "BlockedShortMidRange": 3,
+    "Blocks": 4,
+    "RecoveredBlocks": 2,
+    "FirstChancePoints": 7,
+    "PenaltyPointsExcludingTakeFouls": 1,
+    "PenaltyOffPossExcludingTakeFouls": 8,
+    "NonShootingPenaltyNonTakeFoulsDrawn": 1,
+    "OnOffRtg": 95.74468085106383,
+    "OnDefRtg": 91.66666666666667,
+    "Assisted2sPct": 0.75,
+    "NonPutbacksAssisted2sPct": 1.0,
+    "Fg2Pct": 0.6666666666666666,
+    "SecondChanceFg2Pct": 0.5,
+    "EfgPct": 0.5714285714285714,
+    "SecondChanceEfgPct": 0.3333333333333333,
+    "TsPct": 0.5625,
+    "SecondChanceTsPct": 0.3333333333333333,
+    "PenaltyTsPct": 0.5,
+    "FG3APct": 0.14285714285714285,
+    "FG2APctBlocked": 0.16666666666666666,
+    "AtRimPctBlocked": 0.25,
+    "Usage": 13.559322033898306,
+    "DefTwoPtReboundPct": 0.16666666666666666,
+    "OffTwoPtReboundPct": 0.13333333333333333,
+    "DefThreePtReboundPct": 0.14285714285714285,
+    "OffThreePtReboundPct": 0.06666666666666667,
+    "DefFGReboundPct": 0.15384615384615385,
+    "OffFGReboundPct": 0.1,
+    "OffShortMidRangeReboundPct": 0.2,
+    "OffArc3ReboundPct": 0.07692307692307693,
+    "DefShortMidRangeReboundPct": 0.1111111111111111,
+    "DefLongMidRangeReboundPct": 1.0,
+    "DefArc3ReboundPct": 0.16666666666666666,
+    "BlocksRecoveredPct": 0.5,
+    "AtRimFrequency": 0.5714285714285714,
+    "AtRimAccuracy": 0.5,
+    "UnblockedAtRimAccuracy": 0.6666666666666666,
+    "AtRimPctAssisted": 1.0,
+    "ShortMidRangeFrequency": 0.2857142857142857,
+    "ShortMidRangeAccuracy": 1.0,
+    "UnblockedShortMidRangeAccuracy": 1.0,
+    "ShortMidRangePctAssisted": 0.5,
+    "Arc3Frequency": 0.14285714285714285,
+    "SecondChanceAtRimFrequency": 0.3333333333333333,
+    "SecondChanceArc3Frequency": 0.3333333333333333,
+    "AtRimFG3AFrequency": 0.7142857142857143,
+    "ShotQualityAvg": 0.5459071428571428,
+    "SecondChanceShotQualityAvg": 0.475125,
+    "SecondChancePointsPct": 0.2222222222222222,
+    "PenaltyPointsPct": 0.1111111111111111,
+    "Avg2ptShotDistance": 3.966666666666667,
+    "Avg3ptShotDistance": 24.7,
+    "ThreePtOffReboundedPct": 1.0,
+    "PenaltyOffPossPct": 0.19148936170212766,
+    "Date": "2026-10-17",
+    "GameId": "1042600301",
+    "Team": "GSV",
+    "Opponent": "ATL",
+    "PlayerId": "204329",
+    "PlayerName": "Kiah Stokes",
+    "TeamId": "1611661331",
+    "TeamAbbreviation": "GSV",
+    "SeasonType": "Playoffs"
+  },
+  {
+    "Minutes": "30:23",
+    "PlusMinus": -14,
+    "OffPoss": 59,
+    "DefPoss": 59,
+    "PenaltyOffPoss": 16,
+    "PenaltyDefPoss": 17,
+    "SecondChanceOffPoss": 7,
+    "TotalPoss": 118,
+    "OffTwoPtRebounds": 2,
+    "DefThreePtRebounds": 4,
+    "DefTwoPtRebounds": 5,
+    "DefRebounds": 9,
+    "OffRebounds": 2,
+    "Rebounds": 11,
+    "LiveBallTurnovers": 1,
+    "BadPassTurnovers": 1,
+    "DeadBallTurnovers": 1,
+    "Travels": 1,
+    "Turnovers": 2,
+    "SecondChanceTurnovers": 1,
+    "PenaltyTurnovers": 1,
+    "ShootingFouls": 1,
+    "Fouls": 4,
+    "Blocked2s": 4,
+    "BlockedAtRim": 4,
+    "Blocks": 4,
+    "RecoveredBlocks": 3,
+    "PenaltyOffPossExcludingTakeFouls": 16,
+    "NonShootingPenaltyNonTakeFouls": 2,
+    "Period3Fouls3Minutes": 2,
+    "OnOffRtg": 77.96610169491525,
+    "OnDefRtg": 101.69491525423729,
+    "Usage": 2.9850746268656714,
+    "LiveBallTurnoverPct": 0.5,
+    "DefTwoPtReboundPct": 0.2777777777777778,
+    "OffTwoPtReboundPct": 0.10526315789473684,
+    "DefThreePtReboundPct": 0.2857142857142857,
+    "DefFGReboundPct": 0.28125,
+    "OffFGReboundPct": 0.06666666666666667,
+    "OffShortMidRangeReboundPct": 0.09090909090909091,
+    "OffLongMidRangeReboundPct": 0.2,
+    "DefAtRimReboundPct": 0.2857142857142857,
+    "DefShortMidRangeReboundPct": 0.3,
+    "DefArc3ReboundPct": 0.3333333333333333,
+    "BlocksRecoveredPct": 0.75,
+    "PenaltyOffPossPct": 0.2711864406779661,
+    "Date": "2026-10-19",
+    "GameId": "1042600302",
+    "Team": "GSV",
+    "Opponent": "ATL",
+    "PlayerId": "204329",
+    "PlayerName": "Kiah Stokes",
+    "TeamId": "1611661331",
+    "TeamAbbreviation": "GSV",
+    "SeasonType": "Playoffs"
+  },
+  {
+    "Minutes": "26:10",
+    "PlusMinus": -7,
+    "OffPoss": 53,
+    "DefPoss": 52,
+    "PenaltyOffPoss": 9,
+    "PenaltyDefPoss": 14,
+    "SecondChanceOffPoss": 10,
+    "TotalPoss": 105,
+    "AtRimFGM": 1,
+    "AtRimFGA": 2,
+    "SecondChanceAtRimFGM": 1,
+    "SecondChanceAtRimFGA": 2,
+    "Arc3FGA": 1,
+    "SecondChanceArc3FGA": 1,
+    "FG2M": 1,
+    "FG2A": 2,
+    "FG3A": 1,
+    "Points": 2,
+    "SecondChanceFG2M": 1,
+    "SecondChanceFG2A": 2,
+    "SecondChanceFG3A": 1,
+    "SecondChancePoints": 2,
+    "PtsAssisted2s": 2,
+    "NonHeaveArc3FGA": 1,
+    "ThreePtAssists": 1,
+    "Assists": 1,
+    "Corner3Assists": 1,
+    "AssistPoints": 3,
+    "OffThreePtRebounds": 1,
+    "OffTwoPtRebounds": 1,
+    "DefThreePtRebounds": 6,
+    "DefTwoPtRebounds": 3,
+    "DefRebounds": 9,
+    "OffRebounds": 2,
+    "Rebounds": 11,
+    "Steals": 1,
+    "BadPassSteals": 1,
+    "LiveBallTurnovers": 1,
+    "LostBallTurnovers": 1,
+    "Turnovers": 1,
+    "PenaltyTurnovers": 1,
+    "ShootingFouls": 4,
+    "Fouls": 4,
+    "FoulsDrawn": 1,
+    "Blocked2s": 3,
+    "BlockedAtRim": 2,
+    "BlockedShortMidRange": 1,
+    "Blocks": 3,
+    "RecoveredBlocks": 1,
+    "PenaltyOffPossExcludingTakeFouls": 9,
+    "Period2Fouls2Minutes": 3,
+    "Period3Fouls3Minutes": 1,
+    "OnOffRtg": 84.90566037735849,
+    "OnDefRtg": 100.0,
+    "Assisted2sPct": 1.0,
+    "NonPutbacksAssisted2sPct": 1.0,
+    "Fg2Pct": 0.5,
+    "SecondChanceFg2Pct": 0.5,
+    "EfgPct": 0.3333333333333333,
+    "SecondChanceEfgPct": 0.3333333333333333,
+    "TsPct": 0.3333333333333333,
+    "SecondChanceTsPct": 0.3333333333333333,
+    "FG3APct": 0.3333333333333333,
+    "Usage": 6.349206349206349,
+    "LiveBallTurnoverPct": 1.0,
+    "DefTwoPtReboundPct": 0.21428571428571427,
+    "OffTwoPtReboundPct": 0.05555555555555555,
+    "DefThreePtReboundPct": 0.6,
+    "OffThreePtReboundPct": 0.0625,
+    "DefFGReboundPct": 0.375,
+    "OffFGReboundPct": 0.058823529411764705,
+    "OffAtRimReboundPct": 0.16666666666666666,
+    "OffCorner3ReboundPct": 0.25,
+    "DefAtRimReboundPct": 0.25,
+    "DefShortMidRangeReboundPct": 0.2,
+    "DefArc3ReboundPct": 0.6,
+    "BlocksRecoveredPct": 0.3333333333333333,
+    "AtRimFrequency": 0.6666666666666666,
+    "AtRimAccuracy": 0.5,
+    "UnblockedAtRimAccuracy": 0.5,
+    "AtRimPctAssisted": 1.0,
+    "Arc3Frequency": 0.3333333333333333,
+    "SecondChanceAtRimFrequency": 0.6666666666666666,
+    "SecondChanceAtRimAccuracy": 0.5,
+    "SecondChanceAtRimPctAssisted": 1.0,
+    "SecondChanceArc3Frequency": 0.3333333333333333,
+    "AtRimFG3AFrequency": 1.0,
+    "ShotQualityAvg": 0.6182,
+    "SecondChanceShotQualityAvg": 0.65395,
+    "SecondChancePointsPct": 1.0,
+    "Avg2ptShotDistance": 1.4,
+    "Avg3ptShotDistance": 23.6,
+    "PenaltyOffPossPct": 0.16981132075471697,
+    "Date": "2026-10-21",
+    "GameId": "1042600303",
+    "Team": "GSV",
+    "Opponent": "ATL",
+    "PlayerId": "204329",
+    "PlayerName": "Kiah Stokes",
+    "TeamId": "1611661331",
+    "TeamAbbreviation": "GSV",
+    "SeasonType": "Playoffs"
   }
 ]
