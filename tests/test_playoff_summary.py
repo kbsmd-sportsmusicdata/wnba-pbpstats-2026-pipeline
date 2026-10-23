@@ -12,9 +12,12 @@ sys.path.insert(0, str(ROOT / "scripts"))
 import build_playoff_summary as bps  # noqa: E402
 from playoff_summary import (  # noqa: E402
     aggregate_entity,
+    defense_rebounding_leaderboard,
+    delta_movers,
     is_rate,
     player_leaderboard,
     render_markdown,
+    render_movers_markdown,
     rs_vs_playoff_deltas,
     series_rollups,
     team_board,
@@ -30,19 +33,22 @@ def _player_rows():
          "team_id": "1611661313", "team_abbreviation": "NYL", "win": True, "minutes": 30.0,
          "team_points": 100, "opponent_points": 90, "margin": 10, "plus_minus": 8,
          "team_possessions": 95, "opponent_possessions": 95, "off_poss": 25, "def_poss": 25, "total_poss": 50,
-         "points": 20, "assists": 5, "rebounds": 8, "turnovers": 2,
+         "points": 20, "assists": 5, "rebounds": 8, "off_rebounds": 2, "def_rebounds": 6,
+         "steals": 1, "blocks": 2, "def_fgrebound_pct": 0.20, "off_fgrebound_pct": 0.10, "turnovers": 2,
          "fg2_m": 8, "fg2_a": 10, "fg3_m": 1, "fg3_a": 3, "fta": 4, "ts_pct": 0.60, "usage": 30.0},
         {**base, "game_id": "g2", "game_date": "2026-09-16", "player_id": "p1", "player_name": "Star One",
          "team_id": "1611661313", "team_abbreviation": "NYL", "win": False, "minutes": 34.0,
          "team_points": 88, "opponent_points": 93, "margin": -5, "plus_minus": -3,
          "team_possessions": 98, "opponent_possessions": 98, "off_poss": 52, "def_poss": 48, "total_poss": 100,
-         "points": 30, "assists": 7, "rebounds": 10, "turnovers": 4,
+         "points": 30, "assists": 7, "rebounds": 10, "off_rebounds": 3, "def_rebounds": 7,
+         "steals": 2, "blocks": 1, "def_fgrebound_pct": 0.25, "off_fgrebound_pct": 0.08, "turnovers": 4,
          "fg2_m": 10, "fg2_a": 16, "fg3_m": 2, "fg3_a": 5, "fta": 6, "ts_pct": 0.50, "usage": 28.0},
         {**base, "game_id": "g1", "game_date": "2026-09-14", "player_id": "p2", "player_name": "Role Two",
          "team_id": "1611661323", "team_abbreviation": "CON", "win": False, "minutes": 18.0,
          "team_points": 90, "opponent_points": 100, "margin": -10, "plus_minus": -6,
          "team_possessions": 95, "opponent_possessions": 95, "off_poss": 20, "def_poss": 20, "total_poss": 40,
-         "points": 10, "assists": 2, "rebounds": 4, "turnovers": 1,
+         "points": 10, "assists": 2, "rebounds": 4, "off_rebounds": 1, "def_rebounds": 3,
+         "steals": 0, "blocks": 0, "def_fgrebound_pct": 0.15, "off_fgrebound_pct": 0.05, "turnovers": 1,
          "fg2_m": 4, "fg2_a": 7, "fg3_m": 0, "fg3_a": 2, "fta": 2, "ts_pct": 0.48, "usage": 18.0},
     ])
 
@@ -157,6 +163,49 @@ class BoardTest(unittest.TestCase):
         self.assertIn("Star One", md)
 
 
+class DefenseBoardTest(unittest.TestCase):
+    def test_defense_rebounding_board_filters_and_has_columns(self):
+        agg = aggregate_entity(_player_rows(), id_col="player_id",
+                               name_cols=["player_name", "team_abbreviation", "team_id"], min_games=2)
+        board = defense_rebounding_leaderboard(agg, top_n=15)
+        for col in ("DREB/100", "OREB/100", "REB/100", "STL/100", "BLK/100", "DREB%", "OREB%"):
+            self.assertIn(col, board.columns)
+        self.assertEqual(list(board["Player"]), ["Star One"])  # p2 (1 game) filtered out
+
+
+class MoversTest(unittest.TestCase):
+    def _delta(self):
+        playoff = aggregate_entity(_player_rows(), id_col="player_id",
+                                   name_cols=["player_name", "team_abbreviation", "team_id"], min_games=2)
+        rs_rows = _player_rows().copy()
+        rs_rows["season_type"] = "Regular Season"
+        rs_rows["points"] = rs_rows["points"] - 5  # RS lower -> positive playoff delta
+        rs = aggregate_entity(rs_rows, id_col="player_id",
+                              name_cols=["player_name", "team_abbreviation", "team_id"], min_games=2)
+        return rs_vs_playoff_deltas(rs, playoff, id_col="player_id",
+                                    name_cols=["player_name", "team_abbreviation"])
+
+    def test_delta_movers_risers_and_fallers(self):
+        risers, fallers = delta_movers(self._delta(), metric="points_per100", top_n=8)
+        for frame in (risers, fallers):
+            for col in ("Player", "RS", "PO", "Δ"):
+                self.assertIn(col, frame.columns)
+        self.assertIn("Star One", list(risers["Player"]))  # qualified riser
+        self.assertNotIn("Role Two", list(risers["Player"]))  # p2 unqualified (1 game)
+
+    def test_delta_movers_empty_when_metric_absent(self):
+        risers, fallers = delta_movers(self._delta(), metric="not_a_metric", top_n=8)
+        self.assertTrue(risers.empty and fallers.empty)
+
+    def test_render_movers_markdown(self):
+        risers, fallers = delta_movers(self._delta(), metric="points_per100", top_n=8)
+        md = render_movers_markdown(risers, fallers, season="2026",
+                                    metric_label="points_per100", as_of="2026-09-16", min_games=2)
+        self.assertIn("Risers & Fallers", md)
+        self.assertIn("Biggest risers", md)
+        self.assertIn("Biggest fallers", md)
+
+
 def _team_rows():
     base = {"season": 2026, "season_type": "Playoffs"}
     return pd.DataFrame([
@@ -214,12 +263,17 @@ class BuildEndToEndTest(unittest.TestCase):
             for name in ("player_playoff_splits.csv", "player_playoff_splits.json",
                          "team_playoff_splits.csv", "player_rs_vs_playoff_delta.csv",
                          "series_rollups.csv", "playoff_leaderboard.md",
-                         "playoff_summary_manifest.json"):
+                         "playoff_rs_vs_playoff_movers.md", "playoff_summary_manifest.json"):
                 self.assertTrue((out / name).exists(), name)
             self.assertEqual(manifest["players"], 2)
             self.assertEqual(manifest["qualified_players"], 1)  # only p1 has 2 games
             self.assertEqual(manifest["teams"], 2)
             self.assertEqual(manifest["series"], 1)
+            self.assertTrue(manifest["movers_board_written"])
+            self.assertEqual(manifest["movers_metric"], "points_per100")
+            leaderboard = (out / "playoff_leaderboard.md").read_text()
+            self.assertIn("Scoring & efficiency", leaderboard)
+            self.assertIn("Defense & rebounding", leaderboard)
             saved = json.loads((out / "playoff_summary_manifest.json").read_text())
             self.assertEqual(saved["coverage_through"], "2026-09-16")
 

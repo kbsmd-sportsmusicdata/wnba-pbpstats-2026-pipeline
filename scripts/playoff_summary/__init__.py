@@ -11,7 +11,14 @@ from .aggregate import (
     is_rate,
     rs_vs_playoff_deltas,
 )
-from .board import player_leaderboard, render_markdown, team_board
+from .board import (
+    defense_rebounding_leaderboard,
+    delta_movers,
+    player_leaderboard,
+    render_markdown,
+    render_movers_markdown,
+    team_board,
+)
 from .series import series_rollups
 
 __all__ = [
@@ -20,7 +27,10 @@ __all__ = [
     "is_rate",
     "rs_vs_playoff_deltas",
     "player_leaderboard",
+    "defense_rebounding_leaderboard",
+    "delta_movers",
     "team_board",
     "render_markdown",
+    "render_movers_markdown",
     "series_rollups",
 ]

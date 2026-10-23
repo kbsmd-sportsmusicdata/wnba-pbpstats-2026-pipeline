@@ -24,7 +24,14 @@ import sys
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from playoff_summary.aggregate import aggregate_entity, rs_vs_playoff_deltas
-from playoff_summary.board import player_leaderboard, render_markdown, team_board
+from playoff_summary.board import (
+    defense_rebounding_leaderboard,
+    delta_movers,
+    player_leaderboard,
+    render_markdown,
+    render_movers_markdown,
+    team_board,
+)
 from playoff_summary.data_sources import (
     load_config,
     read_games_spine,
@@ -96,16 +103,31 @@ def build(config: Dict[str, Any]) -> Optional[Dict[str, Any]]:
     if not series.empty:
         _write_table(out_root / "series_rollups", series)
 
-    # Curated board + Markdown leaderboard.
+    # Curated boards + Markdown leaderboard (scoring + defense/rebounding).
     board_players = player_leaderboard(player_agg, top_n=top_n)
+    board_defense = defense_rebounding_leaderboard(player_agg, top_n=top_n)
     board_teams = team_board(team_agg)
     markdown = render_markdown(
         board_players, board_teams,
         season=season, as_of=coverage, min_games=min_games,
         total_players=int(len(board_players)), total_teams=int(len(team_agg)),
+        defense_board=board_defense,
     )
     out_root.mkdir(parents=True, exist_ok=True)
     (out_root / "playoff_leaderboard.md").write_text(markdown, encoding="utf-8")
+
+    # RS-vs-playoff risers & fallers board (its own Markdown), on the headline metric.
+    movers_metric = str(config.get("movers_metric", "points_per100"))
+    movers_top_n = int(config.get("movers_top_n", 8))
+    risers, fallers = delta_movers(player_delta, metric=movers_metric, top_n=movers_top_n)
+    movers_written = not (risers.empty and fallers.empty)
+    if movers_written:
+        movers_md = render_movers_markdown(
+            risers, fallers, season=season,
+            metric_label=f"{movers_metric} (points per 100 possessions)" if movers_metric == "points_per100" else movers_metric,
+            as_of=coverage, min_games=min_games,
+        )
+        (out_root / "playoff_rs_vs_playoff_movers.md").write_text(movers_md, encoding="utf-8")
 
     manifest = {
         "generated_at_utc": datetime.now(timezone.utc).replace(microsecond=0).isoformat(),
@@ -118,6 +140,8 @@ def build(config: Dict[str, Any]) -> Optional[Dict[str, Any]]:
         "series": int(len(series)),
         "player_delta_rows": int(len(player_delta)),
         "team_delta_rows": int(len(team_delta)),
+        "movers_metric": movers_metric,
+        "movers_board_written": bool(movers_written),
         "inputs": {k: str(v) for k, v in paths.items() if k != "output_root"},
     }
     (out_root / "playoff_summary_manifest.json").write_text(

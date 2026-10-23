@@ -22,6 +22,8 @@ DEFAULTS: Dict[str, Any] = {
     "output_root": "analysis/playoff_summary",
     "min_playoff_games": 2,
     "board_top_n": 15,
+    "movers_metric": "points_per100",
+    "movers_top_n": 8,
 }
 
 

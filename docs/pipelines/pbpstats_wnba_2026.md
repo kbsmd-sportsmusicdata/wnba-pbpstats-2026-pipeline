@@ -167,11 +167,12 @@ analysis/playoff_summary/
   player_rs_vs_playoff_delta.{csv,json}   # players in both samples: RS rate, playoff rate, delta
   team_rs_vs_playoff_delta.{csv,json}
   series_rollups.{csv,json}               # one row per series (unordered team pair) from the games spine
-  playoff_leaderboard.md                  # curated headline board (the one curated subset, rendered)
+  playoff_leaderboard.md                  # two curated boards: Scoring & efficiency, and Defense & rebounding
+  playoff_rs_vs_playoff_movers.md         # biggest RS->playoff risers & fallers on the headline metric
   playoff_summary_manifest.json
 ```
 
-Conventions: counting stats are summed and expressed **per 100 possessions** (the primary comparison basis); already-computed rates are possession-weighted; headline shooting rates (TS%, eFG%, FG%, 3P%) are recomputed from summed makes/attempts rather than averaged per game. The thin-sample threshold is `min_playoff_games` in `analysis/playoff_summary/config/playoff_summary_config.json` (default 2); it is applied as a filterable **`meets_min_games`** flag column — rows are never dropped. Only players meeting it appear in the ranked Markdown board. If the Playoffs game layer has not been ingested yet, the build **skips cleanly**.
+Conventions: counting stats are summed and expressed **per 100 possessions** (the primary comparison basis); already-computed rates are possession-weighted; headline shooting rates (TS%, eFG%, FG%, 3P%) are recomputed from summed makes/attempts rather than averaged per game. The thin-sample threshold is `min_playoff_games` in `analysis/playoff_summary/config/playoff_summary_config.json` (default 2); it is applied as a filterable **`meets_min_games`** flag column — rows are never dropped. Only players meeting it appear in the ranked Markdown boards. The risers/fallers board ranks the RS→playoff delta of a configurable headline metric (`movers_metric`, default `points_per100`; `movers_top_n` rows each way). If the Playoffs game layer has not been ingested yet, the build **skips cleanly**.
 
 ```bash
 python -m unittest tests.test_playoff_summary
