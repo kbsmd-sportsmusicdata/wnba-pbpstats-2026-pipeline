@@ -1,0 +1,8 @@
+{
+  "season": 2026,
+  "game_layer_root": "data/processed",
+  "game_logs_root": "data/pbpstats_2026_player_game_logs",
+  "output_root": "analysis/playoff_summary",
+  "min_playoff_games": 2,
+  "board_top_n": 15
+}
