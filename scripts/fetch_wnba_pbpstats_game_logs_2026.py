@@ -67,6 +67,11 @@ TEAM_IDENTITY_FIELDS = ("TeamId", "TeamName", "TeamAbbreviation")
 # Row fields that are identity/text, never zero-omitted stats, so they are never blank-fills.
 LOG_KEY_FIELDS = ("GameId", "Date", "Team", "Opponent")
 
+# Column stamped onto every combined row (and onto the games dimension and lookups) so a dataset
+# -- and any concatenation of Regular Season with Playoffs -- is self-describing about which season
+# type it holds. The value is the pbpstats SeasonType string ("Regular Season" / "Playoffs").
+SEASON_TYPE_FIELD = "SeasonType"
+
 
 class PBPStatsGameLogError(RuntimeError):
     """Raised when game-log data cannot be retrieved or fails a structural invariant."""
@@ -291,6 +296,20 @@ def merge_entity_rows(
     return kept
 
 
+def stamp_season_type(rows: Sequence[Mapping[str, Any]], season_type: str) -> List[dict]:
+    """Return the rows with the ``SeasonType`` label set on every row (added when absent).
+
+    Stamping the whole combined set (not just freshly fetched rows) keeps the label uniform even
+    when an older baseline predates this column.
+    """
+    stamped: List[dict] = []
+    for row in rows:
+        record = dict(row)
+        record[SEASON_TYPE_FIELD] = season_type
+        stamped.append(record)
+    return stamped
+
+
 def rows_present_by_entity(rows: Sequence[Mapping[str, Any]], entity_field: str) -> Dict[str, int]:
     counts: Dict[str, int] = {}
     for row in rows:
@@ -469,6 +488,8 @@ def build(
     get_games = fetch_games(season, season_type, fetcher=fetcher)
     _write_json(data_root / f"get_games_{_slug(season_type)}.json", get_games)
     games_dim = build_games_dimension(get_games)
+    if not games_dim.empty:
+        games_dim["season_type"] = season_type
     games_dim.to_csv(data_root / f"games_{_slug(season_type)}.csv", index=False)
     current_game_ids = game_ids_of(get_games)
     if not current_game_ids:
@@ -486,6 +507,7 @@ def build(
         game_team_ids = teams_in_games(get_games, current_game_ids)
         player_lookup = player_lookup[player_lookup["team_id"].isin(game_team_ids)].reset_index(drop=True)
 
+    player_lookup = player_lookup.assign(season_type=season_type)
     player_lookup.to_csv(data_root / "player_lookup_wnba_2026.csv", index=False)
 
     result: Dict[str, Any] = {
@@ -517,6 +539,7 @@ def build(
         totals_team = fetch_totals(season, season_type, "Team", fetcher=fetcher)
         _write_json(data_root / f"get_totals_team_{_slug(season_type)}.json", totals_team)
         team_lookup = build_team_lookup(totals_team)
+        team_lookup = team_lookup.assign(season_type=season_type)
         team_lookup.to_csv(data_root / "team_lookup_wnba_2026.csv", index=False)
         result["teams_total"] = int(len(team_lookup))
         result["teams"] = _refresh_team_logs(
@@ -586,6 +609,7 @@ def _refresh_player_logs(
 
     merged = merge_entity_rows(existing_rows, refreshed, entity_field="PlayerId")
     merged = dedupe_rows(merged, ("PlayerId", "GameId"))
+    merged = stamp_season_type(merged, season_type)
     _write_combined(combined_base, merged)
     _write_json(failures_path, failures)
 
@@ -646,6 +670,7 @@ def _refresh_team_logs(
 
     merged = merge_entity_rows(existing_rows, refreshed, entity_field="TeamId")
     merged = dedupe_rows(merged, ("TeamId", "GameId"))
+    merged = stamp_season_type(merged, season_type)
     _write_combined(combined_base, merged)
     _write_json(failures_path, failures)
 
@@ -706,6 +731,14 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> argparse.Namespace:
     parser.add_argument("--data-root", default=DEFAULT_DATA_ROOT)
     parser.add_argument("--skip-team-logs", action="store_true", help="Ingest player logs only.")
     parser.add_argument(
+        "--no-restrict-players",
+        action="store_true",
+        help=(
+            "Disable the Playoffs player-fan-out restriction and fetch the full player universe "
+            "even in the playoffs. No effect on Regular Season (never restricted)."
+        ),
+    )
+    parser.add_argument(
         "--sleep-seconds", type=float, default=REQUEST_SLEEP_SECONDS, help="Politeness delay between calls."
     )
     return parser.parse_args(argv)
@@ -726,8 +759,9 @@ def main(argv: Optional[Sequence[str]] = None) -> None:
             season_type_root(base_root, season_type),
             include_team_logs=not args.skip_team_logs,
             # The playoffs player fan-out is the slow, timeout-prone call; restrict it to the
-            # (up to) eight teams that actually have playoff games this season.
-            restrict_players_to_game_teams=(season_type == PLAYOFFS),
+            # (up to) eight teams that actually have playoff games this season -- unless the caller
+            # explicitly asks for the full player universe with --no-restrict-players.
+            restrict_players_to_game_teams=(season_type == PLAYOFFS and not args.no_restrict_players),
             sleep_seconds=args.sleep_seconds,
         )
         _print_summary(args.season, season_type, result, skip_team_logs=args.skip_team_logs)

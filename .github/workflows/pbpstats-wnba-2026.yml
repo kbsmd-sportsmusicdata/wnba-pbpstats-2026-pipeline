@@ -49,7 +49,11 @@ jobs:
         run: python scripts/fetch_wnba_pbpstats_game_logs_2026.py --season-type "$SEASON_TYPE"
 
       - name: Build shared normalized game layer
-        run: python scripts/build_wnba_game_layer_2026.py
+        # Build the same season type(s) the ingest step pulled; scheduled runs fall back to
+        # Regular Season. Playoffs is skipped automatically until its logs have been ingested.
+        env:
+          SEASON_TYPE: ${{ inputs.season_type || 'Regular Season' }}
+        run: python scripts/build_wnba_game_layer_2026.py --season-type "$SEASON_TYPE"
 
       - name: Commit generated outputs if changed
         run: |

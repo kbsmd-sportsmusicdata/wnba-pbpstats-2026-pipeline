@@ -13,8 +13,10 @@ class GameLayerError(RuntimeError):
 
 
 # Row fields consumed into the normalized spine block; not re-emitted under their raw names.
-_PLAYER_IDENTITY = {"GameId", "Date", "Team", "Opponent", "PlayerId", "PlayerName", "TeamId", "TeamAbbreviation", "Minutes"}
-_TEAM_IDENTITY = {"GameId", "Date", "Team", "Opponent", "TeamId", "TeamName", "TeamAbbreviation", "Minutes"}
+# ``SeasonType`` is the ingest's own season-type label; the layer takes its authoritative
+# ``season_type`` from the build argument, so the row's copy is consumed here, not duplicated.
+_PLAYER_IDENTITY = {"GameId", "Date", "Team", "Opponent", "PlayerId", "PlayerName", "TeamId", "TeamAbbreviation", "Minutes", "SeasonType"}
+_TEAM_IDENTITY = {"GameId", "Date", "Team", "Opponent", "TeamId", "TeamName", "TeamAbbreviation", "Minutes", "SeasonType"}
 
 # The normalized spine columns, in order, that lead every row.
 _PLAYER_SPINE = [

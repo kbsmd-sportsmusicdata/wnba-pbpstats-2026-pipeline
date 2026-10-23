@@ -1,11 +1,16 @@
+import json
 import sys
+import tempfile
 import unittest
 from pathlib import Path
+
+import pandas as pd
 
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 
+import build_wnba_game_layer_2026 as glayer  # noqa: E402
 from wnba_game_layer import (  # noqa: E402
     GameLayerError,
     build_player_game,
@@ -115,6 +120,77 @@ class TeamGameTest(unittest.TestCase):
         self.assertTrue(bool(nyl["win"]))
         self.assertEqual(nyl["team_name"], "NYL")
         self.assertEqual(nyl["opponent_team_id"], "1611661323")
+
+
+def _write_season_logs(logs_dir: Path, slug: str, season_type: str) -> None:
+    """Lay down the combined logs + games spine the build script reads, for one season type."""
+    logs_dir.mkdir(parents=True, exist_ok=True)
+    pd.DataFrame([{
+        "game_id": "1022600001", "date": "2026-05-08",
+        "home_team_id": "1611661313", "home_team_abbreviation": "NYL", "home_points": 106, "home_possessions": 87,
+        "away_team_id": "1611661323", "away_team_abbreviation": "CON", "away_points": 75, "away_possessions": 88,
+        "season_type": season_type,
+    }]).to_csv(logs_dir / f"games_{slug}.csv", index=False)
+    player_rows = [
+        {"GameId": "1022600001", "Date": "2026-05-08", "Team": "CON", "Opponent": "NYL",
+         "Minutes": "33:00", "Points": 18, "PlayerId": "203833", "PlayerName": "Chelsea Gray",
+         "TeamId": "1611661323", "TeamAbbreviation": "CON", "SeasonType": season_type},
+    ]
+    team_rows = [
+        {"GameId": "1022600001", "Date": "2026-05-08", "Opponent": "CON", "Minutes": "200:00",
+         "Points": 106, "TeamId": "1611661313", "TeamName": "NYL", "TeamAbbreviation": "NYL", "SeasonType": season_type},
+        {"GameId": "1022600001", "Date": "2026-05-08", "Opponent": "NYL", "Minutes": "200:00",
+         "Points": 75, "TeamId": "1611661323", "TeamName": "CON", "TeamAbbreviation": "CON", "SeasonType": season_type},
+    ]
+    (logs_dir / f"player_game_logs_{slug}.json").write_text(json.dumps(player_rows), encoding="utf-8")
+    (logs_dir / f"team_game_logs_{slug}.json").write_text(json.dumps(team_rows), encoding="utf-8")
+
+
+class BuildScriptTest(unittest.TestCase):
+    def test_season_type_helpers(self):
+        self.assertEqual(glayer.resolve_season_types("Both"), ["Regular Season", "Playoffs"])
+        self.assertEqual(glayer.resolve_season_types("Playoffs"), ["Playoffs"])
+        logs = Path("/logs")
+        self.assertEqual(glayer._logs_dir(logs, "Regular Season"), logs)
+        self.assertEqual(glayer._logs_dir(logs, "Playoffs"), logs / "playoffs")
+        out = Path("/out")
+        self.assertEqual(
+            glayer._output_dir(out, "wnba_pbpstats_player_game", "2026", "Regular Season"),
+            out / "wnba_pbpstats_player_game" / "season=2026",
+        )
+        self.assertEqual(
+            glayer._output_dir(out, "wnba_pbpstats_player_game", "2026", "Playoffs"),
+            out / "wnba_pbpstats_player_game" / "season=2026" / "playoffs",
+        )
+
+    def test_build_skips_when_season_type_not_ingested(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            self.assertIsNone(glayer.build("2026", "Playoffs", Path(tmp) / "logs", Path(tmp) / "out"))
+
+    def test_regular_season_and_playoffs_build_to_isolated_paths(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            logs_root, out = Path(tmp) / "logs", Path(tmp) / "out"
+            _write_season_logs(logs_root, "wnba_2026_regular_season", "Regular Season")
+            _write_season_logs(logs_root / "playoffs", "wnba_2026_playoffs", "Playoffs")
+
+            self.assertIsNotNone(glayer.build("2026", "Regular Season", logs_root, out))
+            self.assertIsNotNone(glayer.build("2026", "Playoffs", logs_root, out))
+
+            rs_player = out / "wnba_pbpstats_player_game" / "season=2026" / "player_game.parquet"
+            po_player = out / "wnba_pbpstats_player_game" / "season=2026" / "playoffs" / "player_game.parquet"
+            self.assertTrue(rs_player.exists())
+            self.assertTrue(po_player.exists())
+
+            rs_df = pd.read_parquet(rs_player)
+            po_df = pd.read_parquet(po_player)
+            # Exactly one season_type column, correctly labeled; the SeasonType row field is
+            # consumed as identity, not re-emitted as a stray metric column.
+            self.assertEqual(list(rs_df.columns).count("season_type"), 1)
+            self.assertNotIn("SeasonType", rs_df.columns)
+            self.assertEqual(set(rs_df["season_type"]), {"Regular Season"})
+            # Regular Season parquet is intact after the Playoffs build (not clobbered).
+            self.assertEqual(set(rs_df["season_type"]), {"Regular Season"})
+            self.assertEqual(set(po_df["season_type"]), {"Playoffs"})
 
 
 if __name__ == "__main__":

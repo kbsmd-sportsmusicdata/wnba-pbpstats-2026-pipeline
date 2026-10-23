@@ -97,8 +97,13 @@ _TOTALS_PLAYER_PLAYOFFS = {
 _PLAYER_TEAM_PLAYOFFS = dict(_PLAYER_TEAM, **{"9999": "1611661999"})
 
 
-def _make_playoffs_fetcher():
-    """Playoffs fetcher that asserts SeasonType=Playoffs and refuses to serve the non-playoff player."""
+def _make_playoffs_fetcher(*, serve_all=False):
+    """Playoffs fetcher asserting SeasonType=Playoffs.
+
+    With ``serve_all=False`` (the default) it refuses to serve the non-playoff-team player, proving
+    the restriction dropped them before the call. With ``serve_all=True`` it serves everyone (the
+    non-playoff player simply has no rows), for the --no-restrict-players path.
+    """
     def fetcher(endpoint, params=None):
         params = params or {}
         assert params.get("SeasonType") == "Playoffs", params
@@ -109,7 +114,8 @@ def _make_playoffs_fetcher():
         if "/get-game-logs/" in endpoint:
             eid, etype = str(params["EntityId"]), params["EntityType"]
             if etype == "Player":
-                assert eid != "9999", "a player on a team with no playoff games must not be fetched"
+                if not serve_all:
+                    assert eid != "9999", "a player on a team with no playoff games must not be fetched"
                 return _player_log(_PLAYER_TEAM_PLAYOFFS[eid], None, _GAMES["results"])
             return _player_log(eid, None, _GAMES["results"])
         raise AssertionError(f"unexpected endpoint {endpoint}")
@@ -243,6 +249,8 @@ class BuildIntegrationTest(unittest.TestCase):
             combined = json.loads((root / "player_game_logs_wnba_2026_regular_season.json").read_text())
             keys = {(r["PlayerId"], r["GameId"]) for r in combined}
             self.assertEqual(len(keys), len(combined))  # PlayerId + GameId is unique
+            # Every combined row carries the season-type label.
+            self.assertTrue(all(r["SeasonType"] == "Regular Season" for r in combined))
 
             # Incremental run: a new game appears and the prior failure now succeeds.
             games_v2 = {"results": _GAMES["results"] + [_NEW_GAME]}
@@ -271,6 +279,10 @@ class SeasonTypeSelectionTest(unittest.TestCase):
         # Regular Season keeps the historical top-level layout; other types nest in a subdir.
         self.assertEqual(gl.season_type_root(base, "Regular Season"), base)
         self.assertEqual(gl.season_type_root(base, "Playoffs"), base / "playoffs")
+
+    def test_no_restrict_players_flag_defaults_off(self):
+        self.assertFalse(gl.parse_args([]).no_restrict_players)
+        self.assertTrue(gl.parse_args(["--no-restrict-players"]).no_restrict_players)
 
 
 class PlayoffsBuildTest(unittest.TestCase):
@@ -306,6 +318,30 @@ class PlayoffsBuildTest(unittest.TestCase):
             self.assertFalse((root / "raw" / "player_9999_game_logs.json").exists())
             combined = json.loads((root / "player_game_logs_wnba_2026_playoffs.json").read_text())
             self.assertFalse(any(r["PlayerId"] == "9999" for r in combined))
+            # Every combined player and team row is labeled Playoffs, as are the games dim + lookups.
+            self.assertTrue(combined and all(r["SeasonType"] == "Playoffs" for r in combined))
+            team_combined = json.loads((root / "team_game_logs_wnba_2026_playoffs.json").read_text())
+            self.assertTrue(team_combined and all(r["SeasonType"] == "Playoffs" for r in team_combined))
+            games_dim = pd.read_csv(root / "games_wnba_2026_playoffs.csv")
+            self.assertEqual(set(games_dim["season_type"]), {"Playoffs"})
+            player_lookup = pd.read_csv(root / "player_lookup_wnba_2026.csv")
+            self.assertEqual(set(player_lookup["season_type"]), {"Playoffs"})
+
+    def test_no_restrict_players_fetches_full_universe_in_playoffs(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp) / "playoffs"
+            # restrict=False: the non-playoff-team player is fetched too (it just yields no rows).
+            result = gl.build(
+                "2026", "Playoffs", root,
+                restrict_players_to_game_teams=False,
+                fetcher=_make_playoffs_fetcher(serve_all=True), sleep_seconds=0,
+            )
+            self.assertNotIn("players_restricted_to_game_teams", result)
+            self.assertEqual(result["players_total"], 5)
+            self.assertEqual(result["players"]["affected_players"], 5)
+            self.assertEqual(result["players"]["refreshed_players"], 5)
+            # Player 9999 has no playoff rows, so it contributes nothing to the combined table.
+            self.assertEqual(result["players"]["combined_players"], 4)
 
     def test_both_season_types_do_not_clobber_each_other(self):
         with tempfile.TemporaryDirectory() as tmp:
