@@ -75,7 +75,9 @@ The fan-out is: `get-totals` (Player) enumerates the season's players → `get-g
 
 `--season-type` accepts `Regular Season` (default), `Playoffs`, or `Both` (Regular Season then Playoffs). It is forwarded to the pbpstats `SeasonType` query param on every call (`get-games`, `get-totals`, `get-game-logs`), so each season type is a fully independent ingest.
 
-For the **Playoffs** player fan-out, the player list is first restricted to the (up to) eight teams that appear in the playoff `get-games` spine — there is no point requesting a per-game log for a player whose team played no playoff games. The player call is the slow, timeout-prone one, so this keeps the playoff run bounded to the rosters that actually have playoff data. Team logs are not restricted (there are only a handful of teams either way).
+For the **Playoffs** player fan-out, the player list is first restricted to the (up to) eight teams that appear in the playoff `get-games` spine — there is no point requesting a per-game log for a player whose team played no playoff games. The player call is the slow, timeout-prone one, so this keeps the playoff run bounded to the rosters that actually have playoff data. Team logs are not restricted (there are only a handful of teams either way). Pass `--no-restrict-players` to disable this and fetch the full player universe in the playoffs anyway (it has no effect on Regular Season, which is never restricted).
+
+Every dataset the script writes carries a **season-type label** so a dataset — or any concatenation of Regular Season with Playoffs — is self-describing: the combined player/team game-log rows get a `SeasonType` column (`Regular Season` / `Playoffs`), and the games dimension and player/team lookups get a `season_type` column with the same values.
 
 To keep the two datasets from clobbering each other, **Regular Season keeps the historical top-level layout** (its `ingest_manifest.json`, `player_game_logs_failures.json` and lookups are read by downstream scripts at those exact paths), while **Playoffs is written to a `playoffs/` subdirectory** of the data root. A `Both` run produces both side by side.
 
@@ -89,7 +91,7 @@ data/pbpstats_2026_player_game_logs/
   games_wnba_2026_regular_season.csv             # game dimension derived from get-games
   get_totals_player_wnba_2026_regular_season.json
   get_totals_team_wnba_2026_regular_season.json
-  player_lookup_wnba_2026.csv                    # player_id, player_name, team_id, team_abbreviation, games_played
+  player_lookup_wnba_2026.csv                    # player_id, player_name, team_id, team_abbreviation, games_played, season_type
   team_lookup_wnba_2026.csv
   player_game_logs_wnba_2026_regular_season.csv  # combined player-game table (column union)
   player_game_logs_wnba_2026_regular_season.json # combined, ragged (preserves pbpstats zero-omission)
@@ -124,14 +126,21 @@ python -m unittest tests.test_fetch_wnba_pbpstats_game_logs
 `scripts/build_wnba_game_layer_2026.py` turns the combined game logs into analysis-ready per-game tables that every downstream analysis reads instead of re-deriving game grain from season totals:
 
 ```bash
-python scripts/build_wnba_game_layer_2026.py
+python scripts/build_wnba_game_layer_2026.py                        # Regular Season (default)
+python scripts/build_wnba_game_layer_2026.py --season-type Playoffs  # Playoffs
+python scripts/build_wnba_game_layer_2026.py --season-type Both      # Regular Season then Playoffs
 ```
 
 ```text
-data/processed/wnba_pbpstats_player_game/season=2026/player_game.parquet   # one row per player-game
-data/processed/wnba_pbpstats_team_game/season=2026/team_game.parquet       # one row per team-game
+data/processed/wnba_pbpstats_player_game/season=2026/player_game.parquet            # Regular Season player-game
+data/processed/wnba_pbpstats_team_game/season=2026/team_game.parquet                # Regular Season team-game
 data/processed/wnba_pbpstats_player_game/season=2026/game_layer_manifest.json
+data/processed/wnba_pbpstats_player_game/season=2026/playoffs/player_game.parquet   # Playoffs player-game
+data/processed/wnba_pbpstats_team_game/season=2026/playoffs/team_game.parquet       # Playoffs team-game
+data/processed/wnba_pbpstats_player_game/season=2026/playoffs/game_layer_manifest.json
 ```
+
+`--season-type` mirrors the ingest (`Regular Season` default, `Playoffs`, or `Both`). Each row already carries a `season_type` column (`Regular Season` / `Playoffs`). As with the ingest, **Regular Season keeps the flat `season=2026/` path** (where every downstream analysis already reads it) and **Playoffs nests one level deeper in `season=2026/playoffs/`** so it never overwrites it. A season type whose combined logs have not been ingested yet is **skipped** (not an error), so a `Both` build quietly does Regular Season only until the first playoff ingest has run.
 
 Each row is snake_cased, has its zero-omitted stats filled to 0 (pbpstats semantics), and is joined to the `get-games` spine for `game_date`, `is_home`, `opponent_team_id`, `team_points`/`opponent_points`, `margin`, `win`, and possessions. Player-game rows are keyed **`player_id + game_id`**; team-game rows are keyed **`team_id + game_id`**. The per-game team is derived from the spine by matching the played-for abbreviation, so a mid-season trade attributes each game to the team actually played for rather than the player's current team. The transforms live in the importable `wnba_game_layer` package and fail closed on a row absent from the spine or matching neither side of its game.
 
@@ -145,9 +154,9 @@ python -m unittest tests.test_wnba_game_layer
 
 The workflow at `.github/workflows/pbpstats-wnba-2026.yml` supports:
 
-- `workflow_dispatch` for manual runs, with a **Season type(s)** dropdown (`Regular Season`, `Playoffs`, or `Both`) that drives the game-log ingest step
+- `workflow_dispatch` for manual runs, with a **Season type(s)** dropdown (`Regular Season`, `Playoffs`, or `Both`) that drives both the game-log ingest step and the shared game-layer build step
 - a daily in-season schedule during May through October
 
-Scheduled runs have no dispatch input, so they fall back to `Regular Season`. The dropdown only affects the game-log ingest step; the pull/clean and features steps are current-season (Regular Season) and are unchanged.
+Scheduled runs have no dispatch input, so they fall back to `Regular Season`. The dropdown drives the game-log ingest and the game-layer build (which skips a season type whose logs were not ingested); the pull/clean and features steps are current-season (Regular Season) and are unchanged.
 
-The workflow runs the pull/clean, features, and game-log ingest steps, then stages and commits only generated CSV/JSON files under `data/pbpstats_wnba_2026/` and `data/pbpstats_2026_player_game_logs/` (the recursive `find` picks up the `playoffs/` subdirectory too).
+The workflow runs the pull/clean, features, game-log ingest, and game-layer steps, then stages and commits only generated CSV/JSON files under `data/pbpstats_wnba_2026/` and `data/pbpstats_2026_player_game_logs/`, plus the game-layer parquet under `data/processed/` (the recursive `find`/`git add` picks up the `playoffs/` subdirectories too).
