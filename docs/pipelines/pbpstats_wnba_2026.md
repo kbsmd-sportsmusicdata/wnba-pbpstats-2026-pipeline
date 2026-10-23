@@ -64,10 +64,20 @@ data/pbpstats_wnba_2026/features_latest/2026/leaderboards/*.csv
 `scripts/fetch_wnba_pbpstats_game_logs_2026.py` ingests per-game logs for every player and team, producing one combined player-game table for downstream analysis plus the individual raw API responses behind it.
 
 ```bash
-python scripts/fetch_wnba_pbpstats_game_logs_2026.py
+python scripts/fetch_wnba_pbpstats_game_logs_2026.py                        # Regular Season (default)
+python scripts/fetch_wnba_pbpstats_game_logs_2026.py --season-type Playoffs  # Playoffs
+python scripts/fetch_wnba_pbpstats_game_logs_2026.py --season-type Both      # Regular Season then Playoffs
 ```
 
 The fan-out is: `get-totals` (Player) enumerates the season's players → `get-game-logs` (Player) is called once per player → the per-game rows are combined, with the player identity the rows omit (`PlayerId`, `PlayerName`, `TeamId`, `TeamAbbreviation`) injected from the totals lookup. Team logs are ingested the same way from `get-totals`/`get-game-logs` (Team). `get-games` is the authoritative game dimension / schedule-result spine; logs join to it by `GameId`.
+
+### Season Types
+
+`--season-type` accepts `Regular Season` (default), `Playoffs`, or `Both` (Regular Season then Playoffs). It is forwarded to the pbpstats `SeasonType` query param on every call (`get-games`, `get-totals`, `get-game-logs`), so each season type is a fully independent ingest.
+
+For the **Playoffs** player fan-out, the player list is first restricted to the (up to) eight teams that appear in the playoff `get-games` spine — there is no point requesting a per-game log for a player whose team played no playoff games. The player call is the slow, timeout-prone one, so this keeps the playoff run bounded to the rosters that actually have playoff data. Team logs are not restricted (there are only a handful of teams either way).
+
+To keep the two datasets from clobbering each other, **Regular Season keeps the historical top-level layout** (its `ingest_manifest.json`, `player_game_logs_failures.json` and lookups are read by downstream scripts at those exact paths), while **Playoffs is written to a `playoffs/` subdirectory** of the data root. A `Both` run produces both side by side.
 
 ### Data Root and Folder Contract
 
@@ -91,6 +101,10 @@ data/pbpstats_2026_player_game_logs/
   raw/
     player_<ID>_game_logs.json                   # one raw response per player
     team_<ID>_game_logs.json
+  playoffs/                                      # Playoffs ingest, same file set as above but
+    player_game_logs_wnba_2026_playoffs.json     #   slugged _playoffs and fully isolated from
+    team_game_logs_wnba_2026_playoffs.json       #   the Regular Season dataset above
+    ...
 ```
 
 The combined player log's primary key is **`PlayerId` + `GameId`**; the combined JSON is what the playoff project consumes. Because pbpstats omits zero-valued stats, an absent column in a row means zero — the JSON stays ragged to preserve that, while the CSV is the column union with blanks for the same absences.
@@ -131,7 +145,9 @@ python -m unittest tests.test_wnba_game_layer
 
 The workflow at `.github/workflows/pbpstats-wnba-2026.yml` supports:
 
-- `workflow_dispatch` for manual runs
+- `workflow_dispatch` for manual runs, with a **Season type(s)** dropdown (`Regular Season`, `Playoffs`, or `Both`) that drives the game-log ingest step
 - a daily in-season schedule during May through October
 
-The workflow runs the pull/clean, features, and game-log ingest steps, then stages and commits only generated CSV/JSON files under `data/pbpstats_wnba_2026/` and `data/pbpstats_2026_player_game_logs/`.
+Scheduled runs have no dispatch input, so they fall back to `Regular Season`. The dropdown only affects the game-log ingest step; the pull/clean and features steps are current-season (Regular Season) and are unchanged.
+
+The workflow runs the pull/clean, features, and game-log ingest steps, then stages and commits only generated CSV/JSON files under `data/pbpstats_wnba_2026/` and `data/pbpstats_2026_player_game_logs/` (the recursive `find` picks up the `playoffs/` subdirectory too).

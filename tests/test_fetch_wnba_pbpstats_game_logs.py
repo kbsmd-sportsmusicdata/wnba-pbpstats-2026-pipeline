@@ -86,6 +86,37 @@ def _make_fetcher(games_payload, *, fail_players=frozenset()):
     return fetcher
 
 
+# A fifth player sits on a team (1611661999) that plays no games in the spine -- the playoffs
+# restriction must drop them before any get-game-logs call is made for them.
+_TOTALS_PLAYER_PLAYOFFS = {
+    "single_row_table_data": {},
+    "multi_row_table_data": _TOTALS_PLAYER["multi_row_table_data"] + [
+        {"EntityId": "9999", "Name": "Bench Benchington", "TeamId": "1611661999", "TeamAbbreviation": "XXX", "GamesPlayed": 0},
+    ],
+}
+_PLAYER_TEAM_PLAYOFFS = dict(_PLAYER_TEAM, **{"9999": "1611661999"})
+
+
+def _make_playoffs_fetcher():
+    """Playoffs fetcher that asserts SeasonType=Playoffs and refuses to serve the non-playoff player."""
+    def fetcher(endpoint, params=None):
+        params = params or {}
+        assert params.get("SeasonType") == "Playoffs", params
+        if endpoint.endswith("/get-games/wnba"):
+            return _GAMES
+        if endpoint.endswith("/get-totals/wnba"):
+            return _TOTALS_PLAYER_PLAYOFFS if params.get("Type") == "Player" else _TOTALS_TEAM
+        if "/get-game-logs/" in endpoint:
+            eid, etype = str(params["EntityId"]), params["EntityType"]
+            if etype == "Player":
+                assert eid != "9999", "a player on a team with no playoff games must not be fetched"
+                return _player_log(_PLAYER_TEAM_PLAYOFFS[eid], None, _GAMES["results"])
+            return _player_log(eid, None, _GAMES["results"])
+        raise AssertionError(f"unexpected endpoint {endpoint}")
+
+    return fetcher
+
+
 class LookupTest(unittest.TestCase):
     def test_player_lookup_columns_and_ids(self):
         lookup = gl.build_player_lookup(_TOTALS_PLAYER)
@@ -195,6 +226,8 @@ class BuildIntegrationTest(unittest.TestCase):
             # First build: one player fails transiently and is recorded, not fatal.
             first = gl.build("2026", "Regular Season", root, fetcher=_make_fetcher(_GAMES, fail_players={"203833"}), sleep_seconds=0)
             players = first["players"]
+            # Regular Season never restricts the player fan-out -- it is the whole dataset.
+            self.assertNotIn("players_restricted_to_game_teams", first)
             self.assertTrue(players["is_first_build"])
             self.assertEqual(players["affected_players"], 4)
             self.assertEqual(players["refreshed_players"], 3)
@@ -225,6 +258,75 @@ class BuildIntegrationTest(unittest.TestCase):
             self.assertTrue(any(r["PlayerId"] == "203833" for r in combined2))
             keys2 = {(r["PlayerId"], r["GameId"]) for r in combined2}
             self.assertEqual(len(keys2), len(combined2))
+
+
+class SeasonTypeSelectionTest(unittest.TestCase):
+    def test_resolve_season_types_expands_both(self):
+        self.assertEqual(gl.resolve_season_types("Regular Season"), ["Regular Season"])
+        self.assertEqual(gl.resolve_season_types("Playoffs"), ["Playoffs"])
+        self.assertEqual(gl.resolve_season_types("Both"), ["Regular Season", "Playoffs"])
+
+    def test_season_type_root_keeps_regular_season_at_top_level(self):
+        base = Path("/data/pbpstats_2026_player_game_logs")
+        # Regular Season keeps the historical top-level layout; other types nest in a subdir.
+        self.assertEqual(gl.season_type_root(base, "Regular Season"), base)
+        self.assertEqual(gl.season_type_root(base, "Playoffs"), base / "playoffs")
+
+
+class PlayoffsBuildTest(unittest.TestCase):
+    def test_playoffs_restricts_players_to_game_teams_and_isolates_outputs(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            base = Path(tmp) / "logs"
+            root = gl.season_type_root(base, "Playoffs")
+            self.assertEqual(root, base / "playoffs")
+
+            result = gl.build(
+                "2026", "Playoffs", root,
+                restrict_players_to_game_teams=True,
+                fetcher=_make_playoffs_fetcher(), sleep_seconds=0,
+            )
+            players = result["players"]
+
+            # Five players in the playoff directory, but the one whose team plays no game in the
+            # spine is dropped before fan-out -> only the four on the two playoff teams are fetched.
+            self.assertTrue(result["players_restricted_to_game_teams"])
+            self.assertEqual(result["players_before_restriction"], 5)
+            self.assertEqual(result["players_total"], 4)
+            self.assertEqual(result["game_team_count"], 2)
+            self.assertEqual(players["affected_players"], 4)
+            self.assertEqual(players["refreshed_players"], 4)
+            self.assertEqual(players["combined_players"], 4)
+            self.assertEqual(result["teams"]["combined_teams"], 2)
+
+            # Outputs land under the playoffs subdir with the playoffs slug; the dropped player has
+            # no raw response and never reaches the combined table.
+            self.assertTrue((root / "player_game_logs_wnba_2026_playoffs.json").exists())
+            self.assertTrue((root / "team_game_logs_wnba_2026_playoffs.json").exists())
+            self.assertTrue((root / "raw" / "player_1627668_game_logs.json").exists())
+            self.assertFalse((root / "raw" / "player_9999_game_logs.json").exists())
+            combined = json.loads((root / "player_game_logs_wnba_2026_playoffs.json").read_text())
+            self.assertFalse(any(r["PlayerId"] == "9999" for r in combined))
+
+    def test_both_season_types_do_not_clobber_each_other(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            base = Path(tmp) / "logs"
+
+            # Regular Season writes the historical top-level layout (what downstream scripts read).
+            gl.build("2026", "Regular Season", gl.season_type_root(base, "Regular Season"),
+                     fetcher=_make_fetcher(_GAMES), sleep_seconds=0)
+            # Playoffs writes into its own subdir, leaving the Regular Season files untouched.
+            gl.build("2026", "Playoffs", gl.season_type_root(base, "Playoffs"),
+                     restrict_players_to_game_teams=True,
+                     fetcher=_make_playoffs_fetcher(), sleep_seconds=0)
+
+            self.assertTrue((base / "ingest_manifest.json").exists())
+            self.assertTrue((base / "player_game_logs_failures.json").exists())
+            self.assertTrue((base / "player_game_logs_wnba_2026_regular_season.json").exists())
+            self.assertTrue((base / "playoffs" / "ingest_manifest.json").exists())
+            self.assertTrue((base / "playoffs" / "player_game_logs_wnba_2026_playoffs.json").exists())
+            # The Regular Season manifest still describes Regular Season after the Playoffs run.
+            rs_manifest = json.loads((base / "ingest_manifest.json").read_text())
+            self.assertEqual(rs_manifest["season_type"], "Regular Season")
 
 
 if __name__ == "__main__":

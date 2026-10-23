@@ -39,7 +39,17 @@ import pandas as pd
 BASE_URL = "https://api.pbpstats.com"
 LEAGUE = "wnba"
 DEFAULT_SEASON = "2026"
-DEFAULT_SEASON_TYPE = "Regular Season"
+
+# Season types. pbpstats uses these exact strings for the ``SeasonType`` query param. ``Both`` is a
+# CLI/Action convenience that expands to Regular Season followed by Playoffs -- it is never sent to
+# the API. Regular Season keeps the historical top-level data layout; other season types nest under
+# their own subdirectory (see ``season_type_root``) so one never clobbers the other.
+REGULAR_SEASON = "Regular Season"
+PLAYOFFS = "Playoffs"
+BOTH = "Both"
+SEASON_TYPE_CHOICES = (REGULAR_SEASON, PLAYOFFS, BOTH)
+DEFAULT_SEASON_TYPE = REGULAR_SEASON
+
 DEFAULT_DATA_ROOT = os.getenv("PBPSTATS_GAME_LOGS_DATA_ROOT", "data/pbpstats_2026_player_game_logs")
 
 MAX_ATTEMPTS = 5
@@ -437,10 +447,21 @@ def build(
     data_root: Path,
     *,
     include_team_logs: bool = True,
+    restrict_players_to_game_teams: bool = False,
     fetcher: Callable = request_json,
     sleep_seconds: float = REQUEST_SLEEP_SECONDS,
 ) -> Dict[str, Any]:
-    """Run the full historical build or an incremental refresh into ``data_root``."""
+    """Run the full historical build or an incremental refresh into ``data_root``.
+
+    Every output (slugged and unslugged alike) is written under ``data_root``; the caller picks a
+    season-type-specific root (see :func:`season_type_root`) so Regular Season and Playoffs never
+    collide.
+
+    ``restrict_players_to_game_teams`` trims the player fan-out to only the players whose team
+    appears in ``get-games``. In the playoffs that is the (up to) eight teams with playoff games,
+    which is the slow, timeout-prone call -- there is no point asking the API for a player-game log
+    of a player on a team that played no games in this season type.
+    """
     raw_dir = data_root / "raw"
     raw_dir.mkdir(parents=True, exist_ok=True)
 
@@ -457,6 +478,14 @@ def build(
     totals_player = fetch_totals(season, season_type, "Player", fetcher=fetcher)
     _write_json(data_root / f"get_totals_player_{_slug(season_type)}.json", totals_player)
     player_lookup = build_player_lookup(totals_player)
+
+    players_before_restriction: Optional[int] = None
+    game_team_ids: Optional[Set[str]] = None
+    if restrict_players_to_game_teams:
+        players_before_restriction = int(len(player_lookup))
+        game_team_ids = teams_in_games(get_games, current_game_ids)
+        player_lookup = player_lookup[player_lookup["team_id"].isin(game_team_ids)].reset_index(drop=True)
+
     player_lookup.to_csv(data_root / "player_lookup_wnba_2026.csv", index=False)
 
     result: Dict[str, Any] = {
@@ -467,6 +496,10 @@ def build(
         "coverage_through": (str(games_dim["date"].max()) if not games_dim.empty else None),
         "players_total": int(len(player_lookup)),
     }
+    if restrict_players_to_game_teams:
+        result["players_restricted_to_game_teams"] = True
+        result["players_before_restriction"] = players_before_restriction
+        result["game_team_count"] = len(game_team_ids or ())
 
     result["players"] = _refresh_player_logs(
         data_root=data_root,
@@ -632,6 +665,30 @@ def _slug(season_type: str) -> str:
     return "wnba_2026_" + season_type.strip().lower().replace(" ", "_")
 
 
+def resolve_season_types(selection: str) -> List[str]:
+    """Expand a CLI/Action ``--season-type`` selection into the concrete season types to ingest.
+
+    ``Both`` runs Regular Season first, then Playoffs; every other value is a single season type.
+    """
+    if selection == BOTH:
+        return [REGULAR_SEASON, PLAYOFFS]
+    return [selection]
+
+
+def season_type_root(base: Path, season_type: str) -> Path:
+    """Output directory for one season type.
+
+    Regular Season keeps the historical top-level layout -- its ``ingest_manifest.json`` and
+    ``player_game_logs_failures.json`` are read by downstream scripts at those exact paths, and its
+    other files are already tracked there. Any other season type (e.g. Playoffs) gets its own
+    subdirectory so a combined ``Both`` run keeps the two datasets fully independent instead of
+    clobbering each other's lookups, failures, manifest and raw responses.
+    """
+    if season_type.strip().lower() == REGULAR_SEASON.lower():
+        return base
+    return base / season_type.strip().lower().replace(" ", "_")
+
+
 # ------------------------------------------------------------------------- cli
 
 
@@ -640,7 +697,12 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> argparse.Namespace:
         description="Ingest WNBA 2026 player and team game logs from pbpstats (historical + incremental)."
     )
     parser.add_argument("--season", default=DEFAULT_SEASON)
-    parser.add_argument("--season-type", default=DEFAULT_SEASON_TYPE)
+    parser.add_argument(
+        "--season-type",
+        default=DEFAULT_SEASON_TYPE,
+        choices=SEASON_TYPE_CHOICES,
+        help="Season type(s) to ingest. 'Both' runs Regular Season then Playoffs.",
+    )
     parser.add_argument("--data-root", default=DEFAULT_DATA_ROOT)
     parser.add_argument("--skip-team-logs", action="store_true", help="Ingest player logs only.")
     parser.add_argument(
@@ -656,25 +718,40 @@ def _resolve(path_str: str) -> Path:
 
 def main(argv: Optional[Sequence[str]] = None) -> None:
     args = parse_args(argv)
-    result = build(
-        args.season,
-        args.season_type,
-        _resolve(args.data_root),
-        include_team_logs=not args.skip_team_logs,
-        sleep_seconds=args.sleep_seconds,
-    )
+    base_root = _resolve(args.data_root)
+    for season_type in resolve_season_types(args.season_type):
+        result = build(
+            args.season,
+            season_type,
+            season_type_root(base_root, season_type),
+            include_team_logs=not args.skip_team_logs,
+            # The playoffs player fan-out is the slow, timeout-prone call; restrict it to the
+            # (up to) eight teams that actually have playoff games this season.
+            restrict_players_to_game_teams=(season_type == PLAYOFFS),
+            sleep_seconds=args.sleep_seconds,
+        )
+        _print_summary(args.season, season_type, result, skip_team_logs=args.skip_team_logs)
+
+
+def _print_summary(season: str, season_type: str, result: Dict[str, Any], *, skip_team_logs: bool) -> None:
     players = result["players"]
+    restriction = ""
+    if result.get("players_restricted_to_game_teams"):
+        restriction = (
+            f" [restricted to {result['players_total']} players on "
+            f"{result['game_team_count']} playoff teams, from {result['players_before_restriction']}]"
+        )
     print(
-        f"pbpstats {args.season} game logs: {players['combined_rows']} player-game rows "
+        f"pbpstats {season} {season_type} game logs: {players['combined_rows']} player-game rows "
         f"across {players['combined_players']} players and {players['combined_game_ids']} games "
         f"(refreshed {players['refreshed_players']}, failed {players['failed_players']}) "
-        f"through {result['coverage_through']}"
+        f"through {result['coverage_through']}{restriction}"
     )
-    if args.skip_team_logs:
+    if skip_team_logs:
         return
     teams = result["teams"]
     print(
-        f"pbpstats {args.season} team logs: {teams['combined_rows']} team-game rows "
+        f"pbpstats {season} {season_type} team logs: {teams['combined_rows']} team-game rows "
         f"across {teams['combined_teams']} teams (refreshed {teams['refreshed_teams']}, "
         f"failed {teams['failed_teams']})"
     )
