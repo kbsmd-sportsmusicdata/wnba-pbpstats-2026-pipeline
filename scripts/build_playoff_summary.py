@@ -107,10 +107,12 @@ def build(config: Dict[str, Any]) -> Optional[Dict[str, Any]]:
     board_players = player_leaderboard(player_agg, top_n=top_n)
     board_defense = defense_rebounding_leaderboard(player_agg, top_n=top_n)
     board_teams = team_board(team_agg)
+    qualified_players = int(player_agg["meets_min_games"].sum()) if "meets_min_games" in player_agg else 0
     markdown = render_markdown(
         board_players, board_teams,
         season=season, as_of=coverage, min_games=min_games,
-        total_players=int(len(board_players)), total_teams=int(len(team_agg)),
+        qualified_players=qualified_players, shown_players=int(len(board_players)),
+        total_teams=int(len(team_agg)),
         defense_board=board_defense,
     )
     out_root.mkdir(parents=True, exist_ok=True)

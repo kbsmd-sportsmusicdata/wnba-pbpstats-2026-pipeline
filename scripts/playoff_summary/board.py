@@ -112,8 +112,11 @@ def delta_movers(
     def _view(sub: pd.DataFrame) -> pd.DataFrame:
         return sub[name_cols + cols].rename(columns=rename).reset_index(drop=True)
 
-    risers = _view(df.sort_values(f"{metric}_delta", ascending=False).head(top_n))
-    fallers = _view(df.sort_values(f"{metric}_delta", ascending=True).head(top_n))
+    delta = f"{metric}_delta"
+    # Filter by sign first so a short slate can't label a negative change a "riser" (or list the
+    # same player in both tables) just to fill top_n rows.
+    risers = _view(df[df[delta] > 0].sort_values(delta, ascending=False).head(top_n))
+    fallers = _view(df[df[delta] < 0].sort_values(delta, ascending=True).head(top_n))
     return risers, fallers
 
 
@@ -159,7 +162,8 @@ def render_markdown(
     season: str,
     as_of: Optional[str],
     min_games: int,
-    total_players: int,
+    qualified_players: int,
+    shown_players: int,
     total_teams: int,
     defense_board: Optional[pd.DataFrame] = None,
 ) -> str:
@@ -168,9 +172,9 @@ def render_markdown(
     lines = [
         f"# WNBA {season} Playoff Summary",
         "",
-        f"Descriptive playoff splits (per 100 possessions){coverage}. "
-        f"Player boards are limited to the **{total_players}** players with at least "
-        f"**{min_games}** playoff game(s); shooting rates are recomputed from summed makes and "
+        f"Descriptive playoff splits (per 100 offensive possessions){coverage}. "
+        f"Player boards show the top **{shown_players}** of **{qualified_players}** players with at "
+        f"least **{min_games}** playoff game(s); shooting rates are recomputed from summed makes and "
         f"attempts, not averaged per game.",
         "",
         "## Scoring & efficiency",

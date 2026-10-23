@@ -84,12 +84,14 @@ class AggregateTest(unittest.TestCase):
         self.assertFalse(bool(p2["meets_min_games"]))  # only one game, min is 2
         self.assertEqual(p1["team_abbreviation"], "NYL")
 
-    def test_counting_per100(self):
+    def test_counting_per100_uses_offensive_possessions(self):
         p1 = self._p1()
         self.assertEqual(p1["points_total"], 50)
-        self.assertAlmostEqual(p1["points_per100"], 50 / 150 * 100)   # 33.33...
-        self.assertAlmostEqual(p1["assists_per100"], 12 / 150 * 100)  # 8.0
+        # Per-100 is per 100 OFFENSIVE possessions (off_poss 25+52=77), not total_poss (150).
+        self.assertEqual(p1["off_poss_total"], 77)
         self.assertEqual(p1["total_poss_total"], 150)
+        self.assertAlmostEqual(p1["points_per100"], 50 / 77 * 100)   # ~64.9, not ~33.3
+        self.assertAlmostEqual(p1["assists_per100"], 12 / 77 * 100)
 
     def test_rate_is_possession_weighted(self):
         p1 = self._p1()
@@ -158,9 +160,10 @@ class BoardTest(unittest.TestCase):
         self.assertIn("PTS/100", board.columns)
         self.assertEqual(list(board["Player"]), ["Star One"])  # p2 filtered (1 game < 2)
         md = render_markdown(board, team_board(pd.DataFrame()), season="2026", as_of="2026-09-16",
-                             min_games=2, total_players=len(board), total_teams=0)
+                             min_games=2, qualified_players=1, shown_players=len(board), total_teams=0)
         self.assertIn("Playoff Summary", md)
         self.assertIn("Star One", md)
+        self.assertIn("top **1** of **1** players", md)
 
 
 class DefenseBoardTest(unittest.TestCase):
@@ -235,7 +238,9 @@ class BuildEndToEndTest(unittest.TestCase):
         rs_players.to_parquet(pdir / "player_game.parquet", index=False)
         _team_rows().assign(season_type="Regular Season").to_parquet(tdir / "team_game.parquet", index=False)
         if with_playoffs:
-            _player_rows().to_parquet(pdir / "playoffs" / "player_game.parquet", index=False)
+            po_players = _player_rows()
+            po_players["points"] = po_players["points"] + 3  # a real RS->playoff delta for the movers board
+            po_players.to_parquet(pdir / "playoffs" / "player_game.parquet", index=False)
             _team_rows().to_parquet(tdir / "playoffs" / "team_game.parquet", index=False)
             (logs / "playoffs").mkdir(parents=True, exist_ok=True)
             pd.DataFrame([{

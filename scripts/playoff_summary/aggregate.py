@@ -107,7 +107,15 @@ def aggregate_entity(
         _numeric(df, ["total_poss"]).assign(**{id_col: key}).groupby(id_col)["total_poss"].sum()
         if "total_poss" in df.columns else pd.Series(0.0, index=games.index)
     )
-    denom = total_poss_sum.replace(0, np.nan)
+    # Per-100 counting rates are per 100 **offensive** possessions. pbpstats ``total_poss`` is
+    # offensive + defensive, so using it as the denominator would halve every rate (PTS/100 ~52
+    # instead of ~105). Rate columns are still weighted by total on-court possessions.
+    off_poss_sum = (
+        _numeric(df, ["off_poss"]).assign(**{id_col: key}).groupby(id_col)["off_poss"].sum()
+        if "off_poss" in df.columns else total_poss_sum
+    )
+    per100_denom = off_poss_sum.replace(0, np.nan)
+    weight_denom = total_poss_sum.replace(0, np.nan)
 
     # Assemble every block as a frame indexed by entity id, then concat once (no fragmentation).
     blocks: List[pd.DataFrame] = []
@@ -139,7 +147,7 @@ def aggregate_entity(
     if kinds["counting"]:
         csum = _numeric(df, kinds["counting"]).assign(**{id_col: key}).groupby(id_col).sum()
         blocks.append(csum.add_suffix("_total"))
-        blocks.append((csum.div(denom, axis=0) * 100.0).add_suffix("_per100"))
+        blocks.append((csum.div(per100_denom, axis=0) * 100.0).add_suffix("_per100"))
 
     # Game-context: total + per-game (per-100 would be meaningless here).
     if kinds["context"]:
@@ -151,7 +159,7 @@ def aggregate_entity(
     if kinds["rate"]:
         weighted = _numeric(df, kinds["rate"]).mul(pd.to_numeric(df["total_poss"], errors="coerce"), axis=0)
         wsum = weighted.assign(**{id_col: key}).groupby(id_col).sum()
-        blocks.append(wsum.div(denom, axis=0))
+        blocks.append(wsum.div(weight_denom, axis=0))
 
     out = pd.concat(blocks, axis=1)
     out = pd.concat([out, _derived_shooting_rates(out)], axis=1)
