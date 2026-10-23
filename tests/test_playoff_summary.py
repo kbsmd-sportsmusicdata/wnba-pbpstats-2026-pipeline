@@ -57,7 +57,8 @@ class ClassifyTest(unittest.TestCase):
     def test_is_rate(self):
         for rate in ("ts_pct", "efg_pct", "usage", "pace", "at_rim_accuracy", "arc3_frequency",
                      "on_off_rtg", "fg3_apct", "at_rim_pct_assisted", "fg2_apct_blocked",
-                     "avg3pt_shot_distance", "shot_quality_avg", "seconds_per_poss_off"):
+                     "avg3pt_shot_distance", "shot_quality_avg", "seconds_per_poss_off",
+                     "at_rim_fg3_afrequency"):
             self.assertTrue(is_rate(rate), rate)
         for counting in ("points", "assists", "rebounds", "fg3_m", "fg3_a", "three_pt_assists",
                          "turnovers", "fta", "period3_fouls3_minutes"):
@@ -127,6 +128,22 @@ class DeltaTest(unittest.TestCase):
         self.assertAlmostEqual(p1["points_per100_delta"], p1["points_per100_playoff"] - p1["points_per100_rs"])
         self.assertGreater(p1["points_per100_delta"], 0)  # playoffs scored more here
         self.assertNotIn("points_total_delta", delta.columns)  # raw volumes are never differenced
+
+    def test_delta_keeps_metrics_zero_omitted_in_playoffs(self):
+        # A stat present in RS but all-zero (and so column-absent) in the playoff layer must still
+        # appear in the delta as a drop to 0, not vanish.
+        playoff_rows = _player_rows().drop(columns=["steals"])  # steals omitted from playoff layer
+        playoff = aggregate_entity(playoff_rows, id_col="player_id",
+                                   name_cols=["player_name", "team_abbreviation", "team_id"], min_games=2)
+        rs = aggregate_entity(_player_rows(), id_col="player_id",
+                              name_cols=["player_name", "team_abbreviation", "team_id"], min_games=2)
+        delta = rs_vs_playoff_deltas(rs, playoff, id_col="player_id",
+                                     name_cols=["player_name", "team_abbreviation"])
+        self.assertIn("steals_per100_playoff", delta.columns)
+        p1 = delta[delta["player_id"] == "p1"].iloc[0]
+        self.assertEqual(p1["steals_per100_playoff"], 0.0)       # absent -> 0 on the playoff side
+        self.assertGreater(p1["steals_per100_rs"], 0.0)
+        self.assertLess(p1["steals_per100_delta"], 0.0)          # a real drop, not dropped
 
 
 class SeriesTest(unittest.TestCase):
@@ -226,7 +243,7 @@ def _team_rows():
 
 
 class BuildEndToEndTest(unittest.TestCase):
-    def _layout(self, tmp: Path, *, with_playoffs: bool):
+    def _layout(self, tmp: Path, *, with_playoffs: bool, with_failures: bool = False):
         layer = tmp / "processed"
         logs = tmp / "logs"
         pdir = layer / "wnba_pbpstats_player_game" / "season=2026"
@@ -249,6 +266,9 @@ class BuildEndToEndTest(unittest.TestCase):
                 "away_team_id": "1611661323", "away_team_abbreviation": "CON", "away_points": 90,
                 "away_possessions": 95, "season_type": "Playoffs",
             }]).to_csv(logs / "playoffs" / "games_wnba_2026_playoffs.csv", index=False)
+            if with_failures:
+                (logs / "playoffs" / "player_game_logs_failures.json").write_text(
+                    json.dumps([{"player_id": "9999", "name": "Pending", "error": "500"}]), encoding="utf-8")
         return {
             "season": 2026, "game_layer_root": str(layer), "game_logs_root": str(logs),
             "output_root": str(tmp / "out"), "min_playoff_games": 2, "board_top_n": 15,
@@ -281,6 +301,17 @@ class BuildEndToEndTest(unittest.TestCase):
             self.assertIn("Defense & rebounding", leaderboard)
             saved = json.loads((out / "playoff_summary_manifest.json").read_text())
             self.assertEqual(saved["coverage_through"], "2026-09-16")
+            self.assertTrue(saved["source_completeness"]["complete"])  # no failures file
+
+    def test_partial_ingest_is_flagged(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            config = self._layout(Path(tmp), with_playoffs=True, with_failures=True)
+            manifest = bps.build(config)
+            sc = manifest["source_completeness"]
+            self.assertFalse(sc["complete"])
+            self.assertEqual(sc["player_failures"], 1)
+            out = Path(config["output_root"])
+            self.assertIn("Partial ingest", (out / "playoff_leaderboard.md").read_text())
 
 
 if __name__ == "__main__":

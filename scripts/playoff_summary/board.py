@@ -166,12 +166,14 @@ def render_markdown(
     shown_players: int,
     total_teams: int,
     defense_board: Optional[pd.DataFrame] = None,
+    note: Optional[str] = None,
 ) -> str:
     """Render the playoff leaderboard Markdown summary (scoring + optional defense/rebounding)."""
     coverage = f" · data through **{as_of}**" if as_of else ""
     lines = [
         f"# WNBA {season} Playoff Summary",
         "",
+        *( [f"> ⚠️ {note}", ""] if note else [] ),
         f"Descriptive playoff splits (per 100 offensive possessions){coverage}. "
         f"Player boards show the top **{shown_players}** of **{qualified_players}** players with at "
         f"least **{min_games}** playoff game(s); shooting rates are recomputed from summed makes and "
@@ -203,6 +205,7 @@ def render_movers_markdown(
     metric_label: str,
     as_of: Optional[str],
     min_games: int,
+    note: Optional[str] = None,
 ) -> str:
     """Render the RS->playoff risers & fallers board for one headline metric."""
     coverage = f" · data through **{as_of}**" if as_of else ""
@@ -210,6 +213,7 @@ def render_movers_markdown(
         [
             f"# WNBA {season} Playoffs — Risers & Fallers",
             "",
+            *( [f"> ⚠️ {note}", ""] if note else [] ),
             f"Largest regular-season → playoff change in **{metric_label}**{coverage}. "
             f"Qualified players ({min_games}+ playoff games); Δ = playoff − regular season.",
             "",

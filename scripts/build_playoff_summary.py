@@ -33,6 +33,7 @@ from playoff_summary.board import (
     team_board,
 )
 from playoff_summary.data_sources import (
+    count_failures,
     load_config,
     read_games_spine,
     read_parquet_optional,
@@ -67,6 +68,17 @@ def build(config: Dict[str, Any]) -> Optional[Dict[str, Any]]:
 
     out_root = paths["output_root"]
     coverage = _coverage_through(playoff_player) or _coverage_through(playoff_team)
+
+    # Completeness: a partial ingest (some entities failed and are pending a retry) still yields
+    # non-empty frames, so the skip gate above won't catch it. Surface it rather than publishing a
+    # partial dataset as if it were final.
+    player_failures = count_failures(paths["playoff_player_failures"])
+    team_failures = count_failures(paths["playoff_team_failures"])
+    complete = player_failures == 0 and team_failures == 0
+    note = None if complete else (
+        f"Partial ingest: {player_failures} player(s) and {team_failures} team(s) failed to refresh "
+        f"and are pending a retry — these splits/deltas are incomplete."
+    )
 
     player_agg = aggregate_entity(
         playoff_player, id_col="player_id", name_cols=["player_name", "team_abbreviation", "team_id"], min_games=min_games
@@ -114,6 +126,7 @@ def build(config: Dict[str, Any]) -> Optional[Dict[str, Any]]:
         qualified_players=qualified_players, shown_players=int(len(board_players)),
         total_teams=int(len(team_agg)),
         defense_board=board_defense,
+        note=note,
     )
     out_root.mkdir(parents=True, exist_ok=True)
     (out_root / "playoff_leaderboard.md").write_text(markdown, encoding="utf-8")
@@ -127,7 +140,7 @@ def build(config: Dict[str, Any]) -> Optional[Dict[str, Any]]:
         movers_md = render_movers_markdown(
             risers, fallers, season=season,
             metric_label=f"{movers_metric} (points per 100 possessions)" if movers_metric == "points_per100" else movers_metric,
-            as_of=coverage, min_games=min_games,
+            as_of=coverage, min_games=min_games, note=note,
         )
         (out_root / "playoff_rs_vs_playoff_movers.md").write_text(movers_md, encoding="utf-8")
 
@@ -144,6 +157,11 @@ def build(config: Dict[str, Any]) -> Optional[Dict[str, Any]]:
         "team_delta_rows": int(len(team_delta)),
         "movers_metric": movers_metric,
         "movers_board_written": bool(movers_written),
+        "source_completeness": {
+            "complete": bool(complete),
+            "player_failures": int(player_failures),
+            "team_failures": int(team_failures),
+        },
         "inputs": {k: str(v) for k, v in paths.items() if k != "output_root"},
     }
     (out_root / "playoff_summary_manifest.json").write_text(

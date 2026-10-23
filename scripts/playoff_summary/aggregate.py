@@ -31,6 +31,9 @@ _RATE_TOKENS = {"pct", "apct", "accuracy", "frequency", "rtg", "distance"}
 _RATE_EXACT = {"usage", "pace"}
 
 
+_RATE_SUFFIXES = ("pct", "accuracy", "frequency", "rtg", "distance")
+
+
 def is_rate(col: str) -> bool:
     """True when the column is an already-computed rate/ratio (averaged, never summed)."""
     if col in _RATE_EXACT:
@@ -38,6 +41,10 @@ def is_rate(col: str) -> bool:
     if col.startswith("seconds"):  # seconds_per_poss_*, seconds_excluding_orebs_per_poss_*
         return True
     if "shot_quality_avg" in col:
+        return True
+    # Suffix match catches rate words fused to a preceding letter, e.g. ``at_rim_fg3_afrequency``
+    # (token "afrequency") or ``fg3_apct`` (token "apct"), which whole-token matching misses.
+    if col.endswith(_RATE_SUFFIXES):
         return True
     return any(token in _RATE_TOKENS for token in col.split("_"))
 
@@ -191,10 +198,19 @@ def rs_vs_playoff_deltas(
     if rs_agg.empty or po_agg.empty:
         return pd.DataFrame()
 
-    metrics = [c for c in comparable_metric_columns(po_agg) if c in rs_agg.columns]
+    # Union of both sides' comparable columns: a stat that is zero across every playoff game has
+    # no column in the playoff layer (pbpstats zero-omission), but it still exists in RS and should
+    # show a drop to 0, not vanish. An absent per-100 (counting) column fills 0 on that side; an
+    # absent rate/per-game column is undefined (NaN), since "no attempts" is not "0%".
+    metrics = sorted(set(comparable_metric_columns(rs_agg)) | set(comparable_metric_columns(po_agg)))
     rs = rs_agg.set_index(id_col)
     po = po_agg.set_index(id_col)
     common = [eid for eid in po.index if eid in rs.index]
+
+    def _val(frame: pd.DataFrame, eid, col: str):
+        if col in frame.columns:
+            return frame.loc[eid, col]
+        return 0.0 if col.endswith("_per100") else np.nan
 
     records = []
     for eid in common:
@@ -206,12 +222,9 @@ def rs_vs_playoff_deltas(
         rec["playoff_games"] = int(po.loc[eid, "games"])
         rec["meets_min_games"] = bool(po.loc[eid, "meets_min_games"])
         for col in metrics:
-            rs_val, po_val = rs.loc[eid, col], po.loc[eid, col]
+            rs_val, po_val = _val(rs, eid, col), _val(po, eid, col)
             rec[f"{col}_rs"] = rs_val
             rec[f"{col}_playoff"] = po_val
-            if pd.notna(rs_val) and pd.notna(po_val):
-                rec[f"{col}_delta"] = po_val - rs_val
-            else:
-                rec[f"{col}_delta"] = np.nan
+            rec[f"{col}_delta"] = (po_val - rs_val) if (pd.notna(rs_val) and pd.notna(po_val)) else np.nan
         records.append(rec)
     return pd.DataFrame(records).sort_values(id_col).reset_index(drop=True)

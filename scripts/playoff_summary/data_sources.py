@@ -56,8 +56,22 @@ def resolve_paths(config: Mapping[str, Any]) -> Dict[str, Path]:
         "rs_player": player_dir / "player_game.parquet",
         "rs_team": team_dir / "team_game.parquet",
         "playoff_games": logs / "playoffs" / f"games_{_slug('Playoffs')}.csv",
+        "playoff_player_failures": logs / "playoffs" / "player_game_logs_failures.json",
+        "playoff_team_failures": logs / "playoffs" / "team_game_logs_failures.json",
         "output_root": path_from_config(config.get("output_root", DEFAULTS["output_root"])),
     }
+
+
+def count_failures(path: Path) -> int:
+    """Number of entities the ingest recorded as failed/pending for this season type (0 if none)."""
+    if not Path(path).exists():
+        return 0
+    try:
+        with Path(path).open(encoding="utf-8") as handle:
+            payload = json.load(handle)
+    except (ValueError, OSError):
+        return 0
+    return len(payload) if isinstance(payload, list) else 0
 
 
 def read_parquet_optional(path: Path) -> pd.DataFrame:
