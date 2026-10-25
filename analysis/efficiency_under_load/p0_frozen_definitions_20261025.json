@@ -1,0 +1,55 @@
+{
+  "project": "2026 WNBA Efficiency Under Load | P0 frozen v1.0",
+  "frozen_on": "2026-10-25",
+  "source": {
+    "owner_repo": "kbsmd-sportsmusicdata/wnba-pbpstats-2026-pipeline",
+    "path": "data/pbpstats_2026_player_game_logs/player_game_logs_wnba_2026_regular_season.csv",
+    "git_blob_sha": "4030c140e580bceb5fce25abf7704967e457fadc",
+    "scope": "Regular Season 2026",
+    "coverage_through": "2026-09-24",
+    "grain": "unique PlayerId×GameId",
+    "raw_rows_expected": 6587
+  },
+  "cohort": {
+    "season_minutes_min": 200,
+    "season_games_min": 20,
+    "season_mpg_min": 15,
+    "season_cohort_expected": 111,
+    "retrospective_selection_note": "season-end filters used only for descriptive model; for prediction use eligibility defined from prior-period data"
+  },
+  "features": {
+    "minutes": "Minutes as MM:SS converted to decimal minutes",
+    "shot_opportunities": "FG2A + FG3A + 0.44*FTA",
+    "used_plays": "shot_opportunities + Turnovers",
+    "game_ts_pct": "100*Points/(2*shot_opportunities), null when opportunities=0 (can exceed 100% on single-game sampling)",
+    "game_tov_pct": "100*Turnovers/used_plays, null when used_plays=0",
+    "game_usage_pct": "PBPStats Usage in percentage point units (e.g. 27.3), no recomputation",
+    "prior_usage_pct": "prior up-to-10 player appearances, excluding current game; weighted by OffPoss, keeping prior rows with OffPoss>0 and non-null Usage",
+    "usage_delta_pp": "game_usage_pct-prior_usage_pct; missing unless both terms valid",
+    "workload_band": "lower if usage_delta_pp<=-5; elevated if >=5; typical if -5<delta<5; else unclassified",
+    "history_reliable": "at least 5 prior valid usage games and sum of prior OffPoss >= 150",
+    "game_reliable": "current minutes >=15, shot_opportunities>=5, used_plays>=5, usage present",
+    "p0_reliable": "season_cohort_qualified and history_reliable and game_reliable"
+  },
+  "model": {
+    "primary": "Within-player weighted least squares fixed effects, TS% on usage_delta_pp and game minutes; analogous TOV%, both outcomes expressed 0-100 percentage points",
+    "ts_weights": "shot_opportunities",
+    "tov_weights": "used_plays",
+    "uncertainty": "Player-cluster bootstrap of player-specific within-transformed sufficient-statistic contributions; 800 draws, percentile 95% CI; deterministic LCG seed=754321",
+    "interpretation": "+5 percentage points of game usage relative to pregame baseline => adjusted association in TS% or TOV% percentage points (not causal)",
+    "descriptive_bands": "Pooled points/(2*opportunities) and turnovers/used_plays; unadjusted observational summaries, NOT player-adjusted group effect",
+    "sensitivity": [
+      "shot_opportunities >= 8",
+      "at least 8 prior valid usage games",
+      "exclude group games below 15 current minutes"
+    ]
+  },
+  "guardrails": [
+    "No mutation of existing Hidden Value / Role Fulfillment / Functional Depth / Scalability weights or outputs",
+    "TS% and TOV% share components with usage and may be mechanically dependent; workload can respond to in-game performance, so estimates are not causal",
+    "Season-end eligibility creates selection bias for future-facing validation",
+    "Shot-quality, playmaking and teammate-availability context are deferred P1/P2",
+    "Preserve raw zero-vs-null evidence and do not recode zero denominators as zero percentages",
+    "Do not interpret usage changes as exogenous workload assignments"
+  ]
+}
