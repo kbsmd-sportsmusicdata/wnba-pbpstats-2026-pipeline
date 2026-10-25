@@ -1,0 +1,158 @@
+{
+  "project": "2026 WNBA Efficiency Under Load — Chronological Prediction Gate",
+  "schema_version": "oos_v1.0",
+  "date_frozen": "2026-10-25",
+  "p0_branch": "analysis/efficiency-under-load-p0-20261025",
+  "p0_source_sha": "4030c140e580bceb5fce25abf7704967e457fadc",
+  "design": {
+    "unit": "player-game",
+    "pregame_eligibility": "at least 20 completed prior games, at least 200 prior total minutes, and >=15 prior-season-to-date MPG",
+    "train_end_exclusive": "2026-08-01",
+    "validation_end_exclusive": "2026-08-21",
+    "final_test_end_inclusive": "2026-09-24",
+    "observations": {
+      "train": 650,
+      "validation": 677,
+      "test": 695
+    },
+    "players": {
+      "train": 95,
+      "validation": 103,
+      "test": 109
+    },
+    "no_future_game_usage_as_predictor": true,
+    "baseline_prior_games": 10,
+    "enhanced_workload_history_games": 20,
+    "baseline_features": [
+      "pregame previous-10 pooled TS%",
+      "pregame previous-10 pooled TOV%",
+      "pregame previous-10 offensive-possessions-weighted usage",
+      "pregame previous-10 mean MPG"
+    ],
+    "additional_features": [
+      "prior-20 elevated (>= +5 pp) TS%-minus-typical TS%, clipped and opportunity-shrunk",
+      "prior-20 elevated TOV%-minus-typical TOV%, clipped and opportunity-shrunk",
+      "prior-20 elevated-game share",
+      "prior-20 high-vs-typical comparison reliability flag"
+    ],
+    "algorithm": "Weighted ridge regression, per-feature weighted z-score on train only, intercept unpenalized, alpha 20 fixed; opportunity weights to fit and score; no hyperparameter selection on final test",
+    "uncertainty": "800 player-cluster bootstrap replicates of paired prediction losses, conditional on the trained model; fixed LCG seed 9381472",
+    "eligibility_note": "uses pregame, not full-season qualification. Predictions use only earlier games. Current game opportunity denominator used only for scoring; test workload category is posthoc subgroup, never predictor."
+  },
+  "validation": {
+    "ts": {
+      "n": 671,
+      "baseline_rmse_pp": 17.977,
+      "enhanced_rmse_pp": 18.047,
+      "baseline_mae_pp": 13.762,
+      "enhanced_mae_pp": 13.839,
+      "rmse_improvement_pct": -0.385,
+      "ci95_pct": [
+        -1.118,
+        0.24
+      ]
+    },
+    "tov": {
+      "n": 672,
+      "baseline_rmse_pp": 10.272,
+      "enhanced_rmse_pp": 10.301,
+      "baseline_mae_pp": 7.866,
+      "enhanced_mae_pp": 7.909,
+      "rmse_improvement_pct": -0.288,
+      "ci95_pct": [
+        -0.958,
+        0.366
+      ]
+    }
+  },
+  "final_test": {
+    "ts": {
+      "n": 688,
+      "players": 109,
+      "baseline_rmse_pp": 18.623,
+      "enhanced_rmse_pp": 18.656,
+      "baseline_mae_pp": 14.146,
+      "enhanced_mae_pp": 14.219,
+      "rmse_improvement_pct": -0.176,
+      "ci95_pct": [
+        -0.963,
+        0.445
+      ]
+    },
+    "tov": {
+      "n": 689,
+      "players": 109,
+      "baseline_rmse_pp": 10.94,
+      "enhanced_rmse_pp": 10.948,
+      "baseline_mae_pp": 8.46,
+      "enhanced_mae_pp": 8.492,
+      "rmse_improvement_pct": -0.078,
+      "ci95_pct": [
+        -0.587,
+        0.472
+      ]
+    }
+  },
+  "final_test_subsets": {
+    "actual_elevated_games_observed_posthoc": {
+      "ts": {
+        "n": 144,
+        "players": 81,
+        "baseline_rmse_pp": 17.333,
+        "enhanced_rmse_pp": 17.345,
+        "rmse_improvement_pct": -0.071,
+        "ci95_pct": [
+          -1.176,
+          0.936
+        ]
+      },
+      "tov": {
+        "n": 144,
+        "players": 81,
+        "baseline_rmse_pp": 10.331,
+        "enhanced_rmse_pp": 10.292,
+        "rmse_improvement_pct": 0.382,
+        "ci95_pct": [
+          -0.693,
+          1.614
+        ]
+      }
+    },
+    "adequate_prior_highload_history": {
+      "ts": {
+        "n": 568,
+        "players": 97,
+        "baseline_rmse_pp": 18.155,
+        "enhanced_rmse_pp": 18.208,
+        "rmse_improvement_pct": -0.289,
+        "ci95_pct": [
+          -1.221,
+          0.519
+        ]
+      },
+      "tov": {
+        "n": 569,
+        "players": 97,
+        "baseline_rmse_pp": 10.5,
+        "enhanced_rmse_pp": 10.506,
+        "rmse_improvement_pct": -0.058,
+        "ci95_pct": [
+          -0.712,
+          0.591
+        ]
+      }
+    }
+  },
+  "decision": "Do not promote historical efficiency-under-load response to a weighted component in Hidden Value, Role Fulfillment, or Scalability. No out-of-sample improvement; preserve framework weights.",
+  "research_limits": [
+    "One season, overlapping player histories and possible teammates/opponents context missing",
+    "Point estimates and CI from one fixed feature design and three date windows; small performance differences",
+    "Player-cluster resampling estimates conditional uncertainty, not refit or independent season replication",
+    "Outcome TS and TOV game-level noisy; opportunity-weighted loss reduces but not eliminates sampling noise",
+    "High-load actual-game split is defined after game, not available to predict pretip",
+    "Pregame eligibility removes season-end selection bias but may select ongoing high-minute players; no causal interpretation",
+    "Training fit-only z-score and hyperparameters fixed, not selected on test",
+    "More advanced role, shot difficulty, availability, lineup data not yet included",
+    "Do not confuse predictive performance for all future games with conditional performance under exogenously assigned high workload"
+  ]
+}
