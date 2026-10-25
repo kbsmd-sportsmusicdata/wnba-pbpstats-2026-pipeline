@@ -1,0 +1,36 @@
+{
+  "source_blob_sha": "4030c140e580bceb5fce25abf7704967e457fadc",
+  "feature_schema": "p0_frozen_definitions_20261025.json",
+  "rows": 6587,
+  "players": 238,
+  "qualified_players": 111,
+  "p0_reliable_rows": 2850,
+  "shards": [
+    {
+      "path": "analysis/efficiency_under_load/data/p0_2026_player_game_part_01.csv",
+      "rows": 1700,
+      "size": 361590
+    },
+    {
+      "path": "analysis/efficiency_under_load/data/p0_2026_player_game_part_02.csv",
+      "rows": 1700,
+      "size": 359238
+    },
+    {
+      "path": "analysis/efficiency_under_load/data/p0_2026_player_game_part_03.csv",
+      "rows": 1700,
+      "size": 358371
+    },
+    {
+      "path": "analysis/efficiency_under_load/data/p0_2026_player_game_part_04.csv",
+      "rows": 1487,
+      "size": 314115
+    }
+  ],
+  "primary_key": [
+    "player_id",
+    "game_id"
+  ],
+  "data_quality": "raw missing event counts treated as zero; raw missing Usage treated as null; zero denominators yield null rates; each record independently calculated from season game logs; raw source unchanged",
+  "date": "2026-10-25"
+}
