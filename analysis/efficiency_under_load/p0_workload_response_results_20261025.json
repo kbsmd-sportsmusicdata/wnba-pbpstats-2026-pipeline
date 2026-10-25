@@ -1,0 +1,113 @@
+{
+  "title": "2026 WNBA Efficiency Under Load — P0 Workload Response",
+  "analysis_date": "2026-10-25",
+  "status": "exploratory observational / frozen definition v1.0",
+  "base_blob_sha": "4030c140e580bceb5fce25abf7704967e457fadc",
+  "definitions": "analysis/efficiency_under_load/p0_frozen_definitions_20261025.json",
+  "cohort": {
+    "base_rows": 6587,
+    "unique_players": 238,
+    "qualified_players": 111,
+    "qualified_player_game_rows_before_p0_gates": 4251,
+    "model_ready_player_games": 2850,
+    "model_ready_players": 111
+  },
+  "qa": {
+    "duplicate_player_game_keys": 0,
+    "missing_usage_in_base_rows": 270,
+    "raw_computed_ts_over_100_base_rows": 231,
+    "model_ready_computed_ts_over_100_rows": 30,
+    "reported_TsPct_vs_reconstructed_median_absolute_difference_pp_with_shot_opportunities_at_least_5": 0.76,
+    "model_ready_nonmissing_reported_TsPct_rows": 2834,
+    "flags_consistent": true
+  },
+  "bands": [
+    {
+      "band": "lower",
+      "condition": "delta USG <= -5 pp",
+      "n_games": 359,
+      "players": 88,
+      "mean_delta_usage_pp": -7.28,
+      "pooled_ts_pct": 55.32,
+      "pooled_tov_pct": 12.58
+    },
+    {
+      "band": "typical",
+      "condition": "-5 < delta USG < 5 pp",
+      "n_games": 1949,
+      "players": 111,
+      "mean_delta_usage_pp": 0.08,
+      "pooled_ts_pct": 57.31,
+      "pooled_tov_pct": 13.4
+    },
+    {
+      "band": "elevated",
+      "condition": "delta USG >= 5 pp",
+      "n_games": 542,
+      "players": 108,
+      "mean_delta_usage_pp": 8.38,
+      "pooled_ts_pct": 58.37,
+      "pooled_tov_pct": 13.16
+    }
+  ],
+  "model": {
+    "spec": "Player FE WLS; response TS% or TOV%, covariates usage_delta_pp and current game minutes; weights shot opportunities for TS, used plays for TOV. Rescale usage coefficient to 5 pp. Player-bootstrap 800 replicates with seeded LCG; 95% percentile intervals.",
+    "ts_pct_change_per_5pp_usage": {
+      "coefficient_pp": 1.158,
+      "CI95_pp": [
+        0.538,
+        1.825
+      ]
+    },
+    "tov_pct_change_per_5pp_usage": {
+      "coefficient_pp": 0.304,
+      "CI95_pp": [
+        0.014,
+        0.642
+      ]
+    },
+    "min_shot_opportunities_8_sensitivity": {
+      "n": 2182,
+      "players": 108,
+      "ts_coef_pp": 0.981,
+      "ts_CI95_pp": [
+        0.265,
+        1.721
+      ],
+      "tov_coef_pp": 0.586,
+      "tov_CI95_pp": [
+        0.209,
+        0.979
+      ]
+    },
+    "prior_history_at_least_8_sensitivity": {
+      "n": 2598,
+      "players": 109,
+      "ts_coef_pp": 1.115,
+      "ts_CI95_pp": [
+        0.407,
+        1.803
+      ],
+      "tov_coef_pp": 0.303,
+      "tov_CI95_pp": [
+        -0.016,
+        0.662
+      ]
+    },
+    "same_sample_reported_pbpstats_ts_pct_sensitivity": {
+      "n_nonmissing": 2834,
+      "ts_coef_pp": 0.988,
+      "interval_not_computed": true
+    }
+  },
+  "paired_band_sensitivity": {
+    "players_with_at_least_two_elevated_and_two_typical_games": 104,
+    "mean_elevated_minus_typical_ts_pp": 1.06,
+    "median_elevated_minus_typical_ts_pp": 1.7,
+    "mean_elevated_minus_typical_tov_pp": 0.39,
+    "fraction_player_ts_higher_in_elevated": 0.577
+  },
+  "interpretation": "In this 2026 observational sample, higher same-game usage relative to a player's pregame level accompanies a higher TS% and a slightly higher TOV%. Neither implies that raising usage causes efficiency to rise or that a player can scale to a sustained expanded role. Same-game usage is endogenous; selection effects and shared metric inputs remain.",
+  "framework_weight_changes": 0,
+  "next_validation": "Test pregame load-response evidence for incremental chronological out-of-sample predictive value over prior level and role/memo metrics before any score integration."
+}
