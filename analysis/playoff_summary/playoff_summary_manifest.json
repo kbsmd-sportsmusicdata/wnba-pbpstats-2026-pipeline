@@ -1,6 +1,6 @@
 {
-  "coverage_through": "2026-10-21",
-  "generated_at_utc": "2026-10-25T17:18:20+00:00",
+  "coverage_through": "2026-10-24",
+  "generated_at_utc": "2026-10-26T00:13:56+00:00",
   "inputs": {
     "playoff_games": "/home/runner/work/wnba-pbpstats-2026-pipeline/wnba-pbpstats-2026-pipeline/data/pbpstats_2026_player_game_logs/playoffs/games_wnba_2026_playoffs.csv",
     "playoff_player": "/home/runner/work/wnba-pbpstats-2026-pipeline/wnba-pbpstats-2026-pipeline/data/processed/wnba_pbpstats_player_game/season=2026/playoffs/player_game.parquet",
@@ -13,14 +13,14 @@
   "min_playoff_games": 2,
   "movers_board_written": true,
   "movers_metric": "points_per100",
-  "player_delta_rows": 90,
-  "players": 90,
-  "qualified_players": 81,
+  "player_delta_rows": 91,
+  "players": 91,
+  "qualified_players": 82,
   "season": "2026",
   "series": 7,
   "source_completeness": {
-    "complete": false,
-    "player_failures": 1,
+    "complete": true,
+    "player_failures": 0,
     "team_failures": 0
   },
   "team_delta_rows": 8,

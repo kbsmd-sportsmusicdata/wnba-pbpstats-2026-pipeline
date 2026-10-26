@@ -1,8 +1,6 @@
 # WNBA 2026 Playoffs — Risers & Fallers
 
-> ⚠️ Partial ingest: 1 player(s) and 0 team(s) failed to refresh and are pending a retry — these splits/deltas are incomplete.
-
-Largest regular-season → playoff change in **points_per100 (points per 100 possessions)** · data through **2026-10-21**. Qualified players (2+ playoff games); Δ = playoff − regular season.
+Largest regular-season → playoff change in **points_per100 (points per 100 possessions)** · data through **2026-10-24**. Qualified players (2+ playoff games); Δ = playoff − regular season.
 
 ## Biggest risers
 
@@ -23,7 +21,7 @@ Largest regular-season → playoff change in **points_per100 (points per 100 pos
 | --- | --- | --- | --- | --- | --- |
 | Kalani Brown | LVA | 5 | 51.4 | 25.0 | -26.4 |
 | Justine Pissott | LVA | 4 | 23.1 | 0 | -23.1 |
-| Shatori Walker-Kimbrough | ATL | 3 | 19.3 | 0 | -19.3 |
+| Shatori Walker-Kimbrough | ATL | 4 | 19.3 | 0 | -19.3 |
 | Rebecca Allen | NYL | 4 | 16.0 | 0 | -16.0 |
 | Lauren Betts | WAS | 2 | 18.8 | 2.9 | -15.9 |
 | Angela Dugalic | WAS | 2 | 15.8 | 0 | -15.8 |
