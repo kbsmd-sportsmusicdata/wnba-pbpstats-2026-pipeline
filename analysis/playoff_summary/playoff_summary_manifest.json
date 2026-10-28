@@ -1,6 +1,6 @@
 {
   "coverage_through": "2026-10-24",
-  "generated_at_utc": "2026-10-27T19:02:27+00:00",
+  "generated_at_utc": "2026-10-28T19:12:52+00:00",
   "inputs": {
     "playoff_games": "/home/runner/work/wnba-pbpstats-2026-pipeline/wnba-pbpstats-2026-pipeline/data/pbpstats_2026_player_game_logs/playoffs/games_wnba_2026_playoffs.csv",
     "playoff_player": "/home/runner/work/wnba-pbpstats-2026-pipeline/wnba-pbpstats-2026-pipeline/data/processed/wnba_pbpstats_player_game/season=2026/playoffs/player_game.parquet",
