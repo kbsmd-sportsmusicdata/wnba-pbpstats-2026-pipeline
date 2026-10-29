@@ -6,8 +6,8 @@
     "season_type": "Regular Season",
     "dedupe_strategy": "features_master appends unique content hashes; features_latest overwrites current feature snapshot",
     "row_count": 238,
-    "last_saved_at_utc": "2026-10-28T19:10:41+00:00",
-    "run_id": "20261028T191035Z"
+    "last_saved_at_utc": "2026-10-29T05:06:27+00:00",
+    "run_id": "20261029T050623Z"
   },
   "rows": [
     {
@@ -319,8 +319,8 @@
       "shot_diet_profile_label": "Modern Shot Diet",
       "specialized_shooter_label": "Above-Break Spacer",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "1d39ab610886c73413f6690696e787620335bac0089638c238b00b683848ef37"
     },
     {
@@ -632,8 +632,8 @@
       "shot_diet_profile_label": "Modern Shot Diet",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "71485d8a070d04d90875b977d749e0d5f6f6cc9d2242541644e29149c6c18aa4"
     },
     {
@@ -945,8 +945,8 @@
       "shot_diet_profile_label": "Modern Shot Diet",
       "specialized_shooter_label": "Balanced Three-Level Scorer",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "7d88a68179eb88401eb2416fff431e816089476eae64ff133cc8236706076e06"
     },
     {
@@ -1258,8 +1258,8 @@
       "shot_diet_profile_label": "Modern Shot Diet",
       "specialized_shooter_label": "Above-Break Spacer",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "cbdefa7f301964425c0a831cd287fc21f19fb0831558d005c8f08ddea872937c"
     },
     {
@@ -1571,8 +1571,8 @@
       "shot_diet_profile_label": "Perimeter-Leaning",
       "specialized_shooter_label": "Midrange Specialist",
       "shot_diet_risk_label": "Midrange-Heavy Risk",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "7c9fff829c848ff8b38224397fe2736d3917f5f42cfd0bb359e13212c65290b1"
     },
     {
@@ -1884,8 +1884,8 @@
       "shot_diet_profile_label": "Unavailable Shot Diet",
       "specialized_shooter_label": "Midrange Specialist",
       "shot_diet_risk_label": "Midrange-Heavy Risk",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "8dba3e1dbddacf361c2991b6f6ab952b29f046b28f57bdcd3c7b9e5d60699492"
     },
     {
@@ -2197,8 +2197,8 @@
       "shot_diet_profile_label": "Balanced Shot Diet",
       "specialized_shooter_label": "Midrange Specialist",
       "shot_diet_risk_label": "Balanced / Low Risk",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "dbdfecea00e0662bc9e5278d4bd44daaf1617a76b741d068d069b318d3359808"
     },
     {
@@ -2510,8 +2510,8 @@
       "shot_diet_profile_label": "Midrange-Heavy",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Midrange-Heavy Risk",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "248897b8ab006d48eea1ff4e27c26b778975d85b523d12a265a07f06b95956f0"
     },
     {
@@ -2823,8 +2823,8 @@
       "shot_diet_profile_label": "Midrange-Heavy",
       "specialized_shooter_label": "Midrange Specialist",
       "shot_diet_risk_label": "Balanced / Low Risk",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "10c6816855e57fa2a79fc6f0842299a0acec16e0431843a5a4f2f16d2b79b1af"
     },
     {
@@ -3136,8 +3136,8 @@
       "shot_diet_profile_label": "Balanced Shot Diet",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "0a2f2ee519869d59d39b18dc72b51c5ac20c76c9a7e642eba7e05dabd1f3a0b4"
     },
     {
@@ -3449,8 +3449,8 @@
       "shot_diet_profile_label": "Modern Shot Diet",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "2f0ab841a34742adf5e30a9c759ab106d674125564d8516945708f9fe56c063d"
     },
     {
@@ -3762,8 +3762,8 @@
       "shot_diet_profile_label": "Paint-Oriented",
       "specialized_shooter_label": "Rim Pressure Finisher",
       "shot_diet_risk_label": "Spacing-Limited Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "b07e092f4c87af0bda84da9bc94aca601518d89bf92f2332bd3ddd780f6da044"
     },
     {
@@ -4075,8 +4075,8 @@
       "shot_diet_profile_label": "Midrange-Heavy",
       "specialized_shooter_label": "Midrange Specialist",
       "shot_diet_risk_label": "Balanced / Low Risk",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "605d8bcbaabd83553f1b3d55e5f2a2222e67a9e8191faf04d74009266705d852"
     },
     {
@@ -4388,8 +4388,8 @@
       "shot_diet_profile_label": "Diversified Shot Profile",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Midrange-Heavy Risk",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "38465cc9ce9ac268c3d58854bbef5a1ce8b27069f3252532ea2a7f9262df3683"
     },
     {
@@ -4701,8 +4701,8 @@
       "shot_diet_profile_label": "Diversified Shot Profile",
       "specialized_shooter_label": "Balanced Three-Level Scorer",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "ef8063e51a364d696d96c007184dbc47d81642116009a32b0462daa29958510f"
     },
     {
@@ -5014,8 +5014,8 @@
       "shot_diet_profile_label": "Diversified Shot Profile",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Balanced / Low Risk",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "98ff275280a43cd97d0e3c13f59e8333d5859b73c8ebe85a98a0b4642b49746a"
     },
     {
@@ -5327,8 +5327,8 @@
       "shot_diet_profile_label": "Midrange-Heavy",
       "specialized_shooter_label": "Midrange Specialist",
       "shot_diet_risk_label": "Midrange-Heavy Risk",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "b16b754531c770a18be76293efb97c0bf907555a77dd8310dce8daf5695fb1ea"
     },
     {
@@ -5640,8 +5640,8 @@
       "shot_diet_profile_label": "Midrange-Heavy",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Midrange-Heavy Risk",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "c9815bc92c8f182e97d7ee657b1aa02233e1c052b7c3eb151c54fc73ae6b1f0e"
     },
     {
@@ -5953,8 +5953,8 @@
       "shot_diet_profile_label": "Paint-Oriented",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Midrange-Heavy Risk",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "cec00d3263239468e3756175e44af0a09bcbabb6d72846f47b874c4ed790c206"
     },
     {
@@ -6266,8 +6266,8 @@
       "shot_diet_profile_label": "Balanced Shot Diet",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Balanced / Low Risk",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "189eb71dcfe2daa90beac1c6de76deaf2c2b32e0717a9a7c30436335e0531dbc"
     },
     {
@@ -6579,8 +6579,8 @@
       "shot_diet_profile_label": "Paint-Oriented",
       "specialized_shooter_label": "Rim Pressure Finisher",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "44907d2683abf3df66f9edd4bca44f32202fedb7712547fdc4dd8806acd66be6"
     },
     {
@@ -6892,8 +6892,8 @@
       "shot_diet_profile_label": "Modern Shot Diet",
       "specialized_shooter_label": "Above-Break Spacer",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "75e7c178b4dca7631d6e42861f7c7dc89cee15e5071bba104160ec5c040c04c2"
     },
     {
@@ -7205,8 +7205,8 @@
       "shot_diet_profile_label": "Modern Shot Diet",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "fb89c1f2891b7c845670582f1e32d9bfdbcddb4cb1032c5195424dfba5c0430c"
     },
     {
@@ -7518,8 +7518,8 @@
       "shot_diet_profile_label": "Modern Shot Diet",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "757b78b39345447f86fe7b39dad5d7f0a2b3eb3444deaeb7e380d676cc2ad522"
     },
     {
@@ -7831,8 +7831,8 @@
       "shot_diet_profile_label": "Modern Shot Diet",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "373604a68ae68efabd68db07dd3943d0f616776ab2118dd0d40bad4fbff9423a"
     },
     {
@@ -8144,8 +8144,8 @@
       "shot_diet_profile_label": "Modern Shot Diet",
       "specialized_shooter_label": "Above-Break Spacer",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "4e97b82485ddda999f01d337adb2c0832dd77ec5062c11bd405cbca2abcc2e6c"
     },
     {
@@ -8457,8 +8457,8 @@
       "shot_diet_profile_label": "Modern Shot Diet",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "fba5903633b3f2163d69a36748d8609150f3049c18da43e83728a6a975bf29a6"
     },
     {
@@ -8770,8 +8770,8 @@
       "shot_diet_profile_label": "Diversified Shot Profile",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "da34463b5d5ee5f8c0dea131c2f02b4052b52f9cf6662eda8329a7bcba38dde2"
     },
     {
@@ -9083,8 +9083,8 @@
       "shot_diet_profile_label": "Modern Shot Diet",
       "specialized_shooter_label": "Rim Pressure Finisher",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "5025b5b90c4ed7688bc453161868c966ee10e6ae27e6697ca863e2c603f3d4ab"
     },
     {
@@ -9396,8 +9396,8 @@
       "shot_diet_profile_label": "Perimeter-Leaning",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "High Variance Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "1edd6fdb1359be9251c2978cc40258c446b625bd201d681a0a158cdf5bd6c6b5"
     },
     {
@@ -9709,8 +9709,8 @@
       "shot_diet_profile_label": "Paint-Oriented",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Spacing-Limited Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "a636c9fcbb9f3b6b1edf4245b9fcd44d00d2bf0d14af14565710bd698e49454f"
     },
     {
@@ -10022,8 +10022,8 @@
       "shot_diet_profile_label": "Unavailable Shot Diet",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Specialist-Dependent",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "59b4f86e8bb027e03b087c87bd0ad35e43a05649e5f208c9d7fc78a799057583"
     },
     {
@@ -10335,8 +10335,8 @@
       "shot_diet_profile_label": "Perimeter-Leaning",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Low Pressure Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "9cda52d4b130a4f04eb5f1276f14e1fcf134b4d0d7702c6b18eacf99adf1306c"
     },
     {
@@ -10648,8 +10648,8 @@
       "shot_diet_profile_label": "Diversified Shot Profile",
       "specialized_shooter_label": "Balanced Three-Level Scorer",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "2c57c77f1ff2d34cd41a15596607a7ad15e5d94fe7d2740b96044fa4635c8355"
     },
     {
@@ -10961,8 +10961,8 @@
       "shot_diet_profile_label": "Modern Shot Diet",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "6c502c33f0050fad653c4eabf1d78e9572e8b20715f3cd8d9cae9280fad17f70"
     },
     {
@@ -11274,8 +11274,8 @@
       "shot_diet_profile_label": "Modern Shot Diet",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "c7e12abd274ff26c24018bcbcddb5f77e257c23447a1cecccf0a2530bb76a68e"
     },
     {
@@ -11587,8 +11587,8 @@
       "shot_diet_profile_label": "Modern Shot Diet",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "1c755730357c38f90df60cd88c5a4c284e8a750048b1a7c4cfd1806d5a0ed4f5"
     },
     {
@@ -11900,8 +11900,8 @@
       "shot_diet_profile_label": "Modern Shot Diet",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "f15bbded16fb042e4add83188ab18618373da10f25415f14da07337b20a6e3da"
     },
     {
@@ -12213,8 +12213,8 @@
       "shot_diet_profile_label": "Modern Shot Diet",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "8ce47796f61688eee539bc5461a4c4a0526b367cfe41129fdeec7576cc58608c"
     },
     {
@@ -12526,8 +12526,8 @@
       "shot_diet_profile_label": "Paint-Oriented",
       "specialized_shooter_label": "Midrange Specialist",
       "shot_diet_risk_label": "Balanced / Low Risk",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "7950645c711d1171c2eb32490b6e5e698d728dca466052c285661b284a14c226"
     },
     {
@@ -12839,8 +12839,8 @@
       "shot_diet_profile_label": "Modern Shot Diet",
       "specialized_shooter_label": "High-Volume Low-Efficiency Shooter",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "76029f6dbb9e55a80ee071ddda8e6e709557f0dbdd6fb71de37f1c05677d7b15"
     },
     {
@@ -13152,8 +13152,8 @@
       "shot_diet_profile_label": "Diversified Shot Profile",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Balanced / Low Risk",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "10ae3781a222daddd8fbc617d02bb8082826743051809b79be98faa42f7a9617"
     },
     {
@@ -13465,8 +13465,8 @@
       "shot_diet_profile_label": "Modern Shot Diet",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "eb2b755b01bc896be3169e180192b238d7bd782c347d22caff4e60597d9de07b"
     },
     {
@@ -13778,8 +13778,8 @@
       "shot_diet_profile_label": "Paint-Oriented",
       "specialized_shooter_label": "Rim Pressure Finisher",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "a3b91b31522f6eb8bf3b2f5c87cd5b37cdafad662d90d77a7b61933c0299435f"
     },
     {
@@ -14091,8 +14091,8 @@
       "shot_diet_profile_label": "Perimeter-Leaning",
       "specialized_shooter_label": "Balanced Three-Level Scorer",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "afaf6d4ca8820b70d3caebcae802c43eedff8c8eee75c798ea04c09c2ed8fba2"
     },
     {
@@ -14404,8 +14404,8 @@
       "shot_diet_profile_label": "Midrange-Heavy",
       "specialized_shooter_label": "Midrange Specialist",
       "shot_diet_risk_label": "Midrange-Heavy Risk",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "5e0a49cf439f4a86b4afc94d5cf63f83c7c537dba11afc85895263970d8f0f73"
     },
     {
@@ -14717,8 +14717,8 @@
       "shot_diet_profile_label": "Modern Shot Diet",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "af5f5cff34bc89c6d230236de06de1ac8e8906ace47b9835dc883bac29f9a149"
     },
     {
@@ -15030,8 +15030,8 @@
       "shot_diet_profile_label": "Perimeter-Leaning",
       "specialized_shooter_label": "Corner Spacer",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "fd88eca7f7202eba90d9fdfa5ca5e9aa6529f3614dc1dee6746062acbeb16bd7"
     },
     {
@@ -15343,8 +15343,8 @@
       "shot_diet_profile_label": "Modern Shot Diet",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "ec3ff243e97f773aa3e6a41cae24cd6ad0ec1e3d5d3fe5c246a74a7d3516a0e5"
     },
     {
@@ -15656,8 +15656,8 @@
       "shot_diet_profile_label": "Modern Shot Diet",
       "specialized_shooter_label": "Balanced Three-Level Scorer",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "17e0ef9d23e2e976730e8949fcf96ac34ec999f22d35fbd3193687813794ae27"
     },
     {
@@ -15969,8 +15969,8 @@
       "shot_diet_profile_label": "Modern Shot Diet",
       "specialized_shooter_label": "Above-Break Spacer",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "c1151189901d37a201142d1fbae10359661c1c9b80a4f469fa6704a6385a1244"
     },
     {
@@ -16282,8 +16282,8 @@
       "shot_diet_profile_label": "Diversified Shot Profile",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Midrange-Heavy Risk",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "34c8dce6943ee398b1f5cc30d626fe243af0cc47b5a7db438ec3d5eb3d813835"
     },
     {
@@ -16595,8 +16595,8 @@
       "shot_diet_profile_label": "Modern Shot Diet",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "f9299b7df9b4b6cf0bb19b96f60f60679294cbde0f524f38415d1fc0ce0592e0"
     },
     {
@@ -16908,8 +16908,8 @@
       "shot_diet_profile_label": "Modern Shot Diet",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "f29e122502da8f71c28c73c7d23c18ba293057dd5f886b5dc6d784f4a8e05c78"
     },
     {
@@ -17221,8 +17221,8 @@
       "shot_diet_profile_label": "Modern Shot Diet",
       "specialized_shooter_label": "Above-Break Spacer",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "d5f963f8add7c0d4e2daec4d4dd8850293927aaeedca93b94946119c7e78963b"
     },
     {
@@ -17534,8 +17534,8 @@
       "shot_diet_profile_label": "Perimeter-Leaning",
       "specialized_shooter_label": "Midrange Specialist",
       "shot_diet_risk_label": "Midrange-Heavy Risk",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "4a44da4350e512a46d733ac935d3046d877d3489e75d642b4e41972ce8df69bd"
     },
     {
@@ -17847,8 +17847,8 @@
       "shot_diet_profile_label": "Modern Shot Diet",
       "specialized_shooter_label": "Above-Break Spacer",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "98b65bd458120652b58531d41c5b5e92f468f2d44762e9434d1d2c58f3108967"
     },
     {
@@ -18160,8 +18160,8 @@
       "shot_diet_profile_label": "Modern Shot Diet",
       "specialized_shooter_label": "Above-Break Spacer",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "2cf44e575e34b21f27b4f7e137d9cd7fa274f0fbd881a1385ce6f1fe655b87ca"
     },
     {
@@ -18473,8 +18473,8 @@
       "shot_diet_profile_label": "Paint-Oriented",
       "specialized_shooter_label": "Midrange Specialist",
       "shot_diet_risk_label": "Midrange-Heavy Risk",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "c1db2d96f0417eb5393d2979a7bfffb261bf49593353282c08bd27ebfcd78e98"
     },
     {
@@ -18786,8 +18786,8 @@
       "shot_diet_profile_label": "Unavailable Shot Diet",
       "specialized_shooter_label": "Rim Pressure Finisher",
       "shot_diet_risk_label": "Balanced / Low Risk",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "2384093a1015cb7298f9c0846c116893e92c992cc5d457499917ff2dfa295327"
     },
     {
@@ -19099,8 +19099,8 @@
       "shot_diet_profile_label": "Modern Shot Diet",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "9278aaaa91d701e3f74a88237c13bf1f146d9f3417e1060f68d5c1d4e7311805"
     },
     {
@@ -19412,8 +19412,8 @@
       "shot_diet_profile_label": "Modern Shot Diet",
       "specialized_shooter_label": "High-Volume Low-Efficiency Shooter",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "08091f19ab6346c2d6c087fd4579b374cc7baac876183414f03aeabbd78928cb"
     },
     {
@@ -19725,8 +19725,8 @@
       "shot_diet_profile_label": "Modern Shot Diet",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "eca3508f3d628c52e10f95f05c799c44edc1690ff717af763b0a4dfbd75a7493"
     },
     {
@@ -20038,8 +20038,8 @@
       "shot_diet_profile_label": "Diversified Shot Profile",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Balanced / Low Risk",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "8869858f7453d119ca970f684bbbd7c207359f72b0b9a71255132d0850aef14f"
     },
     {
@@ -20351,8 +20351,8 @@
       "shot_diet_profile_label": "Modern Shot Diet",
       "specialized_shooter_label": "Above-Break Spacer",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "d5229e33e2561a2bd3607fa6d7ad6488011faba42334883b23fccac45e45c3a3"
     },
     {
@@ -20664,8 +20664,8 @@
       "shot_diet_profile_label": "Modern Shot Diet",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "52f8c9d0c7565cb957cc23c37578f9344a037e2af6d119a873eade71ccea8ccf"
     },
     {
@@ -20977,8 +20977,8 @@
       "shot_diet_profile_label": "Midrange-Heavy",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Midrange-Heavy Risk",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "b8e2cf8f0a0103bdc41598b125ab569296e03d3c6ee901488b0d7589e8dd1bac"
     },
     {
@@ -21290,8 +21290,8 @@
       "shot_diet_profile_label": "Midrange-Heavy",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Midrange-Heavy Risk",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "ab2d9859fe6107a1255db55c42e258ee833247dfe6d314adf83c588652e8b783"
     },
     {
@@ -21603,8 +21603,8 @@
       "shot_diet_profile_label": "Modern Shot Diet",
       "specialized_shooter_label": "Above-Break Spacer",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "6156e473df2e73dc9d1caab14721ee1b03dde2c4b557cd41dd5f3102f746b0f6"
     },
     {
@@ -21916,8 +21916,8 @@
       "shot_diet_profile_label": "Modern Shot Diet",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "ed97727340c450ea07c4600b524b9410269eeba1541ababde4ccb38f41017983"
     },
     {
@@ -22229,8 +22229,8 @@
       "shot_diet_profile_label": "Unavailable Shot Diet",
       "specialized_shooter_label": "Rim Pressure Finisher",
       "shot_diet_risk_label": "Specialist-Dependent",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "f3323d216e9cb7e8a85fec7822fe7552dd9fcb0c6f1390393237849f264cf2ed"
     },
     {
@@ -22542,8 +22542,8 @@
       "shot_diet_profile_label": "Modern Shot Diet",
       "specialized_shooter_label": "Corner Spacer",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "6357c82e7bb999bd8705603c060dd09d93893e8e702460c8bc5bd740b44d0f7f"
     },
     {
@@ -22855,8 +22855,8 @@
       "shot_diet_profile_label": "Midrange-Heavy",
       "specialized_shooter_label": "Midrange Specialist",
       "shot_diet_risk_label": "Spacing-Limited Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "fe19ffea4632fb7b25e059a2fcd3c2f7e6ea509495aa096e7a2632f175d03e96"
     },
     {
@@ -23168,8 +23168,8 @@
       "shot_diet_profile_label": "Paint-Oriented",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Spacing-Limited Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "2c400b9473b6ff73bce01e02b0658a340a42fb9c254d66dad5305a9b72256c23"
     },
     {
@@ -23481,8 +23481,8 @@
       "shot_diet_profile_label": "Modern Shot Diet",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "4ec317487314686a6e3a6ff0950d3346f71e6b8b29a7d0aec9cdf689b8705b2a"
     },
     {
@@ -23794,8 +23794,8 @@
       "shot_diet_profile_label": "Unavailable Shot Diet",
       "specialized_shooter_label": "Rim Pressure Finisher",
       "shot_diet_risk_label": "Midrange-Heavy Risk",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "c304d24fcb02233c34320380ae032eb182f06a668ce3aa7550099b51d6fcdf62"
     },
     {
@@ -24107,8 +24107,8 @@
       "shot_diet_profile_label": "Modern Shot Diet",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "89dfc365f1af92eb6d101f684bbf95dbb3e1a1b80551ff2e4d7720441689115d"
     },
     {
@@ -24420,8 +24420,8 @@
       "shot_diet_profile_label": "Modern Shot Diet",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "1f70fc63a59932cf48943b314005618e7acee589bfe28dc9490cf3c1db9da4ff"
     },
     {
@@ -24733,8 +24733,8 @@
       "shot_diet_profile_label": "Modern Shot Diet",
       "specialized_shooter_label": "Balanced Three-Level Scorer",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "a899464272ed9d3499c15985d648efb607e7006c968f99cc048fdfcd7cdd95d4"
     },
     {
@@ -25046,8 +25046,8 @@
       "shot_diet_profile_label": "Modern Shot Diet",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "281b7870e2b7db5b349448f1e0a96339171bb00d5d34c5bbd35695c33a3e3221"
     },
     {
@@ -25359,8 +25359,8 @@
       "shot_diet_profile_label": "Paint-Oriented",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "6c24fc193df3c7b23bce2853552e2d6a72c4357ddcbcb0b001404069c8f93183"
     },
     {
@@ -25672,8 +25672,8 @@
       "shot_diet_profile_label": "Paint-Oriented",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "d2b10a6108629891277f8c379c132a5507c4f1c91b650871abe137fd90f042de"
     },
     {
@@ -25985,8 +25985,8 @@
       "shot_diet_profile_label": "Paint-Oriented",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Balanced / Low Risk",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "a4857ae72f709f16014b95198798f90407fde966e88596abbeb3373238b0dbb5"
     },
     {
@@ -26298,8 +26298,8 @@
       "shot_diet_profile_label": "Unavailable Shot Diet",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Midrange-Heavy Risk",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "aff94aa049cc5b09b09303025a53638dc7535368fd22acc54ca79f9d6bbac90e"
     },
     {
@@ -26611,8 +26611,8 @@
       "shot_diet_profile_label": "Balanced Shot Diet",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "62b46925ea0f577af1f7642cc2d797f4cdb9b91fb035efba2ab2adfd1064deb6"
     },
     {
@@ -26924,8 +26924,8 @@
       "shot_diet_profile_label": "Perimeter-Leaning",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Midrange-Heavy Risk",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "dbd1612e040e5bb729086a9b8e419f5cfd407a6a08f3d20b5bef410e200d5810"
     },
     {
@@ -27237,8 +27237,8 @@
       "shot_diet_profile_label": "Unavailable Shot Diet",
       "specialized_shooter_label": "Rim Pressure Finisher",
       "shot_diet_risk_label": "Balanced / Low Risk",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "6216cf6b2a1f89c416d123bdcc2027077c84c588ae447d33b557884614011666"
     },
     {
@@ -27550,8 +27550,8 @@
       "shot_diet_profile_label": "Diversified Shot Profile",
       "specialized_shooter_label": "Midrange Specialist",
       "shot_diet_risk_label": "Balanced / Low Risk",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "7d3982f5bb7809de0eeeae48f2de26985e18960c7fefedcfa24c8597efbbfdcd"
     },
     {
@@ -27863,8 +27863,8 @@
       "shot_diet_profile_label": "Modern Shot Diet",
       "specialized_shooter_label": "Above-Break Spacer",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "e18a245994b8ebba5f4d3f0107d65ed726c60a69e41bdde168ca725b6bad9d34"
     },
     {
@@ -28176,8 +28176,8 @@
       "shot_diet_profile_label": "Diversified Shot Profile",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Balanced / Low Risk",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "a043a5d10098164196dc9c38f7d2be72b12f901afc1f568581ae2ed90ee1d9f5"
     },
     {
@@ -28489,8 +28489,8 @@
       "shot_diet_profile_label": "Diversified Shot Profile",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Balanced / Low Risk",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "ef3c7ca70dd8fe5617d368b69a30158dcff3bab698a5ec8a01b38c9408e0b498"
     },
     {
@@ -28802,8 +28802,8 @@
       "shot_diet_profile_label": "Perimeter-Leaning",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "084f45303d9a37f9e72cf98bf3946c679e8f71c2e88a40d7d566a995edf13f0e"
     },
     {
@@ -29115,8 +29115,8 @@
       "shot_diet_profile_label": "Modern Shot Diet",
       "specialized_shooter_label": "Corner Spacer",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "017b76dbe99fb320be4d3f0f1abe737877e78777ccacd79fe91de0c11015e024"
     },
     {
@@ -29428,8 +29428,8 @@
       "shot_diet_profile_label": "Modern Shot Diet",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "ee2bf54808325a7f05444640d516b7e491c2bed2b416bdcb51c4e6646b14cd31"
     },
     {
@@ -29741,8 +29741,8 @@
       "shot_diet_profile_label": "Modern Shot Diet",
       "specialized_shooter_label": "Rim Pressure Finisher",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "b0e58356906a050d855b99223c110854fd9f622964788aa6a0d842eba10eeb40"
     },
     {
@@ -30054,8 +30054,8 @@
       "shot_diet_profile_label": "Paint-Oriented",
       "specialized_shooter_label": "Rim Pressure Finisher",
       "shot_diet_risk_label": "Midrange-Heavy Risk",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "c29b53dc41d8cd021ed85a74163273f7f9ff4f6d0e6623080a74a8f4344061cf"
     },
     {
@@ -30367,8 +30367,8 @@
       "shot_diet_profile_label": "Diversified Shot Profile",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Midrange-Heavy Risk",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "efd557c2e8a35fa404f64b1722a910097fadc0b7f58ce6941ad8b7fa22bbdd43"
     },
     {
@@ -30680,8 +30680,8 @@
       "shot_diet_profile_label": "Modern Shot Diet",
       "specialized_shooter_label": "Corner Spacer",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "9d71d82daf7306bf7397a55bee5f8bc17469c9e63310a6f9fea92560e38aee68"
     },
     {
@@ -30993,8 +30993,8 @@
       "shot_diet_profile_label": "Diversified Shot Profile",
       "specialized_shooter_label": "Balanced Three-Level Scorer",
       "shot_diet_risk_label": "Balanced / Low Risk",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "d0d34eb9e746cfa34b9b64e2cfc80e625f5a8b679df2932e30a3693622776f7e"
     },
     {
@@ -31306,8 +31306,8 @@
       "shot_diet_profile_label": "Diversified Shot Profile",
       "specialized_shooter_label": "Balanced Three-Level Scorer",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "a9ee24f7ffcfed463aefba3e05591b9d8e5f17d05c6d6a8d47d9463b8c84a59b"
     },
     {
@@ -31619,8 +31619,8 @@
       "shot_diet_profile_label": "Modern Shot Diet",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "3b4705904081f147fb38a85d62f4fcb2acdb15787d00bfccdc63bf29b4471579"
     },
     {
@@ -31932,8 +31932,8 @@
       "shot_diet_profile_label": "Modern Shot Diet",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "80c4c1fd89d2b8c465443febaded31436e8792d7d963965863c68d5b47a6526b"
     },
     {
@@ -32245,8 +32245,8 @@
       "shot_diet_profile_label": "Modern Shot Diet",
       "specialized_shooter_label": "Corner Spacer",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "8e91ec99df98826ec0a6b5357d11f33dc9bc9fde12cb716e494082509cfd6652"
     },
     {
@@ -32558,8 +32558,8 @@
       "shot_diet_profile_label": "Modern Shot Diet",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "297f0b82bf0d2d8f39510e9db4cf3dcb789f01554afc4d2cc299ec6ef8e34b8e"
     },
     {
@@ -32871,8 +32871,8 @@
       "shot_diet_profile_label": "Modern Shot Diet",
       "specialized_shooter_label": "Balanced Three-Level Scorer",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "366f036eacc310e6cb6a9dbea0287447d801d42010cb6e16d492aafd18a0c53b"
     },
     {
@@ -33184,8 +33184,8 @@
       "shot_diet_profile_label": "Modern Shot Diet",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "ef718bbb4cc6389d2db9bab4be07d441a1e7ee24c575457bada49b7d6ec673b1"
     },
     {
@@ -33497,8 +33497,8 @@
       "shot_diet_profile_label": "Modern Shot Diet",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "d3aee460bb4fb004797853bfc9a5571a6b87366941b1fc76ed961d4eb974b9ca"
     },
     {
@@ -33810,8 +33810,8 @@
       "shot_diet_profile_label": "Modern Shot Diet",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "5c8b6f1adebd843165b584917eb478ed1832f6dc0cd45577bb9bb287a244f271"
     },
     {
@@ -34123,8 +34123,8 @@
       "shot_diet_profile_label": "Modern Shot Diet",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "da009523576f33d635a00ac35b78e06bffd95531fe594f4642227f07e304da6f"
     },
     {
@@ -34436,8 +34436,8 @@
       "shot_diet_profile_label": "Diversified Shot Profile",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Midrange-Heavy Risk",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "6da47ee2b8f451e5cfdfd0b8e1f7e93761c3af457f9d01f8555d34c7ddad5684"
     },
     {
@@ -34749,8 +34749,8 @@
       "shot_diet_profile_label": "Modern Shot Diet",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "4b1e6bc15b0c3f20d9e2aa6062ceacf9d9f021f320fb783adff31fdfadb50250"
     },
     {
@@ -35062,8 +35062,8 @@
       "shot_diet_profile_label": "Unavailable Shot Diet",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Specialist-Dependent",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "a0b47a48c4918b7ea322f208c0bcdc1aff60332e9913d27cb933779711ba9fc0"
     },
     {
@@ -35375,8 +35375,8 @@
       "shot_diet_profile_label": "Perimeter-Leaning",
       "specialized_shooter_label": "Above-Break Spacer",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "f2b6d9880fd57a30bb4a587dacbe6d5c35a4a3a2c5215374a399cc71524b2fd1"
     },
     {
@@ -35688,8 +35688,8 @@
       "shot_diet_profile_label": "Modern Shot Diet",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "a712d7b7f6337e4efcd82a2607da3c5335daece5bff3e7909ab7bd776e7b1c74"
     },
     {
@@ -36001,8 +36001,8 @@
       "shot_diet_profile_label": "Modern Shot Diet",
       "specialized_shooter_label": "Corner Spacer",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "cd4a61881c7c9e20bdb8c8de6247d94e12cb0745c588b67ad29fef2fc861d4ba"
     },
     {
@@ -36314,8 +36314,8 @@
       "shot_diet_profile_label": "Balanced Shot Diet",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "add8726552ea89104492dd2f97eae27f76833e8062d51982ad7347d1ceba654a"
     },
     {
@@ -36627,8 +36627,8 @@
       "shot_diet_profile_label": "Modern Shot Diet",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "db0540e0f44f12d48e6e27c544251f7611097fad877a7bf463068f936f169e8e"
     },
     {
@@ -36940,8 +36940,8 @@
       "shot_diet_profile_label": "Paint-Oriented",
       "specialized_shooter_label": "Rim Pressure Finisher",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "f07eaeafcdcf0dbe2cd3e6588fab3a6c0b38386f74af86a851aa82c70415ab2a"
     },
     {
@@ -37253,8 +37253,8 @@
       "shot_diet_profile_label": "Paint-Oriented",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Balanced / Low Risk",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "5e000a4b2df306c3a657a15e2467150fefd51849191da7968d8bb4e75f6391a6"
     },
     {
@@ -37566,8 +37566,8 @@
       "shot_diet_profile_label": "Diversified Shot Profile",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Balanced / Low Risk",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "1abb821fa835aaddc095e17cf66d6cbf5a759b7765896d7cb0a05215a64b70cf"
     },
     {
@@ -37879,8 +37879,8 @@
       "shot_diet_profile_label": "Diversified Shot Profile",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Midrange-Heavy Risk",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "15a37848686e2a362a90b600c5b93094b245be0daf88c662b4ae63b97a3a26af"
     },
     {
@@ -38192,8 +38192,8 @@
       "shot_diet_profile_label": "Modern Shot Diet",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "2da15ae53159834717be616dbf487083285dd8cf14a4fb7ce44860b2231cf070"
     },
     {
@@ -38505,8 +38505,8 @@
       "shot_diet_profile_label": "Perimeter-Leaning",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Midrange-Heavy Risk",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "da688a9239939c432466fa0fe5b12d4215ebd4946311e3f76774ba4f6163127b"
     },
     {
@@ -38818,8 +38818,8 @@
       "shot_diet_profile_label": "Paint-Oriented",
       "specialized_shooter_label": "Rim Pressure Finisher",
       "shot_diet_risk_label": "Midrange-Heavy Risk",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "9a029769d60e20de650c850bffdb446eb647effdfdaa8ee2ec98ba5dd86ad4f4"
     },
     {
@@ -39131,8 +39131,8 @@
       "shot_diet_profile_label": "Diversified Shot Profile",
       "specialized_shooter_label": "Midrange Specialist",
       "shot_diet_risk_label": "Balanced / Low Risk",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "e1c130396df17b12b8a90f0523eb71fad514f055254aa6b2413f9a32e92906d3"
     },
     {
@@ -39444,8 +39444,8 @@
       "shot_diet_profile_label": "Midrange-Heavy",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Midrange-Heavy Risk",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "a7e925a002ccfdd2c6d6e2e697affaf5c7ceda18f19f8b1bd161bf8d2e495087"
     },
     {
@@ -39757,8 +39757,8 @@
       "shot_diet_profile_label": "Perimeter-Leaning",
       "specialized_shooter_label": "Above-Break Spacer",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "f4a76f563fcac83c39634b8c90b5d0e6a0033824e84908ba1c114853e77a9c48"
     },
     {
@@ -40070,8 +40070,8 @@
       "shot_diet_profile_label": "Modern Shot Diet",
       "specialized_shooter_label": "Low-Volume Efficient Shooter",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "4fa1a064530b0982d7241a85175852854c18bee18a34bbdb9df9317c0b7e22e5"
     },
     {
@@ -40383,8 +40383,8 @@
       "shot_diet_profile_label": "Modern Shot Diet",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "4dbe8bc0e6c27524a8175c8c259fe6cbf7d21537d20557cbb3aa24bae3fe240b"
     },
     {
@@ -40696,8 +40696,8 @@
       "shot_diet_profile_label": "Paint-Oriented",
       "specialized_shooter_label": "Midrange Specialist",
       "shot_diet_risk_label": "Midrange-Heavy Risk",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "417a1c37d968e717cd59f0f8c4b1506e62e2263a34250000718663b4cb84079b"
     },
     {
@@ -41009,8 +41009,8 @@
       "shot_diet_profile_label": "Modern Shot Diet",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "945b438edf44d956b0c5123e35d8faeed1a16bdf61a90bd3aa347bd3575f2e13"
     },
     {
@@ -41322,8 +41322,8 @@
       "shot_diet_profile_label": "Modern Shot Diet",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "d3a72ecdd7be359b7f01a26fda0e03ae7ad730e706068ee4e44559c3d67db34f"
     },
     {
@@ -41635,8 +41635,8 @@
       "shot_diet_profile_label": "Diversified Shot Profile",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Balanced / Low Risk",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "066902a5846c635e61aebe7aee1a2a7afa13dacda136cf989e317857cc6689c7"
     },
     {
@@ -41948,8 +41948,8 @@
       "shot_diet_profile_label": "Modern Shot Diet",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "ede850d308e1e2b17887dd77a22a40e57f4da953a8ec460a1c7e7f5748066708"
     },
     {
@@ -42261,8 +42261,8 @@
       "shot_diet_profile_label": "Modern Shot Diet",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "8cbc185b2abe5c0e01d961478c3b97a102925e2d4121a8b10889c5f3711c746a"
     },
     {
@@ -42574,8 +42574,8 @@
       "shot_diet_profile_label": "Modern Shot Diet",
       "specialized_shooter_label": "Above-Break Spacer",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "8e3591bb61738f6310b6ea1f3612a24a92453daa350bb5375570e26dfc26bb0a"
     },
     {
@@ -42887,8 +42887,8 @@
       "shot_diet_profile_label": "Diversified Shot Profile",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Balanced / Low Risk",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "0aae1e24a0b352c975ab22afe28c749a8321beb3d5d73407cead77e0352c9d7d"
     },
     {
@@ -43200,8 +43200,8 @@
       "shot_diet_profile_label": "Modern Shot Diet",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "cb966f73a7f45935653faa25f42ab6a7c4cc15bb108db1301e8840738d5e2f57"
     },
     {
@@ -43513,8 +43513,8 @@
       "shot_diet_profile_label": "Perimeter-Leaning",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "659520d2b92169a3243c4c32c12fdde76ff3ce4df5f9a217b9821c30c0f69ffb"
     },
     {
@@ -43826,8 +43826,8 @@
       "shot_diet_profile_label": "Modern Shot Diet",
       "specialized_shooter_label": "Above-Break Spacer",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "55b2b9f95b6548cfcd55678d5927280e31d8a493fd085f7d5bda407b5ce905e8"
     },
     {
@@ -44139,8 +44139,8 @@
       "shot_diet_profile_label": "Modern Shot Diet",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "2e136177fc3dfce8ff5eb219f5656a3c1ff245c9b8e312c525840068e5af655e"
     },
     {
@@ -44452,8 +44452,8 @@
       "shot_diet_profile_label": "Midrange-Heavy",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Midrange-Heavy Risk",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "c44dd56121bfbc5a5996aeafc069713ec8973eddc6abdbe63fb17760425ac139"
     },
     {
@@ -44765,8 +44765,8 @@
       "shot_diet_profile_label": "Paint-Oriented",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "379e539f45dc71c55866df5f3025fb84b9b3ce01dfcd56dfd984e27c30af9150"
     },
     {
@@ -45078,8 +45078,8 @@
       "shot_diet_profile_label": "Modern Shot Diet",
       "specialized_shooter_label": "High-Volume Low-Efficiency Shooter",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "720c620bb40737629da3574ce58b0812daf38f41e5328e46966281d761094981"
     },
     {
@@ -45391,8 +45391,8 @@
       "shot_diet_profile_label": "Modern Shot Diet",
       "specialized_shooter_label": "Perimeter Volume Threat",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "d9120e4a6e83f691cf6956052fe806d657a6a9d7bcfb8b9614b159ed95008f39"
     },
     {
@@ -45704,8 +45704,8 @@
       "shot_diet_profile_label": "Paint-Oriented",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "3ac237863b77f4d7079679e644268f7d3a8106cfde5a5cf6d045b118e43ab973"
     },
     {
@@ -46017,8 +46017,8 @@
       "shot_diet_profile_label": "Modern Shot Diet",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "059fb3e8ce3df762d5fbaca9aff36a332af2f909cc98787aadf5fb28ca1fcede"
     },
     {
@@ -46330,8 +46330,8 @@
       "shot_diet_profile_label": "Perimeter-Leaning",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "e67fc4e54a6978cdce929f3c85d04a9ea9b84dc8b38c004bf61c439fc225b2a2"
     },
     {
@@ -46643,8 +46643,8 @@
       "shot_diet_profile_label": "Modern Shot Diet",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "818889f4489dbfafd027cccd62b973d56a59361bff59109e9b7d2a3ea82129d6"
     },
     {
@@ -46956,8 +46956,8 @@
       "shot_diet_profile_label": "Modern Shot Diet",
       "specialized_shooter_label": "Above-Break Spacer",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "24c5c388ece109d9b5662312d799b2cf79fb7c4c423a840e8b21da10b745b3d0"
     },
     {
@@ -47269,8 +47269,8 @@
       "shot_diet_profile_label": "Modern Shot Diet",
       "specialized_shooter_label": "High-Volume Low-Efficiency Shooter",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "3399a8816d8114e2234fdbbc50a6caf2af6abae0c3c88a887bb8cd9f0c6a87b4"
     },
     {
@@ -47582,8 +47582,8 @@
       "shot_diet_profile_label": "Modern Shot Diet",
       "specialized_shooter_label": "High-Volume Low-Efficiency Shooter",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "ade1a472ff5a79866f8a9397a1cea05ae79d9e81f9b1e6b53fa51744e1a10904"
     },
     {
@@ -47895,8 +47895,8 @@
       "shot_diet_profile_label": "Paint-Oriented",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Spacing-Limited Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "860718db900cf6040371fbf914fc37eb22ed0629963ec819eb98a6b68647e5c4"
     },
     {
@@ -48208,8 +48208,8 @@
       "shot_diet_profile_label": "Paint-Oriented",
       "specialized_shooter_label": "Low-Volume Efficient Shooter",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "fa6d85c0fabbbad5b370ee621d593902c70c0580c2a69b54f5d0a6452f25cac0"
     },
     {
@@ -48521,8 +48521,8 @@
       "shot_diet_profile_label": "Paint-Oriented",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Balanced / Low Risk",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "3fb64c28b0f6ea6a9a4f81e1fd6005447bf9980feb1f53481aefa6a5f9d2199d"
     },
     {
@@ -48834,8 +48834,8 @@
       "shot_diet_profile_label": "Modern Shot Diet",
       "specialized_shooter_label": "High-Volume Low-Efficiency Shooter",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "a78ca557821ce1e224d76e01c0874247420602e9853bffe61a8d713327a1b93e"
     },
     {
@@ -49147,8 +49147,8 @@
       "shot_diet_profile_label": "Modern Shot Diet",
       "specialized_shooter_label": "Above-Break Spacer",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "fd0a603e626223ffb11adb010d44efb26d34c985df83eaf7fa22d708a920baf2"
     },
     {
@@ -49460,8 +49460,8 @@
       "shot_diet_profile_label": "Modern Shot Diet",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "e859e12fcb27bbfdb826a9d8086aa959ad234ee7462d0e7d9a261c7c4b324dca"
     },
     {
@@ -49773,8 +49773,8 @@
       "shot_diet_profile_label": "Midrange-Heavy",
       "specialized_shooter_label": "Midrange Specialist",
       "shot_diet_risk_label": "Midrange-Heavy Risk",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "aae119bed1b65d325751463dff2e6457095cebe701a29535f7bd1d2c8080dc1e"
     },
     {
@@ -50086,8 +50086,8 @@
       "shot_diet_profile_label": "Paint-Oriented",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "92afa1900887116efcd8717c9b0c5ee83c6ab374173e40e7eb0d250f271d4b4e"
     },
     {
@@ -50399,8 +50399,8 @@
       "shot_diet_profile_label": "Paint-Oriented",
       "specialized_shooter_label": "Rim Pressure Finisher",
       "shot_diet_risk_label": "Balanced / Low Risk",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "dee01d9627afccf543f5a4b877e3133223ea1ec7479ffd928e61904da37c91c9"
     },
     {
@@ -50712,8 +50712,8 @@
       "shot_diet_profile_label": "Modern Shot Diet",
       "specialized_shooter_label": "Low-Volume Efficient Shooter",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "94313330781804dace6ebf5e117a47036bc556d0e61579943842737e979348b0"
     },
     {
@@ -51025,8 +51025,8 @@
       "shot_diet_profile_label": "Perimeter-Leaning",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Midrange-Heavy Risk",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "ae191e6d11f08901cad76c0b19676029a4e713f4782798f9a5d6bc934ae76daa"
     },
     {
@@ -51338,8 +51338,8 @@
       "shot_diet_profile_label": "Modern Shot Diet",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "3220e96f161634adfd80e64956f1f4ab1a595c3e54d4e7351634f99553dd9308"
     },
     {
@@ -51651,8 +51651,8 @@
       "shot_diet_profile_label": "Modern Shot Diet",
       "specialized_shooter_label": "Corner Spacer",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "41be896ae84f46d929777f0cda238247fff3d8afa5b1e85c35cbb09e7f1d083d"
     },
     {
@@ -51964,8 +51964,8 @@
       "shot_diet_profile_label": "Diversified Shot Profile",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "585985c009c2e0d704db675f9ccde0a54b27530e16b754238d65bc29cea7990d"
     },
     {
@@ -52277,8 +52277,8 @@
       "shot_diet_profile_label": "Paint-Oriented",
       "specialized_shooter_label": "Low-Volume Efficient Shooter",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "3e0a15e55ed7a8f1914e552f2af937d3c8d7ce14c6647337e8822779a6541896"
     },
     {
@@ -52590,8 +52590,8 @@
       "shot_diet_profile_label": "Midrange-Heavy",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Midrange-Heavy Risk",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "9fed61497fcea56092ad6a8dd84da0f52cd41ea5bed889a82754386ef1d231d4"
     },
     {
@@ -52903,8 +52903,8 @@
       "shot_diet_profile_label": "Modern Shot Diet",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "3f529203cd14759d9cda820054de8690eff16e1eac89fd5df94cbe177ce7bcb9"
     },
     {
@@ -53216,8 +53216,8 @@
       "shot_diet_profile_label": "Paint-Oriented",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "22771a40681898c7d6643b14eacc2d24cbe74525aa8e052054f3aa8bdc4b508d"
     },
     {
@@ -53529,8 +53529,8 @@
       "shot_diet_profile_label": "Modern Shot Diet",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "c420836068e0fdd51d2e8fd96b1e396a6312d71f10f17dc21307c86bfa10f569"
     },
     {
@@ -53842,8 +53842,8 @@
       "shot_diet_profile_label": "Perimeter-Leaning",
       "specialized_shooter_label": "Corner Spacer",
       "shot_diet_risk_label": "Low Pressure Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "ce552ee00ba4ea6b2c4cd1e541a5c5a1d3f5208654868a1fbb42bf356280f133"
     },
     {
@@ -54155,8 +54155,8 @@
       "shot_diet_profile_label": "Paint-Oriented",
       "specialized_shooter_label": "Low-Volume Efficient Shooter",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "d6981e02eeacd5da8c6ea3175ae61a1b2cc38042d76ae9b3247f250b3e614e47"
     },
     {
@@ -54468,8 +54468,8 @@
       "shot_diet_profile_label": "Unavailable Shot Diet",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Specialist-Dependent",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "d9ae85c2216ef448ef3799e88c8208494875aae54c1ee14a0246a8dc3db7a533"
     },
     {
@@ -54781,8 +54781,8 @@
       "shot_diet_profile_label": "Modern Shot Diet",
       "specialized_shooter_label": "Low-Volume Efficient Shooter",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "21ac06ebfcf43e7ed3a0cbef26628691b9e873dac7fc702bb9638a3f7aa1add0"
     },
     {
@@ -55094,8 +55094,8 @@
       "shot_diet_profile_label": "Modern Shot Diet",
       "specialized_shooter_label": "Corner Spacer",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "040a754ce6c4c327199824963b89d3308856b397ee9f46f93def09dbd13a3228"
     },
     {
@@ -55407,8 +55407,8 @@
       "shot_diet_profile_label": "Perimeter-Leaning",
       "specialized_shooter_label": "Balanced Three-Level Scorer",
       "shot_diet_risk_label": "High Variance Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "dd7c0df71998a4e6446455c1cae1c467e4a41d7bb6451a67740d1d9357fe0a23"
     },
     {
@@ -55720,8 +55720,8 @@
       "shot_diet_profile_label": "Modern Shot Diet",
       "specialized_shooter_label": "Low-Volume Efficient Shooter",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "eb28251494c332aeeeebbcbb13b32f8d43e65e9d411777300079010a48a5342c"
     },
     {
@@ -56033,8 +56033,8 @@
       "shot_diet_profile_label": "Perimeter-Leaning",
       "specialized_shooter_label": "Above-Break Spacer",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "b33070d527e23102d4340da8671ce9c28224b50674581900dc83c200c815f99e"
     },
     {
@@ -56346,8 +56346,8 @@
       "shot_diet_profile_label": "Midrange-Heavy",
       "specialized_shooter_label": "Low-Volume Efficient Shooter",
       "shot_diet_risk_label": "Balanced / Low Risk",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "5db0ed1e011c3cfcf44545f97f64d21e6dc39a78cb2f03d3825066b4c3b1e5cd"
     },
     {
@@ -56659,8 +56659,8 @@
       "shot_diet_profile_label": "Perimeter-Leaning",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Low Pressure Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "e50b59e65d50a1b9cec6a21e2fe4856bba2239239c4bbc6da130ef924c77477f"
     },
     {
@@ -56972,8 +56972,8 @@
       "shot_diet_profile_label": "Midrange-Heavy",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Midrange-Heavy Risk",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "ee4dc1b55b04897e5d55ae1a28c63d3839b58d7f3989d9160875f2823922e4be"
     },
     {
@@ -57285,8 +57285,8 @@
       "shot_diet_profile_label": "Paint-Oriented",
       "specialized_shooter_label": "Rim Pressure Finisher",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "59a6063819846d3bf16850ee113cedcf520ad02d2d4f3964f96083ce6f8037c9"
     },
     {
@@ -57598,8 +57598,8 @@
       "shot_diet_profile_label": "Modern Shot Diet",
       "specialized_shooter_label": "Above-Break Spacer",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "ba6540529baa9b7e81029438d9edbc8cb99dbdc5866f6b9f4449970b36af7db1"
     },
     {
@@ -57911,8 +57911,8 @@
       "shot_diet_profile_label": "Balanced Shot Diet",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Balanced / Low Risk",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "1aee40ad6fc44b4da85812f80e688d1f7cd8b8b6f23ff9e0c6254e2ec0578b9c"
     },
     {
@@ -58224,8 +58224,8 @@
       "shot_diet_profile_label": "Diversified Shot Profile",
       "specialized_shooter_label": "Balanced Three-Level Scorer",
       "shot_diet_risk_label": "Balanced / Low Risk",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "dfc705627be94f6922ab0b7fcf742e9147d61f66f9435555f7f8798c38638373"
     },
     {
@@ -58537,8 +58537,8 @@
       "shot_diet_profile_label": "Paint-Oriented",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "d8fe684014a85a0b2970a929392bdc46128731b79134fe3e42b00d6f7c78eae1"
     },
     {
@@ -58850,8 +58850,8 @@
       "shot_diet_profile_label": "Modern Shot Diet",
       "specialized_shooter_label": "Above-Break Spacer",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "64873a5ef885863f853006c5ccced0935d2ed9dd66fb295c41bb8ef3bf5ab7f6"
     },
     {
@@ -59163,8 +59163,8 @@
       "shot_diet_profile_label": "Paint-Oriented",
       "specialized_shooter_label": "Low-Volume Efficient Shooter",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "c0d144aa180defb519d4ea9445df6d87282556644b8c7e421f999823a5d95fad"
     },
     {
@@ -59476,8 +59476,8 @@
       "shot_diet_profile_label": "Modern Shot Diet",
       "specialized_shooter_label": "Above-Break Spacer",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "67dde83f10e2e8e9cdefedeb4e5e216a80bc620e5aab06641dd90bb4dc28cc35"
     },
     {
@@ -59789,8 +59789,8 @@
       "shot_diet_profile_label": "Diversified Shot Profile",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "dcc16426a2734e1b6697cb3ed7893bb720a2e5ff7aa6c6bd9f9e2f3298dc5b5f"
     },
     {
@@ -60102,8 +60102,8 @@
       "shot_diet_profile_label": "Unavailable Shot Diet",
       "specialized_shooter_label": "Low-Volume Efficient Shooter",
       "shot_diet_risk_label": "Specialist-Dependent",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "49d1c0ee79a7cedd11ef42477317574b491d45dceac5eecb6251c59013272ac1"
     },
     {
@@ -60415,8 +60415,8 @@
       "shot_diet_profile_label": "Perimeter-Leaning",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "246312d020961ab900d59a112a10a55eb76be3af8f53bf68dae5327ff32cee5d"
     },
     {
@@ -60728,8 +60728,8 @@
       "shot_diet_profile_label": "Balanced Shot Diet",
       "specialized_shooter_label": "Low-Volume Efficient Shooter",
       "shot_diet_risk_label": "Spacing-Limited Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "3c26866e65a23aa3b81c0b55c4cdb128458934746723b648ca07e8ab4f520294"
     },
     {
@@ -61041,8 +61041,8 @@
       "shot_diet_profile_label": "Perimeter-Leaning",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "High Variance Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "21b79be849cf117c15added53e584e8ca87a38c8dc3985f92babfd5d9089c068"
     },
     {
@@ -61354,8 +61354,8 @@
       "shot_diet_profile_label": "Modern Shot Diet",
       "specialized_shooter_label": "Low-Volume Efficient Shooter",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "d770debb7146333f10c7da6c677892e6ebc6ff1f46920787ddd3faeff86f09a4"
     },
     {
@@ -61667,8 +61667,8 @@
       "shot_diet_profile_label": "Unavailable Shot Diet",
       "specialized_shooter_label": "Rim Pressure Finisher",
       "shot_diet_risk_label": "Midrange-Heavy Risk",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "e1d35c996475cbb03d8419ca508c6f1e155ba8d7993a3d242e5cadca06f86b41"
     },
     {
@@ -61980,8 +61980,8 @@
       "shot_diet_profile_label": "Unavailable Shot Diet",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Balanced / Low Risk",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "b036a41f5e555bb98cd86f9304906f3c67680aa7f5c0ac180a8b2b683fb8c7fa"
     },
     {
@@ -62293,8 +62293,8 @@
       "shot_diet_profile_label": "Unavailable Shot Diet",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Specialist-Dependent",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "5ce06d0286b86aa8be4291e8f1d68a548bff2282a063a08366e3a3703df59814"
     },
     {
@@ -62606,8 +62606,8 @@
       "shot_diet_profile_label": "Perimeter-Leaning",
       "specialized_shooter_label": "High-Volume Low-Efficiency Shooter",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "7fad81c11c6034b7c8d81a91060dce9bc4c8e4968a97e295e21489768605c92a"
     },
     {
@@ -62919,8 +62919,8 @@
       "shot_diet_profile_label": "Paint-Oriented",
       "specialized_shooter_label": "Rim Pressure Finisher",
       "shot_diet_risk_label": "Spacing-Limited Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "431e3cdcd6f87816e4000693029b1f7d35bd926866bbad46bc3aadd97777e9a5"
     },
     {
@@ -63232,8 +63232,8 @@
       "shot_diet_profile_label": "Perimeter-Leaning",
       "specialized_shooter_label": "Low-Volume Efficient Shooter",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "2ebed289eda77f918c0b0795c09df7bda2ed46964498a37441707522ecd50d84"
     },
     {
@@ -63545,8 +63545,8 @@
       "shot_diet_profile_label": "Perimeter-Leaning",
       "specialized_shooter_label": "Low-Volume Efficient Shooter",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "a06bd24009ed695925b3e5895342ef30c4cd4e749751fbbcedb325cf0706eff1"
     },
     {
@@ -63858,8 +63858,8 @@
       "shot_diet_profile_label": "Perimeter-Leaning",
       "specialized_shooter_label": "Corner Spacer",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "025650c0177b63b89112349987e5966d51d7c14ef49c5a75ac9dcce5972a50f8"
     },
     {
@@ -64171,8 +64171,8 @@
       "shot_diet_profile_label": "Modern Shot Diet",
       "specialized_shooter_label": "Above-Break Spacer",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "5471fdc07286a27afaa7f48103cbfd754d28871226a090b02a9097a9803aa149"
     },
     {
@@ -64484,8 +64484,8 @@
       "shot_diet_profile_label": "Unavailable Shot Diet",
       "specialized_shooter_label": "Low-Volume Efficient Shooter",
       "shot_diet_risk_label": "Specialist-Dependent",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "30a8c36fa9b100246be1d638a990d7175c876255df5fe953fe53104e5b8e1fe4"
     },
     {
@@ -64797,8 +64797,8 @@
       "shot_diet_profile_label": "Perimeter-Leaning",
       "specialized_shooter_label": "Above-Break Spacer",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "cf619f6747f9bd30bcb2aafe1dd2aa3c6cb7cf6543e40814b132b7981bc3ad4c"
     },
     {
@@ -65110,8 +65110,8 @@
       "shot_diet_profile_label": "Perimeter-Leaning",
       "specialized_shooter_label": "Corner Spacer",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "fe51c51207d1b8e2d967b395653cf365c1c96bff8cd042203d409b9b1ced3a9e"
     },
     {
@@ -65423,8 +65423,8 @@
       "shot_diet_profile_label": "Unavailable Shot Diet",
       "specialized_shooter_label": "High-Volume Low-Efficiency Shooter",
       "shot_diet_risk_label": "High Variance Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "4209fbf8a9af2c879d0af2d8165433d496b33eada5950c8d608db251b4eb3b20"
     },
     {
@@ -65736,8 +65736,8 @@
       "shot_diet_profile_label": "Modern Shot Diet",
       "specialized_shooter_label": "Above-Break Spacer",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "e55e768dfa8ddff011a9c11cc90b06955d13d60b4c84a8c95dc6a3a080db65ab"
     },
     {
@@ -66049,8 +66049,8 @@
       "shot_diet_profile_label": "Unavailable Shot Diet",
       "specialized_shooter_label": "Low-Volume Efficient Shooter",
       "shot_diet_risk_label": "Balanced / Low Risk",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "71ab71531c6e43580226a105053eb8ae28774fad79b6e9e5de5074cb980e61ef"
     },
     {
@@ -66362,8 +66362,8 @@
       "shot_diet_profile_label": "Diversified Shot Profile",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Midrange-Heavy Risk",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "37b7c74a0cfd98231f19882ce885fdf7838c887becdfa4d71d8f94a0bb1c89ce"
     },
     {
@@ -66675,8 +66675,8 @@
       "shot_diet_profile_label": "Modern Shot Diet",
       "specialized_shooter_label": "High-Volume Low-Efficiency Shooter",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "d92e387910858f7f709706efe567ea908c688f43667128738568e9670c60306d"
     },
     {
@@ -66988,8 +66988,8 @@
       "shot_diet_profile_label": "Unavailable Shot Diet",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Midrange-Heavy Risk",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "9a61ecbab0e2bd45b3e7616871e40eac99b73c12e7c04d8a291d261a66e8ac17"
     },
     {
@@ -67301,8 +67301,8 @@
       "shot_diet_profile_label": "Unavailable Shot Diet",
       "specialized_shooter_label": "High-Volume Low-Efficiency Shooter",
       "shot_diet_risk_label": "Midrange-Heavy Risk",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "bc975edc857a08da0f738db03e9d65430e4331d246331e57935d436ad3a897fe"
     },
     {
@@ -67614,8 +67614,8 @@
       "shot_diet_profile_label": "Unavailable Shot Diet",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Midrange-Heavy Risk",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "0bc3ac38f03f2b93acbb5af7b9e5f7af735037040d72f2d907ece9ab3015ba7e"
     },
     {
@@ -67927,8 +67927,8 @@
       "shot_diet_profile_label": "Unavailable Shot Diet",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Midrange-Heavy Risk",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "3e9ff21bbdd1e18232bc2f4b22f122fd2031e3297628d72dc71b258da8f67bd7"
     },
     {
@@ -68240,8 +68240,8 @@
       "shot_diet_profile_label": "Perimeter-Leaning",
       "specialized_shooter_label": "Low-Volume Efficient Shooter",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "0b7347b2a562f1421bb9018d23f92634b5cbb2d505ae781d2213db8b0d58dcd3"
     },
     {
@@ -68553,8 +68553,8 @@
       "shot_diet_profile_label": "Perimeter-Leaning",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "e9a1ef1605327235050bbcd3332acb1cd195361fa2cf28b07494e18049a4e8da"
     },
     {
@@ -68866,8 +68866,8 @@
       "shot_diet_profile_label": "Unavailable Shot Diet",
       "specialized_shooter_label": "Low-Volume Efficient Shooter",
       "shot_diet_risk_label": "Specialist-Dependent",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "cbbb5fae5183826ed6d26c11a1630ead89d78c13f7017d1655b035bcba3762cb"
     },
     {
@@ -69179,8 +69179,8 @@
       "shot_diet_profile_label": "Paint-Oriented",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "a0b2fb18776fe6663d91e0184e39956bb4018492fa74f7fe716407c12a5d82e5"
     },
     {
@@ -69492,8 +69492,8 @@
       "shot_diet_profile_label": "Perimeter-Leaning",
       "specialized_shooter_label": "Low-Volume Efficient Shooter",
       "shot_diet_risk_label": "High Variance Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "e92bba1da2f805b005c1ccdef47ac7e286a816421dd3c30b0d135a4c0f8d4886"
     },
     {
@@ -69805,8 +69805,8 @@
       "shot_diet_profile_label": "Perimeter-Leaning",
       "specialized_shooter_label": "High-Volume Low-Efficiency Shooter",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "6a8766d5662fb510640fef3fd70c67447ea3b4244bdeb5173edef3dd0bafab42"
     },
     {
@@ -70118,8 +70118,8 @@
       "shot_diet_profile_label": "Balanced Shot Diet",
       "specialized_shooter_label": "Corner Spacer",
       "shot_diet_risk_label": "Clean Shot Profile",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "de2e4ed1e2c4ee42a133c25e996a7f35882703b24a691e85d212caf88e43542b"
     },
     {
@@ -70431,8 +70431,8 @@
       "shot_diet_profile_label": "Unavailable Shot Diet",
       "specialized_shooter_label": "Rim Pressure Finisher",
       "shot_diet_risk_label": "Specialist-Dependent",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "72d69c86c553a3e6493d3eb96bcb91286bde3d180bd971a7ba5f19c012fa21f3"
     },
     {
@@ -70744,8 +70744,8 @@
       "shot_diet_profile_label": "Unavailable Shot Diet",
       "specialized_shooter_label": "Low-Volume Efficient Shooter",
       "shot_diet_risk_label": "Specialist-Dependent",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "f62711c6751af4d86df336600f6e91737f77789f6f3d9e5bad3c198fbf688f4d"
     },
     {
@@ -71057,8 +71057,8 @@
       "shot_diet_profile_label": "Unavailable Shot Diet",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Midrange-Heavy Risk",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "10a64069c3689ce9eb60c8ed45901e48ec25ecf6348bd890b110ab291dcba3cd"
     },
     {
@@ -71370,8 +71370,8 @@
       "shot_diet_profile_label": "Unavailable Shot Diet",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Balanced / Low Risk",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "490b9f3870b040f3d4f643b5aa0204d7c29045d412b8a6ea13ff47fefa35f544"
     },
     {
@@ -71683,8 +71683,8 @@
       "shot_diet_profile_label": "Unavailable Shot Diet",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Specialist-Dependent",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "76aa8a690575980bf71458bfba66768345daf5975652c832458e60b7e1a8f292"
     },
     {
@@ -71996,8 +71996,8 @@
       "shot_diet_profile_label": "Unavailable Shot Diet",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Midrange-Heavy Risk",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "646981ef6d923c72d3e4b3f8212ab9b5492eb43caf6f229292514b83a587e441"
     },
     {
@@ -72309,8 +72309,8 @@
       "shot_diet_profile_label": "Unavailable Shot Diet",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Specialist-Dependent",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "dab6ff241e9f34f741ecc87adf65dff5fcf7240ecd117f1a5e5b1cafeba5892f"
     },
     {
@@ -72622,8 +72622,8 @@
       "shot_diet_profile_label": "Unavailable Shot Diet",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Specialist-Dependent",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "8f3d70014295677ad624cc02db1a6ed810804464d6e6124ca185e156807651b1"
     },
     {
@@ -72935,8 +72935,8 @@
       "shot_diet_profile_label": "Unavailable Shot Diet",
       "specialized_shooter_label": "Low-Volume Efficient Shooter",
       "shot_diet_risk_label": "Specialist-Dependent",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "8c55a8acc96ff566201a6266e2a190edce36a8dfb8a76439f68688c58c92946c"
     },
     {
@@ -73248,8 +73248,8 @@
       "shot_diet_profile_label": "Unavailable Shot Diet",
       "specialized_shooter_label": "Low-Volume Efficient Shooter",
       "shot_diet_risk_label": "Balanced / Low Risk",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "463070930c45e216a77c07f15121cd61e2a48e8c9183ce41971b88e15a88c525"
     },
     {
@@ -73561,8 +73561,8 @@
       "shot_diet_profile_label": "Unavailable Shot Diet",
       "specialized_shooter_label": "Low-Volume Efficient Shooter",
       "shot_diet_risk_label": "Specialist-Dependent",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "7d14901c9e059ebac120bb452475d28083450fab359ab4ea9edab9e8ca255653"
     },
     {
@@ -73874,8 +73874,8 @@
       "shot_diet_profile_label": "Unavailable Shot Diet",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Specialist-Dependent",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "0001a6ff13de5845159bf5d6948759e5ef9c2e983592cf642fbfa32602968596"
     },
     {
@@ -74187,8 +74187,8 @@
       "shot_diet_profile_label": "Unavailable Shot Diet",
       "specialized_shooter_label": "Low-Volume Efficient Shooter",
       "shot_diet_risk_label": "Specialist-Dependent",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "2a81b8565900e757d97ce552e582ffa31038ecfad8db2e873d293426a57b63eb"
     },
     {
@@ -74500,8 +74500,8 @@
       "shot_diet_profile_label": "Unavailable Shot Diet",
       "specialized_shooter_label": "No Clear Shooting Specialty",
       "shot_diet_risk_label": "Specialist-Dependent",
-      "_feature_run_id": "20261028T191035Z",
-      "_featured_at_utc": "2026-10-28T19:10:36+00:00",
+      "_feature_run_id": "20261029T050623Z",
+      "_featured_at_utc": "2026-10-29T05:06:23+00:00",
       "_row_content_hash": "74df7b0294f82ec575f7947953c5a08cb4d328cc68c591703523a3e8d88c83e5"
     }
   ]
