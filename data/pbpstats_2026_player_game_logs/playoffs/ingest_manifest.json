@@ -1,5 +1,5 @@
 {
-  "generated_at_utc": "2026-10-31T22:00:41+00:00",
+  "generated_at_utc": "2026-10-31T23:16:57+00:00",
   "season": "2026",
   "season_type": "Playoffs",
   "games_total": 22,
@@ -10,21 +10,21 @@
   "game_team_count": 8,
   "players": {
     "is_first_build": false,
-    "affected_players": 23,
-    "refreshed_players": 20,
-    "failed_players": 3,
-    "new_game_ids": 1,
-    "combined_rows": 419,
+    "affected_players": 3,
+    "refreshed_players": 3,
+    "failed_players": 0,
+    "new_game_ids": 0,
+    "combined_rows": 421,
     "combined_players": 91,
     "combined_game_ids": 22
   },
   "teams_total": 8,
   "teams": {
     "is_first_build": false,
-    "affected_teams": 2,
-    "refreshed_teams": 2,
+    "affected_teams": 0,
+    "refreshed_teams": 0,
     "failed_teams": 0,
-    "new_game_ids": 1,
+    "new_game_ids": 0,
     "combined_rows": 44,
     "combined_teams": 8,
     "combined_game_ids": 22

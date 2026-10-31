@@ -1,12 +1,12 @@
 {
   "games_in_spine": 22,
-  "generated_at_utc": "2026-10-31T22:28:49+00:00",
+  "generated_at_utc": "2026-10-31T23:18:23+00:00",
   "player_game": {
     "columns": 247,
     "games": 22,
     "path": "/home/runner/work/wnba-pbpstats-2026-pipeline/wnba-pbpstats-2026-pipeline/data/processed/wnba_pbpstats_player_game/season=2026/playoffs/player_game.parquet",
     "players": 91,
-    "rows": 419
+    "rows": 421
   },
   "season": "2026",
   "season_type": "Playoffs",

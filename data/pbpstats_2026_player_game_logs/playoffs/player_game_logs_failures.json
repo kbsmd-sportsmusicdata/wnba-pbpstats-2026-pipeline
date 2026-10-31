@@ -1,17 +1,1 @@
-[
-  {
-    "player_id": "1628277",
-    "name": "Allisha Gray",
-    "error": "failed to fetch /get-game-logs/wnba after 5 attempts: HTTPSConnectionPool(host='api.pbpstats.com', port=443): Read timed out. (read timeout=60)"
-  },
-  {
-    "player_id": "1628508",
-    "name": "Cecilia Zandalasini",
-    "error": "failed to fetch /get-game-logs/wnba after 5 attempts: retryable status 502"
-  },
-  {
-    "player_id": "1642794",
-    "name": "Juste Jocyte",
-    "error": "failed to fetch /get-game-logs/wnba after 5 attempts: retryable status 500"
-  }
-]
+[]

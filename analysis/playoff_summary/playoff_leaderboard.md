@@ -1,7 +1,5 @@
 # WNBA 2026 Playoff Summary
 
-> ⚠️ Partial ingest: 3 player(s) and 0 team(s) failed to refresh and are pending a retry — these splits/deltas are incomplete.
-
 Descriptive playoff splits (per 100 offensive possessions) · data through **2026-10-29**. Player boards show the top **15** of **82** players with at least **2** playoff game(s); shooting rates are recomputed from summed makes and attempts, not averaged per game.
 
 ## Scoring & efficiency
@@ -22,7 +20,7 @@ Descriptive playoff splits (per 100 offensive possessions) · data through **202
 | Aziaha James | DAL | 3 | 13.0 | 28.6 | 0.564 | 25.1 | 2.6 | 2.6 | 1.3 | 0 |
 | Caitlin Clark | IND | 3 | 34.8 | 28.3 | 0.531 | 29.9 | 13.7 | 5.7 | 8.0 | -5.7 |
 | Jonquel Jones | NYL | 5 | 33.1 | 28.0 | 0.713 | 20.6 | 3.8 | 16.2 | 4.1 | 2.8 |
-| Angel Reese | ATL | 11 | 33.9 | 26.0 | 0.531 | 25.2 | 4.2 | 16.9 | 4.8 | 8.2 |
+| Allisha Gray | ATL | 9 | 29.0 | 26.5 | 0.528 | 24.0 | 3.0 | 5.9 | 2.4 | 6.2 |
 
 ## Defense & rebounding
 
