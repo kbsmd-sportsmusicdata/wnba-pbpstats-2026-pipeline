@@ -94,14 +94,14 @@
     "team_a_abbreviation":"ATL",
     "team_b_id":"1611661331",
     "team_b_abbreviation":"GSV",
-    "games_played":6,
+    "games_played":7,
     "team_a_wins":3,
-    "team_b_wins":3,
-    "series_leader":null,
-    "team_a_points_total":437.0,
-    "team_b_points_total":404.0,
-    "team_a_margin_total":33.0,
-    "avg_possessions":74.9166666667,
-    "game_ids":"1042600301;1042600302;1042600303;1042600304;1042600305;1042600306"
+    "team_b_wins":4,
+    "series_leader":"GSV",
+    "team_a_points_total":500.0,
+    "team_b_points_total":472.0,
+    "team_a_margin_total":28.0,
+    "avg_possessions":74.2857142857,
+    "game_ids":"1042600301;1042600302;1042600303;1042600304;1042600305;1042600306;1042600307"
   }
 ]

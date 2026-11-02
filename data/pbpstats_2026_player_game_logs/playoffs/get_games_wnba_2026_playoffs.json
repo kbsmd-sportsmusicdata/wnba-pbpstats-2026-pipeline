@@ -263,6 +263,18 @@
       "AwayPossessions": 78,
       "HomeTeamAbbreviation": "ATL",
       "AwayTeamAbbreviation": "GSV"
+    },
+    {
+      "GameId": "1042600307",
+      "Date": "2026-10-31",
+      "HomeTeamId": "1611661331",
+      "AwayTeamId": "1611661330",
+      "HomePoints": 68,
+      "AwayPoints": 63,
+      "HomePossessions": 70,
+      "AwayPossessions": 71,
+      "HomeTeamAbbreviation": "GSV",
+      "AwayTeamAbbreviation": "ATL"
     }
   ]
 }

@@ -1,6 +1,8 @@
 # WNBA 2026 Playoffs — Risers & Fallers
 
-Largest regular-season → playoff change in **points_per100 (points per 100 possessions)** · data through **2026-10-29**. Qualified players (2+ playoff games); Δ = playoff − regular season.
+> ⚠️ Partial ingest: 5 player(s) and 0 team(s) failed to refresh and are pending a retry — these splits/deltas are incomplete.
+
+Largest regular-season → playoff change in **points_per100 (points per 100 possessions)** · data through **2026-10-31**. Qualified players (2+ playoff games); Δ = playoff − regular season.
 
 ## Biggest risers
 

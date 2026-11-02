@@ -1,20 +1,20 @@
 {
-  "games_in_spine": 22,
-  "generated_at_utc": "2026-10-31T23:18:23+00:00",
+  "games_in_spine": 23,
+  "generated_at_utc": "2026-11-02T23:35:36+00:00",
   "player_game": {
     "columns": 247,
-    "games": 22,
+    "games": 23,
     "path": "/home/runner/work/wnba-pbpstats-2026-pipeline/wnba-pbpstats-2026-pipeline/data/processed/wnba_pbpstats_player_game/season=2026/playoffs/player_game.parquet",
     "players": 91,
-    "rows": 421
+    "rows": 433
   },
   "season": "2026",
   "season_type": "Playoffs",
   "team_game": {
     "columns": 233,
-    "games": 22,
+    "games": 23,
     "path": "/home/runner/work/wnba-pbpstats-2026-pipeline/wnba-pbpstats-2026-pipeline/data/processed/wnba_pbpstats_team_game/season=2026/playoffs/team_game.parquet",
-    "rows": 44,
+    "rows": 46,
     "teams": 8
   }
 }
