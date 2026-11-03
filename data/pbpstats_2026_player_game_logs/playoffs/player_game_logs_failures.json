@@ -2,26 +2,6 @@
   {
     "player_id": "1631009",
     "name": "Rhyne Howard",
-    "error": "failed to fetch /get-game-logs/wnba after 5 attempts: retryable status 502"
-  },
-  {
-    "player_id": "1631021",
-    "name": "Sika Kone",
-    "error": "failed to fetch /get-game-logs/wnba after 5 attempts: retryable status 502"
-  },
-  {
-    "player_id": "1643431",
-    "name": "Madina Okot",
-    "error": "failed to fetch /get-game-logs/wnba after 5 attempts: retryable status 502"
-  },
-  {
-    "player_id": "201886",
-    "name": "DeWanna Bonner",
-    "error": "failed to fetch /get-game-logs/wnba after 5 attempts: retryable status 502"
-  },
-  {
-    "player_id": "204329",
-    "name": "Kiah Stokes",
-    "error": "failed to fetch /get-game-logs/wnba after 5 attempts: retryable status 502"
+    "error": "failed to fetch /get-game-logs/wnba after 5 attempts: retryable status 500"
   }
 ]

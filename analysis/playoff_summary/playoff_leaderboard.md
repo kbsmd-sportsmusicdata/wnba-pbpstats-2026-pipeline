@@ -1,6 +1,6 @@
 # WNBA 2026 Playoff Summary
 
-> ⚠️ Partial ingest: 5 player(s) and 0 team(s) failed to refresh and are pending a retry — these splits/deltas are incomplete.
+> ⚠️ Partial ingest: 1 player(s) and 0 team(s) failed to refresh and are pending a retry — these splits/deltas are incomplete.
 
 Descriptive playoff splits (per 100 offensive possessions) · data through **2026-10-31**. Player boards show the top **15** of **82** players with at least **2** playoff game(s); shooting rates are recomputed from summed makes and attempts, not averaged per game.
 
@@ -34,7 +34,7 @@ Descriptive playoff splits (per 100 offensive possessions) · data through **202
 | Kalani Brown | LVA | 5 | 9.1 | 11.8 | 10.5 | 22.4 | 0.177 | 0.177 | 0 | 2.6 |
 | Justine Pissott | LVA | 4 | 1.4 | 22.2 | 0 | 22.2 | 0.477 | 0 | 0 | 0 |
 | Madina Okot | ATL | 9 | 2.0 | 14.3 | 7.1 | 21.4 | 0.415 | 0.107 | 2.4 | 4.8 |
-| Kiah Stokes | GSV | 12 | 28.4 | 13.7 | 5.4 | 19.1 | 0.263 | 0.084 | 0.651 | 4.7 |
+| Kiah Stokes | GSV | 13 | 28.6 | 14.0 | 5.6 | 19.5 | 0.261 | 0.088 | 0.752 | 4.7 |
 | Laeticia Amihere | GSV | 5 | 10.1 | 15.3 | 3.1 | 18.4 | 0.304 | 0.045 | 2.0 | 2.0 |
 | Angel Reese | ATL | 12 | 33.8 | 11.7 | 5.5 | 17.2 | 0.209 | 0.1 | 2.2 | 2.6 |
 | Jonquel Jones | NYL | 5 | 33.1 | 10.2 | 6.1 | 16.2 | 0.188 | 0.132 | 0.955 | 4.5 |
